@@ -464,6 +464,20 @@ html_template = '''<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>minicontrol</title>
   <meta name="description" content="Edit, organise and back up the presets on a minichord, over USB MIDI.">
+  <link rel="canonical" href="https://minicontrol.keyandcable.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Key &amp; Cable">
+  <meta property="og:title" content="minicontrol">
+  <meta property="og:description" content="Shape every sound on your minichord, then set it across all twelve banks, save profiles and back them up. In the browser, over USB.">
+  <meta property="og:url" content="https://minicontrol.keyandcable.com/">
+  <meta property="og:image" content="https://minicontrol.keyandcable.com/card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="minicontrol in pixel type beside the pixel minichord, above twelve coloured bank slots">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="minicontrol">
+  <meta name="twitter:description" content="Shape every sound on your minichord, then set it across all twelve banks, save profiles and back them up. In the browser, over USB.">
+  <meta name="twitter:image" content="https://minicontrol.keyandcable.com/card.png">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="icon" href="icons/icon-32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
