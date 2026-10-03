@@ -346,7 +346,8 @@
         max-width: 100%;
         height: 100%;
       }
-    }    /* custom scale: one checkbox per chromatic degree, in two rows of six */
+    }
+    /* custom scale: one checkbox per chromatic degree, in two rows of six */
     .degree-row {
       display: grid;
       grid-template-columns: repeat(6, auto);
@@ -365,4 +366,27 @@
       font-size: 0.85em;
       opacity: 0.8;
       white-space: nowrap;
+    }
+    /* phones: let the slider give way so a row fits the screen */
+    @media screen and (max-width: 767px) {
+      #parameters div[style*="display: flex"] > label {
+        width: 120px !important;
+        flex-shrink: 0;
+      }
+      #parameters input[type="range"] {
+        width: auto !important;
+        flex: 1 1 60px;
+        min-width: 0;
+      }
+      .degree-row {
+        grid-template-columns: repeat(4, auto);
+      }
+    }
+    #theme-select {
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      background-color: var(--primary-color);
+      color: var(--text-color);
+      cursor: pointer;
     }

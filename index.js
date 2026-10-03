@@ -143,7 +143,7 @@ function updateConnectionStatus(connected, message) {
     showNotification(message, connected ? "success" : "error");
   }
   if (!connected) {
-    document.querySelectorAll('input, button, select').forEach(element => {
+    document.querySelectorAll('input:not(.always-on), button:not(.always-on), select:not(.always-on)').forEach(element => {
       element.classList.add("inactive");
       element.classList.remove("active");
     });
@@ -194,15 +194,17 @@ function updateUIColor() {
   if (!param) return console.warn('[updateUIColor] SysEx 20 not found');
   const bankColor = currentValues[20] ?? defaultValues[20] ?? param.default_value;
   const hue = bankColor % 360;
-  const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-  const primaryColor = isDarkMode ? `hsl(${hue}, 70%, 60%)` : `hsl(${hue}, 70%, 50%)`;
+  const theme = document.documentElement.getAttribute('data-theme');
+  const isDarkMode = theme === 'dark' || theme === 'arcade';
+  // the arcade lights the bank colour up as neon
+  const primaryColor = theme === 'arcade' ? `hsl(${hue}, 100%, 62%)` : isDarkMode ? `hsl(${hue}, 70%, 60%)` : `hsl(${hue}, 70%, 50%)`;
   const textColor = (hue >= 45 && hue <= 75) || (hue >= 90 && hue <= 150) ? '#000000' : '#ffffff';
   document.documentElement.style.setProperty('--primary-color-hue', hue);
   document.documentElement.style.setProperty('--primary-color', primaryColor);
   document.documentElement.style.setProperty('--text-color', textColor);
   document.querySelectorAll('input[type="range"]').forEach(slider => {
     const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-    const trackColor = isDarkMode ? '#555' : '#ccc';
+    const trackColor = theme === 'arcade' ? '#2A1C35' : isDarkMode ? '#555' : '#ccc';
     slider.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${value}%, ${trackColor} ${value}%, ${trackColor} 100%)`;
     // console.log(`[updateUIColor] Slider ${slider.id}, Hue=${hue}, Value=${value}%, Theme=${isDarkMode ? 'dark' : 'light'}`);
   });
@@ -214,20 +216,40 @@ function updateUIColor() {
   });
 }
 
-function toggleTheme() {
-  const html = document.documentElement;
-  const currentTheme = html.getAttribute('data-theme') || 'light';
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-  html.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  // console.log(`[toggleTheme] Switched to ${newTheme} mode`);
+const THEMES = ['light', 'dark', 'arcade'];
+
+function sliderTrackColor() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  return theme === 'arcade' ? '#2A1C35' : theme === 'dark' ? '#555' : '#ccc';
+}
+
+function setTheme(theme) {
+  if (!THEMES.includes(theme)) theme = 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  try { localStorage.setItem('theme', theme); } catch (e) { /* private window: the choice just isn't remembered */ }
+  const select = document.getElementById('theme-select');
+  if (select) select.value = theme;
+  // the arcade brings its own favicon
+  let icon = document.getElementById('theme-favicon');
+  if (theme === 'arcade') {
+    if (!icon) {
+      icon = document.createElement('link');
+      icon.id = 'theme-favicon';
+      icon.rel = 'icon';
+      icon.type = 'image/svg+xml';
+      document.head.appendChild(icon);
+    }
+    icon.href = 'themes/arcade-minichord.svg';
+  } else if (icon) {
+    icon.remove();
+  }
   updateUIColor();
 }
 
 function loadTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  // console.log(`[loadTheme] Loaded ${savedTheme} mode`);
+  let savedTheme = 'light';
+  try { savedTheme = localStorage.getItem('theme') || 'light'; } catch (e) { /* no storage: light */ }
+  setTheme(savedTheme);
 }
 
 function refreshRhythmGrid() {
@@ -311,7 +333,7 @@ async function setupParameterControls() {
           updateOptionHint(param, deviceValue);
           controller.sendParameter(sysex, deviceValue);
           const valuePercent = ((element.value - element.min) / (element.max - element.min)) * 100;
-          element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, #ccc 0%, #ccc 100%)`;
+          element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, ${sliderTrackColor()} 0%, ${sliderTrackColor()} 100%)`;
           if (sysex === 20) updateUIColor();
         });
         if (valueDisplay) {
@@ -331,7 +353,7 @@ async function setupParameterControls() {
             updateOptionHint(param, deviceValue);
             controller.sendParameter(sysex, deviceValue);
             const valuePercent = ((element.value - element.min) / (element.max - element.min)) * 100;
-            element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, #ccc 0%, #ccc 100%)`;
+            element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, ${sliderTrackColor()} 0%, ${sliderTrackColor()} 100%)`;
             if (sysex === 20) updateUIColor();
             // console.log(`[text-input] Param ${sysex}, Value=${inputValue}`);
           });
@@ -390,7 +412,7 @@ function handleDataReceived(data) {
   targetBank = data.bankNumber;
   updateUI(data.bankNumber);
   // Toggle active/inactive based on firmware version
-  document.querySelectorAll('input, button, select').forEach(element => {
+  document.querySelectorAll('input:not(.always-on), button:not(.always-on), select:not(.always-on)').forEach(element => {
     const requiredVersion = parseFloat(element.getAttribute('version') || 0.01);
     if (requiredVersion <= data.firmwareVersion) {
       element.classList.add('active');
@@ -597,14 +619,14 @@ function setupRhythmGridControls() {
 
 async function initialize() {
   await initializeDefaultValues();
+  loadTheme();
   await setupParameterControls();
   setupRhythmGridControls();
   controller.onConnectionChange = updateConnectionStatus;
   controller.onDataReceived = handleDataReceived;
   const connected = await controller.initialize();
   if (connected) loadBankSettings(0);
-  loadTheme();
-  document.getElementById("toggle-theme-btn")?.addEventListener("click", toggleTheme);
+  document.getElementById("theme-select")?.addEventListener("change", e => setTheme(e.target.value));
 }
 
 document.getElementById("bank_number_selection")?.addEventListener("change", (e) => {

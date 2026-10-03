@@ -388,14 +388,22 @@ html_template = '''<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <link href="index.css" rel="stylesheet" />
+  <link href="themes/arcade.css" rel="stylesheet" />
   <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Minichord UI</title>
+  <script>
+    // the saved theme, set before the page draws so it doesn't flash light first
+    try {{ document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light'); }} catch (e) {{}}
+  </script>
 </head>
 <body>
   <div id="container" style="max-width: 100vw; margin: 0 auto;">
     <div class="status-header">
       <div class="title-container">
         <h1>minicontrol</h1>
+        <div class="arcade-tagline arcade-only">
+          <span class="coin">insert coin</span><span class="ready">player 1 ready</span>
+        </div>
         <span id="notification-bubble">
           <span id="dot">●</span>
           <span id="connection-text"></span>
@@ -480,12 +488,17 @@ html_template = '''<!DOCTYPE html>
         </div>
         <div class="controls">
           <div class="button_div">
-            <button id="toggle-theme-btn">Toggle Dark Mode</button>
+            <select id="theme-select" class="always-on" aria-label="theme">
+              <option value="light">light</option>
+              <option value="dark">dark</option>
+              <option value="arcade">arcade</option>
+            </select>
           </div>
         </div>
       </div>
       <div class="svg-container">
-        <img src="{svg_file}" alt="Minichord Logo">
+        <img src="{svg_file}" alt="Minichord Logo" class="default-only">
+        <img src="themes/arcade-minichord.svg" alt="Minichord, in pixels" class="arcade-only">
       </div>
     </div>
     <details>
