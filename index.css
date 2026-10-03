@@ -666,3 +666,18 @@
     html:not([data-themed]):not([data-theme="arcade"]) #parameters .submenu-body > h3 {
       font-size: 1.1em !important;
     }
+
+    /* who made it, under the parameters, as on the Minichord Lab pages */
+    #page-footer {
+      margin-top: 34px;
+      padding-top: 14px;
+      border-top: 2px solid var(--text-primary);
+      font-size: .95rem;
+      opacity: .8;
+    }
+    #page-footer p {
+      margin: .2rem 0;
+      max-width: 80ch;
+      line-height: 1.4;
+      color: var(--text-primary);
+    }

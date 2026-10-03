@@ -633,7 +633,13 @@ html_template = '''<!DOCTYPE html>
     <div id="parameters">
       {parameter_sections}
     </div>
+    <footer id="page-footer">
+      <p>A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>. The bank tools, knob layer, double tap pairs and the other newer settings need the unofficial <a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a> for the minichord.</p>
+      <p>Made by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>. Source on <a href="https://github.com/keyandcableco/minicontrol">GitHub</a>.</p>
+    </footer>
   </div>
+  <!-- say-thanks -->
+  <p style="text-align:center;margin:28px 0 18px;font-size:14px;opacity:0.8">minicontrol by <a href="https://keyandcable.com/projects.html" target="_blank" rel="noopener" style="color:inherit">The Key &amp; Cable Company</a> &middot; <a href="https://keyandcable.com/thanks.html" target="_blank" rel="noopener" style="color:inherit;font-weight:bold">Say thanks</a></p>
   <script src="minichordcontroller.js"></script>
   <script src="index.js"></script>
   <script src="banks.js"></script>
