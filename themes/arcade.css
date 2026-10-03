@@ -285,3 +285,33 @@
     box-shadow: 0 0 0 2px #3A2D4E, 4px 4px 0 #000;
   }
 }
+/* Press Start 2P's letters fill the whole font size, with nothing above the capitals, so at the
+   browser's default sizes their tops were cut off by the box. Room enough all round instead. */
+[data-theme="arcade"] input[type="number"],
+[data-theme="arcade"] input[type="number"].active,
+[data-theme="arcade"] input[type="number"].inactive {
+  box-sizing: border-box;
+  height: 22px;
+  line-height: 14px;
+  padding: 3px 5px !important;
+  width: 74px !important; /* five characters ("446.0") and the up/down arrows */
+  text-align: right;
+}
+[data-theme="arcade"] #parameters select,
+[data-theme="arcade"] #parameters select.inactive {
+  box-sizing: border-box;
+  height: 28px;
+  line-height: 16px;
+  padding: 5px 6px !important;
+}
+[data-theme="arcade"] #parameters select option,
+[data-theme="arcade"] #bank_number_selection option,
+[data-theme="arcade"] #theme-select option {
+  line-height: 1.6;
+  padding: 4px;
+}
+[data-theme="arcade"] #bank_number_selection,
+[data-theme="arcade"] #theme-select {
+  height: auto;
+  line-height: 16px;
+}
