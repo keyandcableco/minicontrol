@@ -257,7 +257,7 @@ def generate_param_html(param):
                 <input type="number" id="value-{sysex_address}" class="inactive"
                        value="{display_value_str}"
                        min="{min_value}" max="{max_value}" step="{step if data_type == 'float' else 1}"
-                       style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
         ''')
     elif ui_type == 'select':

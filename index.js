@@ -189,6 +189,18 @@ function displayNextNotification() {
   }, 3000);
 }
 
+// Black or white, whichever reads better on the bank colour. Choosing by hue alone gave
+// white on dark mode's lighter reds and blues, too faint to read.
+function readableOn(h, sPct, lPct) {
+  const s = sPct / 100, l = lPct / 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const channel = n => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
+  const lin = v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  const L = 0.2126 * lin(channel(0)) + 0.7152 * lin(channel(8)) + 0.0722 * lin(channel(4));
+  return (1.05 / (L + 0.05)) >= ((L + 0.05) / 0.05) ? '#ffffff' : '#000000';
+}
+
 function updateUIColor() {
   const param = findParameterBySysex(20);
   if (!param) return console.warn('[updateUIColor] SysEx 20 not found');
@@ -196,7 +208,7 @@ function updateUIColor() {
   const hue = bankColor % 360;
   // each theme says how the bank colour is lit (index.css and the theme sheets set these)
   const primaryColor = `hsl(${hue}, ${themeVar('--bank-saturation', '70%')}, ${themeVar('--bank-lightness', '50%')})`;
-  const textColor = (hue >= 45 && hue <= 75) || (hue >= 90 && hue <= 150) ? '#000000' : '#ffffff';
+  const textColor = readableOn(hue, parseFloat(themeVar('--bank-saturation', '70%')), parseFloat(themeVar('--bank-lightness', '50%')));
   document.documentElement.style.setProperty('--primary-color-hue', hue);
   document.documentElement.style.setProperty('--primary-color', primaryColor);
   document.documentElement.style.setProperty('--text-color', textColor);

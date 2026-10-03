@@ -263,6 +263,17 @@
       opacity: 1;
       pointer-events: auto;
     }
+    /* the value boxes beside the sliders: their colours live here rather than inline, so
+       the dark theme can set its own (an inline light background left dark mode's
+       white text on near-white) */
+    input[type="number"] {
+      background-color: hsl(var(--primary-color-hue, 0), 10%, 95%);
+      color: #333;
+    }
+    [data-theme="dark"] input[type="number"] {
+      background-color: #333;
+      color: #e0e0e0;
+    }
     input[type="number"].inactive {
       opacity: 0.5;
       pointer-events: none;
