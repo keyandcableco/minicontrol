@@ -245,6 +245,19 @@ function sliderTrackColor() {
   return themeVar('--track-color', '#ccc');
 }
 
+// Light or dark is one choice across keyandcable.com, kept in a cookie the shop's site and the
+// Minichord Lab read and write too: pick dark on any of them and the others open dark.
+// minicontrol's own looks (arcade, omnichord and the rest) stay minicontrol's.
+function sharedTheme() {
+  const m = document.cookie.match(/(?:^|;\s*)kc-theme=(dark|light)(?:;|$)/);
+  return m ? m[1] : null;
+}
+function shareTheme(theme) {
+  const domain = /(^|\.)keyandcable\.com$/.test(location.hostname) ? '; domain=keyandcable.com' : '';
+  const secure = location.protocol === 'https:' ? '; secure' : '';
+  document.cookie = `kc-theme=${theme}; path=/; max-age=31536000; samesite=lax${domain}${secure}`;
+}
+
 function setTheme(theme, save = true) {
   if (!themeList().includes(theme)) theme = 'light';
   const html = document.documentElement;
@@ -253,6 +266,7 @@ function setTheme(theme, save = true) {
   else html.removeAttribute('data-themed');
   if (save) {
     try { localStorage.setItem('theme', theme); } catch (e) { /* private window: the choice just isn't remembered */ }
+    if (theme === 'light' || theme === 'dark') shareTheme(theme);
   }
   const select = document.getElementById('theme-select');
   if (select) select.value = theme;
@@ -273,10 +287,13 @@ function setTheme(theme, save = true) {
   updateUIColor();
 }
 
-// a theme picked here wins; until one is, a system asking for more contrast gets high contrast
+// a look picked here wins; plain light or dark follows the shared choice; until there is either,
+// a system asking for more contrast gets high contrast
 function loadTheme() {
   let saved = null;
   try { saved = localStorage.getItem('theme'); } catch (e) { /* no storage */ }
+  const shared = sharedTheme();
+  if (shared && (saved === null || saved === 'light' || saved === 'dark')) return setTheme(shared, false);
   if (themeList().includes(saved)) return setTheme(saved);
   const contrast = window.matchMedia && matchMedia('(prefers-contrast: more)').matches;
   setTheme(contrast ? 'contrast' : 'light', false);

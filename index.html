@@ -42,6 +42,9 @@
     (function () {
       var themes = ["light", "dark", "arcade", "omnichord", "notebook", "choir", "chiptune", "contrast", "stage"], tokenThemes = ["omnichord", "notebook", "choir", "chiptune", "contrast", "stage"], theme = null;
       try { theme = localStorage.getItem('theme'); } catch (e) {}
+      // plain light or dark follows the choice shared across keyandcable.com; minicontrol's own looks stay its own
+      var shared = document.cookie.match(/(?:^|;\s*)kc-theme=(dark|light)(?:;|$)/);
+      if (shared && (theme === null || theme === 'light' || theme === 'dark')) theme = shared[1];
       if (themes.indexOf(theme) < 0) theme = window.matchMedia && matchMedia('(prefers-contrast: more)').matches ? 'contrast' : 'light';
       document.documentElement.setAttribute('data-theme', theme);
       if (tokenThemes.indexOf(theme) >= 0) document.documentElement.setAttribute('data-themed', '');
