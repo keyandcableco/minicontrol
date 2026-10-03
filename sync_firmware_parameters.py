@@ -1,0 +1,212 @@
+"""Bring parameters.json in line with a minichord firmware's parameters.json.
+
+Usage: python3 sync_firmware_parameters.py path/to/firmware/generator/parameters.json
+
+The firmware's file is the source of truth for what each SysEx address is: its name,
+range, default, tooltip, firmware method and the version it arrived in. This page's
+file adds how each one is shown: which section and group it sits in, the kind of
+control, dropdown labels. So for every address the firmware defines:
+
+  - an address this page already shows keeps its section, group and control, and takes
+    everything else from the firmware;
+  - a new address gets the placement and control from UI_OVERRIDES below, or, failing
+    that, its firmware section and group with a control guessed from its range;
+  - UI_OVERRIDES always wins, so decisions made here survive the next sync.
+
+Addresses this page has and the firmware doesn't are dropped (and reported).
+Afterwards run generate_sysex_name_map.py and generate.py.
+"""
+import json
+import sys
+
+PAGE_FILE = 'parameters.json'
+
+# taken from the firmware for every parameter
+FIRMWARE_FIELDS = ['name', 'data_type', 'min_value', 'max_value', 'default_value', 'tooltip',
+                   'method', 'iterate', 'curve', 'follows_target']
+
+WAVEFORMS = ["Sine", "Sawtooth", "Square", "Triangle", "Bandlimited Pulse", "Pulse", "Reverse Sawtooth",
+             "Sample and Hold", "Variable Triangle", "Bandlimited Sawtooth", "Reverse Bandlimited Sawtooth",
+             "Bandlimited Square"]
+CHORD_TYPES = ["Slot default", "Major", "Minor", "Dominant 7", "Major 7", "Minor 7", "Diminished", "Augmented",
+               "Major 6", "Minor 6", "Full diminished", "m7b5", "sus4", "sus2", "7sus4", "maj9", "min9", "add9",
+               "6/9", "Supermajor triad", "Subminor triad", "Neutral triad", "Harmonic 7th", "Neutral 7th",
+               "Subminor 7th", "Utonal tetrad", "Harmonic 9th", "Otonal hexad", "Just augmented", "Supermajor 7th"]
+
+
+def options(labels, start=0):
+    return [{"value": i + start, "label": label} for i, label in enumerate(labels)]
+
+
+def select(section, group, labels, start=0):
+    return {"section": section, "group": group, "ui_type": "select", "options": options(labels, start)}
+
+
+def control(section, group, ui_type):
+    return {"section": section, "group": group, "ui_type": ui_type}
+
+
+ALT_LAYOUT = lambda: select('chord_parameter', 'Alternate layout', CHORD_TYPES)
+
+UI_OVERRIDES = {
+    # the firmware's name has an underscore
+    187: {"name": "default bpm"},
+    # global: device
+    20: {"group": "General"},
+    32: {"group": "General"},
+    # global: key and tuning
+    30: control('global_parameter', 'Key and tuning', 'discrete_slider'),
+    31: select('global_parameter', 'Key and tuning', ["sharp", "flat"]),
+    35: select('global_parameter', 'Key and tuning',
+               ["C", "G", "D", "A", "E", "B", "F", "Bb", "Eb", "Ab", "Db", "Gb",
+                "F#", "C#", "G#", "D#", "A#", "E#", "B#", "Fb", "Cb"]),
+    # sent in tenths of a Hz, shown in Hz
+    109: {"section": "global_parameter", "group": "Key and tuning", "ui_type": "slider", "data_type": "float",
+          "float_multiplier": 10, "step": 0.1, "min_value": 432, "max_value": 446, "default_value": 440,
+          "tooltip": "reference pitch for A4, in Hz (432.0 to 446.0, default 440.0). Retunes the synth only; "
+                     "MIDI note numbers are unchanged"},
+    237: select('global_parameter', 'Key and tuning',
+                ["Equal", "Quarter-comma meantone", "Five-limit just (C major)", "Pythagorean",
+                 "Werckmeister III", "Kirnberger III", "Vallotti", "Young no. 2", "Kellner",
+                 "Sixth-comma meantone", "19-EDO", "24-EDO (quarter tones)", "31-EDO"]),
+    # global: MIDI
+    106: select('global_parameter', 'MIDI', [str(i) for i in range(1, 17)], start=1),
+    107: select('global_parameter', 'MIDI', [str(i) for i in range(1, 17)], start=1),
+    108: control('global_parameter', 'MIDI', 'switch'),
+    110: control('global_parameter', 'MIDI', 'switch'),
+    238: control('global_parameter', 'MIDI', 'switch'),
+    # global: knobs
+    117: select('global_parameter', 'Knobs', ["Main functions", "Alternate functions"]),
+    # global: double tap. The firmware calls the second and third pairs "Settings"
+    200: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none"},
+    209: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none"},
+    211: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none"},
+    201: control('global_parameter', 'Double tap', 'slider'),
+    210: control('global_parameter', 'Double tap', 'slider'),
+    212: control('global_parameter', 'Double tap', 'slider'),
+    # potentiometers
+    10: {"section": "chord_potentiometer", "group": "Potentiometer"},
+    11: {"section": "chord_potentiometer", "group": "Potentiometer"},
+    12: {"section": "harp_potentiometer", "group": "Potentiometer"},
+    13: {"section": "harp_potentiometer", "group": "Potentiometer"},
+    14: {"section": "modulation_potentiometer", "group": "Potentiometer"},
+    15: {"section": "modulation_potentiometer", "group": "Potentiometer"},
+    16: {"section": "modulation_potentiometer", "group": "Potentiometer"},
+    17: {"section": "modulation_potentiometer", "group": "Potentiometer"},
+    # chord: buttons
+    21: control('chord_parameter', 'Buttons', 'switch'),
+    33: control('chord_parameter', 'Buttons', 'switch'),
+    34: control('chord_parameter', 'Buttons', 'discrete_slider'),
+    39: select('chord_parameter', 'Buttons', ["Standard seven", "Suspended and extended"]),
+    # chord: general
+    199: control('chord_parameter', 'General', 'slider'),
+    # chord: voicing
+    37: select('chord_parameter', 'Voicing',
+               ["Root position", "First inversion", "Second inversion", "Third inversion / root up an octave"]),
+    38: select('chord_parameter', 'Voicing', ["Close", "Drop 2", "Drop 3", "Drop 2 and 4", "Spread outer voices"]),
+    111: select('chord_parameter', 'Voicing', ["Off", "On", "Strict"]),
+    112: control('chord_parameter', 'Voicing', 'discrete_slider'),
+    # chord: slash chords and cantus
+    23: control('chord_parameter', 'Slash chords and cantus', 'discrete_slider'),
+    113: select('chord_parameter', 'Slash chords and cantus',
+                ["Slash level decides", "Bass", "Tenor", "Alto", "Soprano"]),
+    114: control('chord_parameter', 'Slash chords and cantus', 'switch'),
+    115: select('chord_parameter', 'Slash chords and cantus',
+                ["Off", "Bass", "Tenor", "Alto", "Soprano", "Nearest voice"]),
+    # chord: alternate layout
+    **{address: ALT_LAYOUT() for address in range(202, 209)},
+    # chord: formants
+    118: control('chord_parameter', 'Formants', 'slider'),
+    119: control('chord_parameter', 'Formants', 'slider'),
+    239: control('chord_parameter', 'Formants', 'slider'),
+    240: control('chord_parameter', 'Formants', 'slider'),
+    # harp: notes
+    22: control('harp_parameter', 'Notes', 'switch'),
+    36: select('harp_parameter', 'Notes',
+               ["Chord Tones", "Major Scale", "Major Pentatonic", "Minor Pentatonic", "Diminished 6th",
+                "Relative Natural Minor", "Relative Harmonic Minor", "Relative Minor Pentatonic",
+                "Scale Per Chord", "Scale Per Chord (Pentatonic)", "Custom Scale (key root)",
+                "Custom Scale (chord root)"]),
+    40: control('harp_parameter', 'Notes', 'discrete_slider'),
+    98: control('harp_parameter', 'Notes', 'switch'),
+    99: control('harp_parameter', 'Notes', 'discrete_slider'),
+    116: select('harp_parameter', 'Notes', ["Steps 1-12", "Steps 13-24", "Steps 25-36"], start=1),
+    236: control('harp_parameter', 'Notes', 'degrees'),
+}
+# every waveform dropdown gets the same labels
+WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]
+for address in WAVEFORM_ADDRESSES:
+    UI_OVERRIDES.setdefault(address, {})["options"] = options(WAVEFORMS)
+
+# the rhythm section and the hidden values live in sections of their own here
+RHYTHM_ADDRESSES = set(range(187, 192)) | set(range(220, 236))
+
+
+def guess_ui_type(param):
+    if param['data_type'] == 'degrees':
+        return 'degrees'
+    if param['data_type'] == 'int' and param['min_value'] == 0 and param['max_value'] == 1:
+        return 'switch'
+    if param['data_type'] == 'int' and param['max_value'] - param['min_value'] <= 12:
+        return 'discrete_slider'
+    return 'slider'
+
+
+def main(firmware_file):
+    with open(firmware_file) as f:
+        firmware = json.load(f)
+    with open(PAGE_FILE) as f:
+        page = json.load(f)
+
+    current = {}  # address -> (section, entry) as this page has it
+    for section, params in page.items():
+        for param in params:
+            current[param['sysex_adress']] = (section, param)
+
+    merged = {section: [] for section in page}
+    seen = set()
+    added = []
+    for fw_section, params in firmware.items():
+        for fw_param in params:
+            address = fw_param['sysex_adress']
+            seen.add(address)
+            if address in current:
+                section, entry = current[address]
+                entry = dict(entry)
+            else:
+                added.append(address)
+                if fw_param['group'] == 'hidden':
+                    section = 'hidden'
+                elif address in RHYTHM_ADDRESSES:
+                    section = 'rhythm_parameter'
+                else:
+                    section = fw_section
+                entry = {'sysex_adress': address, 'group': fw_param['group'], 'ui_type': guess_ui_type(fw_param)}
+            for field in FIRMWARE_FIELDS:
+                if field in fw_param:
+                    entry[field] = fw_param[field]
+            # the firmware counts versions in whole numbers, this page in hundredths
+            entry['introduction_version'] = round(fw_param.get('introduction_version', 2) / 100.0, 2)
+            override = dict(UI_OVERRIDES.get(address, {}))
+            section = override.pop('section', section)
+            entry.update(override)
+            if entry['data_type'] == 'int' and entry['ui_type'] != 'select':
+                entry['step'] = 1
+            if entry['ui_type'] == 'select' and 'options' in entry:
+                entry.setdefault('step', 1)
+            merged.setdefault(section, []).append(entry)
+
+    dropped = sorted(address for address in current if address not in seen)
+    for section in merged:
+        merged[section].sort(key=lambda p: p['sysex_adress'])
+    with open(PAGE_FILE, 'w') as f:
+        json.dump(merged, f, indent=2)
+        f.write('\n')
+    print(f"added {len(added)}: {added}")
+    print(f"dropped {len(dropped)}: {dropped}")
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        sys.exit(__doc__)
+    main(sys.argv[1])

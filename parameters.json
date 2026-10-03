@@ -11,112 +11,10 @@
       "max_value": 360,
       "tooltip": "color of the preset",
       "iterate": 1,
-      "method": "bank_led_hue=value; set_led_color(bank_led_hue, 1.0, 1-led_attenuation);",
+      "method": "bank_led_hue=value; set_led_color(bank_led_hue, bank_led_saturation(), 1-led_attenuation);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
-    },
-    {
-      "name": "led attenuation",
-      "group": "General",
-      "default_value": 0,
-      "data_type": "float",
-      "sysex_adress": 32,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "attenuation of the brightness of the led",
-      "iterate": 1,
-      "method": "led_attenuation=value; set_led_color(bank_led_hue, 1.0, 1-led_attenuation);",
-      "introduction_version": 0.03,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "transpose",
-      "group": "General",
-      "default_value": 0,
-      "data_type": "int",
-      "sysex_adress": 30,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 11,
-      "tooltip": "transpose all sounds by a number of semitones",
-      "iterate": 1,
-      "method": "transpose_semitones=value;midi_base_note_transposed=midi_base_note+transpose_semitones;",
-      "introduction_version": 0.02,
-      "ui_type": "discrete_slider",
-      "step": 1
-    },
-    {
-      "sysex_adress": 255,
-      "name": "master tuning",
-      "group": "General",
-      "ui_type": "select",
-      "data_type": "int",
-      "default_value": 440,
-      "min_value": 432,
-      "max_value": 444,
-      "tooltip":"recalibrates notes around different reference concert A (default 440)",
-      "step": 1,
-      "options": [
-        {"value": 432, "label": "432 Hz"},
-        {"value": 433, "label": "433 Hz"},
-        {"value": 434, "label": "434 Hz"},
-        {"value": 435, "label": "435 Hz"},
-        {"value": 436, "label": "436 Hz"},
-        {"value": 437, "label": "437 Hz"},
-        {"value": 438, "label": "438 Hz"},
-        {"value": 439, "label": "439 Hz"},
-        {"value": 440, "label": "440 Hz"},
-        {"value": 441, "label": "441 Hz"},
-        {"value": 442, "label": "442 Hz"},
-        {"value": 443, "label": "443 Hz"},
-        {"value": 444, "label": "444 Hz"}
-      ],
-      "method": "a4_master_tuning = constrain(value, 432, 444); c_frequency = 130.81 * (a4_master_tuning / 440.0); save_master_tuning(); /* Note: current_sysex_parameters[255] is not updated to keep master tuning independent of presets */ if (current_line >= 0) { for (int i = 0; i < 4; i++) { if (chord_envelope_array[i]->isActive()) { set_chord_voice_frequency(i, current_chord_notes[i]); } } } for (int i = 0; i < 12; i++) { if (string_enveloppe_array[i]->isActive()) { set_harp_voice_frequency(i, current_harp_notes[i]); } }",
-      "iterate": 1,
-      "introduction_version": 0.09
-    },
-    {
-      "name": "sharp function",
-      "group": "General",
-      "default_value": false,
-      "data_type": "int",
-      "sysex_adress": 31,
-      "curve": "linear",
-      "tooltip": "change the sharp button to a flat button",
-      "iterate": 1,
-      "method": "flat_button_modifier=value;",
-      "introduction_version": 0.03,
-      "ui_type": "select",
-      "step": 1,
-      "options":[
-        {
-          "value":0,
-          "label":"sharp"
-        },
-        {
-          "value":1,
-          "label":"flat"
-        }
-      ]
-    },
-    {
-      "name": "pan",
-      "group": "Effects",
-      "default_value": 1,
-      "data_type": "float",
-      "sysex_adress": 29,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "pans the chord and harp sound, from fully separated to both in the middle ",
-      "iterate": 1,
-      "method": "pan=value;apply_audio_parameter(85, current_sysex_parameters[85]);apply_audio_parameter(184, current_sysex_parameters[184]);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
     },
     {
       "name": "reverb size",
@@ -137,7 +35,7 @@
     {
       "name": "reverb high damping",
       "group": "Effects",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 25,
       "curve": "linear",
@@ -169,7 +67,7 @@
     {
       "name": "reverb low pass",
       "group": "Effects",
-      "default_value": 0.5,
+      "default_value": 0.3,
       "data_type": "float",
       "sysex_adress": 27,
       "curve": "linear",
@@ -185,7 +83,7 @@
     {
       "name": "reverb diffusion",
       "group": "Effects",
-      "default_value": 0.5,
+      "default_value": 0.3,
       "data_type": "float",
       "sysex_adress": 28,
       "curve": "linear",
@@ -197,6 +95,606 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
+    },
+    {
+      "name": "pan",
+      "group": "Effects",
+      "default_value": 0.75,
+      "data_type": "float",
+      "sysex_adress": 29,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "pans the chord and harp sound, from fully separated to both in the middle ",
+      "iterate": 1,
+      "method": "pan=value;apply_audio_parameter(85, current_sysex_parameters[85]);apply_audio_parameter(184, current_sysex_parameters[184]);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "transpose",
+      "group": "Key and tuning",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 30,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 12,
+      "tooltip": "transpose all sounds by a number of semitones",
+      "iterate": 1,
+      "method": "transpose_semitones=value;transpose_steps=(transpose_semitones*EDO+6)/12;midi_base_note_transposed=midi_base_note+transpose_semitones;",
+      "introduction_version": 0.02,
+      "ui_type": "discrete_slider",
+      "step": 1
+    },
+    {
+      "name": "sharp function",
+      "group": "Key and tuning",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 31,
+      "curve": "linear",
+      "tooltip": "change the sharp button to a flat button",
+      "iterate": 1,
+      "method": "flat_button_modifier=value;",
+      "introduction_version": 0.03,
+      "ui_type": "select",
+      "step": 1,
+      "options": [
+        {
+          "value": 0,
+          "label": "sharp"
+        },
+        {
+          "value": 1,
+          "label": "flat"
+        }
+      ],
+      "min_value": 0,
+      "max_value": 1
+    },
+    {
+      "name": "led attenuation",
+      "group": "General",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 32,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "attenuation of the brightness of the led",
+      "iterate": 1,
+      "method": "led_attenuation=value; set_led_color(bank_led_hue, bank_led_saturation(), 1-led_attenuation);",
+      "introduction_version": 0.03,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "sysex_adress": 35,
+      "name": "chord key signature",
+      "group": "Key and tuning",
+      "ui_type": "select",
+      "data_type": "int",
+      "default_value": 0,
+      "min_value": 0,
+      "max_value": 20,
+      "step": 1,
+      "options": [
+        {
+          "value": 0,
+          "label": "C"
+        },
+        {
+          "value": 1,
+          "label": "G"
+        },
+        {
+          "value": 2,
+          "label": "D"
+        },
+        {
+          "value": 3,
+          "label": "A"
+        },
+        {
+          "value": 4,
+          "label": "E"
+        },
+        {
+          "value": 5,
+          "label": "B"
+        },
+        {
+          "value": 6,
+          "label": "F"
+        },
+        {
+          "value": 7,
+          "label": "Bb"
+        },
+        {
+          "value": 8,
+          "label": "Eb"
+        },
+        {
+          "value": 9,
+          "label": "Ab"
+        },
+        {
+          "value": 10,
+          "label": "Db"
+        },
+        {
+          "value": 11,
+          "label": "Gb"
+        },
+        {
+          "value": 12,
+          "label": "F#"
+        },
+        {
+          "value": 13,
+          "label": "C#"
+        },
+        {
+          "value": 14,
+          "label": "G#"
+        },
+        {
+          "value": 15,
+          "label": "D#"
+        },
+        {
+          "value": 16,
+          "label": "A#"
+        },
+        {
+          "value": 17,
+          "label": "E#"
+        },
+        {
+          "value": 18,
+          "label": "B#"
+        },
+        {
+          "value": 19,
+          "label": "Fb"
+        },
+        {
+          "value": 20,
+          "label": "Cb"
+        }
+      ],
+      "introduction_version": 0.06,
+      "tooltip": "automatically makes flat or sharp the chords for a particular key. 0=C, 1=G, 2=D, 3=A, 4=E, 5=B, 6=F, 7=Bb, 8=Eb, 9=Ab, 10=Db, 11=Gb, and the enharmonic keys 12=F#, 13=C#, 14=G#, 15=D#, 16=A#, 17=E#, 18=B#, 19=Fb, 20=Cb",
+      "method": "key_signature_selection=constrain(value,0,20);",
+      "iterate": 1,
+      "curve": "linear"
+    },
+    {
+      "sysex_adress": 106,
+      "group": "MIDI",
+      "ui_type": "select",
+      "name": "chord channel",
+      "data_type": "int",
+      "min_value": 1,
+      "max_value": 16,
+      "default_value": 1,
+      "tooltip": "set the midi channel for the chord section",
+      "method": "chord_channel=max(value,1);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.08,
+      "options": [
+        {
+          "value": 1,
+          "label": "1"
+        },
+        {
+          "value": 2,
+          "label": "2"
+        },
+        {
+          "value": 3,
+          "label": "3"
+        },
+        {
+          "value": 4,
+          "label": "4"
+        },
+        {
+          "value": 5,
+          "label": "5"
+        },
+        {
+          "value": 6,
+          "label": "6"
+        },
+        {
+          "value": 7,
+          "label": "7"
+        },
+        {
+          "value": 8,
+          "label": "8"
+        },
+        {
+          "value": 9,
+          "label": "9"
+        },
+        {
+          "value": 10,
+          "label": "10"
+        },
+        {
+          "value": 11,
+          "label": "11"
+        },
+        {
+          "value": 12,
+          "label": "12"
+        },
+        {
+          "value": 13,
+          "label": "13"
+        },
+        {
+          "value": 14,
+          "label": "14"
+        },
+        {
+          "value": 15,
+          "label": "15"
+        },
+        {
+          "value": 16,
+          "label": "16"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 107,
+      "group": "MIDI",
+      "ui_type": "select",
+      "name": "harp channel",
+      "data_type": "int",
+      "min_value": 1,
+      "max_value": 16,
+      "default_value": 1,
+      "tooltip": "set the midi channel for the harp section",
+      "method": "harp_channel=max(value,1);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.08,
+      "options": [
+        {
+          "value": 1,
+          "label": "1"
+        },
+        {
+          "value": 2,
+          "label": "2"
+        },
+        {
+          "value": 3,
+          "label": "3"
+        },
+        {
+          "value": 4,
+          "label": "4"
+        },
+        {
+          "value": 5,
+          "label": "5"
+        },
+        {
+          "value": 6,
+          "label": "6"
+        },
+        {
+          "value": 7,
+          "label": "7"
+        },
+        {
+          "value": 8,
+          "label": "8"
+        },
+        {
+          "value": 9,
+          "label": "9"
+        },
+        {
+          "value": 10,
+          "label": "10"
+        },
+        {
+          "value": 11,
+          "label": "11"
+        },
+        {
+          "value": 12,
+          "label": "12"
+        },
+        {
+          "value": 13,
+          "label": "13"
+        },
+        {
+          "value": 14,
+          "label": "14"
+        },
+        {
+          "value": 15,
+          "label": "15"
+        },
+        {
+          "value": 16,
+          "label": "16"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 108,
+      "group": "MIDI",
+      "ui_type": "switch",
+      "name": "single port mode",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "puts both the chord and the harp on the same midi port",
+      "method": "harp_port=1-value; mpe_configure();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.08,
+      "step": 1
+    },
+    {
+      "sysex_adress": 109,
+      "group": "Key and tuning",
+      "ui_type": "slider",
+      "name": "master tuning",
+      "data_type": "float",
+      "min_value": 432,
+      "max_value": 446,
+      "default_value": 440,
+      "tooltip": "reference pitch for A4, in Hz (432.0 to 446.0, default 440.0). Retunes the synth only; MIDI note numbers are unchanged",
+      "method": "{ int tenths = (value == 0) ? 4400 : constrain(value, 4320, 4460); float tuned_c_frequency = 130.81 * (tenths / 4400.0); if (tuned_c_frequency != c_frequency) { c_frequency = tuned_c_frequency; retune_active_voices(); } }",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.1,
+      "float_multiplier": 10,
+      "step": 0.1
+    },
+    {
+      "sysex_adress": 110,
+      "group": "MIDI",
+      "ui_type": "switch",
+      "name": "MPE output",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "gives every voice its own midi channel (MPE), so glide and the real pitch of a temperament or a divided octave survive the trip out; off is the usual single channel output",
+      "method": "mpe_set_mode(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.11,
+      "step": 1
+    },
+    {
+      "sysex_adress": 117,
+      "group": "Knobs",
+      "ui_type": "select",
+      "name": "knob layer",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "which functions the potentiometers play. 0: their main functions, and holding the modifier selects their alternates, as always. 1: their alternate functions, and the modifier only sharpens, so an alternate can be turned while chords sound. Assign the double tap to it (control 117, value 1) to switch layers while playing. After switching layers a knob waits until it reaches where its new function was left, so nothing jumps. While it is 1 the LED shows the preset colour pale",
+      "method": "if (knob_layer != (bool)value) { chord_pot.pickup_on_next_switch(); harp_pot.pickup_on_next_switch(); mod_pot.pickup_on_next_switch(); } knob_layer=value; set_led_color(bank_led_hue, bank_led_saturation(), 1-led_attenuation);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.19,
+      "options": [
+        {
+          "value": 0,
+          "label": "Main functions"
+        },
+        {
+          "value": 1,
+          "label": "Alternate functions"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 200,
+      "group": "Double tap",
+      "ui_type": "select",
+      "name": "double tap control",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 219,
+      "default_value": 0,
+      "tooltip": "which setting two quick taps of the modifier button toggle, with the settings of double tap control 2 and 3 if assigned. 0 leaves this pair unassigned. Set it to 39 to switch chord layouts, or to any other setting you want under a tap",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "none_option": "none"
+    },
+    {
+      "sysex_adress": 201,
+      "group": "Double tap",
+      "ui_type": "slider",
+      "name": "double tap value",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 1,
+      "tooltip": "the value the double tap applies. Tapping again puts back whatever was there before",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "follows_target": 200,
+      "introduction_version": 0.09,
+      "step": 1
+    },
+    {
+      "sysex_adress": 209,
+      "group": "Double tap",
+      "ui_type": "select",
+      "name": "double tap control 2",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 219,
+      "default_value": 0,
+      "tooltip": "a second setting the double tap toggles at the same time as the first, so one double tap can turn a preset over to its other side. 0 leaves this pair unused",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.19,
+      "none_option": "none"
+    },
+    {
+      "sysex_adress": 210,
+      "group": "Double tap",
+      "ui_type": "slider",
+      "name": "double tap value 2",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 1,
+      "tooltip": "the value the double tap applies to control 2. Tapping again puts back whatever was there before",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "follows_target": 209,
+      "introduction_version": 0.19,
+      "step": 1
+    },
+    {
+      "sysex_adress": 211,
+      "group": "Double tap",
+      "ui_type": "select",
+      "name": "double tap control 3",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 219,
+      "default_value": 0,
+      "tooltip": "a third setting the double tap toggles at the same time. 0 leaves this pair unused",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.19,
+      "none_option": "none"
+    },
+    {
+      "sysex_adress": 212,
+      "group": "Double tap",
+      "ui_type": "slider",
+      "name": "double tap value 3",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 1,
+      "tooltip": "the value the double tap applies to control 3. Tapping again puts back whatever was there before",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "follows_target": 211,
+      "introduction_version": 0.19,
+      "step": 1
+    },
+    {
+      "sysex_adress": 237,
+      "group": "Key and tuning",
+      "ui_type": "select",
+      "name": "temperament",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 12,
+      "default_value": 0,
+      "tooltip": "tuning of the notes: 0=equal, 1=quarter-comma meantone, 2=five-limit just (C major), 3=pythagorean, 4=werckmeister III, 5=kirnberger III, 6=vallotti, 7=young no. 2, 8=kellner, 9=sixth-comma meantone, 10=19-EDO, 11=24-EDO (quarter tones), 12=31-EDO. A keeps the master tuning pitch in the twelve-note ones, which are fixed to the keyboard, sweetest around C, so far keys sound progressively rougher, as they did historically. 10 and 11 divide the octave differently instead",
+      "method": "apply_temperament(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.1,
+      "options": [
+        {
+          "value": 0,
+          "label": "Equal"
+        },
+        {
+          "value": 1,
+          "label": "Quarter-comma meantone"
+        },
+        {
+          "value": 2,
+          "label": "Five-limit just (C major)"
+        },
+        {
+          "value": 3,
+          "label": "Pythagorean"
+        },
+        {
+          "value": 4,
+          "label": "Werckmeister III"
+        },
+        {
+          "value": 5,
+          "label": "Kirnberger III"
+        },
+        {
+          "value": 6,
+          "label": "Vallotti"
+        },
+        {
+          "value": 7,
+          "label": "Young no. 2"
+        },
+        {
+          "value": 8,
+          "label": "Kellner"
+        },
+        {
+          "value": 9,
+          "label": "Sixth-comma meantone"
+        },
+        {
+          "value": 10,
+          "label": "19-EDO"
+        },
+        {
+          "value": 11,
+          "label": "24-EDO (quarter tones)"
+        },
+        {
+          "value": 12,
+          "label": "31-EDO"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 238,
+      "group": "MIDI",
+      "ui_type": "switch",
+      "name": "knobs send MIDI",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "sends the three knobs' positions out over MIDI as they turn, as control changes 20 (chord knob), 21 (harp knob) and 22 (modulation knob) on the chord channel, so they can be MIDI-learnt in a DAW or read by a program; the knobs keep doing their usual jobs",
+      "method": "knob_midi=value; knob_midi_resend=true;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.17,
+      "step": 1
     }
   ],
   "chord_parameter": [
@@ -217,34 +715,80 @@
       "step": 0.01
     },
     {
-      "name": "octave change",
-      "group": "General",
+      "name": "retrigger chords",
+      "group": "Buttons",
       "default_value": 0,
       "data_type": "int",
-      "sysex_adress": 198,
+      "sysex_adress": 21,
+      "curve": "linear",
+      "tooltip": "defines whether the chords will be retriggered when playing a modulation of the current chord or in continuous chord mode",
+      "iterate": 1,
+      "method": "retrigger_chord=value;",
+      "introduction_version": 0.02,
+      "ui_type": "switch",
+      "step": 1,
+      "min_value": 0,
+      "max_value": 1
+    },
+    {
+      "name": "slash level",
+      "group": "Slash chords and cantus",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 23,
       "curve": "linear",
       "min_value": 0,
-      "max_value": 4,
-      "tooltip": "changes the octave of the chord section up or down",
-      "iterate": 4,
-      "method": "chord_octave_change=value; current_chord_notes[i]=calculate_note_chord(i,slash_chord,sharp_active);",
-      "introduction_version": 0.03,
+      "max_value": 2,
+      "tooltip": "level of the scale which will be affected when using slash chords",
+      "iterate": 1,
+      "method": "note_slash_level=value;",
+      "introduction_version": 0.02,
       "ui_type": "discrete_slider",
+      "options": [
+        {
+          "value": 0,
+          "label": "1"
+        },
+        {
+          "value": 1,
+          "label": "2"
+        },
+        {
+          "value": 2,
+          "label": "3"
+        }
+      ],
       "step": 1
     },
     {
+      "name": "barry harris mode",
+      "group": "Buttons",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 33,
+      "curve": "linear",
+      "tooltip": "change major chords to major 6, the minor chords to minor 6, and the diminished chords to fully diminished. Recommanded to use the fourth harp shuffling array",
+      "iterate": 1,
+      "method": "barry_harris_mode=value;",
+      "introduction_version": 0.04,
+      "ui_type": "switch",
+      "step": 1,
+      "min_value": 0,
+      "max_value": 1
+    },
+    {
       "name": "chord frame shift",
-      "group": "General",
+      "group": "Buttons",
       "default_value": 0,
       "data_type": "int",
       "sysex_adress": 34,
       "curve": "linear",
       "min_value": 0,
       "max_value": 6,
-      "tooltip": "Shifts the register frame up (e.g. 1 makes D the lowest pitched, 2 makes E the lowest pitched",
-      "iterate": 6,
+      "tooltip": "shifts the register frame up (e.g. 1 makes D the lowest pitched, 2 makes E the lowest pitched, and so on)",
+      "iterate": 1,
       "method": "chord_frame_shift=value;",
-      "introduction_version": 0.03,
+      "introduction_version": 0.06,
       "ui_type": "discrete_slider",
       "options": [
         {
@@ -279,80 +823,289 @@
       "step": 1
     },
     {
-      "sysex_adress": 35,
-      "name": "key selection",
-      "group": "General",
+      "sysex_adress": 37,
+      "group": "Voicing",
       "ui_type": "select",
+      "name": "chord inversion",
       "data_type": "int",
-      "default_value": 0,
       "min_value": 0,
-      "max_value": 11,
-      "step": 1,
-      "options": [
-        {"value": 0, "label": "C"},
-        {"value": 1, "label": "G"},
-        {"value": 2, "label": "D"},
-        {"value": 3, "label": "A"},
-        {"value": 4, "label": "E"},
-        {"value": 5, "label": "B"},
-        {"value": 6, "label": "F"},
-        {"value": 7, "label": "Bb"},
-        {"value": 8, "label": "Eb"},
-        {"value": 9, "label": "Ab"},
-        {"value": 10, "label": "Db"},
-        {"value": 11, "label": "Gb"},
-        {"value": 12, "label": "F#"},
-        {"value": 13, "label": "C#"},
-        {"value": 14, "label": "G#"},
-        {"value": 15, "label": "D#"},
-        {"value": 16, "label": "A#"},
-        {"value": 17, "label": "E#"},
-        {"value": 18, "label": "B#"},
-        {"value": 19, "label": "Fb"},
-        {"value": 20, "label": "Cb"}
-      ],
-      "introduction_version": 0.06
-    },
-    {
-      "name": "barry harris mode",
-      "group": "General",
-      "default_value": false,
-      "data_type": "int",
-      "sysex_adress": 33,
-      "curve": "linear",
-      "tooltip": "change major chords to major 6, the minor chords to minor 6, and the diminished chords to fully diminished. Recommend Harp Shuffling array #5",
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "voicing of the chord buttons. 0 is root position, 1 and 2 are the first and second inversions, 3 is the third inversion for seventh and sixth chords or the root position an octave up for triads",
+      "method": "chord_inversion=value; refresh_chord_voicing();",
       "iterate": 1,
-      "method": "barry_harris_mode=value;",
-      "introduction_version": 0.05,
-      "ui_type": "switch",
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Root position"
+        },
+        {
+          "value": 1,
+          "label": "First inversion"
+        },
+        {
+          "value": 2,
+          "label": "Second inversion"
+        },
+        {
+          "value": 3,
+          "label": "Third inversion / root up an octave"
+        }
+      ],
       "step": 1
     },
     {
-      "name": "retrigger chords",
-      "group": "General",
-      "default_value": false,
+      "sysex_adress": 38,
+      "group": "Voicing",
+      "ui_type": "select",
+      "name": "chord spacing",
       "data_type": "int",
-      "sysex_adress": 21,
-      "curve": "linear",
-      "tooltip": "defines whether the chords will be retriggered when playing a modulation of the current chord or in continuous chord mode",
+      "min_value": 0,
+      "max_value": 4,
+      "default_value": 0,
+      "tooltip": "how far apart the chord voices sit. 0=close (adjacent tones), 1=drop 2, 2=drop 3, 3=drop 2 and 4 (the most evenly spread), 4=spread the outer voices. Drops move a voice down an octave; a move that would leave the usable range is not made",
+      "method": "chord_spacing=value; refresh_chord_voicing();",
       "iterate": 1,
-      "method": "retrigger_chord=value;",
-      "introduction_version": 0.02,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Close"
+        },
+        {
+          "value": 1,
+          "label": "Drop 2"
+        },
+        {
+          "value": 2,
+          "label": "Drop 3"
+        },
+        {
+          "value": 3,
+          "label": "Drop 2 and 4"
+        },
+        {
+          "value": 4,
+          "label": "Spread outer voices"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 39,
+      "group": "Buttons",
+      "ui_type": "select",
+      "name": "chord layout",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "which chords the buttons play. 0=the standard seven, 1=suspended and extended: sus4, sus2, 7sus4, maj9, min9, add9 and 6/9 on the same combinations",
+      "method": "alt_chord_layout=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Standard seven"
+        },
+        {
+          "value": 1,
+          "label": "Suspended and extended"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 111,
+      "group": "Voicing",
+      "ui_type": "select",
+      "name": "voice leading",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "place the chord voices to move as little as possible from the chord already sounding, the way a choir does, instead of building every chord upward from its root. 1 is on; 2 is strict, which also avoids parallel fifths and octaves, and the outer voices leaping into a fifth or octave, at the cost of a little more movement. Overrides the inversion setting while it is on. A slash chord keeps its bass on the note it names, in the octave nearest the chord already sounding, and the voices above it are led",
+      "method": "voice_leading=value; refresh_chord_voicing();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.12,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "On"
+        },
+        {
+          "value": 2,
+          "label": "Strict"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 112,
+      "group": "Voicing",
+      "ui_type": "discrete_slider",
+      "name": "voice leading range",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 24,
+      "default_value": 12,
+      "tooltip": "how far, in semitones, a voice led chord may sit outside where root position would have put it, converted to steps of the live division so it means the same interval in 12, 19 and 31. Small keeps the chords anchored where the buttons say, large lets them follow the previous chord further. Only used when voice leading is on",
+      "method": "voice_leading_range=value; refresh_chord_voicing();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.12,
+      "step": 1
+    },
+    {
+      "sysex_adress": 113,
+      "group": "Slash chords and cantus",
+      "ui_type": "select",
+      "name": "slash voice",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4,
+      "default_value": 0,
+      "tooltip": "which of the four chord voices a slash replaces, counted from the bottom: 1 bass, 2 tenor, 3 alto, 4 soprano. At 0 slash level decides, as before. Bass is a slash chord in the usual sense, with the whole chord above it; the others change only that voice, for a melody note on top or a suspension inside the chord",
+      "method": "slash_voice=value; refresh_chord_voicing();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.13,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slash level decides"
+        },
+        {
+          "value": 1,
+          "label": "Bass"
+        },
+        {
+          "value": 2,
+          "label": "Tenor"
+        },
+        {
+          "value": 3,
+          "label": "Alto"
+        },
+        {
+          "value": 4,
+          "label": "Soprano"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 114,
+      "group": "Slash chords and cantus",
       "ui_type": "switch",
+      "name": "slash re-voice",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "with slash voice set to tenor, alto or soprano, the other three voices move to keep the chord whole around the slash note, as little as they can, instead of holding still. The bass always keeps the chord whole",
+      "method": "slash_revoice=value; refresh_chord_voicing();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.13,
+      "step": 1
+    },
+    {
+      "sysex_adress": 115,
+      "group": "Slash chords and cantus",
+      "ui_type": "select",
+      "name": "cantus",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 5,
+      "default_value": 0,
+      "tooltip": "which chord voice the harp sets, the way slash voice lets a slash set one: 1 bass, 2 tenor, 3 alto, 4 soprano counted from the bottom, 5 whichever voice is nearest the note. The first string of each new harp gesture gives that voice its note (the rest of a strum does not). A chord tone keeps the chord whole around it; any other note is a passing tone that voice sings alone. It holds through a chord change when the new chord has the note, and lets go otherwise. A slash keeps any voice it holds. At 0 the harp leaves the chord alone, as before",
+      "method": "cantus_voice=value; if (!cantus_voice) cantus_pc=-1; refresh_chord_voicing();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.14,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "Bass"
+        },
+        {
+          "value": 2,
+          "label": "Tenor"
+        },
+        {
+          "value": 3,
+          "label": "Alto"
+        },
+        {
+          "value": 4,
+          "label": "Soprano"
+        },
+        {
+          "value": 5,
+          "label": "Nearest voice"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 118,
+      "group": "Formants",
+      "ui_type": "slider",
+      "name": "formant vowel",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "the vowel the chords sing: 0 a, 25 e, 50 i, 75 o, 100 u, gliding between. Put it on a knob and sweep it while a chord sounds",
+      "method": "formant_vowel=value; update_formants();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.2,
+      "step": 1
+    },
+    {
+      "sysex_adress": 119,
+      "group": "Formants",
+      "ui_type": "slider",
+      "name": "formant amount",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "how much of the chords go through the formants: 0 leaves them as they are, 100 is the full vowel. Works best with a bright waveform and the chord filter open",
+      "method": "formant_amount=value; update_formants();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.2,
       "step": 1
     },
     {
       "name": "chord shuffling",
       "group": "General",
-      "default_value": 0,
+      "default_value": 2,
       "data_type": "int",
       "sysex_adress": 120,
       "curve": "linear",
       "min_value": 0,
       "max_value": 5,
       "tooltip": "defines different chord patterns. 0 is normal, 1 to 4 is one octave up with different additional notes, 5 is two octave up",
-      "iterate": 7,
-      "method": "chord_shuffling_selection=value; current_chord_notes[i]=calculate_note_chord(i,slash_chord,sharp_active);",
+      "iterate": 1,
+      "method": "chord_shuffling_selection=constrain(value,0,5); refresh_chord_voicing();",
       "introduction_version": 0.02,
       "ui_type": "discrete_slider",
       "options": [
@@ -380,229 +1133,9 @@
       "step": 1
     },
     {
-      "name": "slash level",
-      "group": "General",
-      "default_value": 0,
-      "data_type": "int",
-      "sysex_adress": 23,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 2,
-      "tooltip": "level of the scale which will be affected when using slash chords",
-      "iterate": 1,
-      "method": "note_slash_level=value;",
-      "introduction_version": 0.02,
-      "ui_type": "discrete_slider",
-      "options": [
-        {
-          "value": 0,
-          "label": "1"
-        },
-        {
-          "value": 1,
-          "label": "2"
-        },
-        {
-          "value": 2,
-          "label": "3"
-        }
-      ],
-      "step": 1
-    },
-    {
-      "name": "delay length",
-      "group": "Delay",
-      "default_value": 1,
-      "data_type": "int",
-      "sysex_adress": 176,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 600,
-      "tooltip": "length in ms of the delay",
-      "iterate": 1,
-      "method": "delay_chords.delay(0,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 1
-    },
-    {
-      "name": "delay filter frequency",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "int",
-      "sysex_adress": 177,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 5000,
-      "tooltip": "corner frequency of the filter in the delay loop",
-      "iterate": 1,
-      "method": "filter_delay_chords.frequency(value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 1
-    },
-    {
-      "name": "delay filter resonance",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 178,
-      "curve": "linear",
-      "min_value": 0.7,
-      "max_value": 5,
-      "tooltip": "resonance of the filter in the delay loop",
-      "iterate": 1,
-      "method": "filter_delay_chords.resonance(value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "delay lowpass",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 179,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "lowpass component feedback into the delay",
-      "iterate": 1,
-      "method": "chord_delay_mix.gain(1,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "delay bandpass",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 180,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "bandpass component feedback into the delay",
-      "iterate": 1,
-      "method": "chord_delay_mix.gain(2,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "delay highpass",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 181,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "highpass component feedback into the delay",
-      "iterate": 1,
-      "method": "chord_delay_mix.gain(3,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "dry mix",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 182,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "intensity of the dry signal in the output",
-      "iterate": 1,
-      "method": "chords_effect_mix.gain(0,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "delay mix",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 183,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "intensity of the delayed signal in the output",
-      "iterate": 1,
-      "method": "chords_effect_mix.gain(1,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "reverb level",
-      "group": "Reverb",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 184,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "level of the reverb applied to the chord signal",
-      "iterate": 1,
-      "method": "reverb_mixer.gain(1,value);chords_r_stereo_gain.amplitude(1.0-reverb_dry_proportion*value,100);chords_l_stereo_gain.amplitude((1.0-reverb_dry_proportion*value)*pan,100);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "crunch level",
-      "group": "Crunch",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 185,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "level of crunch applied to the chord signal",
-      "iterate": 1,
-      "method": "chord_waveshaper_mix.gain(0,1-value);chord_waveshaper_mix.gain(1,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "crunch type",
-      "group": "Crunch",
-      "default_value": 0.5,
-      "data_type": "int",
-      "sysex_adress": 186,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 2,
-      "tooltip": "selects the waveshaper transfert function, with more and more distorted shape",
-      "iterate": 1,
-      "method": "ws_sin_param=value;calculate_ws_array(); chord_waveshape.shape(wave_shape,257);",
-      "introduction_version": 0.02,
-      "ui_type": "select",
-      "options": [
-        {
-          "value": 0,
-          "label": "1"
-        },
-        {
-          "value": 1,
-          "label": "2"
-        },
-        {
-          "value": 2,
-          "label": "3"
-        }
-      ],
-      "step": 1
-    },
-    {
       "name": "amplitude 1",
       "group": "Oscillator",
-      "default_value": 0.5,
+      "default_value": 0.15,
       "data_type": "float",
       "sysex_adress": 121,
       "curve": "linear",
@@ -618,7 +1151,7 @@
     {
       "name": "waveform 1",
       "group": "Oscillator",
-      "default_value": 0,
+      "default_value": 8,
       "data_type": "int",
       "sysex_adress": 122,
       "curve": "linear",
@@ -626,7 +1159,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the first oscillator. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.",
       "iterate": 4,
-      "method": "chord_osc_1_array[i]->begin(waveform_array[value]);",
+      "method": "chord_osc_1_array[i]->begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -661,7 +1194,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -682,9 +1215,25 @@
       ]
     },
     {
+      "name": "frequency multiplier 1",
+      "group": "Oscillator",
+      "default_value": 1.0,
+      "data_type": "float",
+      "sysex_adress": 123,
+      "curve": "linear",
+      "min_value": 0.5,
+      "max_value": 2,
+      "tooltip": "frequency multiplier for the first oscillator. 1 is normal, 0.5 an octave below and 1 an octave above",
+      "iterate": 1,
+      "method": "osc_1_freq_multiplier=value;",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
       "name": "amplitude 2",
       "group": "Oscillator",
-      "default_value": 0.5,
+      "default_value": 0.15,
       "data_type": "float",
       "sysex_adress": 124,
       "curve": "linear",
@@ -708,7 +1257,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the second oscillator. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.",
       "iterate": 4,
-      "method": "chord_osc_2_array[i]->begin(waveform_array[value]);",
+      "method": "chord_osc_2_array[i]->begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -743,7 +1292,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -764,9 +1313,25 @@
       ]
     },
     {
+      "name": "frequency multiplier 2",
+      "group": "Oscillator",
+      "default_value": 2.0,
+      "data_type": "float",
+      "sysex_adress": 126,
+      "curve": "linear",
+      "min_value": 0.5,
+      "max_value": 2,
+      "tooltip": "frequency multiplier for the second oscillator. 1 is normal, 0.5 an octave below and 1 an octave above",
+      "iterate": 1,
+      "method": "osc_2_freq_multiplier=value;",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
       "name": "amplitude 3",
       "group": "Oscillator",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 127,
       "curve": "linear",
@@ -790,7 +1355,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the third oscillator. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.",
       "iterate": 4,
-      "method": "chord_osc_3_array[i]->begin(waveform_array[value]);",
+      "method": "chord_osc_3_array[i]->begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -825,7 +1390,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -846,9 +1411,25 @@
       ]
     },
     {
-      "name": "noise",
+      "name": "frequency multiplier 3",
       "group": "Oscillator",
       "default_value": 0.5,
+      "data_type": "float",
+      "sysex_adress": 129,
+      "curve": "linear",
+      "min_value": 0.5,
+      "max_value": 2,
+      "tooltip": "frequency multiplier for the third oscillator. 1 is normal, 0.5 an octave below and 1 an octave above",
+      "iterate": 1,
+      "method": "osc_3_freq_multiplier=value;",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "noise",
+      "group": "Oscillator",
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 130,
       "curve": "linear",
@@ -926,57 +1507,9 @@
       "step": 0.01
     },
     {
-      "name": "frequency multiplier 1",
-      "group": "Oscillator",
-      "default_value": 0,
-      "data_type": "float",
-      "sysex_adress": 123,
-      "curve": "linear",
-      "min_value": 0.5,
-      "max_value": 2,
-      "tooltip": "frequency multiplier for the first oscillator. 1 is normal, 0.5 an octave below and 1 an octave above",
-      "iterate": 1,
-      "method": "osc_1_freq_multiplier=value;",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "frequency multiplier 2",
-      "group": "Oscillator",
-      "default_value": 0,
-      "data_type": "float",
-      "sysex_adress": 126,
-      "curve": "linear",
-      "min_value": 0.5,
-      "max_value": 2,
-      "tooltip": "frequency multiplier for the second oscillator. 1 is normal, 0.5 an octave below and 1 an octave above",
-      "iterate": 1,
-      "method": "osc_2_freq_multiplier=value;",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "frequency multiplier 3",
-      "group": "Oscillator",
-      "default_value": 0,
-      "data_type": "float",
-      "sysex_adress": 129,
-      "curve": "linear",
-      "min_value": 0.5,
-      "max_value": 2,
-      "tooltip": "frequency multiplier for the third oscillator. 1 is normal, 0.5 an octave below and 1 an octave above",
-      "iterate": 1,
-      "method": "osc_3_freq_multiplier=value;",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
       "name": "inter-note delay",
       "group": "General",
-      "default_value": 10,
+      "default_value": 0,
       "data_type": "int",
       "sysex_adress": 135,
       "curve": "linear",
@@ -992,7 +1525,7 @@
     {
       "name": "random note delay",
       "group": "General",
-      "default_value": 10,
+      "default_value": 0,
       "data_type": "int",
       "sysex_adress": 136,
       "curve": "linear",
@@ -1008,7 +1541,7 @@
     {
       "name": "attack",
       "group": "Envelope",
-      "default_value": 15,
+      "default_value": 10,
       "data_type": "int",
       "sysex_adress": 137,
       "curve": "exponential",
@@ -1019,12 +1552,12 @@
       "method": "chord_envelope_array[i]->attack(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "hold",
       "group": "Envelope",
-      "default_value": 2,
+      "default_value": 70,
       "data_type": "int",
       "sysex_adress": 138,
       "curve": "exponential",
@@ -1035,12 +1568,12 @@
       "method": "chord_envelope_array[i]->hold(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "decay",
       "group": "Envelope",
-      "default_value": 1000,
+      "default_value": 400,
       "data_type": "int",
       "sysex_adress": 139,
       "curve": "exponential",
@@ -1051,12 +1584,12 @@
       "method": "chord_envelope_array[i]->decay(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "sustain",
       "group": "Envelope",
-      "default_value": 0.5,
+      "default_value": 0.75,
       "data_type": "float",
       "sysex_adress": 140,
       "curve": "linear",
@@ -1083,12 +1616,12 @@
       "method": "chord_envelope_array[i]->release(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "retrigger release",
       "group": "Envelope",
-      "default_value": 5,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 142,
       "curve": "exponential",
@@ -1099,20 +1632,20 @@
       "method": "chord_envelope_array[i]->releaseNoteOn(value); chord_retrigger_release=value;",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "base frequency",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 600,
       "data_type": "int",
       "sysex_adress": 143,
       "curve": "linear",
       "min_value": 0,
       "max_value": 5000,
       "tooltip": "corner frequency of the filter in the absence of control signal",
-      "iterate": 4,
-      "method": "chord_filter_base_freq=value;",
+      "iterate": 1,
+      "method": "chord_filter_base_freq=value; refresh_chord_filter();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -1120,15 +1653,15 @@
     {
       "name": "keytrack value",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 0.15,
       "data_type": "float",
       "sysex_adress": 144,
       "curve": "linear",
       "min_value": 0,
       "max_value": 1,
       "tooltip": "value that is multiplied by the note frequency and added to the base corner frequency to allow for keytracking",
-      "iterate": 4,
-      "method": "chord_filter_keytrack=value;",
+      "iterate": 1,
+      "method": "chord_filter_keytrack=value; refresh_chord_filter();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -1136,7 +1669,7 @@
     {
       "name": "resonance",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 1.5,
       "data_type": "float",
       "sysex_adress": 145,
       "curve": "linear",
@@ -1152,7 +1685,7 @@
     {
       "name": "attack",
       "group": "Low pass filter",
-      "default_value": 15,
+      "default_value": 30,
       "data_type": "int",
       "sysex_adress": 146,
       "curve": "exponential",
@@ -1163,12 +1696,12 @@
       "method": "chord_envelope_filter_array[i]->attack(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "hold",
       "group": "Low pass filter",
-      "default_value": 2,
+      "default_value": 90,
       "data_type": "int",
       "sysex_adress": 147,
       "curve": "exponential",
@@ -1179,12 +1712,12 @@
       "method": "chord_envelope_filter_array[i]->hold(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "decay",
       "group": "Low pass filter",
-      "default_value": 1000,
+      "default_value": 30,
       "data_type": "int",
       "sysex_adress": 148,
       "curve": "exponential",
@@ -1195,7 +1728,7 @@
       "method": "chord_envelope_filter_array[i]->decay(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "sustain",
@@ -1216,7 +1749,7 @@
     {
       "name": "release",
       "group": "Low pass filter",
-      "default_value": 1000,
+      "default_value": 50,
       "data_type": "int",
       "sysex_adress": 150,
       "curve": "exponential",
@@ -1227,12 +1760,12 @@
       "method": "chord_envelope_filter_array[i]->release(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "retrigger release",
       "group": "Low pass filter",
-      "default_value": 5,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 151,
       "curve": "exponential",
@@ -1243,7 +1776,7 @@
       "method": "chord_envelope_filter_array[i]->releaseNoteOn(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "LFO waveform",
@@ -1256,7 +1789,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the low pass filter control LFO. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.",
       "iterate": 1,
-      "method": "chords_filter_LFO.begin(waveform_array[value]);",
+      "method": "chords_filter_LFO.begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -1291,7 +1824,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -1314,7 +1847,7 @@
     {
       "name": "LFO frequency",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 153,
       "curve": "linear",
@@ -1330,7 +1863,7 @@
     {
       "name": "LFO amplitude",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 154,
       "curve": "linear",
@@ -1370,7 +1903,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the tremolo (amplitude variation). In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.. Discontinuous signal will cause clicks",
       "iterate": 4,
-      "method": "chords_tremolo_lfo.begin(waveform_array[value]);",
+      "method": "chords_tremolo_lfo.begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -1405,7 +1938,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -1428,7 +1961,7 @@
     {
       "name": "frequency",
       "group": "Tremolo",
-      "default_value": 0,
+      "default_value": 4.0,
       "data_type": "float",
       "sysex_adress": 157,
       "curve": "linear",
@@ -1444,7 +1977,7 @@
     {
       "name": "keytrack value",
       "group": "Tremolo",
-      "default_value": 0,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 158,
       "curve": "linear",
@@ -1460,7 +1993,7 @@
     {
       "name": "amplitude",
       "group": "Tremolo",
-      "default_value": 0.5,
+      "default_value": 0.2,
       "data_type": "float",
       "sysex_adress": 159,
       "curve": "linear",
@@ -1484,7 +2017,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the vibrato (pitch variation). In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square..",
       "iterate": 4,
-      "method": "chords_vibrato_lfo.begin(waveform_array[value]);",
+      "method": "chords_vibrato_lfo.begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -1519,7 +2052,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -1542,7 +2075,7 @@
     {
       "name": "frequency",
       "group": "Vibrato",
-      "default_value": 0,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 161,
       "curve": "linear",
@@ -1558,7 +2091,7 @@
     {
       "name": "keytrack value",
       "group": "Vibrato",
-      "default_value": 0,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 162,
       "curve": "linear",
@@ -1574,7 +2107,7 @@
     {
       "name": "amplitude",
       "group": "Vibrato",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 163,
       "curve": "linear",
@@ -1590,7 +2123,7 @@
     {
       "name": "attack",
       "group": "Vibrato",
-      "default_value": 15,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 164,
       "curve": "exponential",
@@ -1601,12 +2134,12 @@
       "method": "chord_vibrato_envelope_array[i]->attack(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "hold",
       "group": "Vibrato",
-      "default_value": 2,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 165,
       "curve": "exponential",
@@ -1617,12 +2150,12 @@
       "method": "chord_vibrato_envelope_array[i]->hold(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "decay",
       "group": "Vibrato",
-      "default_value": 1000,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 166,
       "curve": "exponential",
@@ -1633,12 +2166,12 @@
       "method": "chord_vibrato_envelope_array[i]->decay(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "sustain",
       "group": "Vibrato",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 167,
       "curve": "linear",
@@ -1654,7 +2187,7 @@
     {
       "name": "release",
       "group": "Vibrato",
-      "default_value": 1000,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 168,
       "curve": "exponential",
@@ -1665,12 +2198,12 @@
       "method": "chord_vibrato_envelope_array[i]->release(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "retrigger release",
       "group": "Vibrato",
-      "default_value": 5,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 169,
       "curve": "exponential",
@@ -1681,12 +2214,12 @@
       "method": "chord_vibrato_envelope_array[i]->releaseNoteOn(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "pitch bend",
       "group": "Vibrato",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 170,
       "curve": "linear",
@@ -1702,7 +2235,7 @@
     {
       "name": "attack bend ",
       "group": "Vibrato",
-      "default_value": 15,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 171,
       "curve": "exponential",
@@ -1713,12 +2246,12 @@
       "method": "chord_vibrato_dc_envelope_array[i]->attack(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "hold bend",
       "group": "Vibrato",
-      "default_value": 2,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 172,
       "curve": "exponential",
@@ -1729,12 +2262,12 @@
       "method": "chord_vibrato_dc_envelope_array[i]->hold(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "decay bend",
       "group": "Vibrato",
-      "default_value": 1000,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 173,
       "curve": "exponential",
@@ -1745,12 +2278,12 @@
       "method": "chord_vibrato_dc_envelope_array[i]->decay(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "retrigger release bend",
       "group": "Vibrato",
-      "default_value": 5,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 174,
       "curve": "exponential",
@@ -1761,12 +2294,12 @@
       "method": "chord_vibrato_dc_envelope_array[i]->releaseNoteOn(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "intensity",
       "group": "Vibrato",
-      "default_value": 0,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 175,
       "curve": "linear",
@@ -1774,15 +2307,205 @@
       "max_value": 1,
       "tooltip": "intensity of the vibrato effect",
       "iterate": 4,
-      "method": "chord_osc_1_array[i]->frequencyModulation(value);chord_osc_2_array[i]->frequencyModulation(value);chord_osc_3_array[i]->frequencyModulation(value);",
+      "method": "chord_vibrato_mixer_array[i]->gain(0,value/4.0);chord_vibrato_mixer_array[i]->gain(1,value/4.0);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
     },
     {
+      "name": "delay length",
+      "group": "Delay",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 176,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 600,
+      "tooltip": "length in ms of the delay",
+      "iterate": 1,
+      "method": "delay_chords.delay(0,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 1
+    },
+    {
+      "name": "delay filter frequency",
+      "group": "Delay",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 177,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 5000,
+      "tooltip": "corner frequency of the filter in the delay loop",
+      "iterate": 1,
+      "method": "filter_delay_chords.frequency(value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 1
+    },
+    {
+      "name": "delay filter resonance",
+      "group": "Delay",
+      "default_value": 0.7,
+      "data_type": "float",
+      "sysex_adress": 178,
+      "curve": "linear",
+      "min_value": 0.7,
+      "max_value": 5,
+      "tooltip": "resonance of the filter in the delay loop",
+      "iterate": 1,
+      "method": "filter_delay_chords.resonance(value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "delay lowpass",
+      "group": "Delay",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 179,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "lowpass component feedback into the delay",
+      "iterate": 1,
+      "method": "chord_delay_mix.gain(1,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "delay bandpass",
+      "group": "Delay",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 180,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "bandpass component feedback into the delay",
+      "iterate": 1,
+      "method": "chord_delay_mix.gain(2,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "delay highpass",
+      "group": "Delay",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 181,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "highpass component feedback into the delay",
+      "iterate": 1,
+      "method": "chord_delay_mix.gain(3,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "dry mix",
+      "group": "Delay",
+      "default_value": 1.0,
+      "data_type": "float",
+      "sysex_adress": 182,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "intensity of the dry signal in the output",
+      "iterate": 1,
+      "method": "chords_effect_mix.gain(0,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "delay mix",
+      "group": "Delay",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 183,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "intensity of the delayed signal in the output",
+      "iterate": 1,
+      "method": "chords_effect_mix.gain(1,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "reverb level",
+      "group": "Reverb",
+      "default_value": 0.7,
+      "data_type": "float",
+      "sysex_adress": 184,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "level of the reverb applied to the chord signal",
+      "iterate": 1,
+      "method": "reverb_mixer.gain(1,value);chords_r_stereo_gain.amplitude(1.0-reverb_dry_proportion*value,100);chords_l_stereo_gain.amplitude((1.0-reverb_dry_proportion*value)*pan,100);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "crunch level",
+      "group": "Crunch",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 185,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "level of crunch applied to the chord signal",
+      "iterate": 1,
+      "method": "chord_waveshaper_mix.gain(0,1-value);chord_waveshaper_mix.gain(1,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "crunch type",
+      "group": "Crunch",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 186,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 2,
+      "tooltip": "selects the waveshaper transfert function, with more and more distorted shape",
+      "iterate": 1,
+      "method": "ws_sin_param=value;calculate_ws_array(); chord_waveshape.shape(wave_shape,257);",
+      "introduction_version": 0.02,
+      "ui_type": "select",
+      "options": [
+        {
+          "value": 0,
+          "label": "1"
+        },
+        {
+          "value": 1,
+          "label": "2"
+        },
+        {
+          "value": 2,
+          "label": "3"
+        }
+      ],
+      "step": 1
+    },
+    {
       "name": "frequency",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 500,
       "data_type": "int",
       "sysex_adress": 192,
       "curve": "linear",
@@ -1798,7 +2521,7 @@
     {
       "name": "resonance",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 0.7,
       "data_type": "float",
       "sysex_adress": 193,
       "curve": "linear",
@@ -1814,7 +2537,7 @@
     {
       "name": "lowpass",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 0.05,
       "data_type": "float",
       "sysex_adress": 194,
       "curve": "linear",
@@ -1830,7 +2553,7 @@
     {
       "name": "bandpass",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 1.0,
       "data_type": "float",
       "sysex_adress": 195,
       "curve": "linear",
@@ -1846,7 +2569,7 @@
     {
       "name": "highpass",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 1.0,
       "data_type": "float",
       "sysex_adress": 196,
       "curve": "linear",
@@ -1862,7 +2585,7 @@
     {
       "name": "output amplifier",
       "group": "Output filter",
-      "default_value": 1,
+      "default_value": 1.0,
       "data_type": "float",
       "sysex_adress": 197,
       "curve": "linear",
@@ -1874,6 +2597,1036 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
+    },
+    {
+      "name": "octave change",
+      "group": "General",
+      "default_value": 2,
+      "data_type": "int",
+      "sysex_adress": 198,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 4,
+      "tooltip": "changes the octave of the chord section up or down",
+      "iterate": 1,
+      "method": "chord_octave_change=value; refresh_chord_voicing();",
+      "introduction_version": 0.03,
+      "ui_type": "discrete_slider",
+      "step": 1
+    },
+    {
+      "sysex_adress": 199,
+      "group": "General",
+      "ui_type": "slider",
+      "name": "glide chords",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1500,
+      "default_value": 0,
+      "tooltip": "changes the glide lenght between chords",
+      "method": "glide_length=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.07,
+      "step": 1
+    },
+    {
+      "sysex_adress": 202,
+      "group": "Alternate layout",
+      "ui_type": "select",
+      "name": "alt layout maj",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 29,
+      "default_value": 0,
+      "tooltip": "which chord the major button plays in the alternate layout. 0=this slot's default, 1=major, 2=minor, 3=dominant 7, 4=major 7, 5=minor 7, 6=diminished, 7=augmented, 8=major 6, 9=minor 6, 10=full diminished, 11=m7b5, 12=sus4, 13=sus2, 14=7sus4, 15=maj9, 16=min9, 17=add9, 18=6/9, 19=supermajor triad, 20=subminor triad, 21=neutral triad, 22=harmonic 7th, 23=neutral 7th, 24=subminor 7th, 25=utonal tetrad, 26=harmonic 9th, 27=otonal hexad, 28=just augmented, 29=supermajor 7th. 19 and up are just sonorities meant for 19 and 31, listed in the order of their counterparts above; in 12 most of them land on chords already in the list",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slot default"
+        },
+        {
+          "value": 1,
+          "label": "Major"
+        },
+        {
+          "value": 2,
+          "label": "Minor"
+        },
+        {
+          "value": 3,
+          "label": "Dominant 7"
+        },
+        {
+          "value": 4,
+          "label": "Major 7"
+        },
+        {
+          "value": 5,
+          "label": "Minor 7"
+        },
+        {
+          "value": 6,
+          "label": "Diminished"
+        },
+        {
+          "value": 7,
+          "label": "Augmented"
+        },
+        {
+          "value": 8,
+          "label": "Major 6"
+        },
+        {
+          "value": 9,
+          "label": "Minor 6"
+        },
+        {
+          "value": 10,
+          "label": "Full diminished"
+        },
+        {
+          "value": 11,
+          "label": "m7b5"
+        },
+        {
+          "value": 12,
+          "label": "sus4"
+        },
+        {
+          "value": 13,
+          "label": "sus2"
+        },
+        {
+          "value": 14,
+          "label": "7sus4"
+        },
+        {
+          "value": 15,
+          "label": "maj9"
+        },
+        {
+          "value": 16,
+          "label": "min9"
+        },
+        {
+          "value": 17,
+          "label": "add9"
+        },
+        {
+          "value": 18,
+          "label": "6/9"
+        },
+        {
+          "value": 19,
+          "label": "Supermajor triad"
+        },
+        {
+          "value": 20,
+          "label": "Subminor triad"
+        },
+        {
+          "value": 21,
+          "label": "Neutral triad"
+        },
+        {
+          "value": 22,
+          "label": "Harmonic 7th"
+        },
+        {
+          "value": 23,
+          "label": "Neutral 7th"
+        },
+        {
+          "value": 24,
+          "label": "Subminor 7th"
+        },
+        {
+          "value": 25,
+          "label": "Utonal tetrad"
+        },
+        {
+          "value": 26,
+          "label": "Harmonic 9th"
+        },
+        {
+          "value": 27,
+          "label": "Otonal hexad"
+        },
+        {
+          "value": 28,
+          "label": "Just augmented"
+        },
+        {
+          "value": 29,
+          "label": "Supermajor 7th"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 203,
+      "group": "Alternate layout",
+      "ui_type": "select",
+      "name": "alt layout min",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 29,
+      "default_value": 0,
+      "tooltip": "which chord the minor button plays in the alternate layout. 0=this slot's default, 1=major, 2=minor, 3=dominant 7, 4=major 7, 5=minor 7, 6=diminished, 7=augmented, 8=major 6, 9=minor 6, 10=full diminished, 11=m7b5, 12=sus4, 13=sus2, 14=7sus4, 15=maj9, 16=min9, 17=add9, 18=6/9, 19=supermajor triad, 20=subminor triad, 21=neutral triad, 22=harmonic 7th, 23=neutral 7th, 24=subminor 7th, 25=utonal tetrad, 26=harmonic 9th, 27=otonal hexad, 28=just augmented, 29=supermajor 7th. 19 and up are just sonorities meant for 19 and 31, listed in the order of their counterparts above; in 12 most of them land on chords already in the list",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slot default"
+        },
+        {
+          "value": 1,
+          "label": "Major"
+        },
+        {
+          "value": 2,
+          "label": "Minor"
+        },
+        {
+          "value": 3,
+          "label": "Dominant 7"
+        },
+        {
+          "value": 4,
+          "label": "Major 7"
+        },
+        {
+          "value": 5,
+          "label": "Minor 7"
+        },
+        {
+          "value": 6,
+          "label": "Diminished"
+        },
+        {
+          "value": 7,
+          "label": "Augmented"
+        },
+        {
+          "value": 8,
+          "label": "Major 6"
+        },
+        {
+          "value": 9,
+          "label": "Minor 6"
+        },
+        {
+          "value": 10,
+          "label": "Full diminished"
+        },
+        {
+          "value": 11,
+          "label": "m7b5"
+        },
+        {
+          "value": 12,
+          "label": "sus4"
+        },
+        {
+          "value": 13,
+          "label": "sus2"
+        },
+        {
+          "value": 14,
+          "label": "7sus4"
+        },
+        {
+          "value": 15,
+          "label": "maj9"
+        },
+        {
+          "value": 16,
+          "label": "min9"
+        },
+        {
+          "value": 17,
+          "label": "add9"
+        },
+        {
+          "value": 18,
+          "label": "6/9"
+        },
+        {
+          "value": 19,
+          "label": "Supermajor triad"
+        },
+        {
+          "value": 20,
+          "label": "Subminor triad"
+        },
+        {
+          "value": 21,
+          "label": "Neutral triad"
+        },
+        {
+          "value": 22,
+          "label": "Harmonic 7th"
+        },
+        {
+          "value": 23,
+          "label": "Neutral 7th"
+        },
+        {
+          "value": 24,
+          "label": "Subminor 7th"
+        },
+        {
+          "value": 25,
+          "label": "Utonal tetrad"
+        },
+        {
+          "value": 26,
+          "label": "Harmonic 9th"
+        },
+        {
+          "value": 27,
+          "label": "Otonal hexad"
+        },
+        {
+          "value": 28,
+          "label": "Just augmented"
+        },
+        {
+          "value": 29,
+          "label": "Supermajor 7th"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 204,
+      "group": "Alternate layout",
+      "ui_type": "select",
+      "name": "alt layout 7th",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 29,
+      "default_value": 0,
+      "tooltip": "which chord the seventh button plays in the alternate layout. 0=this slot's default, 1=major, 2=minor, 3=dominant 7, 4=major 7, 5=minor 7, 6=diminished, 7=augmented, 8=major 6, 9=minor 6, 10=full diminished, 11=m7b5, 12=sus4, 13=sus2, 14=7sus4, 15=maj9, 16=min9, 17=add9, 18=6/9, 19=supermajor triad, 20=subminor triad, 21=neutral triad, 22=harmonic 7th, 23=neutral 7th, 24=subminor 7th, 25=utonal tetrad, 26=harmonic 9th, 27=otonal hexad, 28=just augmented, 29=supermajor 7th. 19 and up are just sonorities meant for 19 and 31, listed in the order of their counterparts above; in 12 most of them land on chords already in the list",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slot default"
+        },
+        {
+          "value": 1,
+          "label": "Major"
+        },
+        {
+          "value": 2,
+          "label": "Minor"
+        },
+        {
+          "value": 3,
+          "label": "Dominant 7"
+        },
+        {
+          "value": 4,
+          "label": "Major 7"
+        },
+        {
+          "value": 5,
+          "label": "Minor 7"
+        },
+        {
+          "value": 6,
+          "label": "Diminished"
+        },
+        {
+          "value": 7,
+          "label": "Augmented"
+        },
+        {
+          "value": 8,
+          "label": "Major 6"
+        },
+        {
+          "value": 9,
+          "label": "Minor 6"
+        },
+        {
+          "value": 10,
+          "label": "Full diminished"
+        },
+        {
+          "value": 11,
+          "label": "m7b5"
+        },
+        {
+          "value": 12,
+          "label": "sus4"
+        },
+        {
+          "value": 13,
+          "label": "sus2"
+        },
+        {
+          "value": 14,
+          "label": "7sus4"
+        },
+        {
+          "value": 15,
+          "label": "maj9"
+        },
+        {
+          "value": 16,
+          "label": "min9"
+        },
+        {
+          "value": 17,
+          "label": "add9"
+        },
+        {
+          "value": 18,
+          "label": "6/9"
+        },
+        {
+          "value": 19,
+          "label": "Supermajor triad"
+        },
+        {
+          "value": 20,
+          "label": "Subminor triad"
+        },
+        {
+          "value": 21,
+          "label": "Neutral triad"
+        },
+        {
+          "value": 22,
+          "label": "Harmonic 7th"
+        },
+        {
+          "value": 23,
+          "label": "Neutral 7th"
+        },
+        {
+          "value": 24,
+          "label": "Subminor 7th"
+        },
+        {
+          "value": 25,
+          "label": "Utonal tetrad"
+        },
+        {
+          "value": 26,
+          "label": "Harmonic 9th"
+        },
+        {
+          "value": 27,
+          "label": "Otonal hexad"
+        },
+        {
+          "value": 28,
+          "label": "Just augmented"
+        },
+        {
+          "value": 29,
+          "label": "Supermajor 7th"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 205,
+      "group": "Alternate layout",
+      "ui_type": "select",
+      "name": "alt layout maj+7th",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 29,
+      "default_value": 0,
+      "tooltip": "which chord the major and seventh plays in the alternate layout. 0=this slot's default, 1=major, 2=minor, 3=dominant 7, 4=major 7, 5=minor 7, 6=diminished, 7=augmented, 8=major 6, 9=minor 6, 10=full diminished, 11=m7b5, 12=sus4, 13=sus2, 14=7sus4, 15=maj9, 16=min9, 17=add9, 18=6/9, 19=supermajor triad, 20=subminor triad, 21=neutral triad, 22=harmonic 7th, 23=neutral 7th, 24=subminor 7th, 25=utonal tetrad, 26=harmonic 9th, 27=otonal hexad, 28=just augmented, 29=supermajor 7th. 19 and up are just sonorities meant for 19 and 31, listed in the order of their counterparts above; in 12 most of them land on chords already in the list",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slot default"
+        },
+        {
+          "value": 1,
+          "label": "Major"
+        },
+        {
+          "value": 2,
+          "label": "Minor"
+        },
+        {
+          "value": 3,
+          "label": "Dominant 7"
+        },
+        {
+          "value": 4,
+          "label": "Major 7"
+        },
+        {
+          "value": 5,
+          "label": "Minor 7"
+        },
+        {
+          "value": 6,
+          "label": "Diminished"
+        },
+        {
+          "value": 7,
+          "label": "Augmented"
+        },
+        {
+          "value": 8,
+          "label": "Major 6"
+        },
+        {
+          "value": 9,
+          "label": "Minor 6"
+        },
+        {
+          "value": 10,
+          "label": "Full diminished"
+        },
+        {
+          "value": 11,
+          "label": "m7b5"
+        },
+        {
+          "value": 12,
+          "label": "sus4"
+        },
+        {
+          "value": 13,
+          "label": "sus2"
+        },
+        {
+          "value": 14,
+          "label": "7sus4"
+        },
+        {
+          "value": 15,
+          "label": "maj9"
+        },
+        {
+          "value": 16,
+          "label": "min9"
+        },
+        {
+          "value": 17,
+          "label": "add9"
+        },
+        {
+          "value": 18,
+          "label": "6/9"
+        },
+        {
+          "value": 19,
+          "label": "Supermajor triad"
+        },
+        {
+          "value": 20,
+          "label": "Subminor triad"
+        },
+        {
+          "value": 21,
+          "label": "Neutral triad"
+        },
+        {
+          "value": 22,
+          "label": "Harmonic 7th"
+        },
+        {
+          "value": 23,
+          "label": "Neutral 7th"
+        },
+        {
+          "value": 24,
+          "label": "Subminor 7th"
+        },
+        {
+          "value": 25,
+          "label": "Utonal tetrad"
+        },
+        {
+          "value": 26,
+          "label": "Harmonic 9th"
+        },
+        {
+          "value": 27,
+          "label": "Otonal hexad"
+        },
+        {
+          "value": 28,
+          "label": "Just augmented"
+        },
+        {
+          "value": 29,
+          "label": "Supermajor 7th"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 206,
+      "group": "Alternate layout",
+      "ui_type": "select",
+      "name": "alt layout min+7th",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 29,
+      "default_value": 0,
+      "tooltip": "which chord the minor and seventh plays in the alternate layout. 0=this slot's default, 1=major, 2=minor, 3=dominant 7, 4=major 7, 5=minor 7, 6=diminished, 7=augmented, 8=major 6, 9=minor 6, 10=full diminished, 11=m7b5, 12=sus4, 13=sus2, 14=7sus4, 15=maj9, 16=min9, 17=add9, 18=6/9, 19=supermajor triad, 20=subminor triad, 21=neutral triad, 22=harmonic 7th, 23=neutral 7th, 24=subminor 7th, 25=utonal tetrad, 26=harmonic 9th, 27=otonal hexad, 28=just augmented, 29=supermajor 7th. 19 and up are just sonorities meant for 19 and 31, listed in the order of their counterparts above; in 12 most of them land on chords already in the list",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slot default"
+        },
+        {
+          "value": 1,
+          "label": "Major"
+        },
+        {
+          "value": 2,
+          "label": "Minor"
+        },
+        {
+          "value": 3,
+          "label": "Dominant 7"
+        },
+        {
+          "value": 4,
+          "label": "Major 7"
+        },
+        {
+          "value": 5,
+          "label": "Minor 7"
+        },
+        {
+          "value": 6,
+          "label": "Diminished"
+        },
+        {
+          "value": 7,
+          "label": "Augmented"
+        },
+        {
+          "value": 8,
+          "label": "Major 6"
+        },
+        {
+          "value": 9,
+          "label": "Minor 6"
+        },
+        {
+          "value": 10,
+          "label": "Full diminished"
+        },
+        {
+          "value": 11,
+          "label": "m7b5"
+        },
+        {
+          "value": 12,
+          "label": "sus4"
+        },
+        {
+          "value": 13,
+          "label": "sus2"
+        },
+        {
+          "value": 14,
+          "label": "7sus4"
+        },
+        {
+          "value": 15,
+          "label": "maj9"
+        },
+        {
+          "value": 16,
+          "label": "min9"
+        },
+        {
+          "value": 17,
+          "label": "add9"
+        },
+        {
+          "value": 18,
+          "label": "6/9"
+        },
+        {
+          "value": 19,
+          "label": "Supermajor triad"
+        },
+        {
+          "value": 20,
+          "label": "Subminor triad"
+        },
+        {
+          "value": 21,
+          "label": "Neutral triad"
+        },
+        {
+          "value": 22,
+          "label": "Harmonic 7th"
+        },
+        {
+          "value": 23,
+          "label": "Neutral 7th"
+        },
+        {
+          "value": 24,
+          "label": "Subminor 7th"
+        },
+        {
+          "value": 25,
+          "label": "Utonal tetrad"
+        },
+        {
+          "value": 26,
+          "label": "Harmonic 9th"
+        },
+        {
+          "value": 27,
+          "label": "Otonal hexad"
+        },
+        {
+          "value": 28,
+          "label": "Just augmented"
+        },
+        {
+          "value": 29,
+          "label": "Supermajor 7th"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 207,
+      "group": "Alternate layout",
+      "ui_type": "select",
+      "name": "alt layout maj+min",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 29,
+      "default_value": 0,
+      "tooltip": "which chord the major and minor plays in the alternate layout. 0=this slot's default, 1=major, 2=minor, 3=dominant 7, 4=major 7, 5=minor 7, 6=diminished, 7=augmented, 8=major 6, 9=minor 6, 10=full diminished, 11=m7b5, 12=sus4, 13=sus2, 14=7sus4, 15=maj9, 16=min9, 17=add9, 18=6/9, 19=supermajor triad, 20=subminor triad, 21=neutral triad, 22=harmonic 7th, 23=neutral 7th, 24=subminor 7th, 25=utonal tetrad, 26=harmonic 9th, 27=otonal hexad, 28=just augmented, 29=supermajor 7th. 19 and up are just sonorities meant for 19 and 31, listed in the order of their counterparts above; in 12 most of them land on chords already in the list",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slot default"
+        },
+        {
+          "value": 1,
+          "label": "Major"
+        },
+        {
+          "value": 2,
+          "label": "Minor"
+        },
+        {
+          "value": 3,
+          "label": "Dominant 7"
+        },
+        {
+          "value": 4,
+          "label": "Major 7"
+        },
+        {
+          "value": 5,
+          "label": "Minor 7"
+        },
+        {
+          "value": 6,
+          "label": "Diminished"
+        },
+        {
+          "value": 7,
+          "label": "Augmented"
+        },
+        {
+          "value": 8,
+          "label": "Major 6"
+        },
+        {
+          "value": 9,
+          "label": "Minor 6"
+        },
+        {
+          "value": 10,
+          "label": "Full diminished"
+        },
+        {
+          "value": 11,
+          "label": "m7b5"
+        },
+        {
+          "value": 12,
+          "label": "sus4"
+        },
+        {
+          "value": 13,
+          "label": "sus2"
+        },
+        {
+          "value": 14,
+          "label": "7sus4"
+        },
+        {
+          "value": 15,
+          "label": "maj9"
+        },
+        {
+          "value": 16,
+          "label": "min9"
+        },
+        {
+          "value": 17,
+          "label": "add9"
+        },
+        {
+          "value": 18,
+          "label": "6/9"
+        },
+        {
+          "value": 19,
+          "label": "Supermajor triad"
+        },
+        {
+          "value": 20,
+          "label": "Subminor triad"
+        },
+        {
+          "value": 21,
+          "label": "Neutral triad"
+        },
+        {
+          "value": 22,
+          "label": "Harmonic 7th"
+        },
+        {
+          "value": 23,
+          "label": "Neutral 7th"
+        },
+        {
+          "value": 24,
+          "label": "Subminor 7th"
+        },
+        {
+          "value": 25,
+          "label": "Utonal tetrad"
+        },
+        {
+          "value": 26,
+          "label": "Harmonic 9th"
+        },
+        {
+          "value": 27,
+          "label": "Otonal hexad"
+        },
+        {
+          "value": 28,
+          "label": "Just augmented"
+        },
+        {
+          "value": 29,
+          "label": "Supermajor 7th"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 208,
+      "group": "Alternate layout",
+      "ui_type": "select",
+      "name": "alt layout all three",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 29,
+      "default_value": 0,
+      "tooltip": "which chord the all three buttons plays in the alternate layout. 0=this slot's default, 1=major, 2=minor, 3=dominant 7, 4=major 7, 5=minor 7, 6=diminished, 7=augmented, 8=major 6, 9=minor 6, 10=full diminished, 11=m7b5, 12=sus4, 13=sus2, 14=7sus4, 15=maj9, 16=min9, 17=add9, 18=6/9, 19=supermajor triad, 20=subminor triad, 21=neutral triad, 22=harmonic 7th, 23=neutral 7th, 24=subminor 7th, 25=utonal tetrad, 26=harmonic 9th, 27=otonal hexad, 28=just augmented, 29=supermajor 7th. 19 and up are just sonorities meant for 19 and 31, listed in the order of their counterparts above; in 12 most of them land on chords already in the list",
+      "method": "",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slot default"
+        },
+        {
+          "value": 1,
+          "label": "Major"
+        },
+        {
+          "value": 2,
+          "label": "Minor"
+        },
+        {
+          "value": 3,
+          "label": "Dominant 7"
+        },
+        {
+          "value": 4,
+          "label": "Major 7"
+        },
+        {
+          "value": 5,
+          "label": "Minor 7"
+        },
+        {
+          "value": 6,
+          "label": "Diminished"
+        },
+        {
+          "value": 7,
+          "label": "Augmented"
+        },
+        {
+          "value": 8,
+          "label": "Major 6"
+        },
+        {
+          "value": 9,
+          "label": "Minor 6"
+        },
+        {
+          "value": 10,
+          "label": "Full diminished"
+        },
+        {
+          "value": 11,
+          "label": "m7b5"
+        },
+        {
+          "value": 12,
+          "label": "sus4"
+        },
+        {
+          "value": 13,
+          "label": "sus2"
+        },
+        {
+          "value": 14,
+          "label": "7sus4"
+        },
+        {
+          "value": 15,
+          "label": "maj9"
+        },
+        {
+          "value": 16,
+          "label": "min9"
+        },
+        {
+          "value": 17,
+          "label": "add9"
+        },
+        {
+          "value": 18,
+          "label": "6/9"
+        },
+        {
+          "value": 19,
+          "label": "Supermajor triad"
+        },
+        {
+          "value": 20,
+          "label": "Subminor triad"
+        },
+        {
+          "value": 21,
+          "label": "Neutral triad"
+        },
+        {
+          "value": 22,
+          "label": "Harmonic 7th"
+        },
+        {
+          "value": 23,
+          "label": "Neutral 7th"
+        },
+        {
+          "value": 24,
+          "label": "Subminor 7th"
+        },
+        {
+          "value": 25,
+          "label": "Utonal tetrad"
+        },
+        {
+          "value": 26,
+          "label": "Harmonic 9th"
+        },
+        {
+          "value": 27,
+          "label": "Otonal hexad"
+        },
+        {
+          "value": 28,
+          "label": "Just augmented"
+        },
+        {
+          "value": 29,
+          "label": "Supermajor 7th"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 239,
+      "group": "Formants",
+      "ui_type": "slider",
+      "name": "formant voice size",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 50,
+      "tooltip": "moves every formant together: low values a small voice (a child, higher), high values a large one (a bass, lower), 50 an adult",
+      "method": "formant_size=value; update_formants();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.2,
+      "step": 1
+    },
+    {
+      "sysex_adress": 240,
+      "group": "Formants",
+      "ui_type": "slider",
+      "name": "formant resonance",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 40,
+      "tooltip": "how sharply the formants ring: low values a gentle hint of the vowel, high values a strong vocal ring",
+      "method": "formant_resonance=value; update_formants();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.2,
+      "step": 1
     }
   ],
   "harp_parameter": [
@@ -1894,33 +3647,99 @@
       "step": 0.01
     },
     {
-      "name": "octave change",
-      "group": "General",
+      "name": "change held strings",
+      "group": "Notes",
       "default_value": 0,
       "data_type": "int",
-      "sysex_adress": 99,
+      "sysex_adress": 22,
       "curve": "linear",
+      "tooltip": "defines whether a held harp note will change when changing chord",
+      "iterate": 1,
+      "method": "change_held_strings=value;",
+      "introduction_version": 0.02,
+      "ui_type": "switch",
+      "step": 1,
       "min_value": 0,
-      "max_value": 4,
-      "tooltip": "changes the octave of the harp section up or down",
-      "iterate": 12,
-      "method": "harp_octave_change=value; current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active);",
-      "introduction_version": 0.03,
-      "ui_type": "discrete_slider",
-      "step": 1
+      "max_value": 1
+    },
+    {
+      "name": "scalar harp mode",
+      "group": "Notes",
+      "default_value": 0,
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 11,
+      "sysex_adress": 36,
+      "curve": "linear",
+      "tooltip": "what the harp strings play. 0=follows the chord (default), 1=Major, 2=Major Pentatonic, 3=Minor Pentatonic, 4=Diminished 6th, 5=Relative Natural Minor, 6=Relative Harmonic Minor, 7=Relative Minor Pentatonic, 8=scale chosen per chord, 9=as 8 but pentatonic, 10=your own scale rooted on the key, 11=your own scale rooted on the chord",
+      "iterate": 1,
+      "method": "scalar_harp_selection=value; for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
+      "introduction_version": 0.09,
+      "ui_type": "select",
+      "step": 1,
+      "options": [
+        {
+          "value": 0,
+          "label": "Chord Tones"
+        },
+        {
+          "value": 1,
+          "label": "Major Scale"
+        },
+        {
+          "value": 2,
+          "label": "Major Pentatonic"
+        },
+        {
+          "value": 3,
+          "label": "Minor Pentatonic"
+        },
+        {
+          "value": 4,
+          "label": "Diminished 6th"
+        },
+        {
+          "value": 5,
+          "label": "Relative Natural Minor"
+        },
+        {
+          "value": 6,
+          "label": "Relative Harmonic Minor"
+        },
+        {
+          "value": 7,
+          "label": "Relative Minor Pentatonic"
+        },
+        {
+          "value": 8,
+          "label": "Scale Per Chord"
+        },
+        {
+          "value": 9,
+          "label": "Scale Per Chord (Pentatonic)"
+        },
+        {
+          "value": 10,
+          "label": "Custom Scale (key root)"
+        },
+        {
+          "value": 11,
+          "label": "Custom Scale (chord root)"
+        }
+      ]
     },
     {
       "name": "harp shuffling",
-      "group": "General",
+      "group": "Notes",
       "default_value": 0,
       "data_type": "int",
       "sysex_adress": 40,
       "curve": "linear",
       "min_value": 0,
       "max_value": 6,
-      "tooltip": "defines different harp patterns. 0 is normal, 1 i with second, 2 is with fourth, 3 with sixth, 4 octaves and 5 chromatics",
+      "tooltip": "defines different harp patterns. 0 is normal, 1 i with second, 2 is with fourth, 3 with sixth, 4 octaves, 5 chromatics and 6 useful when using a keymaster touchplate in Barry Harris mode",
       "iterate": 12,
-      "method": "harp_shuffling_selection=value; current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active);",
+      "method": "harp_shuffling_selection=constrain(value,0,6); current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active);",
       "introduction_version": 0.02,
       "ui_type": "discrete_slider",
       "options": [
@@ -1948,255 +3767,9 @@
       "step": 1
     },
     {
-      "name": "chromatic mode",
-      "group": "General",
-      "default_value": false,
-      "data_type": "int",
-      "sysex_adress": 98,
-      "curve": "linear",
-      "tooltip": "puts the harp in chromatic mode, with static notes not dependant on chord selection",
-      "iterate": 1,
-      "method": "chromatic_harp_mode=value;",
-      "introduction_version": 0.03,
-      "ui_type": "switch",
-      "step": 1
-    },
-    {
-      "name": "scalar harp mode",
-      "group": "General",
-      "default_value": 0,
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 8,
-      "sysex_adress": 36,
-      "curve": "linear",
-      "tooltip": "Sets harp to ascending scales: 0=Chord Tones (default), 1=Major, 2=Major Pentatonic, 3=Minor Pentatonic, 4=Diminished 6th, 5=Relative Natural Minor, 6=Relative Harmonic Minor, 7=Relative Minor Pentatonic, 8=Scale Per Chord Mode, 9=Mode 8 but Pentatonic",
-      "iterate": 1,
-      "method": "scalar_harp_selection=value;",
-      "introduction_version": 0.07,
-      "ui_type": "select",
-      "step": 1,
-      "options": [
-        {"value": 0, "label": "Chord Tones"},
-        {"value": 1, "label": "Major Scale"},
-        {"value": 2, "label": "Major Pentatonic"},
-        {"value": 3, "label": "Minor Pentatonic"},
-        {"value": 4, "label": "Diminished 6th"},
-        {"value": 5, "label": "Relative Natural Minor"},
-        {"value": 6, "label": "Relative Harmonic Minor"},
-        {"value": 7, "label": "Relative Minor Pentatonic"},
-        {"value": 8, "label": "Scale Per Chord Mode"},
-        {"value": 9, "label": "SPC Mode Pentatonic"}
-      ]
-    },
-    {
-      "name": "change held strings",
-      "group": "General",
-      "default_value": false,
-      "data_type": "int",
-      "sysex_adress": 22,
-      "curve": "linear",
-      "tooltip": "defines whether a held harp note will change when changing chord",
-      "iterate": 1,
-      "method": "change_held_strings=value;",
-      "introduction_version": 0.02,
-      "ui_type": "switch",
-      "step": 1
-    },
-    {
-      "name": "delay length",
-      "group": "Delay",
-      "default_value": 1,
-      "data_type": "int",
-      "sysex_adress": 77,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 600,
-      "tooltip": "length in ms of the delay",
-      "iterate": 1,
-      "method": "delay_strings.delay(0,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 1
-    },
-    {
-      "name": "delay filter frequency",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "int",
-      "sysex_adress": 78,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 5000,
-      "tooltip": "corner frequency of the filter in the delay loop",
-      "iterate": 1,
-      "method": "filter_delay_strings.frequency(value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 1
-    },
-    {
-      "name": "delay filter resonance",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 79,
-      "curve": "linear",
-      "min_value": 0.7,
-      "max_value": 5,
-      "tooltip": "resonance of the filter in the delay loop",
-      "iterate": 1,
-      "method": "filter_delay_strings.resonance(value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "delay lowpass",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 80,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "lowpass component feedback into the delay",
-      "iterate": 1,
-      "method": "string_delay_mix.gain(1,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "delay bandpass",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 81,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "bandpass component feedback into the delay",
-      "iterate": 1,
-      "method": "string_delay_mix.gain(2,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "delay highpass",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 82,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "highpass component feedback into the delay",
-      "iterate": 1,
-      "method": "string_delay_mix.gain(3,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "dry mix",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 83,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "intensity of the dry signal in the output",
-      "iterate": 1,
-      "method": "strings_effect_mix.gain(0,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "delay mix",
-      "group": "Delay",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 84,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "intensity of the delayed signal in the output",
-      "iterate": 1,
-      "method": "strings_effect_mix.gain(1,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "reverb level",
-      "group": "Reverb",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 85,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "level of the reverb applied to the harp signal",
-      "iterate": 1,
-      "method": "reverb_mixer.gain(0,value);string_r_stereo_gain.amplitude((1-reverb_dry_proportion*value)*pan,100);string_l_stereo_gain.amplitude(1-reverb_dry_proportion*value,100);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "crunch level",
-      "group": "Crunch",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 86,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "level of crunch applied to the harp signal",
-      "iterate": 1,
-      "method": "string_waveshaper_mix.gain(0,1-value);string_waveshaper_mix.gain(1,value);",
-      "introduction_version": 0.02,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "crunch type",
-      "group": "Crunch",
-      "default_value": 0.5,
-      "data_type": "int",
-      "sysex_adress": 87,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 2,
-      "tooltip": "selects the waveshaper transfert function, with more and more distorted shape",
-      "iterate": 1,
-      "method": "ws_sin_param=value;calculate_ws_array(); string_waveshape.shape(wave_shape,257);",
-      "introduction_version": 0.02,
-      "ui_type": "select",
-      "options": [
-        {
-          "value": 0,
-          "label": "1"
-        },
-        {
-          "value": 1,
-          "label": "2"
-        },
-        {
-          "value": 2,
-          "label": "3"
-        }
-      ],
-      "step": 1
-    },
-    {
       "name": "amplitude",
       "group": "Oscillator",
-      "default_value": 0.5,
+      "default_value": 0.15,
       "data_type": "float",
       "sysex_adress": 41,
       "curve": "linear",
@@ -2220,7 +3793,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.",
       "iterate": 12,
-      "method": "string_waveform_array[i]->begin(waveform_array[value]);",
+      "method": "string_waveform_array[i]->begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -2255,7 +3828,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -2278,7 +3851,7 @@
     {
       "name": "attack",
       "group": "Envelope",
-      "default_value": 5,
+      "default_value": 8,
       "data_type": "int",
       "sysex_adress": 43,
       "curve": "exponential",
@@ -2289,12 +3862,12 @@
       "method": "string_enveloppe_array[i]->attack(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "hold",
       "group": "Envelope",
-      "default_value": 2,
+      "default_value": 8,
       "data_type": "int",
       "sysex_adress": 44,
       "curve": "exponential",
@@ -2305,12 +3878,12 @@
       "method": "string_enveloppe_array[i]->hold(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "decay",
       "group": "Envelope",
-      "default_value": 1000,
+      "default_value": 12,
       "data_type": "int",
       "sysex_adress": 45,
       "curve": "exponential",
@@ -2321,7 +3894,7 @@
       "method": "string_enveloppe_array[i]->decay(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "sustain",
@@ -2353,12 +3926,12 @@
       "method": "string_enveloppe_array[i]->release(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "retrigger release",
       "group": "Envelope",
-      "default_value": 5,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 48,
       "curve": "exponential",
@@ -2369,12 +3942,12 @@
       "method": "string_enveloppe_array[i]->releaseNoteOn(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "base frequency",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 500,
       "data_type": "int",
       "sysex_adress": 49,
       "curve": "exponential",
@@ -2390,7 +3963,7 @@
     {
       "name": "keytrack value",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 0.4,
       "data_type": "float",
       "sysex_adress": 50,
       "curve": "linear",
@@ -2406,7 +3979,7 @@
     {
       "name": "resonance",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 0.7,
       "data_type": "float",
       "sysex_adress": 51,
       "curve": "linear",
@@ -2422,7 +3995,7 @@
     {
       "name": "attack",
       "group": "Low pass filter",
-      "default_value": 15,
+      "default_value": 3,
       "data_type": "int",
       "sysex_adress": 52,
       "curve": "exponential",
@@ -2433,12 +4006,12 @@
       "method": "string_enveloppe_filter_array[i]->attack(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "hold",
       "group": "Low pass filter",
-      "default_value": 2,
+      "default_value": 35,
       "data_type": "int",
       "sysex_adress": 53,
       "curve": "exponential",
@@ -2449,12 +4022,12 @@
       "method": "string_enveloppe_filter_array[i]->hold(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "decay",
       "group": "Low pass filter",
-      "default_value": 1000,
+      "default_value": 90,
       "data_type": "int",
       "sysex_adress": 54,
       "curve": "exponential",
@@ -2465,7 +4038,7 @@
       "method": "string_enveloppe_filter_array[i]->decay(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "sustain",
@@ -2486,7 +4059,7 @@
     {
       "name": "release",
       "group": "Low pass filter",
-      "default_value": 1000,
+      "default_value": 2500,
       "data_type": "int",
       "sysex_adress": 56,
       "curve": "exponential",
@@ -2497,12 +4070,12 @@
       "method": "string_enveloppe_filter_array[i]->release(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "retrigger release",
       "group": "Low pass filter",
-      "default_value": 5,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 57,
       "curve": "exponential",
@@ -2513,12 +4086,12 @@
       "method": "string_enveloppe_filter_array[i]->releaseNoteOn(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "filter sensitivity",
       "group": "Low pass filter",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 58,
       "curve": "linear",
@@ -2533,152 +4106,6 @@
     },
     {
       "name": "waveform",
-      "group": "Transient",
-      "default_value": 0,
-      "data_type": "int",
-      "sysex_adress": 100,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 11,
-      "tooltip": "defines the waveform of the transient. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.",
-      "iterate": 12,
-      "method": "string_transient_waveform_array[i]->begin(waveform_array[value]);",
-      "introduction_version": 0.05,
-      "ui_type": "select",
-      "step": 1,
-      "options": [
-        {
-          "value": 0,
-          "label": "Sine"
-        },
-        {
-          "value": 1,
-          "label": "Sawtooth"
-        },
-        {
-          "value": 2,
-          "label": "Square"
-        },
-        {
-          "value": 3,
-          "label": "Triangle"
-        },
-        {
-          "value": 4,
-          "label": "Bandlimited Pulse"
-        },
-        {
-          "value": 5,
-          "label": "Pulse"
-        },
-        {
-          "value": 6,
-          "label": "Reverse Sawtooth"
-        },
-        {
-          "value": 7,
-          "label": "Noise"
-        },
-        {
-          "value": 8,
-          "label": "Variable Triangle"
-        },
-        {
-          "value": 9,
-          "label": "Bandlimited Sawtooth"
-        },
-        {
-          "value": 10,
-          "label": "Reverse Bandlimited Sawtooth"
-        },
-        {
-          "value": 11,
-          "label": "Bandlimited Square"
-        }
-      ]
-    },
-    {
-      "name": "amplitude",
-      "group": "Transient",
-      "default_value": 0.5,
-      "data_type": "float",
-      "sysex_adress": 101,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 1,
-      "tooltip": "amplitude of the transient",
-      "iterate": 12,
-      "method": "string_transient_waveform_array[i]->amplitude(value);",
-      "introduction_version": 0.05,
-      "ui_type": "slider",
-      "step": 0.01
-    },
-    {
-      "name": "note level",
-      "group": "Transient",
-      "default_value": 0,
-      "data_type": "int",
-      "sysex_adress": 105,
-      "curve": "linear",
-      "min_value": 0,
-      "max_value": 24,
-      "tooltip": "level in the scale of the transient",
-      "iterate": 1,
-      "method": "transient_note_level=value;",
-      "introduction_version": 0.05,
-      "ui_type": "discrete_slider",
-      "step": 1
-    },
-    {
-      "name": "attack",
-      "group": "Transient",
-      "default_value": 15,
-      "data_type": "int",
-      "sysex_adress": 102,
-      "curve": "exponential",
-      "min_value": 0,
-      "max_value": 5000,
-      "tooltip": "attack time of the transient",
-      "iterate": 12,
-      "method": "string_transient_envelope_array[i]->attack(value);",
-      "introduction_version": 0.05,
-      "ui_type": "slider",
-      "step": 0.1
-    },
-    {
-      "name": "hold",
-      "group": "Transient",
-      "default_value": 2,
-      "data_type": "int",
-      "sysex_adress": 103,
-      "curve": "exponential",
-      "min_value": 0,
-      "max_value": 5000,
-      "tooltip": "hold time of the transient",
-      "iterate": 12,
-      "method": "string_transient_envelope_array[i]->hold(value);",
-      "introduction_version": 0.05,
-      "ui_type": "slider",
-      "step": 0.1
-    },
-    {
-      "name": "decay",
-      "group": "Transient",
-      "default_value": 1000,
-      "data_type": "int",
-      "sysex_adress": 104,
-      "curve": "exponential",
-      "min_value": 0,
-      "max_value": 5000,
-      "tooltip": "decay time of the transient",
-      "iterate": 12,
-      "method": "string_transient_envelope_array[i]->decay(value);string_transient_envelope_array[i]->release(value);",
-      "introduction_version": 0.05,
-      "ui_type": "slider",
-      "step": 0.1
-    },
-    {
-      "name": "waveform",
       "group": "Tremolo",
       "default_value": 0,
       "data_type": "int",
@@ -2688,7 +4115,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the tremolo (amplitude variation). In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.. Discontinuous signal will cause clicks",
       "iterate": 1,
-      "method": "string_tremolo_lfo.begin(waveform_array[value]);",
+      "method": "string_tremolo_lfo.begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -2723,7 +4150,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -2746,7 +4173,7 @@
     {
       "name": "frequency",
       "group": "Tremolo",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 60,
       "curve": "linear",
@@ -2762,7 +4189,7 @@
     {
       "name": "amplitude",
       "group": "Tremolo",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 61,
       "curve": "linear",
@@ -2786,7 +4213,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the vibrato (pitch variation). In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square..",
       "iterate": 1,
-      "method": "string_vibrato_lfo.begin(waveform_array[value]);",
+      "method": "string_vibrato_lfo.begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -2821,7 +4248,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -2844,7 +4271,7 @@
     {
       "name": "frequency",
       "group": "Vibrato",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 63,
       "curve": "linear",
@@ -2860,7 +4287,7 @@
     {
       "name": "amplitude",
       "group": "Vibrato",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 64,
       "curve": "linear",
@@ -2876,7 +4303,7 @@
     {
       "name": "attack",
       "group": "Vibrato",
-      "default_value": 15,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 65,
       "curve": "exponential",
@@ -2887,12 +4314,12 @@
       "method": "envelope_string_vibrato_lfo.attack(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "hold",
       "group": "Vibrato",
-      "default_value": 2,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 66,
       "curve": "exponential",
@@ -2903,12 +4330,12 @@
       "method": "envelope_string_vibrato_lfo.hold(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "decay",
       "group": "Vibrato",
-      "default_value": 1000,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 67,
       "curve": "exponential",
@@ -2919,12 +4346,12 @@
       "method": "envelope_string_vibrato_lfo.decay(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "sustain",
       "group": "Vibrato",
-      "default_value": 0.5,
+      "default_value": 1.0,
       "data_type": "float",
       "sysex_adress": 68,
       "curve": "linear",
@@ -2940,7 +4367,7 @@
     {
       "name": "release",
       "group": "Vibrato",
-      "default_value": 1000,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 69,
       "curve": "exponential",
@@ -2951,12 +4378,12 @@
       "method": "envelope_string_vibrato_lfo.release(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "retrigger release",
       "group": "Vibrato",
-      "default_value": 5,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 70,
       "curve": "exponential",
@@ -2967,12 +4394,12 @@
       "method": "envelope_string_vibrato_lfo.releaseNoteOn(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "pitch bend",
       "group": "Vibrato",
-      "default_value": 1,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 71,
       "curve": "linear",
@@ -2988,7 +4415,7 @@
     {
       "name": "attack bend",
       "group": "Vibrato",
-      "default_value": 15,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 72,
       "curve": "exponential",
@@ -2999,12 +4426,12 @@
       "method": "envelope_string_vibrato_dc.attack(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "hold bend",
       "group": "Vibrato",
-      "default_value": 2,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 73,
       "curve": "exponential",
@@ -3015,12 +4442,12 @@
       "method": "envelope_string_vibrato_dc.hold(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "decay bend",
       "group": "Vibrato",
-      "default_value": 1000,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 74,
       "curve": "exponential",
@@ -3031,12 +4458,12 @@
       "method": "envelope_string_vibrato_dc.decay(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "retrigger release bend",
       "group": "Vibrato",
-      "default_value": 1000,
+      "default_value": 1,
       "data_type": "int",
       "sysex_adress": 75,
       "curve": "exponential",
@@ -3047,12 +4474,12 @@
       "method": "envelope_string_vibrato_dc.releaseNoteOn(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.1
+      "step": 1
     },
     {
       "name": "intensity",
       "group": "Vibrato",
-      "default_value": 5,
+      "default_value": 0.15,
       "data_type": "float",
       "sysex_adress": 76,
       "curve": "linear",
@@ -3066,9 +4493,199 @@
       "step": 0.01
     },
     {
+      "name": "delay length",
+      "group": "Delay",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 77,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 600,
+      "tooltip": "length in ms of the delay",
+      "iterate": 1,
+      "method": "delay_strings.delay(0,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 1
+    },
+    {
+      "name": "delay filter frequency",
+      "group": "Delay",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 78,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 5000,
+      "tooltip": "corner frequency of the filter in the delay loop",
+      "iterate": 1,
+      "method": "filter_delay_strings.frequency(value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 1
+    },
+    {
+      "name": "delay filter resonance",
+      "group": "Delay",
+      "default_value": 0.7,
+      "data_type": "float",
+      "sysex_adress": 79,
+      "curve": "linear",
+      "min_value": 0.7,
+      "max_value": 5,
+      "tooltip": "resonance of the filter in the delay loop",
+      "iterate": 1,
+      "method": "filter_delay_strings.resonance(value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "delay lowpass",
+      "group": "Delay",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 80,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "lowpass component feedback into the delay",
+      "iterate": 1,
+      "method": "string_delay_mix.gain(1,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "delay bandpass",
+      "group": "Delay",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 81,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "bandpass component feedback into the delay",
+      "iterate": 1,
+      "method": "string_delay_mix.gain(2,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "delay highpass",
+      "group": "Delay",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 82,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "highpass component feedback into the delay",
+      "iterate": 1,
+      "method": "string_delay_mix.gain(3,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "dry mix",
+      "group": "Delay",
+      "default_value": 1.0,
+      "data_type": "float",
+      "sysex_adress": 83,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "intensity of the dry signal in the output",
+      "iterate": 1,
+      "method": "strings_effect_mix.gain(0,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "delay mix",
+      "group": "Delay",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 84,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "intensity of the delayed signal in the output",
+      "iterate": 1,
+      "method": "strings_effect_mix.gain(1,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "reverb level",
+      "group": "Reverb",
+      "default_value": 0.05,
+      "data_type": "float",
+      "sysex_adress": 85,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "level of the reverb applied to the harp signal",
+      "iterate": 1,
+      "method": "reverb_mixer.gain(0,value);string_r_stereo_gain.amplitude((1-reverb_dry_proportion*value)*pan,100);string_l_stereo_gain.amplitude(1-reverb_dry_proportion*value,100);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "crunch level",
+      "group": "Crunch",
+      "default_value": 0.0,
+      "data_type": "float",
+      "sysex_adress": 86,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "level of crunch applied to the harp signal",
+      "iterate": 1,
+      "method": "string_waveshaper_mix.gain(0,1-value);string_waveshaper_mix.gain(1,value);",
+      "introduction_version": 0.02,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "crunch type",
+      "group": "Crunch",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 87,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 2,
+      "tooltip": "selects the waveshaper transfert function, with more and more distorted shape",
+      "iterate": 1,
+      "method": "ws_sin_param=value;calculate_ws_array(); string_waveshape.shape(wave_shape,257);",
+      "introduction_version": 0.02,
+      "ui_type": "select",
+      "options": [
+        {
+          "value": 0,
+          "label": "1"
+        },
+        {
+          "value": 1,
+          "label": "2"
+        },
+        {
+          "value": 2,
+          "label": "3"
+        }
+      ],
+      "step": 1
+    },
+    {
       "name": "frequency",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 1400,
       "data_type": "int",
       "sysex_adress": 88,
       "curve": "linear",
@@ -3084,7 +4701,7 @@
     {
       "name": "resonance",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 2,
       "data_type": "float",
       "sysex_adress": 89,
       "curve": "linear",
@@ -3100,7 +4717,7 @@
     {
       "name": "lowpass",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 0.25,
       "data_type": "float",
       "sysex_adress": 90,
       "curve": "linear",
@@ -3116,7 +4733,7 @@
     {
       "name": "bandpass",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 0.75,
       "data_type": "float",
       "sysex_adress": 91,
       "curve": "linear",
@@ -3132,7 +4749,7 @@
     {
       "name": "highpass",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 0.3,
       "data_type": "float",
       "sysex_adress": 92,
       "curve": "linear",
@@ -3156,7 +4773,7 @@
       "max_value": 11,
       "tooltip": "defines the waveform amongst 12 oscillators for the output filter control LFO. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.",
       "iterate": 1,
-      "method": "string_filter_lfo.begin(waveform_array[value]);",
+      "method": "string_filter_lfo.begin(waveform_array[constrain(value,0,11)]);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1,
@@ -3191,7 +4808,7 @@
         },
         {
           "value": 7,
-          "label": "Noise"
+          "label": "Sample and Hold"
         },
         {
           "value": 8,
@@ -3214,7 +4831,7 @@
     {
       "name": "LFO frequency",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 94,
       "curve": "linear",
@@ -3230,7 +4847,7 @@
     {
       "name": "LFO amplitude",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 95,
       "curve": "linear",
@@ -3246,7 +4863,7 @@
     {
       "name": "filter LFO sensitivity",
       "group": "Output filter",
-      "default_value": 0.5,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 96,
       "curve": "linear",
@@ -3262,7 +4879,7 @@
     {
       "name": "output amplifier",
       "group": "Output filter",
-      "default_value": 1,
+      "default_value": 1.5,
       "data_type": "float",
       "sysex_adress": 97,
       "curve": "linear",
@@ -3274,6 +4891,229 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
+    },
+    {
+      "name": "chromatic mode",
+      "group": "Notes",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 98,
+      "curve": "linear",
+      "tooltip": "puts the harp in chromatic mode, with static notes not dependant on chord selection",
+      "iterate": 1,
+      "method": "chromatic_harp_mode=value; for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
+      "introduction_version": 0.03,
+      "ui_type": "switch",
+      "step": 1,
+      "min_value": 0,
+      "max_value": 1
+    },
+    {
+      "name": "octave change",
+      "group": "Notes",
+      "default_value": 2,
+      "data_type": "int",
+      "sysex_adress": 99,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 4,
+      "tooltip": "changes the octave of the harp section up or down",
+      "iterate": 12,
+      "method": "harp_octave_change=value; current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active);",
+      "introduction_version": 0.03,
+      "ui_type": "discrete_slider",
+      "step": 1
+    },
+    {
+      "name": "waveform",
+      "group": "Transient",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 100,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 11,
+      "tooltip": "defines the waveform of the transient. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square.",
+      "iterate": 12,
+      "method": "string_transient_waveform_array[i]->begin(waveform_array[constrain(value,0,11)]);",
+      "introduction_version": 0.06,
+      "ui_type": "select",
+      "step": 1,
+      "options": [
+        {
+          "value": 0,
+          "label": "Sine"
+        },
+        {
+          "value": 1,
+          "label": "Sawtooth"
+        },
+        {
+          "value": 2,
+          "label": "Square"
+        },
+        {
+          "value": 3,
+          "label": "Triangle"
+        },
+        {
+          "value": 4,
+          "label": "Bandlimited Pulse"
+        },
+        {
+          "value": 5,
+          "label": "Pulse"
+        },
+        {
+          "value": 6,
+          "label": "Reverse Sawtooth"
+        },
+        {
+          "value": 7,
+          "label": "Sample and Hold"
+        },
+        {
+          "value": 8,
+          "label": "Variable Triangle"
+        },
+        {
+          "value": 9,
+          "label": "Bandlimited Sawtooth"
+        },
+        {
+          "value": 10,
+          "label": "Reverse Bandlimited Sawtooth"
+        },
+        {
+          "value": 11,
+          "label": "Bandlimited Square"
+        }
+      ]
+    },
+    {
+      "name": "amplitude",
+      "group": "Transient",
+      "default_value": 0.1,
+      "data_type": "float",
+      "sysex_adress": 101,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 1,
+      "tooltip": "amplitude of the transient",
+      "iterate": 12,
+      "method": "string_transient_waveform_array[i]->amplitude(value);",
+      "introduction_version": 0.05,
+      "ui_type": "slider",
+      "step": 0.01
+    },
+    {
+      "name": "attack",
+      "group": "Transient",
+      "default_value": 10,
+      "data_type": "int",
+      "sysex_adress": 102,
+      "curve": "exponential",
+      "min_value": 0,
+      "max_value": 5000,
+      "tooltip": "attack time of the transient",
+      "iterate": 12,
+      "method": "string_transient_envelope_array[i]->attack(value);",
+      "introduction_version": 0.05,
+      "ui_type": "slider",
+      "step": 1
+    },
+    {
+      "name": "hold",
+      "group": "Transient",
+      "default_value": 10,
+      "data_type": "int",
+      "sysex_adress": 103,
+      "curve": "exponential",
+      "min_value": 0,
+      "max_value": 5000,
+      "tooltip": "hold time of the transient",
+      "iterate": 12,
+      "method": "string_transient_envelope_array[i]->hold(value);",
+      "introduction_version": 0.05,
+      "ui_type": "slider",
+      "step": 1
+    },
+    {
+      "name": "decay",
+      "group": "Transient",
+      "default_value": 40,
+      "data_type": "int",
+      "sysex_adress": 104,
+      "curve": "exponential",
+      "min_value": 0,
+      "max_value": 5000,
+      "tooltip": "decay time of the transient",
+      "iterate": 12,
+      "method": "string_transient_envelope_array[i]->decay(value);string_transient_envelope_array[i]->release(value);",
+      "introduction_version": 0.05,
+      "ui_type": "slider",
+      "step": 1
+    },
+    {
+      "name": "note level",
+      "group": "Transient",
+      "default_value": 0,
+      "data_type": "int",
+      "sysex_adress": 105,
+      "curve": "linear",
+      "min_value": 0,
+      "max_value": 24,
+      "tooltip": "level in the scale of the transient",
+      "iterate": 1,
+      "method": "transient_note_level=value;",
+      "introduction_version": 0.05,
+      "ui_type": "discrete_slider",
+      "step": 1
+    },
+    {
+      "sysex_adress": 116,
+      "group": "Notes",
+      "ui_type": "select",
+      "name": "harp rank",
+      "data_type": "int",
+      "min_value": 1,
+      "max_value": 3,
+      "default_value": 1,
+      "tooltip": "which twelve steps the chromatic harp plays, like the rows of strings on a triple harp: 1 is steps 1 to 12 of the division, 2 is 13 to 24, 3 is 25 to 36, carrying on past the octave where the division ends. 31 has three ranks, 19 and 24 have two, and in 12 there is only one, so this changes nothing there. Only in chromatic mode",
+      "method": "harp_rank=value; for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.15,
+      "options": [
+        {
+          "value": 1,
+          "label": "Steps 1-12"
+        },
+        {
+          "value": 2,
+          "label": "Steps 13-24"
+        },
+        {
+          "value": 3,
+          "label": "Steps 25-36"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 236,
+      "group": "Notes",
+      "ui_type": "degrees",
+      "name": "custom scale",
+      "data_type": "degrees",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 2741,
+      "tooltip": "the scale used by scalar harp modes 10 and 11: tick the degrees you want",
+      "method": "custom_scale_mask=value; rebuild_custom_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.09
     }
   ],
   "chord_potentiometer": [
@@ -3284,11 +5124,11 @@
       "data_type": "int",
       "sysex_adress": 10,
       "curve": "linear",
-      "min_value": 40,
+      "min_value": 21,
       "max_value": 219,
       "tooltip": "defines the adress targeted by the chord potentiometer alternate function",
       "iterate": 1,
-      "method": "chord_pot.set_alternate(value);",
+      "method": "chord_pot.set_alternate(constrain(value,0,parameter_size-1));",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1
@@ -3296,7 +5136,7 @@
     {
       "name": "chord alternate range",
       "group": "Potentiometer",
-      "default_value": 0,
+      "default_value": 100,
       "data_type": "int",
       "sysex_adress": 11,
       "curve": "linear",
@@ -3318,11 +5158,11 @@
       "data_type": "int",
       "sysex_adress": 12,
       "curve": "linear",
-      "min_value": 40,
+      "min_value": 21,
       "max_value": 219,
       "tooltip": "defines the adress targeted by the harp potentiometer alternate function",
       "iterate": 1,
-      "method": "harp_pot.set_alternate(value);",
+      "method": "harp_pot.set_alternate(constrain(value,0,parameter_size-1));",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1
@@ -3330,7 +5170,7 @@
     {
       "name": "harp alternate percent range",
       "group": "Potentiometer",
-      "default_value": 0,
+      "default_value": 100,
       "data_type": "int",
       "sysex_adress": 13,
       "curve": "linear",
@@ -3352,11 +5192,11 @@
       "data_type": "int",
       "sysex_adress": 14,
       "curve": "linear",
-      "min_value": 40,
+      "min_value": 21,
       "max_value": 219,
       "tooltip": "defines the adress targeted by the modulation potentiometer main function",
       "iterate": 1,
-      "method": "mod_pot.set_main(value);",
+      "method": "mod_pot.set_main(constrain(value,0,parameter_size-1));",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1
@@ -3364,7 +5204,7 @@
     {
       "name": "mod main percent range",
       "group": "Potentiometer",
-      "default_value": 0,
+      "default_value": 100,
       "data_type": "int",
       "sysex_adress": 15,
       "curve": "linear",
@@ -3384,11 +5224,11 @@
       "data_type": "int",
       "sysex_adress": 16,
       "curve": "linear",
-      "min_value": 40,
+      "min_value": 21,
       "max_value": 219,
       "tooltip": "defines the adress targeted by the modulation potentiometer alternate function",
       "iterate": 1,
-      "method": "mod_pot.set_alternate(value);",
+      "method": "mod_pot.set_alternate(constrain(value,0,parameter_size-1));",
       "introduction_version": 0.02,
       "ui_type": "select",
       "step": 1
@@ -3396,7 +5236,7 @@
     {
       "name": "mod alternate percent range ",
       "group": "Potentiometer",
-      "default_value": 0,
+      "default_value": 100,
       "data_type": "int",
       "sysex_adress": 17,
       "curve": "linear",
@@ -3414,7 +5254,7 @@
     {
       "name": "default bpm",
       "group": "Rhythm",
-      "default_value": 90,
+      "default_value": 80,
       "data_type": "int",
       "sysex_adress": 187,
       "curve": "linear",
@@ -3422,7 +5262,7 @@
       "max_value": 300,
       "tooltip": "default bpm of the rythm mode",
       "iterate": 1,
-      "method": "rythm_bpm=value;recalculate_timer();",
+      "method": "rythm_bpm=constrain(value,30,300);recalculate_timer();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -3438,7 +5278,7 @@
       "max_value": 16,
       "tooltip": "length of the rythm loop",
       "iterate": 1,
-      "method": "rythm_loop_length=value;",
+      "method": "rythm_loop_length=constrain(value,1,16);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -3446,7 +5286,7 @@
     {
       "name": "measure update",
       "group": "Rhythm",
-      "default_value": 2,
+      "default_value": 4,
       "data_type": "int",
       "sysex_adress": 189,
       "curve": "linear",
@@ -3454,7 +5294,7 @@
       "max_value": 8,
       "tooltip": "selects the beats where a new chord selection will be taken into account. Select 1 for every beat",
       "iterate": 1,
-      "method": "rythm_limit_change_to_every=value;",
+      "method": "rythm_limit_change_to_every=constrain(value,1,8);",
       "introduction_version": 0.02,
       "ui_type": "discrete_slider",
       "options": [
@@ -3496,7 +5336,7 @@
     {
       "name": "shuffle value",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 1,
       "data_type": "float",
       "sysex_adress": 190,
       "curve": "linear",
@@ -3512,7 +5352,7 @@
     {
       "name": "note pushed duration",
       "group": "Rhythm",
-      "default_value": 30,
+      "default_value": 700,
       "data_type": "int",
       "sysex_adress": 191,
       "curve": "linear",
@@ -3528,7 +5368,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 16,
       "data_type": "int",
       "sysex_adress": 220,
       "curve": "linear",
@@ -3560,7 +5400,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 6,
       "data_type": "int",
       "sysex_adress": 222,
       "curve": "linear",
@@ -3576,7 +5416,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 6,
       "data_type": "int",
       "sysex_adress": 223,
       "curve": "linear",
@@ -3592,7 +5432,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 32,
       "data_type": "int",
       "sysex_adress": 224,
       "curve": "linear",
@@ -3624,7 +5464,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 6,
       "data_type": "int",
       "sysex_adress": 226,
       "curve": "linear",
@@ -3656,7 +5496,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 16,
       "data_type": "int",
       "sysex_adress": 228,
       "curve": "linear",
@@ -3688,7 +5528,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 6,
       "data_type": "int",
       "sysex_adress": 230,
       "curve": "linear",
@@ -3704,7 +5544,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 6,
       "data_type": "int",
       "sysex_adress": 231,
       "curve": "linear",
@@ -3720,7 +5560,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 32,
       "data_type": "int",
       "sysex_adress": 232,
       "curve": "linear",
@@ -3752,7 +5592,7 @@
     {
       "name": "rythm pattern",
       "group": "Rhythm",
-      "default_value": 0,
+      "default_value": 6,
       "data_type": "int",
       "sysex_adress": 234,
       "curve": "linear",
@@ -3786,7 +5626,7 @@
     {
       "name": "chord alternate value",
       "group": "hidden",
-      "default_value": 0,
+      "default_value": 512,
       "data_type": "int",
       "sysex_adress": 4,
       "curve": "linear",
@@ -3802,7 +5642,7 @@
     {
       "name": "harp alternate value",
       "group": "hidden",
-      "default_value": 0,
+      "default_value": 512,
       "data_type": "int",
       "sysex_adress": 5,
       "curve": "linear",
@@ -3818,7 +5658,7 @@
     {
       "name": "mod alternate value",
       "group": "hidden",
-      "default_value": 0,
+      "default_value": 512,
       "data_type": "int",
       "sysex_adress": 6,
       "curve": "linear",
@@ -3834,7 +5674,7 @@
     {
       "name": "firmware revision",
       "group": "hidden",
-      "default_value": 0,
+      "default_value": 0.0,
       "data_type": "float",
       "sysex_adress": 7,
       "curve": "linear",

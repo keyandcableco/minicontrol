@@ -13,9 +13,65 @@ let minichord_device = false;
 const BASE_ADDRESS_RHYTHM = 220;
 let notificationQueue = [];
 let isShowingNotification = false;
+let snapshotBank = -1; // the bank a snapshot was taken on, -1 when none is held
+// RANDOMISE leaves these alone: device, MIDI, tuning and double tap settings
+const RANDOMISE_FIXED = [32, 33, 34, 35, 41, 97, 106, 107, 108, 109, 110, 117, 197, 200, 201, 209, 210, 211, 212, 237, 238];
 
 function getFloatMultiplier(param) {
   return parseFloat(param.float_multiplier) || (param.data_type === 'float' ? (controller.float_multiplier || 100.0) : 1);
+}
+
+function decimalsFor(param) {
+  if (param.data_type !== 'float') return 0;
+  const step = String(param.step ?? 0.01);
+  return step.includes('.') ? step.split('.')[1].length : 0;
+}
+
+// A double tap value is a raw number whatever its target, so on its own it is a plain slider.
+// Once its control names a target, it takes on that target's range and type, so the value is
+// set the way the setting itself is.
+function effectiveParam(param) {
+  if (param.follows_target == null) return param;
+  const target = findParameterBySysex(parseInt(currentValues[param.follows_target]));
+  if (!target || target.follows_target != null || target.sysex_adress === param.sysex_adress) return param;
+  return {
+    ...param,
+    min_value: target.min_value,
+    max_value: target.max_value,
+    data_type: target.data_type === 'float' ? 'float' : 'int',
+    float_multiplier: target.float_multiplier,
+    step: target.step,
+    options: target.options
+  };
+}
+
+function configureSlider(element, valueDisplay, p) {
+  const floatMultiplier = getFloatMultiplier(p);
+  element.min = Math.round(p.min_value * floatMultiplier);
+  element.max = Math.round(p.max_value * floatMultiplier);
+  element.step = p.data_type === 'float' ? Math.round((p.step ?? 0.01) * floatMultiplier) : 1;
+  if (valueDisplay) {
+    valueDisplay.min = p.min_value;
+    valueDisplay.max = p.max_value;
+    valueDisplay.step = p.data_type === 'float' ? (p.step ?? 0.01) : 1;
+  }
+}
+
+// the label of a dropdown setting's value, shown next to a double tap value aimed at it
+function updateOptionHint(param, value) {
+  if (param.follows_target == null) return;
+  const valueDisplay = document.getElementById(`value-${param.sysex_adress}`);
+  if (!valueDisplay) return;
+  let hint = document.getElementById(`hint-${param.sysex_adress}`);
+  if (!hint) {
+    hint = document.createElement('span');
+    hint.id = `hint-${param.sysex_adress}`;
+    hint.className = 'option-hint';
+    valueDisplay.insertAdjacentElement('afterend', hint);
+  }
+  const p = effectiveParam(param);
+  const option = (p.options || []).find(o => o.value === Math.round(value));
+  hint.textContent = option ? option.label : '';
 }
 
 function applyOverrideDefaults(target = defaultValues) {
@@ -188,20 +244,43 @@ function refreshRhythmGrid() {
 
 function applyUIValue(param, value) {
   const sysex = param.sysex_adress;
-  const floatMultiplier = getFloatMultiplier(param);
-  const displayValue = param.data_type === 'float' ? (value / floatMultiplier).toFixed(2) : value;
   const element = document.getElementById(`param-${sysex}`);
   const valueDisplay = document.getElementById(`value-${sysex}`);
   if (!element) return;
+  const p = effectiveParam(param);
+  const floatMultiplier = getFloatMultiplier(p);
+  const displayValue = p.data_type === 'float' ? (value / floatMultiplier).toFixed(decimalsFor(p)) : value;
+  const uiType = param.ui_type || '';
 
-  if (param.ui_type.includes('slider')) {
+  if (uiType.includes('slider')) {
+    if (param.follows_target != null) configureSlider(element, valueDisplay, p);
     element.value = value;
     if (valueDisplay) valueDisplay.value = displayValue;
-  } else if (param.ui_type === 'select') {
+    updateOptionHint(param, value);
+  } else if (uiType === 'select') {
     element.value = value;
-  } else if (param.ui_type === 'switch') {
+  } else if (uiType === 'switch') {
     element.checked = value === 1;
+  } else if (uiType === 'degrees') {
+    for (let bit = 0; bit < 12; bit++) {
+      const box = document.getElementById(`param-${sysex}-bit-${bit}`);
+      if (box) box.checked = !!(value & (1 << bit));
+    }
   }
+}
+
+// the double tap value that follows this control, if any
+function followerOf(sysex) {
+  for (const group of Object.keys(parameters)) {
+    const follower = parameters[group].find(p => p.follows_target === sysex);
+    if (follower) return follower;
+  }
+  return null;
+}
+
+function refreshFollower(sysex) {
+  const follower = followerOf(sysex);
+  if (follower) applyUIValue(follower, currentValues[follower.sysex_adress] ?? 0);
 }
 
 async function setupParameterControls() {
@@ -218,17 +297,18 @@ async function setupParameterControls() {
       const element = document.getElementById(`param-${sysex}`);
       const valueDisplay = document.getElementById(`value-${sysex}`);
       if (!element) return;
+      const uiType = param.ui_type || '';
 
-      if (param.ui_type.includes('slider')) {
-        element.min = param.min_value * floatMultiplier;
-        element.max = param.max_value * floatMultiplier;
-        element.step = param.data_type === 'float' ? 0.01 * floatMultiplier : 1;
+      if (uiType.includes('slider')) {
+        configureSlider(element, valueDisplay, effectiveParam(param));
         element.addEventListener('input', () => {
-          const uiValue = parseFloat(element.value) / floatMultiplier;
+          const p = effectiveParam(param);
+          const uiValue = parseFloat(element.value) / getFloatMultiplier(p);
           const deviceValue = Math.round(parseFloat(element.value));
           tempValues[sysex] = deviceValue;
           currentValues[sysex] = deviceValue;
-          if (valueDisplay) valueDisplay.value = param.data_type === 'float' ? uiValue.toFixed(2) : deviceValue;
+          if (valueDisplay) valueDisplay.value = p.data_type === 'float' ? uiValue.toFixed(decimalsFor(p)) : deviceValue;
+          updateOptionHint(param, deviceValue);
           controller.sendParameter(sysex, deviceValue);
           const valuePercent = ((element.value - element.min) / (element.max - element.min)) * 100;
           element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, #ccc 0%, #ccc 100%)`;
@@ -236,17 +316,19 @@ async function setupParameterControls() {
         });
         if (valueDisplay) {
           valueDisplay.addEventListener('input', () => {
-            let inputValue = param.data_type === 'float' ? parseFloat(valueDisplay.value) : parseInt(valueDisplay.value);
+            const p = effectiveParam(param);
+            let inputValue = p.data_type === 'float' ? parseFloat(valueDisplay.value) : parseInt(valueDisplay.value);
             if (isNaN(inputValue)) {
               console.warn(`[text-input] Invalid value for ${sysex}: ${valueDisplay.value}`);
               return;
             }
-            inputValue = Math.max(param.min_value, Math.min(param.max_value, inputValue));
-            const deviceValue = param.data_type === 'float' ? Math.round(inputValue * floatMultiplier) : inputValue;
+            inputValue = Math.max(p.min_value, Math.min(p.max_value, inputValue));
+            const deviceValue = p.data_type === 'float' ? Math.round(inputValue * getFloatMultiplier(p)) : inputValue;
             element.value = deviceValue;
             tempValues[sysex] = deviceValue;
             currentValues[sysex] = deviceValue;
-            valueDisplay.value = param.data_type === 'float' ? inputValue.toFixed(2) : inputValue;
+            valueDisplay.value = p.data_type === 'float' ? inputValue.toFixed(decimalsFor(p)) : inputValue;
+            updateOptionHint(param, deviceValue);
             controller.sendParameter(sysex, deviceValue);
             const valuePercent = ((element.value - element.min) / (element.max - element.min)) * 100;
             element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, #ccc 0%, #ccc 100%)`;
@@ -254,20 +336,34 @@ async function setupParameterControls() {
             // console.log(`[text-input] Param ${sysex}, Value=${inputValue}`);
           });
         }
-      } else if (param.ui_type === 'select') {
+      } else if (uiType === 'select') {
         element.addEventListener('change', () => {
           const value = parseInt(element.value);
           tempValues[sysex] = value;
           currentValues[sysex] = value;
           controller.sendParameter(sysex, value);
           if (sysex === 20) updateUIColor();
+          refreshFollower(sysex);
         });
-      } else if (param.ui_type === 'switch') {
+      } else if (uiType === 'switch') {
         element.addEventListener('input', () => {
           const value = element.checked ? 1 : 0;
           tempValues[sysex] = value;
           currentValues[sysex] = value;
           controller.sendParameter(sysex, value);
+        });
+      } else if (uiType === 'degrees') {
+        // each box is one bit of the value: assemble the mask from the whole row and send it
+        element.querySelectorAll('.degree-box').forEach(box => {
+          box.addEventListener('input', () => {
+            let mask = 0;
+            element.querySelectorAll('.degree-box').forEach(b => {
+              if (b.checked) mask |= (1 << parseInt(b.dataset.bit));
+            });
+            tempValues[sysex] = mask;
+            currentValues[sysex] = mask;
+            controller.sendParameter(sysex, mask);
+          });
         });
       }
     });
@@ -328,6 +424,10 @@ async function updateUI(bankNumber) {
       applyUIValue(param, value);
     });
   });
+  // a double tap value takes its range from its control, so redo them once every control is set
+  Object.keys(params).forEach(group => params[group].forEach(param => {
+    if (param.follows_target != null) applyUIValue(param, currentValues[param.sysex_adress] ?? param.default_value);
+  }));
   updateUIColor();
   refreshRhythmGrid();
     if (!isShowingNotification) {
@@ -370,7 +470,7 @@ async function loadParameterRanges() {
         let defaultValue = param.default_value;
         
         if (presetValue !== undefined && presetValue !== null && !isNaN(presetValue)) {
-          defaultValue = param.data_type === 'float' ? presetValue / 100 : presetValue;
+          defaultValue = param.data_type === 'float' ? presetValue / getFloatMultiplier(param) : presetValue;
         }
         
         parameterRanges[sysex] = {
@@ -431,13 +531,17 @@ async function generateRandomPreset() {
   const parameterRanges = await loadParameterRanges();
   const weirdness_factor = 0.10;
   const preset = Array(256).fill(0);
-  const fixedValues = [32, 33, 34, 41, 97, 197];
   
   Object.entries(parameterRanges).forEach(([sysex, params]) => {
     const idx = parseInt(sysex);
     
-    if (idx < 19 || fixedValues.includes(idx)) {
-      preset[idx] = params.original_default;
+    if (idx < 19 || RANDOMISE_FIXED.includes(idx)) {
+      // keep what the minichord has now, not the factory default
+      const param = findParameterBySysex(idx);
+      const current = currentValues[idx];
+      preset[idx] = current !== undefined && param
+        ? (param.data_type === 'float' ? current / getFloatMultiplier(param) : current)
+        : params.original_default;
     } else {
       const minVal = params.min;
       const maxVal = params.max;
@@ -519,6 +623,56 @@ document.getElementById("save-to-bank-btn")?.addEventListener("click", () => {
   console.log(`[save-to-bank-btn] Saving to bank ${saveBank + 1}`);
   controller.saveCurrentSettings(saveBank);
   showNotification(`Saved to bank ${saveBank + 1}`, "success");
+});
+
+document.getElementById("load-bank-btn")?.addEventListener("click", () => {
+  if (!controller.isConnected()) {
+    console.warn("[load-bank-btn] No device connected");
+    document.getElementById("information_zone")?.focus();
+    return;
+  }
+  const bank = parseInt(document.getElementById("bank_number_selection").value);
+  console.log(`[load-bank-btn] Loading bank ${bank + 1}`);
+  // the minichord reports the bank's settings back by itself once it has loaded it
+  controller.sendSysEx([0, 0, 4, bank]);
+  snapshotBank = -1; // loading a bank drops the snapshot
+  showNotification(`Loaded bank ${bank + 1}`, "success");
+});
+
+document.getElementById("snapshot-btn")?.addEventListener("click", () => {
+  if (!controller.isConnected()) {
+    console.warn("[snapshot-btn] No device connected");
+    document.getElementById("information_zone")?.focus();
+    return;
+  }
+  if (snapshotBank >= 0) {
+    // the minichord keeps the first snapshot and ignores another until it is reverted
+    showNotification("A snapshot is already held: revert to it first", "error");
+    return;
+  }
+  controller.sendSysEx([0, 0, 5, 0]);
+  snapshotBank = currentBankNumber;
+  showNotification("Snapshot taken", "success");
+});
+
+document.getElementById("revert-btn")?.addEventListener("click", () => {
+  if (!controller.isConnected()) {
+    console.warn("[revert-btn] No device connected");
+    document.getElementById("information_zone")?.focus();
+    return;
+  }
+  if (snapshotBank < 0) {
+    showNotification("No snapshot taken", "error");
+    return;
+  }
+  if (snapshotBank !== currentBankNumber &&
+      !confirm(`The snapshot was taken on bank ${snapshotBank + 1}. Put its settings onto bank ${currentBankNumber + 1}?`)) {
+    return;
+  }
+  // the minichord puts the settings back and reports them, which refreshes the page
+  controller.sendSysEx([0, 0, 6, 0]);
+  snapshotBank = -1;
+  showNotification("Reverted to snapshot", "success");
 });
 
 document.getElementById("reset-bank-btn")?.addEventListener("click", () => {

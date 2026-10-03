@@ -15,12 +15,14 @@ if os.path.exists('sysex_name_map.json'):
     with open('sysex_name_map.json', 'r') as f:
         sysex_name_map = json.load(f)
 
-# Create a mapping of parameter names to sysex_adress for each group
+# Create a mapping of parameter names to sysex_adress for each section and group
+# (names repeat across groups: every envelope has an attack)
 name_to_sysex = {}
 for group_name, params in parameters.items():
     if group_name == 'sysex_name_map':
         continue
-    name_to_sysex[group_name] = {param['name']: param['sysex_adress'] for param in params}
+    for param in params:
+        name_to_sysex.setdefault(group_name, {}).setdefault(param['group'], {})[param['name']] = param['sysex_adress']
 
 # Define desired order of parameter groups
 group_order = [
@@ -36,9 +38,12 @@ group_order = [
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Effects'],
-    'chord_parameter': ['General', 'Oscillator', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay', 'Reverb', 'Crunch', 'Output filter'],
-    'harp_parameter': ['General', 'Oscillator', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay', 'Reverb', 'Crunch', 'Output filter'],
+    'global_parameter': ['General', 'Key and tuning', 'Effects', 'MIDI', 'Knobs', 'Double tap'],
+    'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
+                        'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
+                        'Output filter'],
+    'harp_parameter': ['Notes', 'Oscillator', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
+                       'Reverb', 'Crunch', 'Output filter'],
     'chord_potentiometer': ['Potentiometer'],
     'harp_potentiometer': ['Potentiometer'],
     'modulation_potentiometer': ['Potentiometer'],
@@ -46,11 +51,14 @@ subgroup_order = {
     'rhythm_parameter': ['Rhythm']
 }
 
+DELAY = ['delay length', 'delay filter frequency', 'delay filter resonance', 'delay lowpass', 'delay bandpass',
+         'delay highpass', 'dry mix', 'delay mix']
+
 # Define parameter order by name within each subgroup
 parameter_name_order = {
     'rhythm_parameter': {
         'Rhythm': [
-            'default_bpm',
+            'default bpm',
             'cycle length',
             'measure update',
             'shuffle value',
@@ -59,31 +67,23 @@ parameter_name_order = {
         ]
     },
     'global_parameter': {
-        'General': ['bank color', 'led attenuation', 'transpose','sharp function'],
-        'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion']
+        'General': ['bank color', 'led attenuation'],
+        'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament'],
+        'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
+        'MIDI': ['chord channel', 'harp channel', 'single port mode', 'MPE output', 'knobs send MIDI'],
+        'Knobs': ['knob layer'],
+        'Double tap': ['double tap control', 'double tap value', 'double tap control 2', 'double tap value 2',
+                       'double tap control 3', 'double tap value 3']
     },
     'chord_parameter': {
-        'General': [
-            'octave change',
-            'chord frame shift',
-            'key selection',
-            'barry harris mode',
-            'retrigger chords',
-            'chord shuffling',
-            'slash level',
-            'inter-note delay',
-            'random note delay'
-        ],
-        'Delay': [
-            'delay length',
-            'delay filter frequency',
-            'delay filter resonance',
-            'delay lowpass',
-            'delay bandpass',
-            'delay highpass',
-            'dry mix',
-            'delay mix'
-        ],
+        'General': ['octave change', 'chord shuffling', 'glide chords', 'inter-note delay', 'random note delay'],
+        'Buttons': ['retrigger chords', 'chord layout', 'chord frame shift', 'barry harris mode'],
+        'Voicing': ['chord inversion', 'chord spacing', 'voice leading', 'voice leading range'],
+        'Slash chords and cantus': ['slash level', 'slash voice', 'slash re-voice', 'cantus'],
+        'Alternate layout': ['alt layout maj', 'alt layout min', 'alt layout 7th', 'alt layout maj+7th',
+                             'alt layout min+7th', 'alt layout maj+min', 'alt layout all three'],
+        'Formants': ['formant vowel', 'formant amount', 'formant voice size', 'formant resonance'],
+        'Delay': DELAY,
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
         'Oscillator': [
@@ -122,26 +122,16 @@ parameter_name_order = {
         'Vibrato': ['waveform', 'frequency', 'keytrack value', 'amplitude']
     },
     'harp_parameter': {
-        'General': [
-            'string mode',
-            'string tuning',
+        'Notes': [
+            'chromatic mode',
+            'harp rank',
+            'scalar harp mode',
+            'custom scale',
             'octave change',
-            'harp frame shift',
-            'key selection',
-            'barry harris mode',
-            'retrigger harp',
-            'harp shuffling'
+            'harp shuffling',
+            'change held strings'
         ],
-        'Delay': [
-            'delay length',
-            'delay filter frequency',
-            'delay filter resonance',
-            'delay lowpass',
-            'delay bandpass',
-            'delay highpass',
-            'dry mix',
-            'delay mix'
-        ],
+        'Delay': DELAY,
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
         'Oscillator': ['waveform', 'frequency multiplier', 'amplitude', 'noise'],
@@ -206,6 +196,13 @@ parameter_name_order = {
     }
 }
 
+DEGREES = ["1", "b2", "2", "b3", "3", "4", "b5", "5", "b6", "6", "b7", "7"]
+
+
+def html_escape(text):
+    return str(text).replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
+
+
 # Generate HTML for parameter controls
 def generate_param_html(param):
     html = []
@@ -221,12 +218,16 @@ def generate_param_html(param):
     float_multiplier = param.get('float_multiplier', 100.0 if data_type == 'float' else 1)
     introduction_version = param.get('introduction_version', 0.01)  # Default to 0.01
 
+    # the device takes whole numbers: a float is sent multiplied, so its slider runs in sent units
+    device_step = round(step * float_multiplier) if data_type == 'float' else 1
+    decimals = len(str(step).split('.')[1]) if data_type == 'float' and '.' in str(step) else 0
+
     attrs = [
         f'data-sysex-address="{sysex_address}"',
         f'data-ui-type="{ui_type}"',
         f'data-data-type="{data_type}"',
         f'data-float-multiplier="{float_multiplier}"',
-        f'title="{tooltip}"',
+        f'title="{html_escape(tooltip)}"',
         f'version="{introduction_version}"'  # Add version attribute
     ]
     if 'special_handling' in param:
@@ -235,43 +236,49 @@ def generate_param_html(param):
         attrs.append(f'data-dependent-addresses="{json.dumps(param["dependent_addresses"])}"')
     if 'rhythm_step' in param:
         attrs.append(f'data-rhythm-step="{param["rhythm_step"]}"')
+    if 'follows_target' in param:
+        attrs.append(f'data-follows-target="{param["follows_target"]}"')
 
+    label = f'<label for="param-{sysex_address}" title="{html_escape(tooltip)}" style="width: 150px; font-weight: bold;">{name}</label>'
     if ui_type == 'slider' or ui_type == 'discrete_slider':
-        display_value = (default_value / float_multiplier) if data_type == 'float' else default_value
-        display_value_str = f"{display_value:.2f}" if data_type == 'float' else str(display_value)
-        slider_value = default_value * float_multiplier if data_type == 'float' else default_value
+        display_value = default_value if data_type == 'float' else default_value
+        display_value_str = f"{display_value:.{decimals}f}" if data_type == 'float' else str(display_value)
+        slider_value = round(default_value * float_multiplier) if data_type == 'float' else default_value
         html.append(f'''
             <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-{sysex_address}" style="width: 150px; font-weight: bold;">{name}</label>
+                {label}
                 <input type="range" id="param-{sysex_address}" name="{name}" class="inactive"
-                       min="{min_value * float_multiplier}" max="{max_value * float_multiplier}" 
-                       step="{0.01 * float_multiplier if data_type == 'float' else 1}" 
+                       min="{round(min_value * float_multiplier)}" max="{round(max_value * float_multiplier)}"
+                       step="{device_step}"
                        value="{slider_value}"
                        {"data-discrete='true'" if ui_type == 'discrete_slider' else ''}
                        {' '.join(attrs)}
                        style="width: 150px; margin: 0 8px;">
                 <input type="number" id="value-{sysex_address}" class="inactive"
                        value="{display_value_str}"
-                       min="{min_value}" max="{max_value}" step="{0.01 if data_type == 'float' else 1}"
+                       min="{min_value}" max="{max_value}" step="{step if data_type == 'float' else 1}"
                        style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
         ''')
     elif ui_type == 'select':
+        options_html = ''
+        if 'none_option' in param:
+            options_html += f'<option value="0">{param["none_option"]}</option>'
         if 'options' in param:
-            options_html = ''.join([
+            options_html += ''.join([
                 f'<option value="{opt["value"]}">{opt["label"]}</option>'
                 for opt in param.get('options', [])
             ])
         else:
             option_addresses = param.get('option_addresses', list(sysex_name_map.keys()))
-            options_html = ''.join([
+            options_html += ''.join([
                 f'<option value="{key}">{value}</option>'
                 for key, value in sorted(sysex_name_map.items(), key=lambda x: x[1].lower())
                 if key in option_addresses
             ])
         html.append(f'''
             <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-{sysex_address}" style="width: 150px; font-weight: bold;">{name}</label>
+                {label}
                 <select id="param-{sysex_address}" name="{name}" class="inactive" {' '.join(attrs)}
                         style="width: 150px; padding: 5px; margin: 0 8px;">
                     {options_html}
@@ -281,10 +288,28 @@ def generate_param_html(param):
     elif ui_type == 'switch':
         html.append(f'''
             <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-{sysex_address}" style="width: 150px; font-weight: bold;">{name}</label>
+                {label}
                 <input type="checkbox" id="param-{sysex_address}" name="{name}" class="inactive"
                        {'checked' if default_value else ''} {' '.join(attrs)}
                        style="margin: 0 8px;">
+            </div>
+        ''')
+    elif ui_type == 'degrees':
+        # twelve checkboxes, one per chromatic degree, each a bit of the one value
+        boxes = ''.join(
+            f'''<label class="degree" title="{degree}">
+                    <input type="checkbox" class="degree-box inactive" id="param-{sysex_address}-bit-{bit}"
+                           data-sysex-address="{sysex_address}" data-bit="{bit}" version="{introduction_version}"
+                           {'checked' if default_value & (1 << bit) else ''}>
+                    <span>{degree}</span>
+                </label>'''
+            for bit, degree in enumerate(DEGREES))
+        html.append(f'''
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label style="width: 150px; font-weight: bold;" title="{html_escape(tooltip)}">{name}</label>
+                <div id="param-{sysex_address}" class="degree-row" {' '.join(attrs)}>
+                    {boxes}
+                </div>
             </div>
         ''')
     return '\n'.join(html)
@@ -329,9 +354,9 @@ def generate_details_html(group_name, params):
         # Convert name-based order to sysex_adress order
         name_order = parameter_name_order.get(group_name, {}).get(param_group, [])
         param_order = [
-            name_to_sysex[group_name][name]
+            name_to_sysex[group_name][param_group][name]
             for name in name_order
-            if name in name_to_sysex[group_name]
+            if name in name_to_sysex[group_name].get(param_group, {})
         ]
         # Special handling for rhythm pattern (SysEx 220–235)
         if group_name == 'rhythm_parameter' and param_group == 'Rhythm':
@@ -405,6 +430,9 @@ html_template = '''<!DOCTYPE html>
           <div class="button_div">
             <button id="save-to-bank-btn" class="inactive" version="0.01">save to bank</button>
           </div>
+          <div class="button_div">
+            <button id="load-bank-btn" class="inactive" version="0.21" title="switch the minichord to the target bank">load bank</button>
+          </div>
         </div>
         <div class="section">
           <h5 style="margin: 0; font-size: 1.1em;">sharing:</h5>
@@ -426,6 +454,17 @@ html_template = '''<!DOCTYPE html>
           </div>
           <div class="button_div">
             <button id="reset-all-banks-btn" class="inactive" version="0.01">reset all banks</button>
+          </div>
+        </div>
+        <div class="section">
+          <h5 style="margin: 0; font-size: 1.1em;">snapshot:</h5>
+        </div>
+        <div class="controls">
+          <div class="button_div">
+            <button id="snapshot-btn" class="inactive" version="0.21" title="remember the live settings, so every change after this can be undone">take snapshot</button>
+          </div>
+          <div class="button_div">
+            <button id="revert-btn" class="inactive" version="0.21" title="put back the settings as they were at the snapshot">revert to snapshot</button>
           </div>
         </div>
         <div class="section">
@@ -501,9 +540,9 @@ for group_name in group_order:
                     # Convert name-based order to sysex_adress order
                     name_order = parameter_name_order.get(group_name, {}).get(param_group, [])
                     param_order = [
-                        name_to_sysex[group_name][name]
+                        name_to_sysex[group_name][param_group][name]
                         for name in name_order
-                        if name in name_to_sysex[group_name]
+                        if name in name_to_sysex[group_name].get(param_group, {})
                     ]
                     sorted_params = sorted(
                         grouped_rhythm_params[param_group],
@@ -561,7 +600,8 @@ for group_name, param_list in parameters.items():
         if not method:
             continue
         # Apply scaling for float parameters
-        if param.get('data_type') == 'float':
+        # floats are sent in hundredths, unless the parameter says otherwise (master tuning is in tenths)
+        if param.get('data_type') == 'float' and 'float_multiplier' not in param:
             method = method.replace('value', 'value/100.0')
         # Ensure method ends with semicolon
         method = method.rstrip(';') + ';'
