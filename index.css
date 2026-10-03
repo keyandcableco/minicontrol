@@ -367,16 +367,40 @@
       opacity: 0.8;
       white-space: nowrap;
     }
-    /* phones: let the slider give way so a row fits the screen */
+    /* each section fills its column (the generated markup asks for fit-content, which on a
+       laptop-width window ran the sections into each other), and in a row the slider is what
+       gives way, so a row always fits its section */
+    #parameters details {
+      width: auto !important;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    #parameters div[style*="display: flex"] > label {
+      flex-shrink: 0;
+    }
+    #parameters input[type="range"] {
+      width: auto !important;
+      flex: 1 1 60px;
+      min-width: 0;
+      max-width: 150px;
+    }
+    #parameters select {
+      width: auto !important;
+      flex: 1 1 90px;
+      min-width: 0;
+      max-width: 150px;
+    }
+    /* two columns until there is room for three */
+    @media screen and (min-width: 768px) and (max-width: 1279px) {
+      #parameters {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+    }
+    /* phones: a narrower label too */
     @media screen and (max-width: 767px) {
       #parameters div[style*="display: flex"] > label {
         width: 120px !important;
-        flex-shrink: 0;
-      }
-      #parameters input[type="range"] {
-        width: auto !important;
-        flex: 1 1 60px;
-        min-width: 0;
       }
       .degree-row {
         grid-template-columns: repeat(4, auto);

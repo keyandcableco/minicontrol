@@ -30,20 +30,29 @@
 [data-theme="arcade"] .arcade-only { display: revert; }
 [data-theme="arcade"] .default-only { display: none; }
 
+[data-theme="arcade"] { background: var(--night); }
 [data-theme="arcade"] body {
   font-family: 'Press Start 2P', ui-monospace, monospace;
   font-size: 11px;
   line-height: 1.7;
   color: var(--ink);
+  background: transparent;
+}
+/* the starfield, on a fixed layer of its own: as a fixed page background it made the browser
+   repaint the whole page on every scroll, which with every section open was the slow part */
+[data-theme="arcade"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background:
     radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 68% 7%, #cfe 50%, transparent 51%),
     radial-gradient(1px 1px at 33% 72%, #fff 50%, transparent 51%),
     radial-gradient(1px 1px at 86% 54%, #ffd 50%, transparent 51%),
-    radial-gradient(1px 1px at 52% 38%, #fff 50%, transparent 51%),
-    var(--night);
-  background-size: 240px 240px, 310px 310px, 270px 270px, 350px 350px, 200px 200px, auto;
-  background-attachment: fixed;
+    radial-gradient(1px 1px at 52% 38%, #fff 50%, transparent 51%);
+  background-size: 240px 240px, 310px 310px, 270px 270px, 350px 350px, 200px 200px;
 }
 /* scanlines and a vignette over the whole screen */
 [data-theme="arcade"] body::after {
@@ -265,10 +274,6 @@
 }
 @media screen and (max-width: 767px) {
   [data-theme="arcade"] #parameters details {
-    width: 100% !important;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow-x: auto;
     box-shadow: 0 0 0 2px #3A2D4E, 4px 4px 0 #000;
   }
 }
