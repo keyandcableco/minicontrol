@@ -309,3 +309,9 @@
   height: auto;
   line-height: 16px;
 }
+/* their open lists: the gold buttons' black ink would otherwise sit on the dark list */
+[data-theme="arcade"] #bank_number_selection option,
+[data-theme="arcade"] #theme-select option {
+  background-color: #000;
+  color: var(--gold);
+}

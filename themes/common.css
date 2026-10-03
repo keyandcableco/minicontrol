@@ -154,3 +154,13 @@
 [data-themed] #instruction_zone { color: var(--t-page-ink, var(--t-dim)); }
 [data-themed] #instruction_zone a,
 [data-themed] #container > details summary:hover { color: var(--t-page-link, var(--t-link)); }
+
+/* The open list of a dropdown. A theme whose buttons are see-through (chiptune, notebook) left the
+   browser to draw the list on its default white, with the theme's ink still on the options: light
+   green on white in chiptune. The options take the theme's control colours, which are always solid
+   or, where they are see-through, paired with ink that reads on white. */
+[data-themed] select option,
+[data-themed] select optgroup {
+  background-color: var(--t-control);
+  color: var(--t-control-ink);
+}

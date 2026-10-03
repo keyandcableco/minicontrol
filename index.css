@@ -692,3 +692,11 @@
       line-height: 1.4;
       color: var(--text-primary);
     }
+
+    /* the open list of a dropdown: the page's own colours, so the bank-coloured dropdowns' text
+       (white or black, for the bank colour) is never left on the browser's default list */
+    html:not([data-themed]):not([data-theme="arcade"]) select option,
+    html:not([data-themed]):not([data-theme="arcade"]) select optgroup {
+      background-color: var(--background-color);
+      color: var(--text-primary);
+    }
