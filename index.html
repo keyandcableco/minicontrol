@@ -2,12 +2,27 @@
 <html lang="en" data-theme="light">
 <head>
   <link href="index.css" rel="stylesheet" />
+  <link href="themes/fonts.css" rel="stylesheet" />
+  <link href="themes/common.css" rel="stylesheet" />
   <link href="themes/arcade.css" rel="stylesheet" />
+  <link href="themes/omnichord.css" rel="stylesheet" />
+  <link href="themes/notebook.css" rel="stylesheet" />
+  <link href="themes/choir.css" rel="stylesheet" />
+  <link href="themes/chiptune.css" rel="stylesheet" />
+  <link href="themes/contrast.css" rel="stylesheet" />
+  <link href="themes/stage.css" rel="stylesheet" />
   <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Minichord UI</title>
   <script>
     // the saved theme, set before the page draws so it doesn't flash light first
-    try { document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light'); } catch (e) {}
+    // (index.js keeps the same rules in setTheme and loadTheme)
+    (function () {
+      var themes = ["light", "dark", "arcade", "omnichord", "notebook", "choir", "chiptune", "contrast", "stage"], tokenThemes = ["omnichord", "notebook", "choir", "chiptune", "contrast", "stage"], theme = null;
+      try { theme = localStorage.getItem('theme'); } catch (e) {}
+      if (themes.indexOf(theme) < 0) theme = window.matchMedia && matchMedia('(prefers-contrast: more)').matches ? 'contrast' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      if (tokenThemes.indexOf(theme) >= 0) document.documentElement.setAttribute('data-themed', '');
+    })();
   </script>
 </head>
 <body>
@@ -15,9 +30,11 @@
     <div class="status-header">
       <div class="title-container">
         <h1>minicontrol</h1>
-        <div class="arcade-tagline arcade-only">
-          <span class="coin">insert coin</span><span class="ready">player 1 ready</span>
-        </div>
+        <div class="theme-tagline" data-for="arcade"><span class="off">insert coin</span><span class="on">player 1 ready</span></div>
+        <div class="theme-tagline" data-for="omnichord"><span class="off">power off · plug in your minichord</span><span class="on">sonic strings ready</span></div>
+        <div class="theme-tagline" data-for="notebook"><span class="off">fig. 1 — awaiting the instrument</span><span class="on">experiment in progress</span></div>
+        <div class="theme-tagline" data-for="choir"><span class="off">the choir is silent</span><span class="on">the choir is assembled</span></div>
+        <div class="theme-tagline" data-for="chiptune"><span class="off">&gt; waiting for device</span><span class="on">&gt; device ready</span></div>
         <span id="notification-bubble">
           <span id="dot">●</span>
           <span id="connection-text"></span>
@@ -102,10 +119,16 @@
         </div>
         <div class="controls">
           <div class="button_div">
-            <select id="theme-select" class="always-on" aria-label="theme">
+            <select id="theme-select" class="always-on" aria-label="theme" data-token-themes='["omnichord", "notebook", "choir", "chiptune", "contrast", "stage"]'>
               <option value="light">light</option>
               <option value="dark">dark</option>
               <option value="arcade">arcade</option>
+              <option value="omnichord">omnichord '81</option>
+              <option value="notebook">lab notebook</option>
+              <option value="choir">choir</option>
+              <option value="chiptune">chiptune</option>
+              <option value="contrast">high contrast</option>
+              <option value="stage">stage</option>
             </select>
           </div>
         </div>

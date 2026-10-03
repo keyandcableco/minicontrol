@@ -383,17 +383,52 @@ def generate_details_html(group_name, params):
         </details>
     '''
 
+# The themes in the picker. "tokens" themes are drawn by themes/common.css from the colours and
+# fonts their own stylesheet sets; light and dark are index.css itself, arcade is its own sheet.
+# A tagline (shown while disconnected, connected) sits under the title.
+THEMES = [
+    {'id': 'light', 'label': 'light'},
+    {'id': 'dark', 'label': 'dark'},
+    {'id': 'arcade', 'label': 'arcade', 'tagline': ('insert coin', 'player 1 ready')},
+    {'id': 'omnichord', 'label': "omnichord '81", 'tokens': True,
+     'tagline': ('power off · plug in your minichord', 'sonic strings ready')},
+    {'id': 'notebook', 'label': 'lab notebook', 'tokens': True,
+     'tagline': ('fig. 1 — awaiting the instrument', 'experiment in progress')},
+    {'id': 'choir', 'label': 'choir', 'tokens': True,
+     'tagline': ('the choir is silent', 'the choir is assembled')},
+    {'id': 'chiptune', 'label': 'chiptune', 'tokens': True,
+     'tagline': ('&gt; waiting for device', '&gt; device ready')},
+    {'id': 'contrast', 'label': 'high contrast', 'tokens': True},
+    {'id': 'stage', 'label': 'stage', 'tokens': True},
+]
+theme_links = '\n'.join(
+    ['  <link href="themes/fonts.css" rel="stylesheet" />', '  <link href="themes/common.css" rel="stylesheet" />'] +
+    [f'  <link href="themes/{t["id"]}.css" rel="stylesheet" />' for t in THEMES if t['id'] not in ('light', 'dark')])
+theme_options = '\n'.join(f'              <option value="{t["id"]}">{t["label"]}</option>' for t in THEMES)
+theme_taglines = '\n'.join(
+    f'        <div class="theme-tagline" data-for="{t["id"]}"><span class="off">{t["tagline"][0]}</span><span class="on">{t["tagline"][1]}</span></div>'
+    for t in THEMES if 'tagline' in t)
+token_themes = json.dumps([t['id'] for t in THEMES if t.get('tokens')])
+all_themes = json.dumps([t['id'] for t in THEMES])
+
 # Define HTML template
 html_template = '''<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <link href="index.css" rel="stylesheet" />
-  <link href="themes/arcade.css" rel="stylesheet" />
+{theme_links}
   <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Minichord UI</title>
   <script>
     // the saved theme, set before the page draws so it doesn't flash light first
-    try {{ document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light'); }} catch (e) {{}}
+    // (index.js keeps the same rules in setTheme and loadTheme)
+    (function () {{
+      var themes = {all_themes}, tokenThemes = {token_themes}, theme = null;
+      try {{ theme = localStorage.getItem('theme'); }} catch (e) {{}}
+      if (themes.indexOf(theme) < 0) theme = window.matchMedia && matchMedia('(prefers-contrast: more)').matches ? 'contrast' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      if (tokenThemes.indexOf(theme) >= 0) document.documentElement.setAttribute('data-themed', '');
+    }})();
   </script>
 </head>
 <body>
@@ -401,9 +436,7 @@ html_template = '''<!DOCTYPE html>
     <div class="status-header">
       <div class="title-container">
         <h1>minicontrol</h1>
-        <div class="arcade-tagline arcade-only">
-          <span class="coin">insert coin</span><span class="ready">player 1 ready</span>
-        </div>
+{theme_taglines}
         <span id="notification-bubble">
           <span id="dot">●</span>
           <span id="connection-text"></span>
@@ -488,10 +521,8 @@ html_template = '''<!DOCTYPE html>
         </div>
         <div class="controls">
           <div class="button_div">
-            <select id="theme-select" class="always-on" aria-label="theme">
-              <option value="light">light</option>
-              <option value="dark">dark</option>
-              <option value="arcade">arcade</option>
+            <select id="theme-select" class="always-on" aria-label="theme" data-token-themes='{token_themes}'>
+{theme_options}
             </select>
           </div>
         </div>
@@ -580,7 +611,12 @@ for group_name in group_order:
 # Insert into HTML
 html_content = html_template.format(
     parameter_sections=''.join(parameter_sections),
-    svg_file=svg_file
+    svg_file=svg_file,
+    theme_links=theme_links,
+    theme_options=theme_options,
+    theme_taglines=theme_taglines,
+    token_themes=token_themes,
+    all_themes=all_themes
 )
 
 # Write to index.html

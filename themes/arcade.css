@@ -1,15 +1,7 @@
 /* The arcade theme, after the minichord arcade: a marquee for the title, cabinets for the
  * parameter sections, the pixel minichord in place of the drawing, scanlines over everything.
  * Everything here is scoped to [data-theme="arcade"], so the other themes never see it.
- * Press Start 2P is under the SIL Open Font License (fonts/OFL-press-start-2p.txt). */
-@font-face {
-  font-family: 'Press Start 2P';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("fonts/press-start-2p-400-latin.woff2") format('woff2');
-}
-
+ * Its font, Press Start 2P, is declared in fonts.css. */
 [data-theme="arcade"] {
   --ink: #F1E8D2;
   --dim: #9A93B5;
@@ -23,6 +15,10 @@
   --header-bg: transparent;
   --text-primary: var(--ink);
   --svg-filter: none;
+  --track-color: #2A1C35;
+  --bank-saturation: 100%;
+  --bank-lightness: 62%;
+  color-scheme: dark;
 }
 
 /* theme-specific pieces of the header: only the arcade shows its own */
@@ -109,17 +105,15 @@
   text-shadow: 0 0 6px #FFD35A, 0 0 18px #FF8A3D, 0 0 38px #FF5AA0, 4px 4px 0 #000;
   animation: arcade-neon 6s infinite;
 }
-[data-theme="arcade"] .arcade-tagline {
+[data-theme="arcade"] .theme-tagline[data-for="arcade"] {
+  display: block;
   margin-top: 14px;
   font-size: .7rem;
   color: var(--cyan);
   text-shadow: 0 0 8px var(--cyan), 2px 2px 0 #000;
 }
-/* "insert coin" until a minichord is plugged in, then player one is ready */
-[data-theme="arcade"] .arcade-tagline .ready { display: none; }
-[data-theme="arcade"] .status-header:has(#notification-bubble.connected) .arcade-tagline .ready { display: inline; }
-[data-theme="arcade"] .status-header:has(#notification-bubble.connected) .arcade-tagline .coin { display: none; }
-[data-theme="arcade"] .arcade-tagline .coin { color: var(--gold); text-shadow: 0 0 8px var(--gold), 2px 2px 0 #000; animation: arcade-blink 1.1s steps(2) infinite; }
+/* "insert coin" blinks until a minichord is plugged in, then player one is ready */
+[data-theme="arcade"] .theme-tagline .off { color: var(--gold); text-shadow: 0 0 8px var(--gold), 2px 2px 0 #000; animation: arcade-blink 1.1s steps(2) infinite; }
 
 [data-theme="arcade"] #notification-bubble,
 [data-theme="arcade"] #notification-bubble.connected,

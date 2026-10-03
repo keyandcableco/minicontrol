@@ -1,0 +1,80 @@
+/* Lab notebook: the Minichord Lab's EB Garamond on ruled paper with a red margin, the drawing as a
+ * pencil figure, and the bank colour as the highlighter over the group names. */
+[data-theme="notebook"] {
+  --t-font: "EB Garamond", Georgia, serif;
+  --t-display-font: "EB Garamond", Georgia, serif;
+  --t-size: 17px;
+  --t-page: #F4EEDC;
+  --t-ink: #23262E;
+  --t-dim: #5E6170;
+  --t-link: #1F4FA8;
+  --t-panel: rgba(253, 250, 240, .92);
+  --t-panel-border: 1px solid #D9CFB4;
+  --t-radius: 2px;
+  --t-shadow: 0 1px 0 #D9CFB4, 0 6px 14px rgba(70, 55, 20, .12);
+  --t-title: #23262E;
+  --t-heading: #23262E;
+  --t-subheading: #23262E;
+  --t-button: transparent;
+  --t-button-ink: #23262E;
+  --t-button-border: 1.5px solid #23262E;
+  --t-button-off: transparent;
+  --t-button-off-ink: #A9A391;
+  --t-control: transparent;
+  --t-control-ink: #1F4FA8;
+  --t-control-border: none;
+  --t-thumb: #23262E;
+  --track-color: #DCD3BC;
+  --bank-saturation: 90%;
+  --bank-lightness: 62%;
+  --t-ok: transparent;
+  --t-ok-ink: #2E6B34;
+  --t-bad: transparent;
+  --t-bad-ink: #B3261E;
+  --t-art-filter: grayscale(1) contrast(1.4);
+}
+/* ruled paper, with the margin line */
+[data-theme="notebook"] body {
+  background:
+    linear-gradient(90deg, transparent 46px, rgba(205, 60, 60, .45) 46px 48px, transparent 48px),
+    repeating-linear-gradient(180deg, transparent 0 27px, rgba(80, 120, 190, .18) 27px 28px),
+    #F4EEDC;
+}
+[data-theme="notebook"] h1 { font-weight: 700; font-size: 2.6em; letter-spacing: -.01em; }
+[data-theme="notebook"] .theme-tagline[data-for="notebook"] { display: block; font-style: italic; font-size: 1.05em; }
+[data-theme="notebook"] details summary { font-style: italic; font-weight: 600; }
+/* group names highlighted in the bank colour */
+[data-theme="notebook"] #parameters h3 {
+  display: inline-block;
+  font-weight: 600;
+  font-style: italic;
+  background: linear-gradient(transparent 55%, hsla(var(--primary-color-hue, 50), 90%, 62%, .5) 55%);
+  padding: 0 4px;
+}
+[data-theme="notebook"] #parameters label { font-weight: 500 !important; }
+/* fields written on a line */
+[data-theme="notebook"] #parameters select,
+[data-theme="notebook"] #parameters select.inactive,
+[data-theme="notebook"] input[type="number"],
+[data-theme="notebook"] input[type="number"].active,
+[data-theme="notebook"] input[type="number"].inactive {
+  border-bottom: 1.5px solid #8E8A7C !important;
+  border-radius: 0;
+  font-size: 1em;
+}
+[data-theme="notebook"] button,
+[data-theme="notebook"] #bank_number_selection,
+[data-theme="notebook"] #theme-select { font-size: 1em; padding: 4px 10px; }
+[data-theme="notebook"] button:hover {
+  filter: none;
+  background: linear-gradient(transparent 50%, hsla(var(--primary-color-hue, 50), 90%, 62%, .55) 50%) !important;
+}
+[data-theme="notebook"] #notification-bubble { border-style: dashed; font-style: italic; }
+/* the figure caption */
+[data-theme="notebook"] .svg-container { flex-direction: column; }
+[data-theme="notebook"] .svg-container::after {
+  content: "fig. 1 — the minichord";
+  font-style: italic;
+  color: #5E6170;
+  margin-top: 4px;
+}

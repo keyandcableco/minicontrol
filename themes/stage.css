@@ -1,0 +1,41 @@
+/* Stage: dim red on black, for a dark venue. Red light doesn't spoil eyes adjusted to the dark, the
+ * page gives off as little light as it can, and nothing moves. */
+[data-theme="stage"] {
+  --t-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --t-page: #000;
+  --t-ink: #C23A3A;
+  --t-dim: #7E2424;
+  --t-link: #E04848;
+  --t-panel: #070000;
+  --t-panel-border: 1px solid #3A0A0A;
+  --t-radius: 6px;
+  --t-title: #D84040;
+  --t-heading: #D84040;
+  --t-subheading: #B83232;
+  --t-rule: 1px solid #2A0606;
+  --t-button: #2A0505;
+  --t-button-ink: #E04848;
+  --t-button-border: 1px solid #5A1010;
+  --t-button-off: #0C0101;
+  --t-button-off-ink: #4A1414;
+  --t-control: #0C0101;
+  --t-control-ink: #E04848;
+  --t-control-border: 1px solid #3A0A0A;
+  --t-thumb: #E04848;
+  --track-color: #2A0606;
+  --primary-color: #A82020 !important;
+  --text-color: #000 !important;
+  --t-ok: #0C0101;
+  --t-ok-ink: #C23A3A;
+  --t-bad: #0C0101;
+  --t-bad-ink: #FF5050;
+  --t-art-filter: invert(1) sepia(1) saturate(8) hue-rotate(-45deg) brightness(.45);
+  --t-focus: 2px solid #E04848;
+  color-scheme: dark;
+}
+[data-theme="stage"] #parameters label { font-weight: 500 !important; }
+[data-theme="stage"] img { opacity: .6; }
+/* a native checkbox is a bright grey square, the brightest thing on the page */
+[data-theme="stage"] input[type="checkbox"] { opacity: .45; }
+[data-theme="stage"] input[type="checkbox"]:checked { opacity: .8; }
+[data-theme="stage"] * { animation: none !important; transition: none !important; }

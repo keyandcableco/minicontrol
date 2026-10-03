@@ -1,0 +1,57 @@
+/* High contrast: white on black with a yellow accent, Atkinson Hyperlegible (designed for low
+ * vision), bigger text and targets, a thick focus ring, no motion. Chosen automatically when the
+ * system asks for more contrast and no theme has been picked here. */
+[data-theme="contrast"] {
+  --t-font: "Atkinson Hyperlegible", Verdana, sans-serif;
+  --t-size: 18px;
+  --t-page: #000;
+  --t-ink: #FFF;
+  --t-dim: #E6E6E6;
+  --t-link: #FFE600;
+  --t-panel: #000;
+  --t-panel-border: 2px solid #FFF;
+  --t-radius: 4px;
+  --t-title: #FFF;
+  --t-heading: #FFE600;
+  --t-subheading: #FFF;
+  --t-rule: 2px solid #FFF;
+  --t-button: #FFE600;
+  --t-button-ink: #000;
+  --t-button-border: 2px solid #FFE600;
+  --t-button-off: #000;
+  --t-button-off-ink: #BDBDBD;
+  --t-control: #000;
+  --t-control-ink: #FFF;
+  --t-control-border: 2px solid #FFF;
+  --t-thumb: #FFE600;
+  --track-color: #6B6B6B;
+  --primary-color: #FFE600 !important;
+  --text-color: #000 !important;
+  --t-ok: #000;
+  --t-ok-ink: #7CFF7C;
+  --t-bad: #000;
+  --t-bad-ink: #FF8C8C;
+  --t-art-filter: invert(1);
+  --t-focus: 4px solid #FFE600;
+  color-scheme: dark;
+}
+[data-theme="contrast"] #parameters label { font-weight: 700 !important; font-size: 1em; }
+[data-theme="contrast"] details summary { font-weight: 700 !important; text-decoration: underline; text-underline-offset: 4px; }
+/* unavailable controls stay readable, marked by a dashed outline rather than by fading */
+[data-theme="contrast"] .inactive { opacity: 1 !important; }
+[data-theme="contrast"] button.inactive,
+[data-theme="contrast"] #bank_number_selection.inactive { border: 2px dashed #BDBDBD !important; }
+[data-theme="contrast"] #parameters select.inactive,
+[data-theme="contrast"] input.inactive { border-style: dashed !important; }
+/* bigger targets */
+[data-theme="contrast"] button,
+[data-theme="contrast"] #bank_number_selection,
+[data-theme="contrast"] #theme-select { font-size: 1em; font-weight: 700; padding: 10px 14px; }
+[data-theme="contrast"] #parameters select { height: 36px; font-size: .95em; }
+[data-theme="contrast"] input[type="number"] { height: 32px; font-size: .95em; width: 76px !important; }
+[data-theme="contrast"] input[type="range"] { height: 10px; }
+[data-theme="contrast"] input[type="range"]::-webkit-slider-thumb { width: 22px; height: 22px; border: 3px solid #000; outline: 2px solid #FFE600; }
+[data-theme="contrast"] input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border: 3px solid #000; }
+[data-theme="contrast"] input[type="checkbox"] { width: 22px; height: 22px; }
+[data-theme="contrast"] #notification-bubble { font-size: 1em; }
+[data-theme="contrast"] * { animation: none !important; transition: none !important; }

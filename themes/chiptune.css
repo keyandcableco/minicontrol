@@ -1,0 +1,71 @@
+/* Chiptune: after the 8B8's AY-3-8910 days, a green phosphor terminal. Monospace, bracketed
+ * commands, ASCII headings, block-cursor sliders and a blinking prompt under the name. */
+[data-theme="chiptune"] {
+  --t-font: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+  --t-display-font: var(--t-font);
+  --t-size: 14px;
+  --t-page: #040904;
+  --t-ink: #8CFF8C;
+  --t-dim: #3FA34D;
+  --t-link: #D8FF8C;
+  --t-panel: rgba(4, 18, 6, .85);
+  --t-panel-border: 1px dashed #2F7A38;
+  --t-radius: 0px;
+  --t-title: #B6FFB0;
+  --t-heading: #B6FFB0;
+  --t-subheading: #8CFF8C;
+  --t-button: transparent;
+  --t-button-ink: #8CFF8C;
+  --t-button-border: 1px solid #2F7A38;
+  --t-button-off: transparent;
+  --t-button-off-ink: #2A5E31;
+  --t-control: #020602;
+  --t-control-ink: #B6FFB0;
+  --t-control-border: 1px solid #2F7A38;
+  --t-thumb: #8CFF8C;
+  --t-thumb-radius: 0;
+  --track-color: #0F2A13;
+  --primary-color: #39C94F !important;
+  --text-color: #020602 !important;
+  --t-ok: transparent;
+  --t-ok-ink: #8CFF8C;
+  --t-bad: transparent;
+  --t-bad-ink: #FF6B5A;
+  --t-art-filter: invert(1) sepia(1) saturate(6) hue-rotate(70deg) brightness(.85) drop-shadow(0 0 6px rgba(80, 255, 110, .55));
+  --t-focus: 2px solid #D8FF8C;
+  color-scheme: dark;
+}
+[data-theme="chiptune"] body { text-shadow: 0 0 4px rgba(90, 255, 120, .35); }
+/* scanlines, on a fixed layer of their own so scrolling never repaints them */
+[data-theme="chiptune"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, .25) 2px 3px);
+}
+[data-theme="chiptune"] h1 { font-weight: 700; letter-spacing: .08em; }
+[data-theme="chiptune"] h1::before { content: "C:\\> "; color: var(--t-dim); }
+[data-theme="chiptune"] .theme-tagline[data-for="chiptune"] { display: block; color: #8CFF8C; }
+[data-theme="chiptune"] .theme-tagline::after { content: "█"; margin-left: 4px; animation: chip-blink 1s steps(2) infinite; }
+[data-theme="chiptune"] .section h5 { text-transform: uppercase; }
+[data-theme="chiptune"] .section h5::before { content: "## "; color: var(--t-dim); }
+[data-theme="chiptune"] details summary { text-transform: uppercase; font-weight: 700 !important; font-size: 1.15em !important; }
+[data-theme="chiptune"] #parameters h3 { text-transform: uppercase; font-size: 1em !important; font-weight: 700; }
+[data-theme="chiptune"] #parameters h3::before { content: "== "; color: var(--t-dim); }
+[data-theme="chiptune"] #parameters h3::after { content: " =="; color: var(--t-dim); }
+[data-theme="chiptune"] #parameters label { font-weight: 400 !important; }
+/* [ COMMANDS ] */
+[data-theme="chiptune"] button { text-transform: uppercase; padding: 5px 8px; }
+[data-theme="chiptune"] button::before { content: "[ "; }
+[data-theme="chiptune"] button::after { content: " ]"; }
+[data-theme="chiptune"] button:hover { filter: none; background: #8CFF8C !important; color: #020602 !important; text-shadow: none; }
+/* block cursors for slider knobs */
+[data-theme="chiptune"] input[type="range"] { border-radius: 0; height: 8px; }
+[data-theme="chiptune"] input[type="range"]::-webkit-slider-thumb { width: 8px; height: 16px; }
+[data-theme="chiptune"] input[type="range"]::-moz-range-thumb { width: 8px; height: 16px; border: none; }
+@keyframes chip-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="chiptune"] .theme-tagline::after { animation: none; }
+}

@@ -194,19 +194,16 @@ function updateUIColor() {
   if (!param) return console.warn('[updateUIColor] SysEx 20 not found');
   const bankColor = currentValues[20] ?? defaultValues[20] ?? param.default_value;
   const hue = bankColor % 360;
-  const theme = document.documentElement.getAttribute('data-theme');
-  const isDarkMode = theme === 'dark' || theme === 'arcade';
-  // the arcade lights the bank colour up as neon
-  const primaryColor = theme === 'arcade' ? `hsl(${hue}, 100%, 62%)` : isDarkMode ? `hsl(${hue}, 70%, 60%)` : `hsl(${hue}, 70%, 50%)`;
+  // each theme says how the bank colour is lit (index.css and the theme sheets set these)
+  const primaryColor = `hsl(${hue}, ${themeVar('--bank-saturation', '70%')}, ${themeVar('--bank-lightness', '50%')})`;
   const textColor = (hue >= 45 && hue <= 75) || (hue >= 90 && hue <= 150) ? '#000000' : '#ffffff';
   document.documentElement.style.setProperty('--primary-color-hue', hue);
   document.documentElement.style.setProperty('--primary-color', primaryColor);
   document.documentElement.style.setProperty('--text-color', textColor);
   document.querySelectorAll('input[type="range"]').forEach(slider => {
     const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-    const trackColor = theme === 'arcade' ? '#2A1C35' : isDarkMode ? '#555' : '#ccc';
+    const trackColor = sliderTrackColor();
     slider.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${value}%, ${trackColor} ${value}%, ${trackColor} 100%)`;
-    // console.log(`[updateUIColor] Slider ${slider.id}, Hue=${hue}, Value=${value}%, Theme=${isDarkMode ? 'dark' : 'light'}`);
   });
   document.querySelectorAll('button, #bank_number_selection').forEach(element => {
     if (element.classList.contains('active')) {
@@ -216,22 +213,38 @@ function updateUIColor() {
   });
 }
 
-const THEMES = ['light', 'dark', 'arcade'];
+// the picker is the list of themes; themes drawn by themes/common.css are marked on it
+function themeList() {
+  const select = document.getElementById('theme-select');
+  return select ? [...select.options].map(o => o.value) : ['light'];
+}
+function tokenThemes() {
+  try { return JSON.parse(document.getElementById('theme-select')?.dataset.tokenThemes || '[]'); } catch (e) { return []; }
+}
+const THEME_FAVICONS = { arcade: 'themes/arcade-minichord.svg' };
 
+// a theme's own value for a CSS variable, such as its slider track colour
+function themeVar(name, fallback) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
 function sliderTrackColor() {
-  const theme = document.documentElement.getAttribute('data-theme');
-  return theme === 'arcade' ? '#2A1C35' : theme === 'dark' ? '#555' : '#ccc';
+  return themeVar('--track-color', '#ccc');
 }
 
-function setTheme(theme) {
-  if (!THEMES.includes(theme)) theme = 'light';
-  document.documentElement.setAttribute('data-theme', theme);
-  try { localStorage.setItem('theme', theme); } catch (e) { /* private window: the choice just isn't remembered */ }
+function setTheme(theme, save = true) {
+  if (!themeList().includes(theme)) theme = 'light';
+  const html = document.documentElement;
+  html.setAttribute('data-theme', theme);
+  if (tokenThemes().includes(theme)) html.setAttribute('data-themed', '');
+  else html.removeAttribute('data-themed');
+  if (save) {
+    try { localStorage.setItem('theme', theme); } catch (e) { /* private window: the choice just isn't remembered */ }
+  }
   const select = document.getElementById('theme-select');
   if (select) select.value = theme;
-  // the arcade brings its own favicon
+  // some themes bring their own favicon
   let icon = document.getElementById('theme-favicon');
-  if (theme === 'arcade') {
+  if (THEME_FAVICONS[theme]) {
     if (!icon) {
       icon = document.createElement('link');
       icon.id = 'theme-favicon';
@@ -239,17 +252,20 @@ function setTheme(theme) {
       icon.type = 'image/svg+xml';
       document.head.appendChild(icon);
     }
-    icon.href = 'themes/arcade-minichord.svg';
+    icon.href = THEME_FAVICONS[theme];
   } else if (icon) {
     icon.remove();
   }
   updateUIColor();
 }
 
+// a theme picked here wins; until one is, a system asking for more contrast gets high contrast
 function loadTheme() {
-  let savedTheme = 'light';
-  try { savedTheme = localStorage.getItem('theme') || 'light'; } catch (e) { /* no storage: light */ }
-  setTheme(savedTheme);
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (e) { /* no storage */ }
+  if (themeList().includes(saved)) return setTheme(saved);
+  const contrast = window.matchMedia && matchMedia('(prefers-contrast: more)').matches;
+  setTheme(contrast ? 'contrast' : 'light', false);
 }
 
 function refreshRhythmGrid() {

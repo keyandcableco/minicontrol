@@ -1,0 +1,156 @@
+/* The themes beyond light, dark and arcade are drawn here, from variables each theme's own sheet
+ * sets: its fonts, colours, borders and corners. A theme's sheet then adds only what makes it
+ * itself. These rules apply while the page has data-themed (index.js and the script at the top of
+ * index.html set it for those themes).
+ *
+ * Variables a theme sets (all optional except the colours it wants to change):
+ *   --t-font, --t-display-font, --t-size          body font, headings font, base size
+ *   --t-page, --t-ink, --t-dim, --t-link          page background, text, quiet text, links
+ *   --t-panel, --t-panel-border, --t-radius, --t-shadow    the header and the sections
+ *   --t-title, --t-heading, --t-subheading, --t-rule       title, section names, group names, rules
+ *   --t-button, --t-button-ink, --t-button-border, --t-button-off, --t-button-off-ink
+ *   --t-control, --t-control-ink, --t-control-border       dropdowns and number boxes
+ *   --t-thumb, --t-thumb-radius, --track-color             sliders
+ *   --t-ok, --t-ok-ink, --t-bad, --t-bad-ink               the connection bubble
+ *   --t-art-filter                                         how the minichord drawing is tinted
+ *   --t-focus                                              the keyboard focus ring
+ */
+[data-themed] {
+  --t-font: inherit;
+  --t-display-font: var(--t-font);
+  --t-size: 16px;
+  --t-radius: 6px;
+  --t-shadow: none;
+  --t-thumb-radius: 50%;
+  --t-art-filter: none;
+  --t-focus: 3px solid var(--primary-color);
+  background: var(--t-page);
+  --background-color: var(--t-page);
+  --header-bg: transparent;
+  --text-primary: var(--t-ink);
+}
+
+[data-themed] body {
+  font-family: var(--t-font);
+  font-size: var(--t-size);
+  color: var(--t-ink);
+  background: transparent;
+}
+[data-themed] a,
+[data-themed] a:visited { color: var(--t-link); }
+[data-themed] :focus-visible { outline: var(--t-focus); outline-offset: 2px; }
+
+/* title and the panels */
+[data-themed] .status-header,
+[data-themed] #header,
+[data-themed] #parameters details {
+  background: var(--t-panel);
+  border: var(--t-panel-border);
+  border-radius: var(--t-radius) !important;
+  box-shadow: var(--t-shadow);
+  color: var(--t-ink);
+}
+[data-themed] .status-header { margin-bottom: 10px; }
+[data-themed] h1 {
+  font-family: var(--t-display-font);
+  color: var(--t-title);
+}
+[data-themed] .theme-tagline {
+  margin-top: 6px;
+  color: var(--t-dim);
+}
+[data-themed] .section h5,
+[data-themed] details summary {
+  font-family: var(--t-display-font);
+  color: var(--t-heading);
+}
+[data-themed] details summary:hover { color: var(--t-link); }
+[data-themed] #parameters h3 {
+  font-family: var(--t-display-font);
+  color: var(--t-subheading);
+  border-bottom: var(--t-rule, none);
+  padding-bottom: 4px;
+}
+[data-themed] #parameters label { color: var(--t-ink); }
+[data-themed] #instruction_zone,
+[data-themed] details > ul,
+[data-themed] .option-hint,
+[data-themed] .degree { color: var(--t-dim); }
+
+/* buttons: index.js paints active ones in the bank colour, which a theme's own colours override */
+[data-themed] button,
+[data-themed] #bank_number_selection,
+[data-themed] #theme-select {
+  font-family: inherit;
+  background: var(--t-button) !important;
+  color: var(--t-button-ink) !important;
+  border: var(--t-button-border, none);
+  border-radius: var(--t-radius);
+}
+[data-themed] button:hover,
+[data-themed] #bank_number_selection:hover,
+[data-themed] #theme-select:hover { filter: brightness(1.12); }
+[data-themed] button.inactive,
+[data-themed] #bank_number_selection.inactive {
+  background: var(--t-button-off) !important;
+  color: var(--t-button-off-ink) !important;
+}
+
+/* dropdowns and number boxes */
+[data-themed] #parameters select,
+[data-themed] #parameters select.inactive,
+[data-themed] input[type="number"],
+[data-themed] input[type="number"].active,
+[data-themed] input[type="number"].inactive {
+  font-family: inherit;
+  background-color: var(--t-control) !important;
+  color: var(--t-control-ink);
+  border: var(--t-control-border) !important;
+  border-radius: calc(var(--t-radius) / 2);
+}
+[data-themed] input[type="number"] { width: 64px !important; }
+
+/* sliders: index.js paints the track from --primary-color and --track-color */
+[data-themed] input[type="range"]::-webkit-slider-thumb {
+  background: var(--t-thumb, var(--primary-color));
+  border-radius: var(--t-thumb-radius);
+}
+[data-themed] input[type="range"]::-moz-range-thumb {
+  background: var(--t-thumb, var(--primary-color));
+  border-radius: var(--t-thumb-radius);
+}
+[data-themed] input[type="checkbox"] { accent-color: var(--t-thumb, var(--primary-color)); }
+
+/* the connection bubble */
+[data-themed] #notification-bubble,
+[data-themed] #notification-bubble.connected,
+[data-themed] #notification-bubble.disconnected {
+  border-radius: var(--t-radius);
+  border-width: 2px;
+}
+[data-themed] #notification-bubble.connected { background: var(--t-ok); color: var(--t-ok-ink); border-color: var(--t-ok-ink); }
+[data-themed] #notification-bubble.disconnected { background: var(--t-bad); color: var(--t-bad-ink); border-color: var(--t-bad-ink); }
+[data-themed] #notification-bubble #dot { color: inherit !important; }
+
+/* the minichord drawing, tinted to suit */
+[data-themed] .svg-container img.default-only { filter: var(--t-art-filter); }
+/* the drawing sized to sit inside the control panel, centred against it (index.css's own sizing
+   is larger than the panel, which a plain page hides but a framed panel shows) */
+[data-themed] .svg-container {
+  height: auto;
+  align-self: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+[data-themed] .svg-container img.default-only {
+  width: clamp(260px, 40vw, 600px);
+  height: auto;
+  max-width: 100%;
+}
+
+/* text sitting straight on the page, outside the panels, which on some themes is dark */
+[data-themed] #container > details,
+[data-themed] #container > details summary,
+[data-themed] #instruction_zone { color: var(--t-page-ink, var(--t-dim)); }
+[data-themed] #instruction_zone a,
+[data-themed] #container > details summary:hover { color: var(--t-page-link, var(--t-link)); }

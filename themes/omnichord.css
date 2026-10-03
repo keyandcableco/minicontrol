@@ -1,0 +1,94 @@
+/* Omnichord '81: after Suzuki's original, cream panels in a walnut case, burnt orange and brown,
+ * rounded chord buttons, '70s stripes under the name and the Sonic Strings bar over each section. */
+[data-theme="omnichord"] {
+  --t-font: "Trebuchet MS", "Helvetica Neue", Arial, sans-serif;
+  --t-display-font: "Trebuchet MS", "Helvetica Neue", Arial, sans-serif;
+  --t-page: #3A2618;
+  --t-ink: #3B2414;
+  --t-dim: #7A5A3E;
+  --t-link: #C4501E;
+  --t-panel: linear-gradient(180deg, #FBF4E2, #EFE3C6);
+  --t-panel-border: 3px solid #2A1A0F;
+  --t-radius: 16px;
+  --t-shadow: 0 6px 0 #1E120A;
+  --t-title: #3B2414;
+  --t-heading: #3B2414;
+  --t-subheading: #C4501E;
+  --t-rule: 2px solid #E3D3AE;
+  --t-button: #4A2E1C;
+  --t-button-ink: #FBF4E2;
+  --t-button-border: 2px solid #2A1A0F;
+  --t-button-off: #D9CCAE;
+  --t-button-off-ink: #8C7558;
+  --t-control: #FFFBF0;
+  --t-control-ink: #3B2414;
+  --t-control-border: 2px solid #B89B70;
+  --t-thumb: #C4501E;
+  --t-thumb-radius: 4px;
+  --track-color: #DCCBA6;
+  --primary-color: #E06A2C !important;
+  --text-color: #FBF4E2 !important;
+  --t-ok: #E8F0C8;
+  --t-ok-ink: #4E6B1E;
+  --t-bad: #F6D9C4;
+  --t-bad-ink: #A33A12;
+  --t-art-filter: sepia(1) saturate(3) hue-rotate(-12deg) brightness(.45) contrast(1.6);
+  --t-page-ink: #E9D9B4;
+  --t-page-link: #F2A33A;
+}
+/* the walnut case around everything */
+[data-theme="omnichord"] body {
+  background: repeating-linear-gradient(92deg, #3A2618 0 14px, #42291A 14px 22px, #36231A 22px 40px);
+}
+[data-theme="omnichord"] h1 {
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+/* the stripes */
+[data-theme="omnichord"] h1::after {
+  content: "";
+  display: block;
+  height: 12px;
+  margin-top: 6px;
+  width: min(320px, 70vw);
+  background: linear-gradient(180deg, #F2A33A 0 33%, #E06A2C 33% 66%, #9E3B16 66%);
+  border-radius: 2px;
+}
+[data-theme="omnichord"] .theme-tagline[data-for="omnichord"] {
+  display: block;
+  font-size: .8em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+[data-theme="omnichord"] .theme-tagline .on::before { content: "● "; color: #E06A2C; }
+/* the Sonic Strings bar across the top of each section */
+[data-theme="omnichord"] #parameters details::before {
+  content: "";
+  display: block;
+  height: 14px;
+  margin: -2px 0 8px;
+  border-radius: 7px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 9px, #8C6A45 9px 10px),
+    linear-gradient(180deg, #E9D8B0, #D8C28F);
+  box-shadow: inset 0 0 0 2px #2A1A0F;
+}
+[data-theme="omnichord"] details summary {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+[data-theme="omnichord"] #parameters h3 { font-size: 1.05em !important; text-transform: uppercase; letter-spacing: .08em; }
+/* chord buttons: rounded and pressed in */
+[data-theme="omnichord"] button,
+[data-theme="omnichord"] #bank_number_selection,
+[data-theme="omnichord"] #theme-select {
+  border-radius: 999px;
+  padding: 8px 14px;
+  box-shadow: 0 3px 0 #2A1A0F;
+  font-weight: 700;
+}
+[data-theme="omnichord"] button:active { transform: translateY(2px); box-shadow: 0 1px 0 #2A1A0F; }
+[data-theme="omnichord"] .section h5 { text-transform: uppercase; letter-spacing: .1em; color: #C4501E; }

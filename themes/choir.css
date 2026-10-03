@@ -1,0 +1,59 @@
+/* Choir: after the minichord choir, blackletter headings on parchment, set like a hymnal, the
+ * section names in red with a decorated initial, gold on deep red for the buttons. */
+[data-theme="choir"] {
+  --t-font: "EB Garamond", Georgia, serif;
+  --t-display-font: "UnifrakturMaguntia", "EB Garamond", serif;
+  --t-size: 17px;
+  --t-page: #2B1A12;
+  --t-ink: #2A1B10;
+  --t-dim: #6B5034;
+  --t-link: #8E1B10;
+  --t-panel: radial-gradient(ellipse at center, #F4EAD0 55%, #E6D5AE 100%);
+  --t-panel-border: 4px double #6B4B2A;
+  --t-radius: 3px;
+  --t-shadow: 0 8px 20px rgba(0, 0, 0, .35);
+  --t-title: #2A1B10;
+  --t-heading: #8E1B10;
+  --t-subheading: #2A1B10;
+  --t-rule: 1px solid #C9B285;
+  --t-button: #7A1810;
+  --t-button-ink: #F3D98A;
+  --t-button-border: 1px solid #4A0D08;
+  --t-button-off: #D8C6A0;
+  --t-button-off-ink: #8F7650;
+  --t-control: #FBF5E4;
+  --t-control-ink: #2A1B10;
+  --t-control-border: 1px solid #A88D5E;
+  --t-thumb: #8E1B10;
+  --track-color: #D9C59C;
+  --primary-color: #A62A1C !important;
+  --text-color: #F3D98A !important;
+  --t-ok: #EDE3BF;
+  --t-ok-ink: #4A5A1E;
+  --t-bad: #F0D5C0;
+  --t-bad-ink: #8E1B10;
+  --t-art-filter: sepia(1) brightness(.6);
+  --t-page-ink: #E2CFA3;
+  --t-page-link: #F3D98A;
+}
+/* the dark wood of the choir stalls behind the pages */
+[data-theme="choir"] body { background: linear-gradient(180deg, #2B1A12, #1C100A); }
+[data-theme="choir"] h1 { font-weight: 400; font-size: 3em; }
+[data-theme="choir"] h1::first-letter { color: #8E1B10; }
+[data-theme="choir"] .theme-tagline[data-for="choir"] { display: block; font-style: italic; font-size: 1.1em; }
+[data-theme="choir"] .section h5 { font-weight: 400; font-size: 1.3em !important; color: #8E1B10; }
+/* section names in red, with a gilded initial */
+[data-theme="choir"] details summary { font-weight: 400 !important; font-size: 1.9em !important; }
+[data-theme="choir"] #parameters details summary::first-letter {
+  font-size: 1.35em;
+  color: #F3D98A;
+  background: #7A1810;
+  padding: 0 .12em;
+  margin-right: .05em;
+  border: 1px solid #4A0D08;
+}
+[data-theme="choir"] #parameters h3 { font-weight: 400; font-size: 1.45em !important; }
+[data-theme="choir"] #parameters label { font-weight: 500 !important; }
+[data-theme="choir"] button,
+[data-theme="choir"] #bank_number_selection,
+[data-theme="choir"] #theme-select { font-size: 1em; padding: 5px 12px; letter-spacing: .02em; }
