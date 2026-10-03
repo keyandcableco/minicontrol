@@ -418,7 +418,7 @@ html_template = '''<!DOCTYPE html>
   <link href="index.css" rel="stylesheet" />
 {theme_links}
   <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Minichord UI</title>
+  <title>minicontrol</title>
   <script>
     // the saved theme, set before the page draws so it doesn't flash light first
     // (index.js keeps the same rules in setTheme and loadTheme)
@@ -545,7 +545,7 @@ html_template = '''<!DOCTYPE html>
     </div>
     <div id="instruction_zone" style="margin: 2px 0;">
       For instruction on how to use this tool, please refer to the 
-      <a href="../user_manual/#custom-presets">minichord documentation.</a><br>
+      <a href="https://minichord.com/user_manual/#custom-presets">minichord documentation.</a><br>
       To test and load user-submitted presets, visit the 
       <a href="https://minichord.com/minicontrol/minishop.html">minishop.</a>
     </div>
