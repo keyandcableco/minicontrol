@@ -498,7 +498,7 @@ html_template = '''<!DOCTYPE html>
       </div>
       <div class="svg-container">
         <img src="{svg_file}" alt="Minichord Logo" class="default-only">
-        <img src="themes/arcade-minichord.svg" alt="Minichord, in pixels" class="arcade-only">
+        <img src="themes/arcade-minichord-wide.svg" alt="Minichord, in pixels" class="arcade-only">
       </div>
     </div>
     <details>

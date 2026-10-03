@@ -180,10 +180,18 @@
 }
 
 /* the pixel minichord, bobbing where the drawing was */
-[data-theme="arcade"] .svg-container { height: clamp(120px, 18vw, 240px); }
+/* level and wide, so it is sized by its width, and centred against the control panel beside it */
+[data-theme="arcade"] .svg-container {
+  height: auto;
+  align-self: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0 16px 0 0;
+}
 [data-theme="arcade"] .svg-container img.arcade-only {
-  width: auto;
-  height: 100%;
+  width: clamp(260px, 40vw, 600px);
+  height: auto;
+  max-width: 100%;
   image-rendering: pixelated;
   filter: drop-shadow(0 0 10px rgba(255, 90, 160, .45)) drop-shadow(6px 6px 0 #000);
   animation: arcade-bob 2.4s steps(4) infinite;
