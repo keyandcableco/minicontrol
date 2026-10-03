@@ -544,6 +544,7 @@ html_template = '''<!DOCTYPE html>
       </div>
     </div>
     <div id="instruction_zone" style="margin: 2px 0;">
+      A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>, with themes by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>.<br>
       For instruction on how to use this tool, please refer to the 
       <a href="https://minichord.com/user_manual/#custom-presets">minichord documentation.</a><br>
       To test and load user-submitted presets, visit the 
