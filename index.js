@@ -660,6 +660,7 @@ document.getElementById("save-to-bank-btn")?.addEventListener("click", () => {
   const saveBank = parseInt(bankSelect.value);
   console.log(`[save-to-bank-btn] Saving to bank ${saveBank + 1}`);
   controller.saveCurrentSettings(saveBank);
+  bankCacheStale();
   showNotification(`Saved to bank ${saveBank + 1}`, "success");
 });
 
@@ -721,6 +722,7 @@ document.getElementById("reset-bank-btn")?.addEventListener("click", () => {
   }
   console.log(`[reset-bank-btn] Resetting bank ${currentBankNumber + 1}`);
   controller.resetCurrentBank();
+  bankCacheStale();
   showNotification(`Reset bank ${currentBankNumber + 1}`, "success");
 });
 
@@ -732,6 +734,7 @@ document.getElementById("reset-all-banks-btn")?.addEventListener("click", () => 
   }
   console.log("[reset-all-banks-btn] Resetting all banks");
   controller.resetMemory();
+  bankCacheStale();
   showNotification("Reset all banks", "success");
 });
 

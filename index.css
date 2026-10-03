@@ -425,3 +425,199 @@
     .theme-tagline .on { display: none; }
     .status-header:has(#notification-bubble.connected) .theme-tagline .on { display: inline; }
     .status-header:has(#notification-bubble.connected) .theme-tagline .off { display: none; }
+
+    /* The bank sheet: every bank read off the minichord, to move them around,
+       set one setting in all of them, or apply a profile. Drawn from the page's
+       own colours, so each theme carries it. */
+    .bank-sheet {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.45);
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 4vh 16px;
+      box-sizing: border-box;
+    }
+    .bank-sheet.open {
+      display: flex;
+    }
+    .bank-sheet-card {
+      background: var(--background-color);
+      color: var(--text-primary);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 680px;
+      padding: 16px;
+      box-sizing: border-box;
+      outline: none;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+    .bank-sheet-card h5 {
+      margin: 14px 0 6px;
+      font-size: 1.1em;
+    }
+    .bank-sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .bank-sheet-head h5 {
+      margin: 0;
+      font-size: 1.5em;
+    }
+    .bank-sheet-intro,
+    .bank-status {
+      line-height: 1.35;
+      margin: 8px 0;
+    }
+    .bank-status:empty {
+      display: none;
+    }
+    .bank-sheet-stale {
+      line-height: 1.35;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 5px;
+      border: 2px solid orange;
+    }
+    .bank-btn {
+      white-space: nowrap;
+    }
+    .bank-btn.primary {
+      font-weight: bold;
+    }
+    .bank-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    .bank-btn.bank-x {
+      background: none !important;
+      color: var(--text-primary) !important;
+      font-size: 1.3em;
+      padding: 0 6px;
+    }
+    .bank-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .bank-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 2px solid var(--track-color);
+      border-radius: 5px;
+      padding: 5px;
+      cursor: grab;
+      min-width: 0;
+    }
+    .bank-cell.dirty {
+      border-style: dashed;
+      border-color: var(--primary-color);
+    }
+    .bank-cell.dragging {
+      opacity: 0.4;
+    }
+    .bank-cell.over {
+      outline: 2px solid var(--text-primary);
+    }
+    .bank-swatch {
+      flex: 0 0 auto;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid var(--text-primary);
+    }
+    .bank-num {
+      flex: 0 0 1.6em;
+      font-weight: bold;
+    }
+    .bank-name {
+      flex: 1;
+      min-width: 0;
+      font: inherit;
+      border: none !important;
+      border-bottom: 1px solid transparent !important;
+      background: transparent !important;
+      color: var(--text-primary);
+      padding: 0;
+    }
+    .bank-name:focus {
+      outline: none;
+      border-bottom-color: var(--text-primary) !important;
+    }
+    .bank-bulk {
+      border-top: 1px solid var(--track-color);
+      margin-top: 12px;
+    }
+    .bank-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 8px;
+      padding: 3px 0;
+    }
+    /* the name takes the line to itself when the row is too narrow for both */
+    .bank-row-name {
+      flex: 1 1 12em;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .bank-row-val {
+      font-family: monospace;
+      text-align: right;
+    }
+    .bank-picker {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .bank-picker select,
+    .bank-value input[type="number"] {
+      padding: 5px;
+      max-width: 100%;
+    }
+    .bank-picker > select {
+      flex: 1 1 14em;
+      min-width: 0;
+    }
+    .bank-value {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    .bank-value select {
+      max-width: 18em;
+    }
+    .bank-value input[type="number"] {
+      width: 6em;
+    }
+    .bank-degrees {
+      display: flex;
+      flex-wrap: wrap;
+      width: 13em;
+      row-gap: 3px;
+    }
+    .bank-degree {
+      flex: 0 0 16.66%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.75em;
+      cursor: pointer;
+    }
+    .bank-hint {
+      opacity: 0.7;
+    }
+    .bank-sheet-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }

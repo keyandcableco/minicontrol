@@ -138,6 +138,12 @@ class MiniChordController {
     }
   }
   this.active_bank_number = processedData.bankNumber;
+  this.firmware_version = processedData.firmwareVersion;
+  // every address exactly as the dump carried it, for reading a bank to write it back
+  processedData.rawParameters = [];
+  for (let i = 0; i < this.parameter_size; i++) {
+    processedData.rawParameters[i] = data[2 * i] + 128 * data[2 * i + 1];
+  }
   if (this.pendingSave && typeof currentValues !== 'undefined') {
     for (let i = 2; i < this.parameter_size; i++) {
       if (processedData.parameters[i] !== undefined && currentValues[i] !== undefined) {
@@ -201,6 +207,59 @@ class MiniChordController {
       this.pendingSave = false;
       return false;
     }
+  }
+
+  // Ask the minichord to report its live parameters (control command 0).
+  requestCurrentData() {
+    if (!this.device) return false;
+    this.sendSysEx([0, 0, 0, 0]);
+    return true;
+  }
+
+  // Ask the minichord to load a bank (control command 4); it reports the bank once loaded.
+  loadBank(bankNumber) {
+    if (!this.device) return false;
+    this.sendSysEx([0, 0, 4, bankNumber]);
+    return true;
+  }
+
+  // Load a bank and resolve with its stored parameters. Chains onto the existing
+  // callback for one dump rather than replacing it; `quiet` keeps that callback
+  // from running, so a walk over twelve banks doesn't redraw the page twelve times.
+  readBank(bankNumber, timeoutMs, quiet) {
+    if (!this.device) return Promise.reject(new Error("not connected"));
+    return new Promise((resolve, reject) => {
+      const previous = this.onDataReceived;
+      let settled = false;
+      let nudges = [];
+      const timer = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        nudges.forEach(clearTimeout);
+        this.onDataReceived = previous;
+        reject(new Error("timed out reading bank " + (bankNumber + 1)));
+      }, timeoutMs || 3000);
+      this.onDataReceived = data => {
+        if (previous && !quiet) previous(data);
+        if (settled) return;
+        // A dump says which bank it describes, and it has to be checked. Loading a
+        // bank reports on its own, so a dump from the previous step of a walk can
+        // still be in flight; taking it would read the bank before the one asked
+        // for, and writing that back copies one preset over another.
+        if (data.bankNumber !== bankNumber) return;
+        settled = true;
+        clearTimeout(timer);
+        nudges.forEach(clearTimeout);
+        this.onDataReceived = previous;
+        resolve(data.rawParameters);
+      };
+      // Loading reports back, but ask again in case the report is missed. An early
+      // ask can be answered by a dump of the previous bank, ignored above, so it repeats.
+      this.loadBank(bankNumber);
+      nudges = [80, 400, 900].map(ms => setTimeout(() => {
+        if (!settled) this.requestCurrentData();
+      }, ms));
+    });
   }
 
   resetCurrentBank() {

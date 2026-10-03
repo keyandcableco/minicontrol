@@ -498,6 +498,20 @@ html_template = '''<!DOCTYPE html>
           </div>
         </div>
         <div class="section">
+          <h5 style="margin: 0; font-size: 1.1em;">all banks:</h5>
+        </div>
+        <div class="controls">
+          <div class="button_div">
+            <button id="bulk-edit-btn" class="inactive" version="0.21" onclick="open_bank_sheet()" title="read all twelve banks, then move them, set a setting in every one, or apply a profile">reorder and bulk edit</button>
+          </div>
+          <div class="button_div">
+            <button id="backup-btn" class="inactive" version="0.21" onclick="backup_all_banks()" title="read all twelve banks into one file">back up all banks</button>
+          </div>
+          <div class="button_div">
+            <button id="restore-btn" class="inactive" version="0.21" onclick="restore_all_banks()" title="write a backup file back to the banks, replacing what is there">restore from backup</button>
+          </div>
+        </div>
+        <div class="section">
           <h5 style="margin: 0; font-size: 1.1em;">snapshot:</h5>
         </div>
         <div class="controls">
@@ -556,6 +570,7 @@ html_template = '''<!DOCTYPE html>
   </div>
   <script src="minichordcontroller.js"></script>
   <script src="index.js"></script>
+  <script src="banks.js"></script>
 </body>
 </html>
 '''
