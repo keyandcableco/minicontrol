@@ -175,7 +175,11 @@
         <details style="width: fit-content; margin: 20px 0; padding: 8px; border: none; border-radius: 5px;">
             <summary style="width: fit-content; font-size: 1.6em; font-weight: bold; cursor: pointer;">Global Parameters</summary>
             <div style="padding: 10px;">
-                <h3 style="margin: 30px 0 10px; font-size: 1.5em;">General</h3>
+                
+                <details class="submenu">
+                    <summary>Device and MIDI</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">General</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-20" title="color of the preset" style="width: 150px; font-weight: bold;">bank color</label>
                 <input type="range" id="param-20" name="bank color" class="inactive"
@@ -205,7 +209,51 @@
                        min="0" max="1" step="0.01"
                        style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Key and tuning</h3>
+        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">MIDI</h3>
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-106" title="set the midi channel for the chord section" style="width: 150px; font-weight: bold;">chord channel</label>
+                <select id="param-106" name="chord channel" class="inactive" data-sysex-address="106" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="set the midi channel for the chord section" version="0.08"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+                </select>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-107" title="set the midi channel for the harp section" style="width: 150px; font-weight: bold;">harp channel</label>
+                <select id="param-107" name="harp channel" class="inactive" data-sysex-address="107" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="set the midi channel for the harp section" version="0.08"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
+                </select>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-108" title="puts both the chord and the harp on the same midi port" style="width: 150px; font-weight: bold;">single port mode</label>
+                <input type="checkbox" id="param-108" name="single port mode" class="inactive"
+                        data-sysex-address="108" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="puts both the chord and the harp on the same midi port" version="0.08"
+                       style="margin: 0 8px;">
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-110" title="gives every voice its own midi channel (MPE), so glide and the real pitch of a temperament or a divided octave survive the trip out; off is the usual single channel output" style="width: 150px; font-weight: bold;">MPE output</label>
+                <input type="checkbox" id="param-110" name="MPE output" class="inactive"
+                        data-sysex-address="110" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="gives every voice its own midi channel (MPE), so glide and the real pitch of a temperament or a divided octave survive the trip out; off is the usual single channel output" version="0.11"
+                       style="margin: 0 8px;">
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-238" title="sends the three knobs' positions out over MIDI as they turn, as control changes 20 (chord knob), 21 (harp knob) and 22 (modulation knob) on the chord channel, so they can be MIDI-learnt in a DAW or read by a program; the knobs keep doing their usual jobs" style="width: 150px; font-weight: bold;">knobs send MIDI</label>
+                <input type="checkbox" id="param-238" name="knobs send MIDI" class="inactive"
+                        data-sysex-address="238" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="sends the three knobs' positions out over MIDI as they turn, as control changes 20 (chord knob), 21 (harp knob) and 22 (modulation knob) on the chord channel, so they can be MIDI-learnt in a DAW or read by a program; the knobs keep doing their usual jobs" version="0.17"
+                       style="margin: 0 8px;">
+            </div>
+        
+                    </div>
+                </details>
+    
+                <details class="submenu">
+                    <summary>Key and tuning</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Key and tuning</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-30" title="transpose all sounds by a number of semitones" style="width: 150px; font-weight: bold;">transpose</label>
                 <input type="range" id="param-30" name="transpose" class="inactive"
@@ -259,7 +307,14 @@
                     <option value="0">Equal</option><option value="1">Quarter-comma meantone</option><option value="2">Five-limit just (C major)</option><option value="3">Pythagorean</option><option value="4">Werckmeister III</option><option value="5">Kirnberger III</option><option value="6">Vallotti</option><option value="7">Young no. 2</option><option value="8">Kellner</option><option value="9">Sixth-comma meantone</option><option value="10">19-EDO</option><option value="11">24-EDO (quarter tones)</option><option value="12">31-EDO</option>
                 </select>
             </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Effects</h3>
+        
+                    </div>
+                </details>
+    
+                <details class="submenu">
+                    <summary>Effects</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Effects</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-29" title="pans the chord and harp sound, from fully separated to both in the middle " style="width: 150px; font-weight: bold;">pan</label>
                 <input type="range" id="param-29" name="pan" class="inactive"
@@ -349,44 +404,14 @@
                        min="0" max="1" step="0.01"
                        style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">MIDI</h3>
-            <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-106" title="set the midi channel for the chord section" style="width: 150px; font-weight: bold;">chord channel</label>
-                <select id="param-106" name="chord channel" class="inactive" data-sysex-address="106" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="set the midi channel for the chord section" version="0.08"
-                        style="width: 150px; padding: 5px; margin: 0 8px;">
-                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
-                </select>
-            </div>
         
-            <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-107" title="set the midi channel for the harp section" style="width: 150px; font-weight: bold;">harp channel</label>
-                <select id="param-107" name="harp channel" class="inactive" data-sysex-address="107" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="set the midi channel for the harp section" version="0.08"
-                        style="width: 150px; padding: 5px; margin: 0 8px;">
-                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option>
-                </select>
-            </div>
-        
-            <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-108" title="puts both the chord and the harp on the same midi port" style="width: 150px; font-weight: bold;">single port mode</label>
-                <input type="checkbox" id="param-108" name="single port mode" class="inactive"
-                        data-sysex-address="108" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="puts both the chord and the harp on the same midi port" version="0.08"
-                       style="margin: 0 8px;">
-            </div>
-        
-            <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-110" title="gives every voice its own midi channel (MPE), so glide and the real pitch of a temperament or a divided octave survive the trip out; off is the usual single channel output" style="width: 150px; font-weight: bold;">MPE output</label>
-                <input type="checkbox" id="param-110" name="MPE output" class="inactive"
-                        data-sysex-address="110" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="gives every voice its own midi channel (MPE), so glide and the real pitch of a temperament or a divided octave survive the trip out; off is the usual single channel output" version="0.11"
-                       style="margin: 0 8px;">
-            </div>
-        
-            <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-238" title="sends the three knobs' positions out over MIDI as they turn, as control changes 20 (chord knob), 21 (harp knob) and 22 (modulation knob) on the chord channel, so they can be MIDI-learnt in a DAW or read by a program; the knobs keep doing their usual jobs" style="width: 150px; font-weight: bold;">knobs send MIDI</label>
-                <input type="checkbox" id="param-238" name="knobs send MIDI" class="inactive"
-                        data-sysex-address="238" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="sends the three knobs' positions out over MIDI as they turn, as control changes 20 (chord knob), 21 (harp knob) and 22 (modulation knob) on the chord channel, so they can be MIDI-learnt in a DAW or read by a program; the knobs keep doing their usual jobs" version="0.17"
-                       style="margin: 0 8px;">
-            </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Knobs</h3>
+                    </div>
+                </details>
+    
+                <details class="submenu">
+                    <summary>Knobs and double tap</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Knobs</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-117" title="which functions the potentiometers play. 0: their main functions, and holding the modifier selects their alternates, as always. 1: their alternate functions, and the modifier only sharpens, so an alternate can be turned while chords sound. Assign the double tap to it (control 117, value 1) to switch layers while playing. After switching layers a knob waits until it reaches where its new function was left, so nothing jumps. While it is 1 the LED shows the preset colour pale" style="width: 150px; font-weight: bold;">knob layer</label>
                 <select id="param-117" name="knob layer" class="inactive" data-sysex-address="117" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="which functions the potentiometers play. 0: their main functions, and holding the modifier selects their alternates, as always. 1: their alternate functions, and the modifier only sharpens, so an alternate can be turned while chords sound. Assign the double tap to it (control 117, value 1) to switch layers while playing. After switching layers a knob waits until it reaches where its new function was left, so nothing jumps. While it is 1 the LED shows the preset colour pale" version="0.19"
@@ -464,13 +489,20 @@
                        style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
         
+                    </div>
+                </details>
+    
             </div>
         </details>
     
         <details style="width: fit-content; margin: 20px 0; padding: 8px; border: none; border-radius: 5px;">
             <summary style="width: fit-content; font-size: 1.6em; font-weight: bold; cursor: pointer;">Chord Parameters</summary>
             <div style="padding: 10px;">
-                <h3 style="margin: 30px 0 10px; font-size: 1.5em;">General</h3>
+                
+                <details class="submenu">
+                    <summary>Playing</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">General</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-198" title="changes the octave of the chord section up or down" style="width: 150px; font-weight: bold;">octave change</label>
                 <input type="range" id="param-198" name="octave change" class="inactive"
@@ -582,7 +614,14 @@
                         data-sysex-address="33" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="change major chords to major 6, the minor chords to minor 6, and the diminished chords to fully diminished. Recommanded to use the fourth harp shuffling array" version="0.04"
                        style="margin: 0 8px;">
             </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Voicing</h3>
+        
+                    </div>
+                </details>
+    
+                <details class="submenu">
+                    <summary>Voicing and layout</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Voicing</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-37" title="voicing of the chord buttons. 0 is root position, 1 and 2 are the first and second inversions, 3 is the third inversion for seventh and sixth chords or the root position an octave up for triads" style="width: 150px; font-weight: bold;">chord inversion</label>
                 <select id="param-37" name="chord inversion" class="inactive" data-sysex-address="37" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="voicing of the chord buttons. 0 is root position, 1 and 2 are the first and second inversions, 3 is the third inversion for seventh and sixth chords or the root position an octave up for triads" version="0.09"
@@ -715,7 +754,14 @@
                     <option value="0">Slot default</option><option value="1">Major</option><option value="2">Minor</option><option value="3">Dominant 7</option><option value="4">Major 7</option><option value="5">Minor 7</option><option value="6">Diminished</option><option value="7">Augmented</option><option value="8">Major 6</option><option value="9">Minor 6</option><option value="10">Full diminished</option><option value="11">m7b5</option><option value="12">sus4</option><option value="13">sus2</option><option value="14">7sus4</option><option value="15">maj9</option><option value="16">min9</option><option value="17">add9</option><option value="18">6/9</option><option value="19">Supermajor triad</option><option value="20">Subminor triad</option><option value="21">Neutral triad</option><option value="22">Harmonic 7th</option><option value="23">Neutral 7th</option><option value="24">Subminor 7th</option><option value="25">Utonal tetrad</option><option value="26">Harmonic 9th</option><option value="27">Otonal hexad</option><option value="28">Just augmented</option><option value="29">Supermajor 7th</option>
                 </select>
             </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Oscillator</h3>
+        
+                    </div>
+                </details>
+    
+                <details class="submenu">
+                    <summary>Sound</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Oscillator</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-122" title="defines the waveform amongst 12 oscillators for the first oscillator. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square." style="width: 150px; font-weight: bold;">waveform 1</label>
                 <select id="param-122" name="waveform 1" class="inactive" data-sysex-address="122" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="defines the waveform amongst 12 oscillators for the first oscillator. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square." version="0.02"
@@ -1528,7 +1574,14 @@
                        min="0" max="100" step="1"
                        style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Delay</h3>
+        
+                    </div>
+                </details>
+    
+                <details class="submenu">
+                    <summary>Effects</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Delay</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-176" title="length in ms of the delay" style="width: 150px; font-weight: bold;">delay length</label>
                 <input type="range" id="param-176" name="delay length" class="inactive"
@@ -1777,13 +1830,20 @@
                        style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
         
+                    </div>
+                </details>
+    
             </div>
         </details>
     
         <details style="width: fit-content; margin: 20px 0; padding: 8px; border: none; border-radius: 5px;">
             <summary style="width: fit-content; font-size: 1.6em; font-weight: bold; cursor: pointer;">Harp Parameters</summary>
             <div style="padding: 10px;">
-                <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Notes</h3>
+                
+                <details class="submenu">
+                    <summary>Notes</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Notes</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-98" title="puts the harp in chromatic mode, with static notes not dependant on chord selection" style="width: 150px; font-weight: bold;">chromatic mode</label>
                 <input type="checkbox" id="param-98" name="chromatic mode" class="inactive"
@@ -1910,7 +1970,14 @@
                         data-sysex-address="22" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="defines whether a held harp note will change when changing chord" version="0.02"
                        style="margin: 0 8px;">
             </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Oscillator</h3>
+        
+                    </div>
+                </details>
+    
+                <details class="submenu">
+                    <summary>Sound</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Oscillator</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-42" title="defines the waveform amongst 12 oscillators. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square." style="width: 150px; font-weight: bold;">waveform</label>
                 <select id="param-42" name="waveform" class="inactive" data-sysex-address="42" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="defines the waveform amongst 12 oscillators. In order: sine, sawtooth, square, triangle, bandlimited pulse, pulse, reverse sawtooth, sample and hold, variable triangle, bandlimited sawtooth, reverse bandlimited sawtooth, bandlimited square." version="0.02"
@@ -2512,7 +2579,14 @@
                        min="0" max="1" step="0.01"
                        style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
-        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Delay</h3>
+        
+                    </div>
+                </details>
+    
+                <details class="submenu">
+                    <summary>Effects</summary>
+                    <div class="submenu-body">
+                        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Delay</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-77" title="length in ms of the delay" style="width: 150px; font-weight: bold;">delay length</label>
                 <input type="range" id="param-77" name="delay length" class="inactive"
@@ -2814,6 +2888,9 @@
                        style="background-color: hsl(var(--primary-color-hue, 0), 10%, 95%); width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
         
+                    </div>
+                </details>
+    
             </div>
         </details>
     

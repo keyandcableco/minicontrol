@@ -335,6 +335,39 @@ def generate_rhythm_grid_html():
     return '\n'.join(html)
 
 # Generate HTML for parameter controls with group headers
+# Submenus within a section, each a list of the subgroups it holds, in order. What shapes the
+# sound is kept apart from what decides which notes play, so neither has to be scrolled past to
+# reach the other. Subgroups not named here stay at the top level of their section.
+submenus = {
+    'global_parameter': [
+        ('Device and MIDI', ['General', 'MIDI']),
+        ('Key and tuning', ['Key and tuning']),
+        ('Effects', ['Effects']),
+        ('Knobs and double tap', ['Knobs', 'Double tap']),
+    ],
+    'chord_parameter': [
+        ('Playing', ['General', 'Buttons']),
+        ('Voicing and layout', ['Voicing', 'Slash chords and cantus', 'Alternate layout']),
+        ('Sound', ['Oscillator', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants']),
+        ('Effects', ['Delay', 'Reverb', 'Crunch', 'Output filter']),
+    ],
+    'harp_parameter': [
+        ('Notes', ['Notes']),
+        ('Sound', ['Oscillator', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
+        ('Effects', ['Delay', 'Reverb', 'Crunch', 'Output filter']),
+    ],
+}
+
+def submenu_html(title, body):
+    return f'''
+                <details class="submenu">
+                    <summary>{title}</summary>
+                    <div class="submenu-body">
+                        {body}
+                    </div>
+                </details>
+    '''
+
 def generate_details_html(group_name, params):
     grouped_params = {}
     for param in params:
@@ -345,7 +378,7 @@ def generate_details_html(group_name, params):
             grouped_params[param_group] = []
         grouped_params[param_group].append(param)
     
-    param_html = []
+    subgroup_html = {}
     # Use defined subgroup order or fallback to sorted
     ordered_subgroups = subgroup_order.get(group_name, sorted(grouped_params.keys()))
     for param_group in ordered_subgroups:
@@ -367,9 +400,19 @@ def generate_details_html(group_name, params):
             grouped_params[param_group],
             key=lambda p: param_order.index(p['sysex_adress']) if p['sysex_adress'] in param_order else len(param_order) + p['sysex_adress']
         )
-        param_html.append(f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{param_group}</h3>')
-        param_html.extend([generate_param_html(param) for param in sorted_params])
-    
+        subgroup_html[param_group] = (f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{param_group}</h3>'
+                                      + ''.join(generate_param_html(param) for param in sorted_params))
+
+    param_html = []
+    placed = set()
+    for title, members in submenus.get(group_name, []):
+        body = [subgroup_html[g] for g in members if g in subgroup_html]
+        placed.update(members)
+        if body:
+            param_html.append(submenu_html(title, ''.join(body)))
+    # anything no submenu claims, so a new subgroup still shows up somewhere
+    param_html.extend(html for g, html in subgroup_html.items() if g not in placed)
+
     if not param_html:
         return ''
     

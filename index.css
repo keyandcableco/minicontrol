@@ -621,3 +621,48 @@
       gap: 8px;
       margin-top: 16px;
     }
+
+    /* Submenus inside a parameter section. The themes draw every section as a panel, some with
+       !important, so the nested ones are reset here to sit inside their section as plain
+       headings with an indent rule rather than as panels of their own. */
+    /* "details details" outranks the themes' "#parameters details", which loads after this */
+    #parameters details details.submenu {
+      background: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin: 6px 0 0 !important;
+    }
+    #parameters details details.submenu::before {
+      content: none !important;
+      display: none !important;
+    }
+    #parameters details details.submenu > summary {
+      width: fit-content;
+      cursor: pointer;
+      font-size: 1.25em !important;
+      font-weight: bold;
+      padding: 4px 0;
+    }
+    #parameters details details.submenu > .submenu-body {
+      margin-left: 6px;
+      padding: 0 0 6px 12px;
+      border-left: 2px solid var(--track-color);
+    }
+    /* the first heading in a submenu sits right under its name */
+    #parameters .submenu-body > h3:first-child {
+      margin-top: 10px !important;
+    }
+    /* arcade's section names are small pixel type, so its submenus are smaller still */
+    [data-theme="arcade"] #parameters details details.submenu > summary {
+      font-size: .65rem !important;
+    }
+    /* chiptune's section names are set small, so its submenus follow */
+    [data-theme="chiptune"] #parameters details details.submenu > summary {
+      font-size: 1em !important;
+    }
+    /* in light and dark the headings inside a submenu sit below its name, not above it */
+    html:not([data-themed]):not([data-theme="arcade"]) #parameters .submenu-body > h3 {
+      font-size: 1.1em !important;
+    }
