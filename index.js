@@ -200,6 +200,8 @@ function updateUIColor() {
   document.documentElement.style.setProperty('--primary-color-hue', hue);
   document.documentElement.style.setProperty('--primary-color', primaryColor);
   document.documentElement.style.setProperty('--text-color', textColor);
+  // an installed window's title bar takes the bank colour too
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', primaryColor);
   document.querySelectorAll('input[type="range"]').forEach(slider => {
     const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
     const trackColor = sliderTrackColor();

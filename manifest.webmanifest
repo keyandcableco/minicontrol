@@ -1,0 +1,18 @@
+{
+  "name": "minicontrol",
+  "short_name": "minicontrol",
+  "description": "Edit, organise and back up the presets on a minichord, over USB MIDI.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f1f1",
+  "theme_color": "#d92626",
+  "categories": ["music", "utilities"],
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -460,8 +460,17 @@ html_template = '''<!DOCTYPE html>
 <head>
   <link href="index.css" rel="stylesheet" />
 {theme_links}
-  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>minicontrol</title>
+  <meta name="description" content="Edit, organise and back up the presets on a minichord, over USB MIDI.">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/icon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#d92626">
+  <meta name="apple-mobile-web-app-title" content="minicontrol">
+  <meta name="mobile-web-app-capable" content="yes">
   <script>
     // the saved theme, set before the page draws so it doesn't flash light first
     // (index.js keeps the same rules in setTheme and loadTheme)
@@ -614,6 +623,12 @@ html_template = '''<!DOCTYPE html>
   <script src="minichordcontroller.js"></script>
   <script src="index.js"></script>
   <script src="banks.js"></script>
+  <script>
+    // installable, and opens offline once visited (see sw.js)
+    if ('serviceWorker' in navigator) {{
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {{}}));
+    }}
+  </script>
 </body>
 </html>
 '''
