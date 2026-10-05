@@ -713,6 +713,9 @@ void apply_audio_parameter(int adress, int value) {
         case 215:
             harp_note_off_on_lift=value;
             break;
+        case 216:
+            harp_pluck_on_lift=value;
+            break;
         case 220:
             rythm_pattern[0]=value;
             break;

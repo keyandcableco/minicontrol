@@ -135,7 +135,7 @@ parameter_name_order = {
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
         'Oscillator': ['waveform', 'frequency multiplier', 'amplitude', 'noise'],
-        'Envelope': ['attack', 'decay', 'sustain', 'release', 'retrigger release', 'palm mute', 'palm mute release'],
+        'Envelope': ['attack', 'decay', 'sustain', 'release', 'retrigger release', 'palm mute', 'palm mute release', 'pluck on lift'],
         'Low pass filter': [
             'base frequency',
             'keytrack value',

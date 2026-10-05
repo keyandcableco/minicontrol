@@ -134,6 +134,7 @@
   "44": "harp: envelope: hold",
   "213": "harp: envelope: palm mute",
   "214": "harp: envelope: palm mute release",
+  "216": "harp: envelope: pluck on lift",
   "47": "harp: envelope: release",
   "48": "harp: envelope: retrigger release",
   "46": "harp: envelope: sustain",
