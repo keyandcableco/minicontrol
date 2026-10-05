@@ -143,7 +143,7 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 47:
             for (int i=0;i<12;i++){
-                string_enveloppe_array[i]->release(value);
+                string_enveloppe_array[i]->release(value); string_release=value;
             }
             break;
         case 48:
@@ -703,6 +703,15 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 199:
             glide_length=value;
+            break;
+        case 213:
+            palm_mute_pads=value ? max(value,2) : 0;
+            break;
+        case 214:
+            palm_mute_release=max(value,1);
+            break;
+        case 215:
+            harp_note_off_on_lift=value;
             break;
         case 220:
             rythm_pattern[0]=value;

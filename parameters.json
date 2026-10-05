@@ -611,6 +611,22 @@
       "step": 1
     },
     {
+      "sysex_adress": 215,
+      "group": "MIDI",
+      "ui_type": "switch",
+      "name": "harp note-off on lift",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "when a harp string's midi note ends. At 0 it lasts as long as the string sounds, through the release, so a strum arrives as ringing strings; a palm mute ends them all at once. At 1 it ends as the finger lifts, as before, leaving the release to whatever is receiving",
+      "method": "harp_note_off_on_lift=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.22,
+      "step": 1
+    },
+    {
       "sysex_adress": 237,
       "group": "Key and tuning",
       "ui_type": "select",
@@ -3923,7 +3939,7 @@
       "max_value": 5000,
       "tooltip": "release time of the envelope",
       "iterate": 12,
-      "method": "string_enveloppe_array[i]->release(value);",
+      "method": "string_enveloppe_array[i]->release(value); string_release=value;",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -5098,6 +5114,38 @@
           "label": "Steps 25-36"
         }
       ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 213,
+      "group": "Envelope",
+      "ui_type": "discrete_slider",
+      "name": "palm mute",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 12,
+      "default_value": 0,
+      "tooltip": "lay a hand flat across the harp to stop every string ringing, the way a guitarist mutes with the palm: this many pads held at once reads as a palm rather than a strum. Pads under the palm stay silent until they are lifted, so the hand landing makes only a short muted chuck. A fingertip strum holds two or three pads at most, so 4 or 5 is a good start. At 0 there is no palm mute, as before",
+      "method": "palm_mute_pads=value ? max(value,2) : 0;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.22,
+      "step": 1
+    },
+    {
+      "sysex_adress": 214,
+      "group": "Envelope",
+      "ui_type": "slider",
+      "name": "palm mute release",
+      "data_type": "int",
+      "min_value": 1,
+      "max_value": 250,
+      "default_value": 15,
+      "tooltip": "how fast a palm mute stops the strings, in milliseconds: a few for a dead stop, longer for a softer damp",
+      "method": "palm_mute_release=max(value,1);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.22,
       "step": 1
     },
     {

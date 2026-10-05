@@ -70,7 +70,7 @@ parameter_name_order = {
         'General': ['bank color', 'led attenuation'],
         'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament'],
         'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
-        'MIDI': ['chord channel', 'harp channel', 'single port mode', 'MPE output', 'knobs send MIDI'],
+        'MIDI': ['chord channel', 'harp channel', 'harp note-off on lift', 'single port mode', 'MPE output', 'knobs send MIDI'],
         'Knobs': ['knob layer'],
         'Double tap': ['double tap control', 'double tap value', 'double tap control 2', 'double tap value 2',
                        'double tap control 3', 'double tap value 3']
@@ -135,7 +135,7 @@ parameter_name_order = {
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
         'Oscillator': ['waveform', 'frequency multiplier', 'amplitude', 'noise'],
-        'Envelope': ['attack', 'decay', 'sustain', 'release', 'retrigger release'],
+        'Envelope': ['attack', 'decay', 'sustain', 'release', 'retrigger release', 'palm mute', 'palm mute release'],
         'Low pass filter': [
             'base frequency',
             'keytrack value',
