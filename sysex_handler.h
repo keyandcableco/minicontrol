@@ -779,6 +779,9 @@ void apply_audio_parameter(int adress, int value) {
         case 240:
             formant_resonance=value; update_formants();
             break;
+        case 244:
+            usb_audio_request(value);
+            break;
         default:
             break;
     }

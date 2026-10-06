@@ -232,6 +232,14 @@
                        min="0" max="1" step="0.01"
                        style="width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-244" title="what the minichord does with the sound of the phone or computer it is plugged into. 0: as it always has, it is offered as a speaker and what is sent to it is not played (a phone sends all its sound there, and goes quiet). 1: it is played through the minichord, beside the instrument, for playing along. 2: it is not offered as a speaker, so the phone or computer keeps its own sound. In every case the minichord's own sound can be recorded over USB. A setting of the instrument, not of a preset: it stays as chosen whichever preset is loaded. Changing to or from 2 restarts the minichord a moment later, since the phone or computer only learns what it offers when it connects" style="width: 150px; font-weight: bold;">usb audio</label>
+                <select id="param-244" name="usb audio" class="inactive" data-sysex-address="244" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="what the minichord does with the sound of the phone or computer it is plugged into. 0: as it always has, it is offered as a speaker and what is sent to it is not played (a phone sends all its sound there, and goes quiet). 1: it is played through the minichord, beside the instrument, for playing along. 2: it is not offered as a speaker, so the phone or computer keeps its own sound. In every case the minichord's own sound can be recorded over USB. A setting of the instrument, not of a preset: it stays as chosen whichever preset is loaded. Changing to or from 2 restarts the minichord a moment later, since the phone or computer only learns what it offers when it connects" version="0.24"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="0">Stock: offered as a speaker, not played</option><option value="1">Play along: through the minichord</option><option value="2">No speaker: the host keeps its sound</option>
+                </select>
+            </div>
         <h3 style="margin: 30px 0 10px; font-size: 1.5em;">MIDI</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-106" title="set the midi channel for the chord section" style="width: 150px; font-weight: bold;">chord channel</label>

@@ -54,6 +54,9 @@ UI_OVERRIDES = {
     # global: device
     20: {"group": "General"},
     32: {"group": "General"},
+    244: select('global_parameter', 'General', ["Stock: offered as a speaker, not played",
+                                                "Play along: through the minichord",
+                                                "No speaker: the host keeps its sound"]),
     # global: key and tuning
     30: control('global_parameter', 'Key and tuning', 'discrete_slider'),
     31: select('global_parameter', 'Key and tuning', ["sharp", "flat"]),
