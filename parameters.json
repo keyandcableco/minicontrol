@@ -745,6 +745,40 @@
       "step": 1
     },
     {
+      "sysex_adress": 243,
+      "group": "General",
+      "ui_type": "select",
+      "name": "harp plate",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "which harp plate is fitted, for the plates that are read between their zones. 0 is the stock strip, and any plate with twelve separate zones. 1 is zipper 24: a finger on the band between two zones touches both and plays the note between them, for 24 strings, the top one the band where the top zone meets an island of the bottom zone: two octaves of 12-EDO, or one of 24-EDO. The extra strings play in chromatic mode and the scale modes, which carry on up the scale; chord mode still plays twelve. 2 is the arcade wheel: its zones play as they are, and while a finger is on the ring it sends where, as control change 23 on the harp channel (0 at the top, counting clockwise to 127), with control change 24 at 127 as the finger lands and 0 as it leaves. 3 is the fretless wrap: twelve zones that taper into one another, with an island of the bottom zone above the top one; it plays as the stock strip does, and with harp ribbon the island is a thirteenth place, a whole octave in chromatic mode (zipper 24 wraps the ribbon the same way). Set it to 0 for any other plate: at 1 every other note goes missing, and at 3 a finger at the top with another on the bottom pad can read as the island",
+      "method": "harp_plate=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.25,
+      "options": [
+        {
+          "value": 0,
+          "label": "Stock strip, or any plate of twelve separate zones"
+        },
+        {
+          "value": 1,
+          "label": "Zipper 24"
+        },
+        {
+          "value": 2,
+          "label": "Arcade wheel"
+        },
+        {
+          "value": 3,
+          "label": "Fretless wrap"
+        }
+      ],
+      "step": 1
+    },
+    {
       "sysex_adress": 244,
       "group": "General",
       "ui_type": "select",
@@ -5266,7 +5300,7 @@
       "min_value": 0,
       "max_value": 24,
       "default_value": 0,
-      "tooltip": "how many strings the ribbon covers from the bottom of the strip to the top: fewer spreads each note wider and makes it easier to play in tune, more fits more range. 0 is the twelve strings of the plate. In chromatic mode 13 is an octave and 25 would be two; in the scale modes the strings carry on up the scale. Chord mode has only its twelve",
+      "tooltip": "how many strings the ribbon covers from the bottom of the strip to the top: fewer spreads each note wider and makes it easier to play in tune, more fits more range. 0 is the twelve strings of the plate, thirteen on the fretless wrap plate and zipper 24. In chromatic mode 13 is an octave and 25 would be two; in the scale modes the strings carry on up the scale. Chord mode has only its twelve",
       "method": "ribbon_span=value;",
       "iterate": 1,
       "curve": "linear",
@@ -5876,36 +5910,6 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
-    },
-    {
-      "sysex_adress": 243,
-      "group": "hidden",
-      "ui_type": "select",
-      "name": "harp plate",
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 2,
-      "default_value": 0,
-      "tooltip": "which harp plate is fitted, for the plates that are read between their zones. 0 is the stock strip, and any plate with twelve separate zones. 1 is zipper 24: a finger on the band between two zones touches both and plays the note between them, for 24 strings, the top one the band where the top zone meets an island of the bottom zone: two octaves of 12-EDO, or one of 24-EDO. The extra strings play in chromatic mode and the scale modes, which carry on up the scale; chord mode still plays twelve. 2 is the arcade wheel: its zones play as they are, and while a finger is on the ring it sends where, as control change 23 on the harp channel (0 at the top, counting clockwise to 127), with control change 24 at 127 as the finger lands and 0 as it leaves. Set it to 0 for any other plate: at 1 every other note goes missing",
-      "method": "harp_plate=value;",
-      "iterate": 1,
-      "curve": "linear",
-      "introduction_version": 0.25,
-      "options": [
-        {
-          "value": 0,
-          "label": "Stock strip, or any plate of twelve separate zones"
-        },
-        {
-          "value": 1,
-          "label": "Zipper 24"
-        },
-        {
-          "value": 2,
-          "label": "Arcade wheel"
-        }
-      ],
-      "step": 1
     }
   ]
 }
