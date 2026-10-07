@@ -240,6 +240,44 @@
                     <option value="0">Stock: offered as a speaker, not played</option><option value="1">Play along: through the minichord</option><option value="2">No speaker: the host keeps its sound</option>
                 </select>
             </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-243" title="which harp plate is fitted, for the plates that are read between their zones. 0 is the stock strip, and any plate with twelve separate zones. 1 is zipper 24: a finger on the band between two zones touches both and plays the note between them, for 24 strings, the top one the band where the top zone meets an island of the bottom zone: two octaves of 12-EDO, or one of 24-EDO. The extra strings play in chromatic mode and the scale modes, which carry on up the scale; chord mode still plays twelve. 2 is the arcade wheel: its zones play as they are, and while a finger is on the ring it sends where, as control change 23 on the harp channel (0 at the top, counting clockwise to 127), with control change 24 at 127 as the finger lands and 0 as it leaves. Set it to 0 for any other plate: at 1 every other note goes missing" style="width: 150px; font-weight: bold;">harp plate</label>
+                <select id="param-243" name="harp plate" class="inactive" data-sysex-address="243" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="which harp plate is fitted, for the plates that are read between their zones. 0 is the stock strip, and any plate with twelve separate zones. 1 is zipper 24: a finger on the band between two zones touches both and plays the note between them, for 24 strings, the top one the band where the top zone meets an island of the bottom zone: two octaves of 12-EDO, or one of 24-EDO. The extra strings play in chromatic mode and the scale modes, which carry on up the scale; chord mode still plays twelve. 2 is the arcade wheel: its zones play as they are, and while a finger is on the ring it sends where, as control change 23 on the harp channel (0 at the top, counting clockwise to 127), with control change 24 at 127 as the finger lands and 0 as it leaves. Set it to 0 for any other plate: at 1 every other note goes missing" version="0.25"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="0">Stock strip, or any plate of twelve separate zones</option><option value="1">Zipper 24</option><option value="2">Arcade wheel</option>
+                </select>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-241" title="how firm a touch the harp needs before a zone counts as touched; higher needs a firmer finger. 0 is the stock 40. A plate with smaller zones reads weaker and may want less. Takes effect once no zone is touched" style="width: 150px; font-weight: bold;">harp touch threshold</label>
+                <input type="range" id="param-241" name="harp touch threshold" class="inactive"
+                       min="0" max="120"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="241" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="how firm a touch the harp needs before a zone counts as touched; higher needs a firmer finger. 0 is the stock 40. A plate with smaller zones reads weaker and may want less. Takes effect once no zone is touched" version="0.25"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-241" class="inactive"
+                       value="0"
+                       min="0" max="120" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-242" title="how far a finger rises before a touched zone lets go: the zone lets go when its reading falls under this. Higher lets go sooner, lower holds on longer. 0 is the stock 20, and it is kept under the touch threshold. On the string plates it sets where on the way up pluck on lift sounds. Takes effect once no zone is touched" style="width: 150px; font-weight: bold;">harp release threshold</label>
+                <input type="range" id="param-242" name="harp release threshold" class="inactive"
+                       min="0" max="119"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="242" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="how far a finger rises before a touched zone lets go: the zone lets go when its reading falls under this. Higher lets go sooner, lower holds on longer. 0 is the stock 20, and it is kept under the touch threshold. On the string plates it sets where on the way up pluck on lift sounds. Takes effect once no zone is touched" version="0.25"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-242" class="inactive"
+                       value="0"
+                       min="0" max="119" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+            </div>
         <h3 style="margin: 30px 0 10px; font-size: 1.5em;">MIDI</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-106" title="set the midi channel for the chord section" style="width: 150px; font-weight: bold;">chord channel</label>
@@ -1895,6 +1933,58 @@
                         style="width: 150px; padding: 5px; margin: 0 8px;">
                     <option value="1">Steps 1-12</option><option value="2">Steps 13-24</option><option value="3">Steps 25-36</option>
                 </select>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-245" title="play the harp as a ribbon controller: one fretless string along the strip, the pitch following the finger as it slides, gliding from each string's note to the next. Each finger sounds a voice of its own, and it sounds on touch whatever pluck on lift says. On the fretless plate, whose zones taper into one another, the pitch moves evenly along the strip; on the stock strip a finger mostly reads one zone, so the pitch rests on each note and slides where the finger bridges two (turn up ribbon glide to smooth the steps into a slide). In MPE the glide goes out as each voice's pitch bend; outside MPE the midi note follows the nearest string. A patch with some sustain holds a note under a still finger. Not on the arcade wheel" style="width: 150px; font-weight: bold;">harp ribbon</label>
+                <input type="checkbox" id="param-245" name="harp ribbon" class="inactive"
+                        data-sysex-address="245" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="play the harp as a ribbon controller: one fretless string along the strip, the pitch following the finger as it slides, gliding from each string's note to the next. Each finger sounds a voice of its own, and it sounds on touch whatever pluck on lift says. On the fretless plate, whose zones taper into one another, the pitch moves evenly along the strip; on the stock strip a finger mostly reads one zone, so the pitch rests on each note and slides where the finger bridges two (turn up ribbon glide to smooth the steps into a slide). In MPE the glide goes out as each voice's pitch bend; outside MPE the midi note follows the nearest string. A patch with some sustain holds a note under a still finger. Not on the arcade wheel" version="0.25"
+                       style="margin: 0 8px;">
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-246" title="how many strings the ribbon covers from the bottom of the strip to the top: fewer spreads each note wider and makes it easier to play in tune, more fits more range. 0 is the twelve strings of the plate. In chromatic mode 13 is an octave and 25 would be two; in the scale modes the strings carry on up the scale. Chord mode has only its twelve" style="width: 150px; font-weight: bold;">ribbon span</label>
+                <input type="range" id="param-246" name="ribbon span" class="inactive"
+                       min="0" max="24"
+                       step="1"
+                       value="0"
+                       data-discrete='true'
+                       data-sysex-address="246" data-ui-type="discrete_slider" data-data-type="int" data-float-multiplier="1" title="how many strings the ribbon covers from the bottom of the strip to the top: fewer spreads each note wider and makes it easier to play in tune, more fits more range. 0 is the twelve strings of the plate. In chromatic mode 13 is an octave and 25 would be two; in the scale modes the strings carry on up the scale. Chord mode has only its twelve" version="0.25"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-246" class="inactive"
+                       value="0"
+                       min="0" max="24" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-247" title="how strongly the ribbon holds to the strings' notes: this much of each string's width, in percent, plays its note in tune, and between the notes the pitch slides the rest of the way. 0 is fretless, 100 steps from note to note" style="width: 150px; font-weight: bold;">ribbon snap</label>
+                <input type="range" id="param-247" name="ribbon snap" class="inactive"
+                       min="0" max="100"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="247" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="how strongly the ribbon holds to the strings' notes: this much of each string's width, in percent, plays its note in tune, and between the notes the pitch slides the rest of the way. 0 is fretless, 100 steps from note to note" version="0.25"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-247" class="inactive"
+                       value="0"
+                       min="0" max="100" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-248" title="how slowly the ribbon's pitch follows the finger, in milliseconds: longer smooths a jumpy reading and slurs fast moves, like portamento. 0 is the stock 10. On the stock strip, 60 to 120 turns its steps into a slide" style="width: 150px; font-weight: bold;">ribbon glide</label>
+                <input type="range" id="param-248" name="ribbon glide" class="inactive"
+                       min="0" max="250"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="248" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="how slowly the ribbon's pitch follows the finger, in milliseconds: longer smooths a jumpy reading and slurs fast moves, like portamento. 0 is the stock 10. On the stock strip, 60 to 120 turns its steps into a slide" version="0.25"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-248" class="inactive"
+                       value="0"
+                       min="0" max="250" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
         
             <div style="display: flex; align-items: center; margin: 8px 0;">

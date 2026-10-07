@@ -57,6 +57,11 @@ UI_OVERRIDES = {
     244: select('global_parameter', 'General', ["Stock: offered as a speaker, not played",
                                                 "Play along: through the minichord",
                                                 "No speaker: the host keeps its sound"]),
+    # global: the harp plate fitted, and how firm a touch its zones need
+    243: select('global_parameter', 'General', ["Stock strip, or any plate of twelve separate zones",
+                                                "Zipper 24", "Arcade wheel"]),
+    241: control('global_parameter', 'General', 'slider'),
+    242: control('global_parameter', 'General', 'slider'),
     # global: key and tuning
     30: control('global_parameter', 'Key and tuning', 'discrete_slider'),
     31: select('global_parameter', 'Key and tuning', ["sharp", "flat"]),
@@ -132,6 +137,11 @@ UI_OVERRIDES = {
                 "Custom Scale (chord root)"]),
     40: control('harp_parameter', 'Notes', 'discrete_slider'),
     98: control('harp_parameter', 'Notes', 'switch'),
+    # the harp ribbon
+    245: control('harp_parameter', 'Notes', 'switch'),
+    246: control('harp_parameter', 'Notes', 'discrete_slider'),
+    247: control('harp_parameter', 'Notes', 'slider'),
+    248: control('harp_parameter', 'Notes', 'slider'),
     99: control('harp_parameter', 'Notes', 'discrete_slider'),
     116: select('harp_parameter', 'Notes', ["Steps 1-12", "Steps 13-24", "Steps 25-36"], start=1),
     236: control('harp_parameter', 'Notes', 'degrees'),
