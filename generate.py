@@ -67,7 +67,7 @@ parameter_name_order = {
         ]
     },
     'global_parameter': {
-        'General': ['bank color', 'led attenuation', 'usb audio', 'harp plate', 'harp touch threshold', 'harp release threshold'],
+        'General': ['bank color', 'led attenuation', 'usb audio', 'harp touch threshold', 'harp release threshold'],
         'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament'],
         'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
         'MIDI': ['chord channel', 'harp channel', 'harp note-off on lift', 'single port mode', 'MPE output', 'knobs send MIDI'],

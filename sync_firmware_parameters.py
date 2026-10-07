@@ -57,9 +57,8 @@ UI_OVERRIDES = {
     244: select('global_parameter', 'General', ["Stock: offered as a speaker, not played",
                                                 "Play along: through the minichord",
                                                 "No speaker: the host keeps its sound"]),
-    # global: the harp plate fitted, and how firm a touch its zones need
-    243: select('global_parameter', 'General', ["Stock strip, or any plate of twelve separate zones",
-                                                "Zipper 24", "Arcade wheel"]),
+    # global: the harp plate fitted (kept off the page for now), and how firm a touch its zones need
+    243: {"section": "hidden", "group": "hidden"},
     241: control('global_parameter', 'General', 'slider'),
     242: control('global_parameter', 'General', 'slider'),
     # global: key and tuning
