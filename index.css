@@ -438,7 +438,7 @@
     .status-header:has(#notification-bubble.connected) .theme-tagline .off { display: none; }
 
     /* The bank sheet: every bank read off the minichord, to move them around,
-       set one setting in all of them, or apply a profile. Drawn from the page's
+       set one setting in all of them, or stage a profile. Drawn from the page's
        own colours, so each theme carries it. */
     .bank-sheet {
       display: none;
@@ -510,6 +510,15 @@
       font-size: 1.3em;
       padding: 0 6px;
     }
+    /* what isn't staging or writing reads as a link, so the filled buttons are the ones that matter */
+    .bank-btn.quiet {
+      background: none !important;
+      color: var(--text-primary) !important;
+      border: none !important;
+      box-shadow: none !important;
+      text-decoration: underline;
+      padding: 2px 4px;
+    }
     .bank-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -561,9 +570,23 @@
       outline: none;
       border-bottom-color: var(--text-primary) !important;
     }
-    .bank-bulk {
+    .bank-section {
       border-top: 1px solid var(--track-color);
-      margin-top: 12px;
+      margin-top: 14px;
+    }
+    .bank-note {
+      margin: 0 0 6px;
+      line-height: 1.35;
+      opacity: 0.75;
+    }
+    /* everything waiting to be written, drawn the way a changed bank is */
+    .bank-section.bank-staged {
+      border: 2px dashed var(--primary-color);
+      border-radius: 6px;
+      padding: 0 10px 6px;
+    }
+    .bank-staged h5 {
+      margin-top: 10px;
     }
     .bank-row {
       display: flex;
@@ -581,6 +604,18 @@
     .bank-row-val {
       font-family: monospace;
       text-align: right;
+    }
+    .bank-row-count {
+      opacity: 0.7;
+      white-space: nowrap;
+    }
+    /* a profile's settings, on their own line under its name */
+    .bank-row-sub {
+      flex: 1 1 100%;
+      margin-top: -4px;
+      font-size: 0.9em;
+      opacity: 0.7;
+      overflow-wrap: anywhere;
     }
     .bank-picker {
       display: flex;
@@ -627,10 +662,28 @@
     .bank-hint {
       opacity: 0.7;
     }
+    /* kept at the foot of the window however far the sheet scrolls; the offset
+       takes back the sheet's own bottom padding, so nothing shows beneath it */
     .bank-sheet-actions {
+      position: sticky;
+      bottom: -4vh;
       display: flex;
+      flex-wrap: wrap;
+      align-items: center;
       gap: 8px;
-      margin-top: 16px;
+      margin: 16px -16px -16px;
+      padding: 10px 16px;
+      background: var(--background-color);
+      border-top: 2px solid var(--track-color);
+      border-radius: 0 0 8px 8px;
+    }
+    .bank-sheet-actions .bank-status {
+      flex: 1 1 100%;
+      margin: 0;
+    }
+    .bank-bar-summary {
+      flex: 1 1 10em;
+      font-weight: bold;
     }
 
     /* Submenus inside a parameter section. The themes draw every section as a panel, some with
