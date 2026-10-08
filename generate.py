@@ -50,7 +50,7 @@ subgroup_order = {
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter'],
-    'harp_parameter': ['Notes', 'Pluck', 'Oscillator', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
+    'harp_parameter': ['Notes', 'Plate', 'Pluck', 'String model', 'Ribbon', 'Oscillator', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
                        'Reverb', 'Crunch', 'Output filter'],
     'chord_potentiometer': ['Potentiometer'],
     'harp_potentiometer': ['Potentiometer'],
@@ -75,7 +75,7 @@ parameter_name_order = {
         ]
     },
     'global_parameter': {
-        'General': ['bank color', 'led attenuation', 'usb audio', 'harp plate', 'harp touch threshold', 'harp release threshold'],
+        'General': ['bank color', 'led attenuation', 'usb audio'],
         'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament'],
         'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
         'MIDI': ['chord channel', 'harp channel', 'harp note-off on lift', 'single port mode', 'MPE output', 'knobs send MIDI',
@@ -135,26 +135,22 @@ parameter_name_order = {
         'Notes': [
             'chromatic mode',
             'harp rank',
-            'harp ribbon',
-            'ribbon span',
-            'ribbon snap',
-            'ribbon glide',
             'scalar harp mode',
             'custom scale',
             'octave change',
             'harp shuffling'
         ],
+        'Plate': ['harp plate', 'harp touch threshold', 'harp release threshold'],
         'Pluck': [
             'pluck on lift',
             'touch velocity',
             'touch pressure',
-            'string model',
-            'string decay',
-            'string damping',
             'palm mute',
             'palm mute release',
             'change held strings'
         ],
+        'String model': ['string model', 'string decay', 'string damping'],
+        'Ribbon': ['harp ribbon', 'ribbon span', 'ribbon snap', 'ribbon glide'],
         'Delay': DELAY,
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
@@ -378,7 +374,7 @@ submenus = {
     ],
     'harp_parameter': [
         ('Notes', ['Notes']),
-        ('Pluck', ['Pluck']),
+        ('Playing', ['Plate', 'Pluck', 'String model', 'Ribbon']),
         ('Sound', ['Oscillator', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
         ('Effects', ['Delay', 'Reverb', 'Crunch', 'Output filter']),
     ],

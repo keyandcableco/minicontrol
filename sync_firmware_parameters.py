@@ -57,11 +57,6 @@ UI_OVERRIDES = {
     244: select('global_parameter', 'General', ["Stock: offered as a speaker, not played",
                                                 "Play along: through the minichord",
                                                 "No speaker: the host keeps its sound"]),
-    # global: the harp plate fitted, and how firm a touch its zones need
-    243: select('global_parameter', 'General', ["Stock strip, or any plate of twelve separate zones",
-                                                "Zipper 24", "Arcade wheel", "Fretless wrap"]),
-    241: control('global_parameter', 'General', 'slider'),
-    242: control('global_parameter', 'General', 'slider'),
     # global: key and tuning
     30: control('global_parameter', 'Key and tuning', 'discrete_slider'),
     31: select('global_parameter', 'Key and tuning', ["sharp", "flat"]),
@@ -146,25 +141,32 @@ UI_OVERRIDES = {
                 "Custom Scale (chord root)"]),
     40: control('harp_parameter', 'Notes', 'discrete_slider'),
     98: control('harp_parameter', 'Notes', 'switch'),
-    # the harp ribbon
-    245: control('harp_parameter', 'Notes', 'switch'),
-    246: control('harp_parameter', 'Notes', 'discrete_slider'),
-    247: control('harp_parameter', 'Notes', 'slider'),
-    248: control('harp_parameter', 'Notes', 'slider'),
     99: control('harp_parameter', 'Notes', 'discrete_slider'),
     116: select('harp_parameter', 'Notes', ["Steps 1-12", "Steps 13-24", "Steps 25-36"], start=1),
     236: control('harp_parameter', 'Notes', 'degrees'),
-    # harp: pluck, how a string is played, sounds and stops: when it sounds and how firmly
-    # it's touched, the plucked string model, and the palm mute and held strings
+    # harp: playing, how the hands meet the harp. Each preset holds these, so the plate and its
+    # thresholds sit here rather than with the instrument's own settings under General.
+    # The plate fitted, and how firm a touch its zones need
+    243: select('harp_parameter', 'Plate', ["Stock strip, or any plate of twelve separate zones",
+                                            "Zipper 24", "Arcade wheel", "Fretless wrap"]),
+    241: control('harp_parameter', 'Plate', 'slider'),
+    242: control('harp_parameter', 'Plate', 'slider'),
+    # when a string sounds and how firmly it's touched, and how it stops
     216: control('harp_parameter', 'Pluck', 'switch'),
     252: control('harp_parameter', 'Pluck', 'slider'),
     253: select('harp_parameter', 'Pluck', ["Off", "Follow: swells and eases off", "Swell only: keeps the firmest"]),
-    217: control('harp_parameter', 'Pluck', 'slider'),
-    218: control('harp_parameter', 'Pluck', 'slider'),
-    219: control('harp_parameter', 'Pluck', 'slider'),
     213: control('harp_parameter', 'Pluck', 'discrete_slider'),
     214: control('harp_parameter', 'Pluck', 'slider'),
     22: control('harp_parameter', 'Pluck', 'switch'),
+    # the plucked string model
+    217: control('harp_parameter', 'String model', 'slider'),
+    218: control('harp_parameter', 'String model', 'slider'),
+    219: control('harp_parameter', 'String model', 'slider'),
+    # the harp ribbon: the strip as one fretless string
+    245: control('harp_parameter', 'Ribbon', 'switch'),
+    246: control('harp_parameter', 'Ribbon', 'discrete_slider'),
+    247: control('harp_parameter', 'Ribbon', 'slider'),
+    248: control('harp_parameter', 'Ribbon', 'slider'),
 }
 # every waveform dropdown gets the same labels
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]
