@@ -133,6 +133,8 @@ UI_OVERRIDES = {
     119: control('chord_parameter', 'Formants', 'slider'),
     239: control('chord_parameter', 'Formants', 'slider'),
     240: control('chord_parameter', 'Formants', 'slider'),
+    # chord: the ensemble, a slow stereo chorus after the chord chain
+    259: control('chord_parameter', 'Ensemble', 'slider'),
     # harp: notes
     36: select('harp_parameter', 'Notes',
                ["Chord Tones", "Major Scale", "Major Pentatonic", "Minor Pentatonic", "Diminished 6th",
@@ -167,6 +169,10 @@ UI_OVERRIDES = {
     246: control('harp_parameter', 'Ribbon', 'discrete_slider'),
     247: control('harp_parameter', 'Ribbon', 'slider'),
     248: control('harp_parameter', 'Ribbon', 'slider'),
+    # harp: the strings fanned across the stereo field
+    257: control('harp_parameter', 'Spread', 'slider'),
+    258: select('harp_parameter', 'Spread', ["By pitch: low strings left, high strings right",
+                                             "Alternating: neighbouring strings on opposite sides"]),
 }
 # every waveform dropdown gets the same labels
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]

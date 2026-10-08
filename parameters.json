@@ -3761,6 +3761,22 @@
       "curve": "linear",
       "introduction_version": 0.2,
       "step": 1
+    },
+    {
+      "sysex_adress": 259,
+      "group": "Ensemble",
+      "ui_type": "slider",
+      "name": "chord ensemble",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "a slow stereo chorus on the chords, the classic ensemble sound: a slightly swept copy on each side, moving at different rates, widens them and gives them a gentle shimmer. 0 is off, as before; 100 is half dry and half chorus",
+      "method": "set_chord_ensemble(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.33,
+      "step": 1
     }
   ],
   "harp_parameter": [
@@ -4638,7 +4654,7 @@
       "max_value": 600,
       "tooltip": "length in ms of the delay",
       "iterate": 1,
-      "method": "delay_strings.delay(0,value);",
+      "method": "delay_strings.delay(0,value);delay_strings_r.delay(0,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -4654,7 +4670,7 @@
       "max_value": 5000,
       "tooltip": "corner frequency of the filter in the delay loop",
       "iterate": 1,
-      "method": "filter_delay_strings.frequency(value);",
+      "method": "filter_delay_strings.frequency(value);filter_delay_strings_r.frequency(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -4670,7 +4686,7 @@
       "max_value": 5,
       "tooltip": "resonance of the filter in the delay loop",
       "iterate": 1,
-      "method": "filter_delay_strings.resonance(value);",
+      "method": "filter_delay_strings.resonance(value);filter_delay_strings_r.resonance(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4686,7 +4702,7 @@
       "max_value": 1,
       "tooltip": "lowpass component feedback into the delay",
       "iterate": 1,
-      "method": "string_delay_mix.gain(1,value);",
+      "method": "string_delay_mix.gain(1,value);string_delay_mix_r.gain(1,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4702,7 +4718,7 @@
       "max_value": 1,
       "tooltip": "bandpass component feedback into the delay",
       "iterate": 1,
-      "method": "string_delay_mix.gain(2,value);",
+      "method": "string_delay_mix.gain(2,value);string_delay_mix_r.gain(2,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4718,7 +4734,7 @@
       "max_value": 1,
       "tooltip": "highpass component feedback into the delay",
       "iterate": 1,
-      "method": "string_delay_mix.gain(3,value);",
+      "method": "string_delay_mix.gain(3,value);string_delay_mix_r.gain(3,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4734,7 +4750,7 @@
       "max_value": 1,
       "tooltip": "intensity of the dry signal in the output",
       "iterate": 1,
-      "method": "strings_effect_mix.gain(0,value);",
+      "method": "strings_effect_mix.gain(0,value);strings_effect_mix_r.gain(0,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4750,7 +4766,7 @@
       "max_value": 1,
       "tooltip": "intensity of the delayed signal in the output",
       "iterate": 1,
-      "method": "strings_effect_mix.gain(1,value);",
+      "method": "strings_effect_mix.gain(1,value);strings_effect_mix_r.gain(1,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4766,7 +4782,7 @@
       "max_value": 1,
       "tooltip": "level of the reverb applied to the harp signal",
       "iterate": 1,
-      "method": "reverb_mixer.gain(0,value);string_r_stereo_gain.amplitude((1-reverb_dry_proportion*value)*pan,100);string_l_stereo_gain.amplitude(1-reverb_dry_proportion*value,100);",
+      "method": "reverb_mixer.gain(0,value/2);reverb_mixer.gain(2,value/2);string_r_stereo_gain.amplitude((1-reverb_dry_proportion*value)*pan,100);string_l_stereo_gain.amplitude(1-reverb_dry_proportion*value,100);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4782,7 +4798,7 @@
       "max_value": 1,
       "tooltip": "level of crunch applied to the harp signal",
       "iterate": 1,
-      "method": "string_waveshaper_mix.gain(0,1-value);string_waveshaper_mix.gain(1,value);",
+      "method": "string_waveshaper_mix.gain(0,1-value);string_waveshaper_mix_r.gain(0,1-value);string_waveshaper_mix.gain(1,value);string_waveshaper_mix_r.gain(1,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4798,7 +4814,7 @@
       "max_value": 2,
       "tooltip": "selects the waveshaper transfert function, with more and more distorted shape",
       "iterate": 1,
-      "method": "ws_sin_param=value;calculate_ws_array(); string_waveshape.shape(wave_shape,257);",
+      "method": "ws_sin_param=value;calculate_ws_array(); string_waveshape.shape(wave_shape,257); string_waveshape_r.shape(wave_shape,257);",
       "introduction_version": 0.02,
       "ui_type": "select",
       "options": [
@@ -4828,7 +4844,7 @@
       "max_value": 5000,
       "tooltip": "corner frequency of the output filter",
       "iterate": 1,
-      "method": "string_filter.frequency(value);",
+      "method": "string_filter.frequency(value);string_filter_r.frequency(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -4844,7 +4860,7 @@
       "max_value": 5,
       "tooltip": "resonance of the output filter",
       "iterate": 1,
-      "method": "string_filter.resonance(value);",
+      "method": "string_filter.resonance(value);string_filter_r.resonance(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4860,7 +4876,7 @@
       "max_value": 1,
       "tooltip": "output lowpass component",
       "iterate": 1,
-      "method": "string_filter_mixer.gain(0,value);",
+      "method": "string_filter_mixer.gain(0,value);string_filter_mixer_r.gain(0,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4876,7 +4892,7 @@
       "max_value": 1,
       "tooltip": "output bandpass component",
       "iterate": 1,
-      "method": "string_filter_mixer.gain(1,value);",
+      "method": "string_filter_mixer.gain(1,value);string_filter_mixer_r.gain(1,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -4892,7 +4908,7 @@
       "max_value": 1,
       "tooltip": "output highpass component",
       "iterate": 1,
-      "method": "string_filter_mixer.gain(2,value);",
+      "method": "string_filter_mixer.gain(2,value);string_filter_mixer_r.gain(2,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -5006,7 +5022,7 @@
       "max_value": 5,
       "tooltip": "sensitivity of the output filter to the control LFO",
       "iterate": 1,
-      "method": "string_filter.octaveControl(value);",
+      "method": "string_filter.octaveControl(value);string_filter_r.octaveControl(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -5022,7 +5038,7 @@
       "max_value": 2,
       "tooltip": "amplifies the volume of the harp",
       "iterate": 1,
-      "method": "string_amplifier.gain(value);",
+      "method": "string_amplifier.gain(value);string_amplifier_r.gain(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -5521,6 +5537,48 @@
         {
           "value": 2,
           "label": "Swell only: keeps the firmest"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 257,
+      "group": "Spread",
+      "ui_type": "slider",
+      "name": "string spread",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "fans the harp strings out across the stereo field, in percent of the full width: 0 keeps them all in the middle, as before. Centred on where pan puts the harp. How they are laid out is spread pattern",
+      "method": "string_spread=value; apply_string_spreads();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.33,
+      "step": 1
+    },
+    {
+      "sysex_adress": 258,
+      "group": "Spread",
+      "ui_type": "select",
+      "name": "spread pattern",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "how string spread lays the strings out. 0: by pitch, the lowest string to the left and the highest to the right, like sitting at a harp; ribbon and incoming notes land by their pitch too. 1: neighbouring strings on alternate sides, so a strum ping-pongs",
+      "method": "string_spread_pattern=value; apply_string_spreads();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.33,
+      "options": [
+        {
+          "value": 0,
+          "label": "By pitch: low strings left, high strings right"
+        },
+        {
+          "value": 1,
+          "label": "Alternating: neighbouring strings on opposite sides"
         }
       ],
       "step": 1
