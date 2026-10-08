@@ -109,6 +109,8 @@ async function initializeDefaultValues() {
       const sysex = param.sysex_adress;
       const floatMultiplier = getFloatMultiplier(param);
       defaultValues[sysex] = param.data_type === 'float' ? param.default_value * floatMultiplier : param.default_value;
+      // page 1 goes to these when a preset of page 0 alone is loaded
+      if (sysex >= controller.page_size) controller.page1_defaults[sysex] = Math.round(defaultValues[sysex]);
     });
   });
   applyOverrideDefaults(defaultValues);
@@ -602,7 +604,7 @@ async function generateRandomPreset() {
   
   const parameterRanges = await loadParameterRanges();
   const weirdness_factor = 0.10;
-  const preset = Array(256).fill(0);
+  const preset = Array(controller.parameter_size).fill(0);
   
   Object.entries(parameterRanges).forEach(([sysex, params]) => {
     const idx = parseInt(sysex);
@@ -628,8 +630,8 @@ async function generateRandomPreset() {
     }
   });
   
-  for (let i = 2; i < 256; i++) {
-    if (preset[i] !== undefined && parameterRanges[i]) {
+  for (let i = 2; i < controller.parameter_size; i++) {
+    if (preset[i] !== undefined && parameterRanges[i] && controller.canWrite(i)) {
       const param = findParameterBySysex(i);
       if (!param) continue;
       const floatMultiplier = getFloatMultiplier(param);
@@ -778,14 +780,18 @@ document.getElementById("export-settings-btn")?.addEventListener("click", () => 
     document.getElementById("information_zone")?.focus();
     return;
   }
-  const sysexArray = Array(256).fill(0);
+  const sysexArray = Array(controller.parameter_size).fill(0);
   Object.entries(currentValues).forEach(([sysex, value]) => {
     sysexArray[parseInt(sysex)] = value;
   });
   for (let i = 0; i < 16; i++) {
     sysexArray[BASE_ADDRESS_RHYTHM + i] = rhythmPattern[i] || 0;
   }
-  const outputBase64 = sysexArray.join(";");
+  // A code holds page 0 alone while page 1 is all at its defaults, as every code from before the
+  // array grew did, so an editor that knows only page 0 still reads it; both pages otherwise.
+  const page1AtDefaults = Object.entries(controller.page1_defaults).every(([sysex, value]) => sysexArray[sysex] === value);
+  const codeLength = page1AtDefaults || !controller.has_page1 ? controller.page_size : controller.parameter_size;
+  const outputBase64 = sysexArray.slice(0, codeLength).join(";");
   const encoded = btoa(outputBase64);
   navigator.clipboard.writeText(encoded);
   console.log(`[export-settings-btn] Exported settings: ${encoded}`);
@@ -802,20 +808,18 @@ document.getElementById("load-settings-btn")?.addEventListener("click", () => {
   if (!presetCode) return;
   try {
     const parameters = atob(presetCode).split(";").map(v => parseFloat(v));
-    if (parameters.length !== 256) {
+    // page 0 alone (every code from before the array grew) or both pages
+    if (parameters.length !== controller.page_size && parameters.length !== controller.parameter_size) {
       console.warn("[load-settings-btn] Malformed preset code");
       showNotification("Malformed preset code", "error");
       return;
     }
-    for (let i = 2; i < parameters.length; i++) {
-      const param = findParameterBySysex(i);
-      if (param) {
-        const value = param.data_type === "float" ? Math.round(parameters[i]) : Math.round(parameters[i]);
-        controller.sendParameter(i, value);
-        currentValues[i] = value;
-      }
-    }
-    controller.sendParameter(0, 0);
+    controller.applyPreset(parameters, (i, value) => {
+      if (!findParameterBySysex(i)) return;
+      value = Math.round(value);
+      controller.sendParameter(i, value);
+      currentValues[i] = value;
+    });
     console.log("[load-settings-btn] Loaded settings");
     showNotification("Preset loaded", "success");
   } catch (error) {

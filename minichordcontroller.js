@@ -1,7 +1,18 @@
 class MiniChordController {
   constructor() {
     this.device = false;
-    this.parameter_size = 256;
+    // Two pages of 256 settings, from firmware 31. Page 0 is every setting from before the array
+    // grew and comes in the dump every editor has always read; page 1 (256-511) comes when asked
+    // for (control command 7), with a header. 382, 383, 510 and 511 can't be written: their low
+    // byte is a universal SysEx id, so nothing lives there.
+    this.parameter_size = 512;
+    this.page_size = 256;
+    this.page1_version = 31;
+    this.reserved_adresses = [382, 383, 510, 511];
+    this.has_page1 = false;     // whether the minichord answered for page 1
+    this.page1_defaults = {};   // address -> stored default, from parameters.json (index.js)
+    this.pendingDump = null;    // page 0, held while page 1 is asked for
+    this.pendingTimer = null;
     this.pendingSave = false;
     this.base_adress_rythm = 220;
     this.active_bank_number = -1;
@@ -79,6 +90,8 @@ class MiniChordController {
     if (event.port.state === "disconnected" && name.includes("minichord")) {
       this.device = false;
       this.pendingSave = false; // Reset pendingSave
+      this.has_page1 = false;
+      this.dropPendingDump();
       // Clean up input handlers
       for (const input of event.target.inputs.values()) {
         if (input.name.toLowerCase().includes("minichord")) {
@@ -101,7 +114,11 @@ class MiniChordController {
     return;
   }
   const data = midiMessage.data.slice(1);
-  const expectedLength = this.parameter_size * 2 + 1;
+  if (data.length === 3 + this.page_size * 2 + 1 && data[0] === 0x7D && data[1] === 0x6D) {
+    this.processPage(data);
+    return;
+  }
+  const expectedLength = this.page_size * 2 + 1;
   if (data.length !== expectedLength) {
     console.warn(`[processCurrentData] Invalid data length, got ${data.length}, expected ${expectedLength}`);
     return;
@@ -113,7 +130,7 @@ class MiniChordController {
     firmwareVersion: 0
   };
   console.log(`[processCurrentData] Received data for bank ${processedData.bankNumber}, timestamp=${Date.now()}`);
-  for (let i = 2; i < this.parameter_size; i++) {
+  for (let i = 2; i < this.page_size; i++) {
     if (2 * i + 1 >= data.length) {
       console.warn(`[processCurrentData] Data index out of bounds at i=${i}`);
       return;
@@ -137,15 +154,66 @@ class MiniChordController {
       console.log(`[PROCESS DATA] Sysex=${i}, value=${sysex_value}, bank=${processedData.bankNumber}`);
     }
   }
-  this.active_bank_number = processedData.bankNumber;
-  this.firmware_version = processedData.firmwareVersion;
   // every address exactly as the dump carried it, for reading a bank to write it back
   processedData.rawParameters = [];
-  for (let i = 0; i < this.parameter_size; i++) {
+  for (let i = 0; i < this.page_size; i++) {
     processedData.rawParameters[i] = data[2 * i] + 128 * data[2 * i + 1];
   }
+  // Firmware with page 1 sends it only when asked, so ask, and hold page 0 till it comes: the
+  // page and a bank read then see the whole preset at once. A newer dump in the meantime takes
+  // the held one's place, since page 1 is always the live settings. Should the answer be lost,
+  // page 0 goes on alone.
+  this.dropPendingDump();
+  if (Math.round(processedData.firmwareVersion * 100) >= this.page1_version) {
+    this.pendingDump = processedData;
+    this.pendingTimer = setTimeout(() => {
+      const held = this.pendingDump;
+      this.pendingDump = null;
+      if (held) {
+        console.warn("[processCurrentData] page 1 didn't come: page 0 alone");
+        this.deliverDump(held);
+      }
+    }, 500);
+    this.requestPage(1);
+  } else {
+    this.has_page1 = false;
+    this.deliverDump(processedData);
+  }
+}
+
+// A page past 0: 7D 6D <page>, then two bytes a setting. Page 1 completes the dump held for it.
+processPage(data) {
+  const page = data[2];
+  if (page !== 1) return;
+  this.has_page1 = true;
+  const held = this.pendingDump;
+  if (!held) return;
+  this.dropPendingDump();
+  for (let i = 0; i < this.page_size; i++) {
+    const value = data[3 + 2 * i] + 128 * data[3 + 2 * i + 1];
+    held.parameters[this.page_size + i] = value;
+    held.rawParameters[this.page_size + i] = value;
+  }
+  this.deliverDump(held);
+}
+
+dropPendingDump() {
+  clearTimeout(this.pendingTimer);
+  this.pendingTimer = null;
+  this.pendingDump = null;
+}
+
+requestPage(page) {
+  if (!this.device) return false;
+  this.sendSysEx([0, 0, 7, page]);
+  return true;
+}
+
+deliverDump(processedData) {
+  this.active_bank_number = processedData.bankNumber;
+  this.firmware_version = processedData.firmwareVersion;
   if (this.pendingSave && typeof currentValues !== 'undefined') {
-    for (let i = 2; i < this.parameter_size; i++) {
+    for (let i = 2; i < processedData.parameters.length; i++) {
       if (processedData.parameters[i] !== undefined && currentValues[i] !== undefined) {
         if (processedData.parameters[i] !== currentValues[i]) {
           console.warn(`[processCurrentData] Mismatch for Sysex=${i}, device=${processedData.parameters[i]}, currentValues=${currentValues[i]}`);
@@ -168,11 +236,19 @@ class MiniChordController {
     this.device.send([0xF0, ...bytes, 0xF7]);
   }
 
+  // whether a setting can be written to this minichord: not a reserved address, and page 1
+  // only to firmware that has it (older firmware drops it, but needn't be sent it)
+  canWrite(address) {
+    if (this.reserved_adresses.includes(address) || address >= this.parameter_size) return false;
+    return address < this.page_size || this.has_page1;
+  }
+
   sendParameter(address, value) {
     if (!this.device) {
       console.warn(`sendParameter: no device connected, address=${address}, value=${value}`);
       return false;
     }
+    if (!this.canWrite(address)) return false;
     const finalValue = Math.round(value);
     const loVal = finalValue % 128;
     const hiVal = Math.floor(finalValue / 128);
@@ -260,6 +336,21 @@ class MiniChordController {
         if (!settled) this.requestCurrentData();
       }, ms));
     });
+  }
+
+  // Send a whole preset, values from address 0: page 0 alone (256, as every preset code before the
+  // array grew) or both pages (512). With page 0 alone, page 1 goes to its defaults rather than
+  // staying as the last preset had it. `send` lets the caller pick what is sent and keep track.
+  applyPreset(values, send) {
+    send = send || ((address, value) => this.sendParameter(address, value));
+    const count = Math.min(values.length, this.parameter_size);
+    for (let i = 2; i < count; i++) {
+      if (i !== this.firmware_adress && this.canWrite(i)) send(i, values[i]);
+    }
+    if (count <= this.page_size && this.has_page1) {
+      for (const [address, value] of Object.entries(this.page1_defaults)) send(parseInt(address), value);
+    }
+    this.sendParameter(0, 0);   // the minichord reports back, and the page follows
   }
 
   resetCurrentBank() {

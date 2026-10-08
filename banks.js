@@ -81,10 +81,10 @@ function bankNamesSet(names) {
 }
 
 //-->>naming settings and values
-// A setting whose value is itself an address: the knob assignments and the
-// double tap controls.
+// A setting whose value is itself an address: the knob assignments, hover and
+// the double tap controls, each a list of the settings it may take.
 function isTargetSetting(p) {
-  return !!p && p.ui_type === "select" && !p.options && p.max_value === 255;
+  return !!p && p.ui_type === "select" && !p.options && !!p.targets;
 }
 
 function paramLabel(p) {
@@ -246,7 +246,8 @@ async function backupAllBanks(onProgress) {
     minichord_backup: BACKUP_FORMAT,
     created: new Date().toISOString(),
     firmware_version: banks[0].values[controller.firmware_adress],
-    parameter_size: controller.parameter_size,
+    // 512 from firmware with page 1, 256 before
+    parameter_size: banks[0].values.length,
     address_names,
     banks,
   };
@@ -281,6 +282,11 @@ async function restoreAllBanks(data, onProgress) {
     // Give each such bank that tuning, so a tuned device stays tuned.
     const legacyTuning = values[255];
     if (!values[109] && legacyTuning >= 4320 && legacyTuning <= 4460) values[109] = legacyTuning;
+    // A backup from before page 1 restores with page 1 at its defaults, as the minichord loads a
+    // preset file of page 0 alone, rather than keeping what the bank had there.
+    if (values.length <= controller.page_size && controller.has_page1) {
+      Object.entries(controller.page1_defaults).forEach(([a, v]) => { values[a] = v; });
+    }
     await writeBank(entry.bank, values);
     if (typeof entry.name === "string") names[entry.bank] = entry.name.slice(0, 24);
   }
@@ -428,8 +434,8 @@ function profilesValid(v) {
   return Array.isArray(v) && v.length <= 24 && v.every(pr =>
     pr && typeof pr.name === "string" && pr.name.length > 0 && pr.name.length <= 40
     && Array.isArray(pr.edits) && pr.edits.length > 0 && pr.edits.length <= 64
-    && pr.edits.every(e => e && Number.isInteger(e.addr) && e.addr >= 2 && e.addr <= 255
-      && Number.isInteger(e.value)));
+    && pr.edits.every(e => e && Number.isInteger(e.addr) && e.addr >= 2 && e.addr < controller.parameter_size
+      && !controller.reserved_adresses.includes(e.addr) && Number.isInteger(e.value)));
 }
 function readProfiles() {
   try {
