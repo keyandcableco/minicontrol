@@ -47,6 +47,8 @@ def control(section, group, ui_type):
 
 
 ALT_LAYOUT = lambda: select('chord_parameter', 'Alternate layout', CHORD_TYPES)
+# what a harp string or chord voice sounds: its own synth, or a sampled instrument
+VOICES = ["Synth", "Piano", "Pizzicato strings", "Choir", "String quartet"]
 
 UI_OVERRIDES = {
     # the firmware's name has an underscore
@@ -133,6 +135,8 @@ UI_OVERRIDES = {
     119: control('chord_parameter', 'Formants', 'slider'),
     239: control('chord_parameter', 'Formants', 'slider'),
     240: control('chord_parameter', 'Formants', 'slider'),
+    # chord: oscillators or a sampled instrument
+    265: select('chord_parameter', 'Oscillator', VOICES),
     # chord: the ensemble, a slow stereo chorus after the chord chain
     259: control('chord_parameter', 'Ensemble', 'slider'),
     # global: the vocoder, shaped by the sound coming in over USB
@@ -174,6 +178,8 @@ UI_OVERRIDES = {
     246: control('harp_parameter', 'Ribbon', 'discrete_slider'),
     247: control('harp_parameter', 'Ribbon', 'slider'),
     248: control('harp_parameter', 'Ribbon', 'slider'),
+    # harp: synth strings or a sampled instrument
+    264: select('harp_parameter', 'Oscillator', VOICES),
     # harp: the strings fanned across the stereo field
     257: control('harp_parameter', 'Spread', 'slider'),
     258: select('harp_parameter', 'Spread', ["By pitch: low strings left, high strings right",

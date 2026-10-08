@@ -848,6 +848,12 @@ void apply_audio_parameter(int adress, int value) {
         case 263:
             strum_velocity=value;
             break;
+        case 264:
+            set_harp_source(value);
+            break;
+        case 265:
+            set_chord_source(value);
+            break;
         default:
             break;
     }

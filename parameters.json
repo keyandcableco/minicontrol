@@ -3839,6 +3839,44 @@
       "curve": "linear",
       "introduction_version": 0.33,
       "step": 1
+    },
+    {
+      "sysex_adress": 265,
+      "group": "Oscillator",
+      "ui_type": "select",
+      "name": "chord voice",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4,
+      "default_value": 0,
+      "tooltip": "what each chord voice sounds: 0 its own oscillators, as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet. A sample runs through the voice's envelope and filter, so the preset still shapes it. Samples rendered by the midi-js-soundfonts project: the piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
+      "method": "set_chord_source(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.36,
+      "options": [
+        {
+          "value": 0,
+          "label": "Synth"
+        },
+        {
+          "value": 1,
+          "label": "Piano"
+        },
+        {
+          "value": 2,
+          "label": "Pizzicato strings"
+        },
+        {
+          "value": 3,
+          "label": "Choir"
+        },
+        {
+          "value": 4,
+          "label": "String quartet"
+        }
+      ],
+      "step": 1
     }
   ],
   "harp_parameter": [
@@ -5659,6 +5697,44 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.35,
+      "step": 1
+    },
+    {
+      "sysex_adress": 264,
+      "group": "Oscillator",
+      "ui_type": "select",
+      "name": "harp voice",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4,
+      "default_value": 0,
+      "tooltip": "what each harp string sounds: 0 its own synth (the oscillator and string model), as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet (cello low, viola in the middle, violin high). A sample runs through the string's envelope, filter and level, so the preset still shapes it, and follows the ribbon and the tuning. Samples rendered by the midi-js-soundfonts project: the piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
+      "method": "set_harp_source(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.36,
+      "options": [
+        {
+          "value": 0,
+          "label": "Synth"
+        },
+        {
+          "value": 1,
+          "label": "Piano"
+        },
+        {
+          "value": 2,
+          "label": "Pizzicato strings"
+        },
+        {
+          "value": 3,
+          "label": "Choir"
+        },
+        {
+          "value": 4,
+          "label": "String quartet"
+        }
+      ],
       "step": 1
     }
   ],

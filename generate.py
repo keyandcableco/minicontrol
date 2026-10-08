@@ -98,6 +98,7 @@ parameter_name_order = {
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
         'Oscillator': [
+            'chord voice',
             'waveform 1',
             'amplitude 1',
             'frequency multiplier 1',
@@ -157,7 +158,7 @@ parameter_name_order = {
         'Delay': DELAY,
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
-        'Oscillator': ['waveform', 'frequency multiplier', 'amplitude', 'noise'],
+        'Oscillator': ['harp voice', 'waveform', 'frequency multiplier', 'amplitude', 'noise'],
         'Envelope': ['attack', 'decay', 'sustain', 'release', 'retrigger release'],
         'Low pass filter': [
             'base frequency',
