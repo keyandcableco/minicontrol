@@ -147,6 +147,8 @@
   "47": "harp: envelope: release",
   "48": "harp: envelope: retrigger release",
   "46": "harp: envelope: sustain",
+  "253": "harp: envelope: touch pressure",
+  "252": "harp: envelope: touch velocity",
   "52": "harp: low pass filter: attack",
   "49": "harp: low pass filter: base frequency",
   "54": "harp: low pass filter: decay",

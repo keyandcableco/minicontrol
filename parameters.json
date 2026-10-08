@@ -3949,8 +3949,8 @@
       "min_value": 0,
       "max_value": 1,
       "tooltip": "amplitude of the 12 initial oscillators",
-      "iterate": 12,
-      "method": "string_waveform_array[i]->amplitude(value);",
+      "iterate": 1,
+      "method": "string_level=value; for (int s=0;s<12;s++) apply_string_firmness(s);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -5173,8 +5173,8 @@
       "min_value": 0,
       "max_value": 1,
       "tooltip": "amplitude of the transient",
-      "iterate": 12,
-      "method": "string_transient_waveform_array[i]->amplitude(value);",
+      "iterate": 1,
+      "method": "transient_level=value; for (int s=0;s<12;s++) apply_string_firmness(s);",
       "introduction_version": 0.05,
       "ui_type": "slider",
       "step": 0.01
@@ -5398,6 +5398,52 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.25,
+      "step": 1
+    },
+    {
+      "sysex_adress": 252,
+      "group": "Envelope",
+      "ui_type": "slider",
+      "name": "touch velocity",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "how much a light touch plays softer and darker than a firm one: the harder a string is plucked, the louder and brighter it sounds and the higher its midi velocity. 0 plays every pluck the same, as before. At 100 a really light touch is quiet and dark (24 dB down, two octaves of the string filter, a tenth of the velocity), while an ordinary strum plays nearly full, about 5 dB down. Read from how firmly the finger lands: a quick tap or strum reads firm, a slow one rolling onto each string softer. Plucking on lift, from how firmly the string was held. Also the depth of touch pressure",
+      "method": "touch_velocity=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.28,
+      "step": 1
+    },
+    {
+      "sysex_adress": 253,
+      "group": "Envelope",
+      "ui_type": "select",
+      "name": "touch pressure",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "a held string follows how hard it is pressed, so the fingers shape the note while they hold it. 0: off. 1: follow: pressing harder than it was plucked swells it louder and brighter, as far as touch velocity reaches, and easing off lets it back down. A finger usually eases off as it lifts, so a note pressed up can fade a little before it rings out. 2: swell only: pressing harder swells it and it keeps the firmest it has been until it is let go, so it always rings out from there. Either way its pressure goes out over midi as it is, as each voice's channel pressure in MPE and as polyphonic aftertouch otherwise. Plucking on lift, held strings are silent, so it only sends on the ribbon",
+      "method": "touch_pressure=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.28,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "Follow: swells and eases off"
+        },
+        {
+          "value": 2,
+          "label": "Swell only: keeps the firmest"
+        }
+      ],
       "step": 1
     }
   ],

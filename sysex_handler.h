@@ -112,9 +112,7 @@ void apply_audio_parameter(int adress, int value) {
             }
             break;
         case 41:
-            for (int i=0;i<12;i++){
-                string_waveform_array[i]->amplitude(value/100.0);
-            }
+            string_level=value/100.0; for (int s=0;s<12;s++) apply_string_firmness(s);
             break;
         case 42:
             for (int i=0;i<12;i++){
@@ -330,9 +328,7 @@ void apply_audio_parameter(int adress, int value) {
             }
             break;
         case 101:
-            for (int i=0;i<12;i++){
-                string_transient_waveform_array[i]->amplitude(value/100.0);
-            }
+            transient_level=value/100.0; for (int s=0;s<12;s++) apply_string_firmness(s);
             break;
         case 102:
             for (int i=0;i<12;i++){
@@ -811,6 +807,12 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 251:
             hover_reach=value ? constrain(value,3,10) : 7;
+            break;
+        case 252:
+            touch_velocity=value;
+            break;
+        case 253:
+            touch_pressure=value;
             break;
         default:
             break;
