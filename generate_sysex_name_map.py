@@ -12,10 +12,9 @@ sysex_name_map = {}
 def is_target(param):
     return param.get('controls', 'all') != 'none'
 
-# Loop through all top-level parameter groups
+# Loop through all top-level parameter groups. A hidden setting has no control on the page, but
+# one a control may take (the looper, for the double tap) is listed by its name alone.
 for group_name, params in parameters.items():
-    if group_name in ('hidden'):
-        continue
     readable_group = group_name.replace('_parameter', '')
     for param in params:
         sysex = param.get('sysex_adress')
@@ -27,7 +26,9 @@ for group_name, params in parameters.items():
             name and name.strip()
         ):
             # Use group if available; fallback to sysex address
-            if group and group.lower() != 'hidden':
+            if group_name == 'hidden':
+                label = name
+            elif group and group.lower() != 'hidden':
                 label = f"{readable_group}: {group.lower()}: {name}"
             else:
                 label = f"{readable_group}: {name} ({sysex})"

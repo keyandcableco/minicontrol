@@ -473,6 +473,18 @@ theme_options = '\n'.join(f'              <option value="{t["id"]}">{t["label"]}
 theme_taglines = '\n'.join(
     f'        <div class="theme-tagline" data-for="{t["id"]}"><span class="off">{t["tagline"][0]}</span><span class="on">{t["tagline"][1]}</span></div>'
     for t in THEMES if 'tagline' in t)
+# The looper (setting 256, firmware 32 on) records what the minichord plays and loops it. The
+# setting is an action, never kept: each button writes it once (index.js, looper buttons).
+LOOPER_ACTIONS = [
+    (1, 'record', 'record a new loop of what you play, in place of the last; press again to close it and play it'),
+    (2, 'play', 'play the loop from the top, or close one being recorded and play it'),
+    (3, 'stop', 'stop the loop, or close one being recorded and stop'),
+    (5, 'overdub', 'while the loop plays, add to it what you play; press again to stop adding'),
+    (4, 'clear', 'forget the loop'),
+]
+looper_buttons = '\n'.join(f'''          <div class="button_div">
+            <button class="looper-btn inactive" data-looper-action="{action}" version="0.32" title="{title}">{label}</button>
+          </div>''' for action, label, title in LOOPER_ACTIONS)
 token_themes = json.dumps([t['id'] for t in THEMES if t.get('tokens')])
 all_themes = json.dumps([t['id'] for t in THEMES])
 
@@ -611,6 +623,12 @@ html_template = '''<!DOCTYPE html>
           </div>
         </div>
         <div class="section">
+          <h5 style="margin: 0; font-size: 1.1em;">looper:</h5>
+        </div>
+        <div class="controls">
+{looper_buttons}
+        </div>
+        <div class="section">
           <h5 style="margin: 0; font-size: 1.1em;">randomising:</h5>
         </div>
         <div class="controls">
@@ -731,6 +749,7 @@ html_content = html_template.format(
     theme_links=theme_links,
     theme_options=theme_options,
     theme_taglines=theme_taglines,
+    looper_buttons=looper_buttons,
     token_themes=token_themes,
     all_themes=all_themes
 )

@@ -824,6 +824,9 @@ void apply_audio_parameter(int adress, int value) {
         case 253:
             touch_pressure=value;
             break;
+        case 256:
+            looper_action(value);
+            break;
         default:
             break;
     }

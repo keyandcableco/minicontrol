@@ -196,6 +196,7 @@
   "75": "harp: vibrato: retrigger release bend",
   "68": "harp: vibrato: sustain",
   "62": "harp: vibrato: waveform",
+  "256": "looper",
   "188": "rhythm: rhythm: cycle length",
   "187": "rhythm: rhythm: default bpm",
   "189": "rhythm: rhythm: measure update",

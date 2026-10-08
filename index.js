@@ -14,9 +14,10 @@ const BASE_ADDRESS_RHYTHM = 220;
 let notificationQueue = [];
 let isShowingNotification = false;
 let snapshotBank = -1; // the bank a snapshot was taken on, -1 when none is held
-// RANDOMISE leaves these alone: device, MIDI, tuning, double tap and hover settings
+// RANDOMISE leaves these alone: device, MIDI, tuning, double tap and hover settings, and the looper
+// (an action, not a setting)
 const RANDOMISE_FIXED = [32, 33, 34, 35, 41, 97, 106, 107, 108, 109, 110, 117, 197, 200, 201, 209, 210, 211, 212, 237, 238,
-  241, 242, 243, 244, 249, 250, 251];
+  241, 242, 243, 244, 249, 250, 251, 256];
 
 function getFloatMultiplier(param) {
   return parseFloat(param.float_multiplier) || (param.data_type === 'float' ? (controller.float_multiplier || 100.0) : 1);
@@ -829,5 +830,15 @@ document.getElementById("load-settings-btn")?.addEventListener("click", () => {
 });
 
 document.getElementById("randomise_btn")?.addEventListener("click", generateRandomPreset);
+
+// The looper: each button writes setting 256 once, an action the minichord takes and forgets
+// (1 record, 2 play, 3 stop, 4 clear, 5 overdub on or off)
+document.querySelectorAll(".looper-btn").forEach(button => button.addEventListener("click", () => {
+  if (!controller.isConnected()) {
+    document.getElementById("information_zone")?.focus();
+    return;
+  }
+  controller.sendParameter(256, parseInt(button.dataset.looperAction));
+}));
 
 initialize();
