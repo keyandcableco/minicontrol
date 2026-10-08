@@ -146,6 +146,7 @@ parameter_name_order = {
             'pluck on lift',
             'touch velocity',
             'touch pressure',
+            'strum velocity',
             'palm mute',
             'palm mute release',
             'change held strings'

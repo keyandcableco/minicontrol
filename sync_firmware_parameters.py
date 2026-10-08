@@ -164,6 +164,7 @@ UI_OVERRIDES = {
     213: control('harp_parameter', 'Pluck', 'discrete_slider'),
     214: control('harp_parameter', 'Pluck', 'slider'),
     22: control('harp_parameter', 'Pluck', 'switch'),
+    263: control('harp_parameter', 'Pluck', 'slider'),
     # the plucked string model
     217: control('harp_parameter', 'String model', 'slider'),
     218: control('harp_parameter', 'String model', 'slider'),

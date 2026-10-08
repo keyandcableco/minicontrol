@@ -5644,6 +5644,22 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 263,
+      "group": "Pluck",
+      "ui_type": "slider",
+      "name": "strum velocity",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "how much a slow strum plays softer and darker than a fast one: the faster a strum sweeps across the strings, the louder and brighter they sound and the higher their midi velocity. 0 is off. With touch velocity on as well, each string plays as firmly as the firmer of the two says. A strum is neighbouring strings plucked one after another the same way; the first string of each has nothing to measure, so it plays by touch (full if touch velocity is off). On the stock and zipper plates, not the ribbon",
+      "method": "strum_velocity=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.35,
+      "step": 1
     }
   ],
   "chord_potentiometer": [

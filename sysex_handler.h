@@ -845,6 +845,9 @@ void apply_audio_parameter(int adress, int value) {
         case 262:
             vocoder_consonants=value; vocoder_set();
             break;
+        case 263:
+            strum_velocity=value;
+            break;
         default:
             break;
     }
