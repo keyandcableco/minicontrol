@@ -803,6 +803,15 @@ void apply_audio_parameter(int adress, int value) {
         case 248:
             ribbon_glide_ms=value;
             break;
+        case 249:
+            hover_set_target(constrain(value,0,parameter_size-1));
+            break;
+        case 250:
+            hover_value=value; hover_reapply=true;
+            break;
+        case 251:
+            hover_reach=value ? constrain(value,3,10) : 7;
+            break;
         default:
             break;
     }

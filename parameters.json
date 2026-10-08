@@ -807,6 +807,67 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 249,
+      "group": "Hover",
+      "ui_type": "select",
+      "name": "hover control",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 255,
+      "default_value": 0,
+      "tooltip": "which setting a hand held over the harp plate moves, like a fourth knob: from as the preset has it with no hand near, to hover value with the hand close over the plate. 0 leaves hover unassigned. While the harp is played hover holds where it was before the hand came down, and after the hand lifts it waits for it to rise back to that height before following again; a quick swoop down to strum doesn't move it. Any setting a knob can take but the double tap's and USB audio. With knobs send MIDI on, hover also goes out as control change 25 on the chord channel, assigned or not",
+      "method": "hover_set_target(constrain(value,0,parameter_size-1));",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.27,
+      "none_option": "none",
+      "excluded_option_addresses": [
+        200,
+        201,
+        209,
+        210,
+        211,
+        212,
+        244,
+        249,
+        250,
+        251
+      ]
+    },
+    {
+      "sysex_adress": 250,
+      "group": "Hover",
+      "ui_type": "slider",
+      "name": "hover value",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 0,
+      "tooltip": "the value hover control's setting reaches with a hand 2 cm above the plate, or nearer. It can be above or below the preset's own value, so hover can open a filter or close it, swell or duck",
+      "method": "hover_value=value; hover_reapply=true;",
+      "iterate": 1,
+      "curve": "linear",
+      "follows_target": 249,
+      "introduction_version": 0.27,
+      "step": 1
+    },
+    {
+      "sysex_adress": 251,
+      "group": "Hover",
+      "ui_type": "discrete_slider",
+      "name": "hover reach",
+      "data_type": "int",
+      "min_value": 3,
+      "max_value": 10,
+      "default_value": 7,
+      "tooltip": "how high above the harp plate hover begins, roughly in centimetres; it is full at 2 cm. Further reaches higher but trembles more at the top, since a hand that far away moves the reading hardly more than the player's own movements do; nearer is steadier. Plates differ: one with smaller pads reaches less far",
+      "method": "hover_reach=value ? constrain(value,3,10) : 7;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.27,
+      "step": 1
     }
   ],
   "chord_parameter": [

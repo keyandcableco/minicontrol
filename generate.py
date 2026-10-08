@@ -38,7 +38,7 @@ group_order = [
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Effects', 'MIDI', 'Knobs', 'Double tap'],
+    'global_parameter': ['General', 'Key and tuning', 'Effects', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter'],
@@ -72,6 +72,7 @@ parameter_name_order = {
         'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
         'MIDI': ['chord channel', 'harp channel', 'harp note-off on lift', 'single port mode', 'MPE output', 'knobs send MIDI'],
         'Knobs': ['knob layer'],
+        'Hover': ['hover control', 'hover value', 'hover reach'],
         'Double tap': ['double tap control', 'double tap value', 'double tap control 2', 'double tap value 2',
                        'double tap control 3', 'double tap value 3']
     },
@@ -275,10 +276,11 @@ def generate_param_html(param):
             ])
         else:
             option_addresses = param.get('option_addresses', list(sysex_name_map.keys()))
+            excluded = [str(a) for a in param.get('excluded_option_addresses', [])]
             options_html += ''.join([
                 f'<option value="{key}">{value}</option>'
                 for key, value in sorted(sysex_name_map.items(), key=lambda x: x[1].lower())
-                if key in option_addresses
+                if key in option_addresses and key not in excluded
             ])
         html.append(f'''
             <div style="display: flex; align-items: center; margin: 8px 0;">
@@ -347,7 +349,7 @@ submenus = {
         ('Device and MIDI', ['General', 'MIDI']),
         ('Key and tuning', ['Key and tuning']),
         ('Effects', ['Effects']),
-        ('Knobs and double tap', ['Knobs', 'Double tap']),
+        ('Knobs, hover and double tap', ['Knobs', 'Hover', 'Double tap']),
     ],
     'chord_parameter': [
         ('Playing', ['General', 'Buttons']),
