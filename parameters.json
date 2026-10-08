@@ -14,7 +14,8 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.29,
-      "step": 1
+      "step": 1,
+      "controls": "tap"
     },
     {
       "name": "bank color",
@@ -30,7 +31,8 @@
       "method": "bank_led_hue=value; set_led_color(bank_led_hue, bank_led_saturation(), 1-led_attenuation);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "reverb size",
@@ -368,7 +370,8 @@
           "label": "16"
         }
       ],
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 107,
@@ -450,7 +453,8 @@
           "label": "16"
         }
       ],
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 108,
@@ -466,7 +470,8 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.08,
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 109,
@@ -499,7 +504,8 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.11,
-      "step": 1
+      "step": 1,
+      "controls": "tap"
     },
     {
       "sysex_adress": 117,
@@ -525,7 +531,8 @@
           "label": "Alternate functions"
         }
       ],
-      "step": 1
+      "step": 1,
+      "controls": "tap"
     },
     {
       "sysex_adress": 200,
@@ -541,7 +548,9 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.09,
-      "none_option": "none"
+      "none_option": "none",
+      "controls": "none",
+      "targets": "tap"
     },
     {
       "sysex_adress": 201,
@@ -558,7 +567,8 @@
       "curve": "linear",
       "follows_target": 200,
       "introduction_version": 0.09,
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 209,
@@ -574,7 +584,9 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.19,
-      "none_option": "none"
+      "none_option": "none",
+      "controls": "none",
+      "targets": "tap"
     },
     {
       "sysex_adress": 210,
@@ -591,7 +603,8 @@
       "curve": "linear",
       "follows_target": 209,
       "introduction_version": 0.19,
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 211,
@@ -607,7 +620,9 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.19,
-      "none_option": "none"
+      "none_option": "none",
+      "controls": "none",
+      "targets": "tap"
     },
     {
       "sysex_adress": 212,
@@ -624,7 +639,8 @@
       "curve": "linear",
       "follows_target": 211,
       "introduction_version": 0.19,
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 215,
@@ -726,7 +742,8 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.17,
-      "step": 1
+      "step": 1,
+      "controls": "tap"
     },
     {
       "sysex_adress": 241,
@@ -742,7 +759,8 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.25,
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 242,
@@ -758,7 +776,8 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.25,
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 243,
@@ -792,7 +811,8 @@
           "label": "Fretless wrap"
         }
       ],
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 244,
@@ -822,7 +842,8 @@
           "label": "No speaker: the host keeps its sound"
         }
       ],
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 249,
@@ -839,18 +860,8 @@
       "curve": "linear",
       "introduction_version": 0.27,
       "none_option": "none",
-      "excluded_option_addresses": [
-        200,
-        201,
-        209,
-        210,
-        211,
-        212,
-        244,
-        249,
-        250,
-        251
-      ]
+      "controls": "none",
+      "targets": "sweep"
     },
     {
       "sysex_adress": 250,
@@ -867,7 +878,8 @@
       "curve": "linear",
       "follows_target": 249,
       "introduction_version": 0.27,
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "sysex_adress": 251,
@@ -883,7 +895,8 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.27,
-      "step": 1
+      "step": 1,
+      "controls": "none"
     }
   ],
   "chord_parameter": [
@@ -901,7 +914,8 @@
       "method": "chords_gain.amplitude(value,100); chord_attack_velocity=value*127;",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.01
+      "step": 0.01,
+      "controls": "none"
     },
     {
       "name": "retrigger chords",
@@ -3833,7 +3847,8 @@
       "method": "string_gain.amplitude(value,100);  harp_attack_velocity=value*127;",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.01
+      "step": 0.01,
+      "controls": "none"
     },
     {
       "name": "change held strings",
@@ -5397,7 +5412,8 @@
       "method": "custom_scale_mask=value; rebuild_custom_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
       "iterate": 1,
       "curve": "linear",
-      "introduction_version": 0.09
+      "introduction_version": 0.09,
+      "controls": "tap"
     },
     {
       "sysex_adress": 245,
@@ -5522,10 +5538,13 @@
       "max_value": 255,
       "tooltip": "defines the adress targeted by the chord potentiometer alternate function",
       "iterate": 1,
-      "method": "chord_pot.set_alternate(constrain(value,0,parameter_size-1));",
+      "method": "chord_pot.set_alternate(control_can_sweep(value) ? value : 0);",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none",
+      "targets": "sweep",
+      "none_option": "none"
     },
     {
       "name": "chord alternate range",
@@ -5541,7 +5560,8 @@
       "method": "chord_pot.set_alternate_range(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     }
   ],
   "harp_potentiometer": [
@@ -5556,10 +5576,13 @@
       "max_value": 255,
       "tooltip": "defines the adress targeted by the harp potentiometer alternate function",
       "iterate": 1,
-      "method": "harp_pot.set_alternate(constrain(value,0,parameter_size-1));",
+      "method": "harp_pot.set_alternate(control_can_sweep(value) ? value : 0);",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none",
+      "targets": "sweep",
+      "none_option": "none"
     },
     {
       "name": "harp alternate percent range",
@@ -5575,7 +5598,8 @@
       "method": "harp_pot.set_alternate_range(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     }
   ],
   "modulation_potentiometer": [
@@ -5590,10 +5614,13 @@
       "max_value": 255,
       "tooltip": "defines the adress targeted by the modulation potentiometer main function",
       "iterate": 1,
-      "method": "mod_pot.set_main(constrain(value,0,parameter_size-1));",
+      "method": "mod_pot.set_main(control_can_sweep(value) ? value : 0);",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none",
+      "targets": "sweep",
+      "none_option": "none"
     },
     {
       "name": "mod main percent range",
@@ -5609,7 +5636,8 @@
       "method": "mod_pot.set_main_range(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "mod alternate control",
@@ -5622,10 +5650,13 @@
       "max_value": 255,
       "tooltip": "defines the adress targeted by the modulation potentiometer alternate function",
       "iterate": 1,
-      "method": "mod_pot.set_alternate(constrain(value,0,parameter_size-1));",
+      "method": "mod_pot.set_alternate(control_can_sweep(value) ? value : 0);",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none",
+      "targets": "sweep",
+      "none_option": "none"
     },
     {
       "name": "mod alternate percent range ",
@@ -5641,7 +5672,8 @@
       "method": "mod_pot.set_alternate_range(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     }
   ],
   "rhythm_parameter": [
@@ -5773,7 +5805,8 @@
       "method": "rythm_pattern[0]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5789,7 +5822,8 @@
       "method": "rythm_pattern[1]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5805,7 +5839,8 @@
       "method": "rythm_pattern[2]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5821,7 +5856,8 @@
       "method": "rythm_pattern[3]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5837,7 +5873,8 @@
       "method": "rythm_pattern[4]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5853,7 +5890,8 @@
       "method": "rythm_pattern[5]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5869,7 +5907,8 @@
       "method": "rythm_pattern[6]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5885,7 +5924,8 @@
       "method": "rythm_pattern[7]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5901,7 +5941,8 @@
       "method": "rythm_pattern[8]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5917,7 +5958,8 @@
       "method": "rythm_pattern[9]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5933,7 +5975,8 @@
       "method": "rythm_pattern[10]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5949,7 +5992,8 @@
       "method": "rythm_pattern[11]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5965,7 +6009,8 @@
       "method": "rythm_pattern[12]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5981,7 +6026,8 @@
       "method": "rythm_pattern[13]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -5997,7 +6043,8 @@
       "method": "rythm_pattern[14]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "rythm pattern",
@@ -6013,7 +6060,8 @@
       "method": "rythm_pattern[15]=value;",
       "introduction_version": 0.02,
       "ui_type": "select",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     }
   ],
   "hidden": [
@@ -6031,7 +6079,8 @@
       "method": "chord_pot.set_alternate_default(value);chord_pot.force_update();",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "harp alternate value",
@@ -6047,7 +6096,8 @@
       "method": "harp_pot.set_alternate_default(value);harp_pot.force_update();",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "mod alternate value",
@@ -6063,7 +6113,8 @@
       "method": "mod_pot.set_alternate_default(value);mod_pot.force_update();",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 1
+      "step": 1,
+      "controls": "none"
     },
     {
       "name": "firmware revision",
@@ -6079,7 +6130,8 @@
       "method": "current_sysex_parameters[7]=version_ID;",
       "introduction_version": 0.02,
       "ui_type": "slider",
-      "step": 0.01
+      "step": 0.01,
+      "controls": "none"
     }
   ]
 }

@@ -23,7 +23,7 @@ PAGE_FILE = 'parameters.json'
 
 # taken from the firmware for every parameter
 FIRMWARE_FIELDS = ['name', 'data_type', 'min_value', 'max_value', 'default_value', 'tooltip',
-                   'method', 'iterate', 'curve', 'follows_target']
+                   'method', 'iterate', 'curve', 'follows_target', 'controls']
 
 WAVEFORMS = ["Sine", "Sawtooth", "Square", "Triangle", "Bandlimited Pulse", "Pulse", "Reverse Sawtooth",
              "Sample and Hold", "Variable Triangle", "Bandlimited Sawtooth", "Reverse Bandlimited Sawtooth",
@@ -84,29 +84,32 @@ UI_OVERRIDES = {
     110: control('global_parameter', 'MIDI', 'switch'),
     238: control('global_parameter', 'MIDI', 'switch'),
     8: control('global_parameter', 'MIDI', 'switch'),
-    # global: hover, the harp plate as a fourth knob. It can't move its own settings, the
-    # double tap's or USB audio (hover_can_move in the firmware)
+    # global: hover, the harp plate as a fourth knob, which sweeps like one
     249: {"section": "global_parameter", "group": "Hover", "ui_type": "select", "none_option": "none",
-          "excluded_option_addresses": [200, 201, 209, 210, 211, 212, 244, 249, 250, 251]},
+          "targets": "sweep"},
     250: control('global_parameter', 'Hover', 'slider'),
     251: control('global_parameter', 'Hover', 'discrete_slider'),
     # global: knobs
     117: select('global_parameter', 'Knobs', ["Main functions", "Alternate functions"]),
     # global: double tap. The firmware calls the second and third pairs "Settings"
-    200: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none"},
-    209: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none"},
-    211: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none"},
+    200: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none",
+          "targets": "tap"},
+    209: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none",
+          "targets": "tap"},
+    211: {"section": "global_parameter", "group": "Double tap", "ui_type": "select", "none_option": "none",
+          "targets": "tap"},
     201: control('global_parameter', 'Double tap', 'slider'),
     210: control('global_parameter', 'Double tap', 'slider'),
     212: control('global_parameter', 'Double tap', 'slider'),
-    # potentiometers
-    10: {"section": "chord_potentiometer", "group": "Potentiometer"},
+    # potentiometers. A knob control's list holds what a knob may sweep; 0, or anything it
+    # can't, leaves the knob unassigned
+    10: {"section": "chord_potentiometer", "group": "Potentiometer", "targets": "sweep", "none_option": "none"},
     11: {"section": "chord_potentiometer", "group": "Potentiometer"},
-    12: {"section": "harp_potentiometer", "group": "Potentiometer"},
+    12: {"section": "harp_potentiometer", "group": "Potentiometer", "targets": "sweep", "none_option": "none"},
     13: {"section": "harp_potentiometer", "group": "Potentiometer"},
-    14: {"section": "modulation_potentiometer", "group": "Potentiometer"},
+    14: {"section": "modulation_potentiometer", "group": "Potentiometer", "targets": "sweep", "none_option": "none"},
     15: {"section": "modulation_potentiometer", "group": "Potentiometer"},
-    16: {"section": "modulation_potentiometer", "group": "Potentiometer"},
+    16: {"section": "modulation_potentiometer", "group": "Potentiometer", "targets": "sweep", "none_option": "none"},
     17: {"section": "modulation_potentiometer", "group": "Potentiometer"},
     # chord: buttons
     21: control('chord_parameter', 'Buttons', 'switch'),
@@ -215,6 +218,8 @@ def main(firmware_file):
             for field in FIRMWARE_FIELDS:
                 if field in fw_param:
                     entry[field] = fw_param[field]
+            if 'controls' not in fw_param:
+                entry.pop('controls', None)
             # the firmware counts versions in whole numbers, this page in hundredths
             entry['introduction_version'] = round(fw_param.get('introduction_version', 2) / 100.0, 2)
             override = dict(UI_OVERRIDES.get(address, {}))

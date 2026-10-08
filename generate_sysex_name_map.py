@@ -6,14 +6,11 @@ with open('parameters.json', 'r') as f:
 
 sysex_name_map = {}
 
-# What a knob or the double tap can be pointed at: every setting from 20 to 219,
-# and the ones added since from 236 on. 220-235 are the rhythm patterns.
-def is_target(sysex):
-    return 20 <= sysex <= 219 or 236 <= sysex <= 255
-
-# Settings the firmware lets them reach but the page doesn't offer: which harp plate
-# is fitted, and the USB audio mode, which the minichord keeps for itself
-HIDDEN_TARGETS = {243, 244}
+# What the knobs, hover or the double tap can be pointed at: each setting says so in its
+# "controls", from the firmware ("all", the default, "tap" for the double tap only, or
+# "none"). generate.py narrows each list to what its own control may move.
+def is_target(param):
+    return param.get('controls', 'all') != 'none'
 
 # Loop through all top-level parameter groups
 for group_name, params in parameters.items():
@@ -26,7 +23,7 @@ for group_name, params in parameters.items():
         group = param.get('group')
         if (
             isinstance(sysex, int) and
-            is_target(sysex) and sysex not in HIDDEN_TARGETS and
+            is_target(param) and
             name and name.strip()
         ):
             # Use group if available; fallback to sysex address

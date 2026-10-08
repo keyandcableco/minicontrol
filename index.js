@@ -329,6 +329,8 @@ function applyUIValue(param, value) {
     updateOptionHint(param, value);
   } else if (uiType === 'select') {
     element.value = value;
+    // a target the list doesn't offer is one this control can't take, which leaves it unassigned
+    if (element.selectedIndex < 0 && param.none_option != null) element.value = 0;
   } else if (uiType === 'switch') {
     element.checked = value === 1;
   } else if (uiType === 'degrees') {

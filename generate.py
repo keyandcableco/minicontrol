@@ -15,6 +15,14 @@ if os.path.exists('sysex_name_map.json'):
     with open('sysex_name_map.json', 'r') as f:
         sysex_name_map = json.load(f)
 
+# Which controls may move each setting, as the firmware has it: "all" (the knobs, hover and the
+# double tap), "tap" (the double tap only) or "none". A target list says which kind of control it
+# belongs to: the knobs and hover sweep, so they take "all"; the double tap sets an exact value,
+# so it takes "tap" too.
+controls_by_address = {str(param['sysex_adress']): param.get('controls', 'all')
+                       for params in parameters.values() for param in params}
+TARGETS = {'sweep': ('all',), 'tap': ('all', 'tap')}
+
 # Create a mapping of parameter names to sysex_adress for each section and group
 # (names repeat across groups: every envelope has an attack)
 name_to_sysex = {}
@@ -287,11 +295,11 @@ def generate_param_html(param):
             ])
         else:
             option_addresses = param.get('option_addresses', list(sysex_name_map.keys()))
-            excluded = [str(a) for a in param.get('excluded_option_addresses', [])]
+            allowed = TARGETS[param.get('targets', 'tap')]
             options_html += ''.join([
                 f'<option value="{key}">{value}</option>'
                 for key, value in sorted(sysex_name_map.items(), key=lambda x: x[1].lower())
-                if key in option_addresses and key not in excluded
+                if key in option_addresses and controls_by_address.get(key, 'none') in allowed
             ])
         html.append(f'''
             <div style="display: flex; align-items: center; margin: 8px 0;">
