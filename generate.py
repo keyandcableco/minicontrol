@@ -140,7 +140,8 @@ parameter_name_order = {
         'Delay': DELAY,
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
-        'Oscillator': ['waveform', 'frequency multiplier', 'amplitude', 'noise'],
+        'Oscillator': ['waveform', 'frequency multiplier', 'amplitude', 'noise', 'string model', 'string decay',
+                       'string damping'],
         'Envelope': ['attack', 'decay', 'sustain', 'release', 'retrigger release', 'palm mute', 'palm mute release', 'pluck on lift',
                      'touch velocity', 'touch pressure'],
         'Low pass filter': [

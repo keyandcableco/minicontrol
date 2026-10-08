@@ -152,6 +152,10 @@ UI_OVERRIDES = {
     99: control('harp_parameter', 'Notes', 'discrete_slider'),
     116: select('harp_parameter', 'Notes', ["Steps 1-12", "Steps 13-24", "Steps 25-36"], start=1),
     236: control('harp_parameter', 'Notes', 'degrees'),
+    # harp: the plucked string model
+    217: control('harp_parameter', 'Oscillator', 'slider'),
+    218: control('harp_parameter', 'Oscillator', 'slider'),
+    219: control('harp_parameter', 'Oscillator', 'slider'),
     # harp: how firmly a string is touched
     252: control('harp_parameter', 'Envelope', 'slider'),
     253: select('harp_parameter', 'Envelope', ["Off", "Follow: swells and eases off", "Swell only: keeps the firmest"]),
