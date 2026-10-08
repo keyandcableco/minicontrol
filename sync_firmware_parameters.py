@@ -136,7 +136,6 @@ UI_OVERRIDES = {
     239: control('chord_parameter', 'Formants', 'slider'),
     240: control('chord_parameter', 'Formants', 'slider'),
     # harp: notes
-    22: control('harp_parameter', 'Notes', 'switch'),
     36: select('harp_parameter', 'Notes',
                ["Chord Tones", "Major Scale", "Major Pentatonic", "Minor Pentatonic", "Diminished 6th",
                 "Relative Natural Minor", "Relative Harmonic Minor", "Relative Minor Pentatonic",
@@ -152,13 +151,17 @@ UI_OVERRIDES = {
     99: control('harp_parameter', 'Notes', 'discrete_slider'),
     116: select('harp_parameter', 'Notes', ["Steps 1-12", "Steps 13-24", "Steps 25-36"], start=1),
     236: control('harp_parameter', 'Notes', 'degrees'),
-    # harp: the plucked string model
-    217: control('harp_parameter', 'Oscillator', 'slider'),
-    218: control('harp_parameter', 'Oscillator', 'slider'),
-    219: control('harp_parameter', 'Oscillator', 'slider'),
-    # harp: how firmly a string is touched
-    252: control('harp_parameter', 'Envelope', 'slider'),
-    253: select('harp_parameter', 'Envelope', ["Off", "Follow: swells and eases off", "Swell only: keeps the firmest"]),
+    # harp: pluck, how a string is played, sounds and stops: when it sounds and how firmly
+    # it's touched, the plucked string model, and the palm mute and held strings
+    216: control('harp_parameter', 'Pluck', 'switch'),
+    252: control('harp_parameter', 'Pluck', 'slider'),
+    253: select('harp_parameter', 'Pluck', ["Off", "Follow: swells and eases off", "Swell only: keeps the firmest"]),
+    217: control('harp_parameter', 'Pluck', 'slider'),
+    218: control('harp_parameter', 'Pluck', 'slider'),
+    219: control('harp_parameter', 'Pluck', 'slider'),
+    213: control('harp_parameter', 'Pluck', 'discrete_slider'),
+    214: control('harp_parameter', 'Pluck', 'slider'),
+    22: control('harp_parameter', 'Pluck', 'switch'),
 }
 # every waveform dropdown gets the same labels
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]
