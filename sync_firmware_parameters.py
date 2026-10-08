@@ -135,6 +135,10 @@ UI_OVERRIDES = {
     240: control('chord_parameter', 'Formants', 'slider'),
     # chord: the ensemble, a slow stereo chorus after the chord chain
     259: control('chord_parameter', 'Ensemble', 'slider'),
+    # global: the vocoder, shaped by the sound coming in over USB
+    260: control('global_parameter', 'Vocoder', 'slider'),
+    261: select('global_parameter', 'Vocoder', ["Chords", "Harp", "Both: the harp through the chords' effects"]),
+    262: control('global_parameter', 'Vocoder', 'slider'),
     # harp: notes
     36: select('harp_parameter', 'Notes',
                ["Chord Tones", "Major Scale", "Major Pentatonic", "Minor Pentatonic", "Diminished 6th",

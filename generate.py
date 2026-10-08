@@ -46,7 +46,7 @@ group_order = [
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Effects', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
+    'global_parameter': ['General', 'Key and tuning', 'Effects', 'Vocoder', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
@@ -78,6 +78,7 @@ parameter_name_order = {
         'General': ['bank color', 'led attenuation', 'usb audio'],
         'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament'],
         'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
+        'Vocoder': ['vocoder', 'vocoder carrier', 'vocoder consonants'],
         'MIDI': ['chord channel', 'harp channel', 'harp note-off on lift', 'single port mode', 'MPE output', 'knobs send MIDI',
                  'MIDI in plays'],
         'Knobs': ['knob layer'],
@@ -364,7 +365,7 @@ submenus = {
     'global_parameter': [
         ('Device and MIDI', ['General', 'MIDI']),
         ('Key and tuning', ['Key and tuning']),
-        ('Effects', ['Effects']),
+        ('Effects', ['Effects', 'Vocoder']),
         ('Knobs, hover and double tap', ['Knobs', 'Hover', 'Double tap']),
     ],
     'chord_parameter': [

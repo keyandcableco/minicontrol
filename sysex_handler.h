@@ -836,6 +836,15 @@ void apply_audio_parameter(int adress, int value) {
         case 259:
             set_chord_ensemble(value);
             break;
+        case 260:
+            vocoder_amount=value; vocoder_set();
+            break;
+        case 261:
+            vocoder_carrier=value; vocoder_set();
+            break;
+        case 262:
+            vocoder_consonants=value; vocoder_set();
+            break;
         default:
             break;
     }

@@ -828,6 +828,68 @@
       "introduction_version": 0.27,
       "step": 1,
       "controls": "none"
+    },
+    {
+      "sysex_adress": 260,
+      "group": "Vocoder",
+      "ui_type": "slider",
+      "name": "vocoder",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "the chords (or the harp, see vocoder carrier) take on the shape of the sound coming in over USB, so they talk or sing with it: speech, singing or drums from the phone or computer. In percent of the vocoded sound in place of the dry; 0 is off, as before. The minichord has no microphone, so the voice has to come over USB, which needs usb audio 0 or 1 (0: only the vocoded chords are heard; 1: the incoming sound is heard too). With nothing coming in, the vocoded part is silent",
+      "method": "vocoder_amount=value; vocoder_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.34,
+      "step": 1
+    },
+    {
+      "sysex_adress": 261,
+      "group": "Vocoder",
+      "ui_type": "select",
+      "name": "vocoder carrier",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "what the vocoder shapes. 0: the chords, the classic sustained vocoder sound. 1: the harp, whose plucks die away too fast to carry words well but make textures. 2: both, the harp's vocoded part coming through the chords' effects",
+      "method": "vocoder_carrier=value; vocoder_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.34,
+      "options": [
+        {
+          "value": 0,
+          "label": "Chords"
+        },
+        {
+          "value": 1,
+          "label": "Harp"
+        },
+        {
+          "value": 2,
+          "label": "Both: the harp through the chords' effects"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 262,
+      "group": "Vocoder",
+      "ui_type": "slider",
+      "name": "vocoder consonants",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 30,
+      "tooltip": "how much of the incoming sound's hiss (s, t, sh) the vocoder lets through, so words can be made out. 0 is a pure vocoder, only the chords' own sound",
+      "method": "vocoder_consonants=value; vocoder_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.34,
+      "step": 1
     }
   ],
   "chord_parameter": [
