@@ -3919,10 +3919,10 @@
       "default_value": 0,
       "data_type": "int",
       "min_value": 0,
-      "max_value": 11,
+      "max_value": 13,
       "sysex_adress": 36,
       "curve": "linear",
-      "tooltip": "what the harp strings play. 0=follows the chord (default), 1=Major, 2=Major Pentatonic, 3=Minor Pentatonic, 4=Diminished 6th, 5=Relative Natural Minor, 6=Relative Harmonic Minor, 7=Relative Minor Pentatonic, 8=scale chosen per chord, 9=as 8 but pentatonic, 10=your own scale rooted on the key, 11=your own scale rooted on the chord",
+      "tooltip": "what the harp strings play. 0=follows the chord (default), 1=Major, 2=Major Pentatonic, 3=Minor Pentatonic, 4=Diminished 6th, 5=Relative Natural Minor, 6=Relative Harmonic Minor, 7=Relative Minor Pentatonic, 8=scale chosen per chord, 9=as 8 but pentatonic, 10=your own scale rooted on the key, 11=your own scale rooted on the chord, 12=the generator scale rooted on the key, 13=the generator scale rooted on the chord",
       "iterate": 1,
       "method": "scalar_harp_selection=value; for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
       "introduction_version": 0.09,
@@ -3976,6 +3976,14 @@
         {
           "value": 11,
           "label": "Custom Scale (chord root)"
+        },
+        {
+          "value": 12,
+          "label": "Generator Scale (key root)"
+        },
+        {
+          "value": 13,
+          "label": "Generator Scale (chord root)"
         }
       ]
     },
@@ -5735,6 +5743,54 @@
           "label": "String quartet"
         }
       ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 267,
+      "group": "Notes",
+      "ui_type": "slider",
+      "name": "generator",
+      "data_type": "int",
+      "min_value": 1,
+      "max_value": 30,
+      "default_value": 7,
+      "tooltip": "the interval the generator scale (scalar harp modes 12 and 13) is built from, in steps of the tuning: the scale is this interval stacked again and again and folded into one octave, which is how a regular temperament makes its scales. In 31: 7 with 9 notes is Orwell[9], 18 with 7 the meantone diatonic, 9 with 7 Mohajira (neutral), 10 with 7 Magic, 3 with 10 Miracle. In 12: 7 is the fifth, with 5 notes the pentatonic and 7 the major scale. Counted in steps of whatever tuning is chosen, so the same numbers make a different scale in another; past the top of the octave it wraps round",
+      "method": "generator_steps=value; rebuild_generator_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.38,
+      "step": 1
+    },
+    {
+      "sysex_adress": 268,
+      "group": "Notes",
+      "ui_type": "slider",
+      "name": "generator notes",
+      "data_type": "int",
+      "min_value": 1,
+      "max_value": 31,
+      "default_value": 9,
+      "tooltip": "how many notes the generator scale has: how many times the generator is stacked. A chain that comes back to the root before it is done (4 in 12 closes after three notes) keeps the notes it has",
+      "method": "generator_size=value; rebuild_generator_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.38,
+      "step": 1
+    },
+    {
+      "sysex_adress": 269,
+      "group": "Notes",
+      "ui_type": "slider",
+      "name": "generator mode",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 30,
+      "default_value": 0,
+      "tooltip": "which rotation of the generator scale the harp plays: how many of its generators lie below the root. 0 builds the chain straight up from the root; each step up moves one generator under it. With 18 in 31 or 7 in 12 and 7 notes, 0 is Lydian, 1 major, 2 Mixolydian, 3 Dorian, 4 minor, 5 Phrygian, 6 Locrian. Past the number of notes it stays at the last",
+      "method": "generator_mode=value; rebuild_generator_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.38,
       "step": 1
     }
   ],

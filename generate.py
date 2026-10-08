@@ -139,6 +139,9 @@ parameter_name_order = {
             'harp rank',
             'scalar harp mode',
             'custom scale',
+            'generator',
+            'generator notes',
+            'generator mode',
             'octave change',
             'harp shuffling'
         ],

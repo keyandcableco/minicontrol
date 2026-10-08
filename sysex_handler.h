@@ -854,6 +854,15 @@ void apply_audio_parameter(int adress, int value) {
         case 265:
             set_chord_source(value);
             break;
+        case 267:
+            generator_steps=value; rebuild_generator_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
+            break;
+        case 268:
+            generator_size=value; rebuild_generator_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
+            break;
+        case 269:
+            generator_mode=value; rebuild_generator_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
+            break;
         default:
             break;
     }

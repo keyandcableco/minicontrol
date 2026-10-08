@@ -148,12 +148,16 @@ UI_OVERRIDES = {
                ["Chord Tones", "Major Scale", "Major Pentatonic", "Minor Pentatonic", "Diminished 6th",
                 "Relative Natural Minor", "Relative Harmonic Minor", "Relative Minor Pentatonic",
                 "Scale Per Chord", "Scale Per Chord (Pentatonic)", "Custom Scale (key root)",
-                "Custom Scale (chord root)"]),
+                "Custom Scale (chord root)", "Generator Scale (key root)", "Generator Scale (chord root)"]),
     40: control('harp_parameter', 'Notes', 'discrete_slider'),
     98: control('harp_parameter', 'Notes', 'switch'),
     99: control('harp_parameter', 'Notes', 'discrete_slider'),
     116: select('harp_parameter', 'Notes', ["Steps 1-12", "Steps 13-24", "Steps 25-36"], start=1),
     236: control('harp_parameter', 'Notes', 'degrees'),
+    # the generator scale: one interval stacked and folded into the octave
+    267: control('harp_parameter', 'Notes', 'slider'),
+    268: control('harp_parameter', 'Notes', 'slider'),
+    269: control('harp_parameter', 'Notes', 'slider'),
     # harp: playing, how the hands meet the harp. Each preset holds these, so the plate and its
     # thresholds sit here rather than with the instrument's own settings under General.
     # The plate fitted, and how firm a touch its zones need
