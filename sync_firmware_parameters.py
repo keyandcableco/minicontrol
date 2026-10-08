@@ -83,6 +83,7 @@ UI_OVERRIDES = {
     108: control('global_parameter', 'MIDI', 'switch'),
     110: control('global_parameter', 'MIDI', 'switch'),
     238: control('global_parameter', 'MIDI', 'switch'),
+    8: control('global_parameter', 'MIDI', 'switch'),
     # global: hover, the harp plate as a fourth knob. It can't move its own settings, the
     # double tap's or USB audio (hover_can_move in the firmware)
     249: {"section": "global_parameter", "group": "Hover", "ui_type": "select", "none_option": "none",

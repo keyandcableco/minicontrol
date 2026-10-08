@@ -1,6 +1,22 @@
 {
   "global_parameter": [
     {
+      "sysex_adress": 8,
+      "group": "MIDI",
+      "ui_type": "switch",
+      "name": "MIDI in plays",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "plays notes sent to the minichord over USB, as a sound module: on the harp's port and channel the harp strings (twelve voices), on the chords' port and channel the chord voices (four), the ones it sends its own notes on, by default the chords on port 1 and the harp on port 2, both on channel 1. Notes sound at their true pitch, whatever the preset's octaves and transpose, in the minichord's tuning and temperament; velocity sets their loudness, and a string's brightness; the sustain pedal holds them. Playing the minichord itself takes a voice back. Off, as a computer that echoes the minichord's own notes back to it would double them",
+      "method": "midi_in_set(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.29,
+      "step": 1
+    },
+    {
       "name": "bank color",
       "group": "General",
       "default_value": 0,
@@ -1609,8 +1625,8 @@
       "min_value": 0,
       "max_value": 1,
       "tooltip": "amplitude of the noise oscillator",
-      "iterate": 4,
-      "method": "chord_voice_mixer_array[i]->gain(3,value);",
+      "iterate": 1,
+      "method": "chord_noise_level=value; for (int v=0;v<4;v++) apply_chord_voice_level(v);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
