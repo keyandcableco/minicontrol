@@ -18,6 +18,7 @@
 const ESPEAK_LIB = "https://cdn.jsdelivr.net/npm/espeak-ng@1.0.2/dist/espeak-ng.js";
 const ESPEAK_WASM = "https://cdn.jsdelivr.net/npm/espeak-ng@1.0.2/dist/espeak-ng.wasm";
 const GAP_SECONDS = 0.5;       // quiet between one time round and the next
+const DEFAULT_PHRASE = "Hello, I am the minichord";   // when no words are given and no song named any
 const USB_AUDIO = 244, VOCODER = 260;
 
 const talk = {
@@ -28,8 +29,15 @@ const talk = {
   using: "robot",              // what is looping: "robot" or "recorded"
   ctx: null, source: null,
   recorder: null, stream: null, chunks: [],
-  rerender: () => {},
+  rerender: () => {},          // the describe box's, when it shows a row
 };
+
+// Three places show the same loop: a row in the describe box, the "vocoder voice" section on the
+// main page, and a button under the vocoder slider. Any change redraws them all.
+function refresh() {
+  talk.rerender();
+  renderSlots();
+}
 
 let espeak = null;             // {ESpeakNG, compiled}: the library, and its engine compiled once
 
@@ -42,8 +50,7 @@ function el(tag, cls, text) {
 
 function say(status) {
   talk.status = status;
-  const line = document.querySelector(".talk-status");
-  if (line) line.textContent = status;
+  document.querySelectorAll(".talk-status").forEach(line => { line.textContent = status; });
 }
 
 // ---- the robot voice ----
@@ -119,18 +126,18 @@ async function startLoop(using) {
   talk.using = using;
   if (!navigator.mediaDevices || !window.AudioContext || !AudioContext.prototype.setSinkId) {
     say("This browser can't choose where a sound goes, so it can't send the voice to the minichord. Chrome can.");
-    talk.rerender();
+    refresh();
     return;
   }
   const mode = typeof currentValues !== "undefined" ? currentValues[USB_AUDIO] : undefined;
   if (mode === 2) {
     say("USB audio is set to 2, so the minichord offers the computer no speaker to send the voice to. " +
-        "Set usb audio to 0 (the vocoder alone hears it) or 1 (you hear it too), in Global Parameters.");
-    talk.rerender();
+        "Set usb audio to 0 (the vocoder alone hears it) or 1 (you hear it too), in Global Parameters › Device and MIDI.");
+    refresh();
     return;
   }
   talk.state = "making";
-  talk.rerender();
+  refresh();
   try {
     const out = await minichordOutput();
     if (!out) throw new Error("the minichord isn't among this computer's sound outputs: is it plugged in, with USB audio at 0 or 1?");
@@ -139,8 +146,7 @@ async function startLoop(using) {
     let line;
     if (recorded) line = recorded;
     else {
-      const text = talk.phrase.trim();
-      if (!text) throw new Error("type some words for the robot voice to say");
+      const text = talk.phrase.trim() || DEFAULT_PHRASE;
       say(espeak ? "Saying it…" : "Loading the robot voice, once (about 18 MB)…");
       const wav = await robotWav(text);
       line = await ctx.decodeAudioData(wav.buffer.slice(wav.byteOffset, wav.byteOffset + wav.byteLength));
@@ -154,15 +160,16 @@ async function startLoop(using) {
     talk.source = source;
     talk.state = "playing";
     const vocoderOff = typeof currentValues !== "undefined" && !currentValues[VOCODER];
-    say((recorded ? "Your line" : `"${talk.phrase.trim()}"`) + " is going round into the minichord: play the chords. " +
+    say((recorded ? "Your line" : `"${talk.phrase.trim() || DEFAULT_PHRASE}"`) + " is going round into the minichord: play the chords. " +
         (mode === 1 ? "USB audio 1 plays it through the minichord too. " : "") +
-        (vocoderOff ? "The vocoder is off in what's playing now: apply a song that talks, or stage \"vocoder\"." : ""));
+        (vocoderOff ? "The vocoder is off in what's playing now: turn up the vocoder slider (Global Parameters › Effects), " +
+                      "or apply a song that talks." : ""));
   } catch (e) {
     console.warn("[talk]", e);
     stopLoop();
     say("Couldn't loop it: " + (e && e.message || e));
   }
-  talk.rerender();
+  refresh();
 }
 
 // ---- the player's own line ----
@@ -184,7 +191,7 @@ async function startRecording() {
   } catch (e) {
     say("No microphone: " + (e.name === "NotAllowedError" ? "it wasn't allowed." : e.message));
   }
-  talk.rerender();
+  refresh();
 }
 
 async function stopRecording() {
@@ -205,7 +212,7 @@ async function stopRecording() {
   } catch (e) {
     talk.chunks = [];
     say("Couldn't use that recording: " + e.message);
-    talk.rerender();
+    refresh();
   }
 }
 
@@ -216,45 +223,84 @@ function phraseFrom(title) {
   if (title && talk.state !== "playing" && (!talk.phrase || talk.fromSong)) {
     talk.phrase = title;
     talk.fromSong = true;
+    renderSlots();
   }
 }
 
-// The row: shown while the vocoder is on, staged, or a line is going round
-function row(rerender, vocoderOn) {
-  talk.rerender = rerender;
-  if (!vocoderOn && talk.state === "idle" && !talk.status) return null;
-  const box = el("div", "talk-row");
-  box.appendChild(el("p", "describe-line", "The vocoder hears what the computer sends the minichord over USB. Loop a line into it, then play:"));
+// The words, the loop and record buttons, and what's happening. `compact` leaves the words out,
+// for the button under the vocoder slider.
+function controls(compact) {
+  const wrap = el("div", "talk-wrap");
   const line = el("div", "talk-controls");
-  const input = el("input", "talk-phrase");
-  input.type = "text";
-  input.placeholder = "words for the robot voice";
-  input.setAttribute("aria-label", "words for the robot voice to say");
-  input.value = talk.phrase;
-  input.addEventListener("input", () => { talk.phrase = input.value; talk.fromSong = false; });
   const btn = (text, title, cls) => {
     const b = el("button", "always-on " + (cls || "active"), text);
     b.type = "button";
     b.title = title;
     return b;
   };
+  if (!compact) {
+    const input = el("input", "talk-phrase");
+    input.type = "text";
+    input.placeholder = DEFAULT_PHRASE;
+    input.setAttribute("aria-label", "words for the robot voice to say");
+    input.value = talk.phrase;
+    input.addEventListener("input", () => { talk.phrase = input.value; talk.fromSong = false; });
+    input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); startLoop("robot"); } });
+    line.appendChild(input);
+  }
   const busy = talk.state === "making";
   const play = talk.state === "playing"
     ? btn("stop the loop", "stop sending the voice to the minichord")
-    : btn(busy ? "starting…" : "loop the robot voice", "say the words in eSpeak's robot voice, round and round into the minichord");
-  play.addEventListener("click", () => (talk.state === "playing" ? (stopLoop(), say("Stopped."), rerender()) : startLoop("robot")));
-  const rec = talk.state === "recording"
-    ? btn("stop and loop it", "stop recording and send your line round into the minichord", "active recording")
-    : btn("record my own", "say a line yourself; it loops into the minichord, and is kept only while it loops");
-  rec.addEventListener("click", () => (talk.state === "recording" ? stopRecording() : startRecording()));
-  input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); startLoop("robot"); } });
-  line.append(input, play, rec);
-  box.appendChild(line);
-  const status = el("p", "describe-line talk-status", talk.status);
-  box.appendChild(status);
+    : btn(busy ? "starting…" : compact ? "loop a voice into it" : "loop the robot voice",
+          "say the words in eSpeak's robot voice, round and round into the minichord's USB speaker, for the vocoder");
+  play.addEventListener("click", () => (talk.state === "playing" ? (stopLoop(), say("Stopped."), refresh()) : startLoop("robot")));
+  line.appendChild(play);
+  if (!compact) {
+    const rec = talk.state === "recording"
+      ? btn("stop and loop it", "stop recording and send your line round into the minichord", "active recording")
+      : btn("record my own", "say a line yourself; it loops into the minichord, and is kept only while it loops");
+    rec.addEventListener("click", () => (talk.state === "recording" ? stopRecording() : startRecording()));
+    line.appendChild(rec);
+  }
+  wrap.appendChild(line);
+  wrap.appendChild(el("p", "describe-line talk-status", talk.status));
+  return wrap;
+}
+
+// The describe box's row: shown while the vocoder is on or staged, or a line is going round
+function row(rerender, vocoderOn) {
+  talk.rerender = rerender;
+  if (!vocoderOn && talk.state === "idle" && !talk.status) return null;
+  const box = el("div", "talk-row");
+  box.appendChild(el("p", "describe-line", "The vocoder hears what the computer sends the minichord over USB. Loop a line into it, then play:"));
+  box.appendChild(controls(false));
   return box;
 }
 
-root.talk = { row, phraseFrom, stop: () => { stopLoop(); talk.rerender(); } };
+// The main page's "vocoder voice" section and the button under the vocoder slider, always there
+function renderSlots() {
+  for (const [id, compact] of [["talk-main", false], ["talk-vocoder", true]]) {
+    const slot = document.getElementById(id);
+    if (!slot) continue;
+    const typing = slot.contains(document.activeElement) && document.activeElement.classList.contains("talk-phrase");
+    if (typing) {
+      // redraw around the words being typed, not over them
+      slot.querySelectorAll(".talk-controls button, .talk-status").forEach(n => n.remove());
+      const fresh = controls(false);
+      fresh.querySelectorAll(".talk-controls button").forEach(b => slot.querySelector(".talk-controls").appendChild(b));
+      slot.querySelector(".talk-wrap").appendChild(fresh.querySelector(".talk-status"));
+      continue;
+    }
+    slot.textContent = "";
+    slot.appendChild(controls(compact));
+  }
+}
+
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", renderSlots);
+  else renderSlots();
+}
+
+root.talk = { row, phraseFrom, stop: () => { stopLoop(); refresh(); } };
 
 })(typeof window !== "undefined" ? window : globalThis);

@@ -287,6 +287,9 @@ def generate_param_html(param):
                        style="width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
         ''')
+        if sysex_address == 260:
+            # the vocoder hears what comes in over USB: a voice to loop into it, filled by talk.js
+            html.append('<div id="talk-vocoder" class="talk-slot talk-beside"></div>')
     elif ui_type == 'select':
         options_html = ''
         if 'none_option' in param:
@@ -595,6 +598,13 @@ html_template = '''<!DOCTYPE html>
           </div>
         </div>
         <div class="section">
+          <h5 style="margin: 0; font-size: 1.1em;">describing:</h5>
+        </div>
+        <div class="controls">
+          <!-- a description or an instruction in words, staged before it changes the live sound or any bank; filled by describe.js and commands.js -->
+          <div id="describe-preset" class="describe-box"></div>
+        </div>
+        <div class="section">
           <h5 style="margin: 0; font-size: 1.1em;">resetting:</h5>
         </div>
         <div class="controls">
@@ -635,6 +645,13 @@ html_template = '''<!DOCTYPE html>
         </div>
         <div class="controls">
 {looper_buttons}
+        </div>
+        <div class="section">
+          <h5 style="margin: 0; font-size: 1.1em;">vocoder voice:</h5>
+        </div>
+        <div class="controls">
+          <!-- a voice looped into the minichord's USB speaker for the vocoder to shape; filled by talk.js -->
+          <div id="talk-main" class="talk-slot"></div>
         </div>
         <div class="section">
           <h5 style="margin: 0; font-size: 1.1em;">randomising:</h5>
@@ -692,6 +709,9 @@ html_template = '''<!DOCTYPE html>
   <script src="minichordcontroller.js"></script>
   <script src="index.js"></script>
   <script src="banks.js"></script>
+  <script src="describe.js"></script>
+  <script src="commands.js"></script>
+  <script src="talk.js"></script>
   <script>
     // installable, and opens offline once visited (see sw.js)
     if ('serviceWorker' in navigator) {{

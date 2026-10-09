@@ -172,6 +172,13 @@
           </div>
         </div>
         <div class="section">
+          <h5 style="margin: 0; font-size: 1.1em;">vocoder voice:</h5>
+        </div>
+        <div class="controls">
+          <!-- a voice looped into the minichord's USB speaker for the vocoder to shape; filled by talk.js -->
+          <div id="talk-main" class="talk-slot"></div>
+        </div>
+        <div class="section">
           <h5 style="margin: 0; font-size: 1.1em;">randomising:</h5>
         </div>
         <div class="controls">
@@ -494,6 +501,7 @@
                        style="width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
         
+<div id="talk-vocoder" class="talk-slot talk-beside"></div>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-261" title="what the vocoder shapes. 0: the chords, the classic sustained vocoder sound. 1: the harp, whose plucks die away too fast to carry words well but make textures. 2: both, the harp's vocoded part coming through the chords' effects" style="width: 150px; font-weight: bold;">vocoder carrier</label>
                 <select id="param-261" name="vocoder carrier" class="inactive" data-sysex-address="261" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="what the vocoder shapes. 0: the chords, the classic sustained vocoder sound. 1: the harp, whose plucks die away too fast to carry words well but make textures. 2: both, the harp's vocoded part coming through the chords' effects" version="0.34"

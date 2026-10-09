@@ -942,6 +942,23 @@
     .talk-status:empty {
       display: none;
     }
+    .talk-slot {
+      flex: 1 1 100%;
+      max-width: 700px;
+    }
+    .talk-slot .talk-status {
+      margin-top: 4px;
+    }
+    /* under the vocoder slider in Global Parameters, lined up with the slider */
+    .talk-beside {
+      margin: -2px 0 8px 158px;
+      max-width: 420px;
+    }
+    @media (max-width: 600px) {
+      .talk-beside {
+        margin-left: 0;
+      }
+    }
     /* the staging area: what the words would change, before anything is sent */
     .describe-question {
       display: flex;
