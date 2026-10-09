@@ -170,9 +170,12 @@ def main():
         "takes effect from where the knob sits when the preset loads; the stored value is the middle of its "
         "sweep.",
         "",
+        "The presets and demos were made by Claude (Anthropic's AI), on a minichord, with a player steering. "
         "The demos were recorded from the minichord's USB audio: the notes went in over MIDI, and the hand "
-        "and knobs were played by writing their settings as it recorded. So they are the sound and the "
-        "controls, but not the buttons' own voicings or the harp's touch.",
+        "and knobs were played by writing their settings as it recorded. So they leave out what needs a "
+        "hand on the instrument: the buttons' own voicings, the harp's touch, and the harp ribbon, which "
+        "makes Midnight Raga something else entirely (the Ribbon Lead demo fakes its slides with quick runs). "
+        "Play those two before judging them.",
         "",
         "| Bank | Preset | Demo | Shows |",
         "|---|---|---|---|",
