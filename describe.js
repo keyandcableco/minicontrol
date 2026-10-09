@@ -78,6 +78,7 @@ function decode(code) {
   let s = code.replace(/\s+/g, "");
   s += "=".repeat((4 - s.length % 4) % 4);
   const fields = atob(s).split(";");
+  if (fields.length === PAGE_SIZE - 1 || fields.length === PARAMETER_SIZE - 1) fields.push("");   // written without the last ";"
   if (fields.length !== PAGE_SIZE && fields.length !== PARAMETER_SIZE) throw new Error("malformed preset code");
   const values = fields.map(v => (v.trim() ? pyRound(parseFloat(v)) : 0));
   if (values.length === PAGE_SIZE) {
