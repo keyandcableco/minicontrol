@@ -240,6 +240,8 @@ class Interpreter {
       const group = tokens(normalise(p.group)).join(" ");
       const variants = [name, `${group} ${name}`];
       if (p.section !== "global") variants.push(`${p.section} ${name}`, `${p.section}s ${name}`, `${p.section} ${group} ${name}`);
+      const wm = /^waveform (\d)$/.exec(name);
+      if (wm && p.section === "chord") variants.push(`oscillator ${wm[1]}`, `osc ${wm[1]}`, `chord oscillator ${wm[1]}`);
       for (const v of variants) {
         const key = v.split(" ").filter(Boolean).join(" ");
         if (!this.names.has(key)) this.names.set(key, new Set());
@@ -335,7 +337,7 @@ class Interpreter {
 
   // ---- one descriptor ----
 
-  describe(entry, section, strength, negate, more, less) {
+  describe(entry, section, strength, negate, more, less, amount) {
     const r = this.result;
     const key = JSON.stringify([entry.label, section, negate, less]);
     if (this.applied.has(key)) return;
@@ -381,6 +383,26 @@ class Interpreter {
           halves[s] = this.movesFor(entry.moves, s).filter(m => m[0] === "set").map(m => ["scale", m[1], 0.5]);
         this.apply(entry, section, 1, `less ${entry.label}`, halves);
         r.understood.push(`${prefix}less ${entry.label}`);
+        return;
+      }
+      if (amount != null) {   // "reverb at 40%": exactly that much
+        const moves = {};
+        for (const s of ["chord", "harp"]) {
+          moves[s] = [];
+          for (const m of this.movesFor(entry.moves, s)) {
+            if (m[0] !== "set") { moves[s].push(m); continue; }
+            const a = this.addr(m[1], s);
+            if (a == null || !(a in this.state)) continue;
+            const p = PARAMS[a];
+            let v = amount;
+            if (isFloat(p) && v > p.max_value && v / 100 <= p.max_value) v /= 100;
+            moves[s].push(["exact", m[1], v]);
+          }
+        }
+        this.apply(entry, section, 1, entry.label, moves);
+        r.understood.push(`${prefix}${entry.label} at ${fmtG(amount)}`);
+        if (entry.note) r.notes.push(entry.note);
+        if (entry.hue != null && this.hue == null) this.hue = entry.hue;
         return;
       }
       const k = { 1: 1.0, 2: 1.5, 0: 0.5 }[strength];
@@ -531,6 +553,22 @@ class Interpreter {
     }
   }
 
+  // A control set to do nothing
+  clear(control) {
+    const r = this.result;
+    if (control.startsWith("tap")) {
+      const pairs = control.includes(":") ? [D.tap_pairs[parseInt(control.slice(4), 10)]] : D.tap_pairs;
+      for (const [c] of pairs) this.put(c, 0, "double tap cleared");
+      r.understood.push(`double tap${control.includes(":") ? " slot " + (parseInt(control.slice(4), 10) + 1) : ""} does nothing`);
+    } else if (control === "hover") {
+      this.put(249, 0, "hover cleared");
+      r.understood.push("hover does nothing");
+    } else {
+      this.put(D.knob_addresses[control][0], 0, `${D.control_names[control]} cleared`);
+      r.understood.push(`${D.control_names[control]} does nothing`);
+    }
+  }
+
   settingName(a) {
     const p = PARAMS[a];
     let name = p.name.trim();
@@ -580,6 +618,7 @@ class Interpreter {
     this.lastValue = null;
     this.forced = null;
     for (const clause of this.clauses(normalise(text))) this.clause(clause);
+    this.result.notes = [...new Set(this.result.notes)];
     const color = this.color != null ? this.color : (this.profile ? null : this.hue);
     if (color != null && this.result.understood.length && (first || this.color != null)) this.put(20, color, "bank color");
     const addrs = this.profile ? [...this.touched] : Object.keys(this.state).filter(a => this.state[a] !== start[a]);
@@ -771,8 +810,20 @@ class Interpreter {
       const lastWord = key.split(" ").pop();
       const more = intersects(this.more, window) || (lastWord.endsWith("er") && entry.kind === "effect");
       for (let j = Math.max(0, i - 3); j < i; j++) if (this.modifiers.has(toks[j])) used[j] = true;
+      let amount = null;
+      if (entry.kind === "effect") {
+        const fillers = new Set(D.amount_fillers);
+        let k = i + n;
+        while (k < toks.length && fillers.has(toks[k]) && k < i + n + 3) k++;
+        if (k < toks.length && /^\d*\.?\d+$/.test(toks[k]) &&
+            !(k + 1 < toks.length && ["edo", "bpm", "hz", "cm", "hertz"].includes(toks[k + 1]))) {
+          amount = parseFloat(toks[k]);
+          for (let j = i + n; j <= k; j++) used[j] = true;
+          if (k + 1 < toks.length && ["percent", "pc"].includes(toks[k + 1])) used[k + 1] = true;
+        }
+      }
       const section = this.sectionFor(i, anchors, entry);
-      this.describe(entry, section, strength, negate, more, less);
+      this.describe(entry, section, strength, negate, more, less, amount);
       for (let j = i; j < i + n; j++) used[j] = true;
       i += n;
     }
@@ -812,6 +863,16 @@ class Interpreter {
 
   assignments(toks, used, controls, anchors, carried) {
     const roles = this.roles(toks, used);
+    const clearWords = new Set(D.clear_words);
+    if (!roles.length && toks.some(t => clearWords.has(t))) {
+      for (const control of controls) this.clear(control);
+      toks.forEach((t, i) => {
+        if (clearWords.has(t) || this.actionVerbs.has(t) || ["also", "too", "on"].includes(t)) used[i] = true;
+      });
+      this.pending = [];
+      this.leftovers(toks, used);
+      return;
+    }
     if (!roles.length) {
       if (!carried) this.pending = controls;
       this.leftovers(toks, used);
@@ -929,7 +990,10 @@ class Interpreter {
       const [key, n] = hit;
       let k = i + n;
       while (k < toks.length && fillers.has(toks[k]) && k < i + n + 3) k++;
-      if (k >= toks.length || !/^\d*\.?\d+$/.test(toks[k]) ||
+      let wave = null;
+      if (k < toks.length && toks[k] in D.wave_names &&
+          [...this.names.get(key)].every(a => PARAMS[a].name.includes("waveform"))) wave = D.wave_names[toks[k]];
+      else if (k >= toks.length || !/^\d*\.?\d+$/.test(toks[k]) ||
           (k + 1 < toks.length && ["edo", "bpm", "hz", "cm", "hertz"].includes(toks[k + 1]))) { i++; continue; }
       let addrs = [...this.names.get(key)].sort((x, y) => x - y);
       if (addrs.length > 1) {
@@ -946,7 +1010,7 @@ class Interpreter {
       }
       for (const a of addrs) {
         const p = PARAMS[a];
-        let v = parseFloat(toks[k]);
+        let v = wave == null ? parseFloat(toks[k]) : wave;
         if (isFloat(p) && v > p.max_value && v / 100 <= p.max_value) v /= 100;
         this.put(a, v, this.settingName(a));
         this.result.understood.push(`${this.settingName(a)} ${fmtG(this.state[a])}`);
