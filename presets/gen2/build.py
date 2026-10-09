@@ -155,6 +155,10 @@ def main():
         "",
         "**One at a time:** \"load preset code\" with the code below, then save it to a bank.",
         "",
+        "Banks 4, 5 and 11 are in 31-tone equal temperament, where a sharp and the flat above it are "
+        "different notes (A sharp is a third of a semitone below B flat). The sharp button plays sharps, so "
+        "in a flat key set the chord key signature, or turn the sharp button into a flat one (sharp function).",
+        "",
         "Hover is a hand held over the harp plate, full about 2 cm above it. The mod knob's main function "
         "takes effect from where the knob sits when the preset loads; the stored value is the middle of its "
         "sweep.",
