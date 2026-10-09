@@ -449,7 +449,7 @@
       align-items: flex-start;
       justify-content: center;
       overflow-y: auto;
-      padding: 4vh 16px;
+      padding: 4vh max(16px, 3vw);
       box-sizing: border-box;
     }
     .bank-sheet.open {
@@ -460,8 +460,8 @@
       color: var(--text-primary);
       border-radius: 8px;
       width: 100%;
-      max-width: 680px;
-      padding: 16px;
+      max-width: 1240px;
+      padding: 20px 24px;
       box-sizing: border-box;
       outline: none;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
@@ -510,14 +510,16 @@
       font-size: 1.3em;
       padding: 0 6px;
     }
-    /* what isn't staging or writing reads as a link, so the filled buttons are the ones that matter */
-    .bank-btn.quiet {
-      background: none !important;
+    /* outlined: still plainly a button, but the filled ones (stage, write) are what move things along */
+    .bank-btn.secondary {
+      background: transparent !important;
       color: var(--text-primary) !important;
-      border: none !important;
+      border: 2px solid var(--primary-color) !important;
       box-shadow: none !important;
-      text-decoration: underline;
-      padding: 2px 4px;
+      padding: 6px 10px;
+    }
+    .bank-btn.secondary:hover:not(:disabled) {
+      background: var(--track-color) !important;
     }
     .bank-grid {
       display: grid;
@@ -570,52 +572,129 @@
       outline: none;
       border-bottom-color: var(--text-primary) !important;
     }
+    /* what you change on the left, what is staged on the right; stacked when the window is narrow */
+    .bank-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      column-gap: 32px;
+      align-items: start;
+    }
+    @media (min-width: 960px) {
+      .bank-layout {
+        grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr);
+      }
+      /* the staged list stays beside whatever you are changing, scrolling on its own when long */
+      .bank-side {
+        position: sticky;
+        top: 0;
+        max-height: calc(92vh - 110px);
+        overflow-y: auto;
+      }
+    }
     .bank-section {
       border-top: 1px solid var(--track-color);
-      margin-top: 14px;
+      margin-top: 18px;
+    }
+    .bank-sheet-card h6 {
+      margin: 0;
+      font-size: 1em;
     }
     .bank-note {
-      margin: 0 0 6px;
-      line-height: 1.35;
+      margin: 0 0 8px;
+      line-height: 1.4;
       opacity: 0.75;
+    }
+    .bank-small {
+      font-size: 0.9em;
+    }
+    .bank-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 4px 0 6px;
     }
     /* everything waiting to be written, drawn the way a changed bank is */
     .bank-section.bank-staged {
       border: 2px dashed var(--primary-color);
       border-radius: 6px;
-      padding: 0 10px 6px;
+      padding: 0 14px 10px;
     }
     .bank-staged h5 {
-      margin-top: 10px;
+      margin-top: 12px;
     }
-    .bank-row {
+    .bank-group-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 14px 0 6px;
+    }
+    .bank-group-head .bank-btn {
+      font-size: 0.9em;
+      padding: 3px 8px;
+    }
+    .bank-chips {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 4px 8px;
-      padding: 3px 0;
+      gap: 6px;
     }
-    /* the name takes the line to itself when the row is too narrow for both */
-    .bank-row-name {
-      flex: 1 1 12em;
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-    .bank-row-val {
-      font-family: monospace;
-      text-align: right;
-    }
-    .bank-row-count {
-      opacity: 0.7;
+    .bank-chip {
+      border: 1px solid var(--track-color);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
-    /* a profile's settings, on their own line under its name */
-    .bank-row-sub {
-      flex: 1 1 100%;
-      margin-top: -4px;
+    /* some theme fonts (the arcade's pixel type) have no arrow */
+    .bank-arrow {
+      font-family: Arial, sans-serif;
+    }
+    /* one staged setting: its name and value on top, where it lives and what it changes below */
+    .bank-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      column-gap: 10px;
+      align-items: baseline;
+      padding: 7px 0;
+      border-top: 1px solid var(--track-color);
+    }
+    .bank-item-name {
+      grid-column: 1;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+    .bank-item-val {
+      grid-column: 2;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+    .bank-item .bank-x {
+      grid-column: 3;
+      grid-row: 1 / 3;
+      align-self: center;
+    }
+    .bank-item-sub {
+      grid-column: 1 / 3;
+      grid-row: 2;
       font-size: 0.9em;
       opacity: 0.7;
       overflow-wrap: anywhere;
+    }
+    /* a saved profile: its name and what you can do with it, then what it sets */
+    .bank-profile {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      column-gap: 8px;
+      row-gap: 2px;
+      align-items: center;
+      padding: 8px 10px;
+      margin: 6px 0;
+      border: 1px solid var(--track-color);
+      border-radius: 6px;
+    }
+    .bank-profile .bank-item-sub {
+      grid-column: 1 / -1;
+      grid-row: 2;
     }
     .bank-picker {
       display: flex;
@@ -671,8 +750,8 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 8px;
-      margin: 16px -16px -16px;
-      padding: 10px 16px;
+      margin: 18px -24px -20px;
+      padding: 12px 24px;
       background: var(--background-color);
       border-top: 2px solid var(--track-color);
       border-radius: 0 0 8px 8px;

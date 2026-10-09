@@ -87,6 +87,13 @@ function isTargetSetting(p) {
   return !!p && p.ui_type === "select" && !p.options && !!p.targets;
 }
 
+// the section and group a setting sits in, for showing under its name
+function paramPath(p) {
+  if (!p) return "";
+  const section = SECTION_LABEL[p.section] || p.section;
+  return p.group === "Potentiometer" ? section : section + " · " + p.group;
+}
+
 function paramLabel(p) {
   if (!p) return "";
   const section = SECTION_LABEL[p.section] || p.section;
@@ -628,11 +635,21 @@ function renderBankSheet() {
     card.appendChild(warn);
   }
 
-  intro.textContent = "Moving a bank, setting something in every bank and using a profile " +
-    "all stage a change. Nothing reaches the minichord until you write it.";
+  intro.textContent = "Make changes, check them under staged changes, then write them. " +
+    "Nothing reaches the minichord until you press write.";
+
+  // what you change on one side, what is staged on the other; one column when narrow
+  const layout = document.createElement("div");
+  layout.className = "bank-layout";
+  const main = document.createElement("div");
+  main.className = "bank-main";
+  const side = document.createElement("div");
+  side.className = "bank-side";
+  layout.append(main, side);
+  card.appendChild(layout);
 
   // a titled part of the sheet, with a line saying what it is for
-  function bankSection(title, note, cls) {
+  function bankSection(parent, title, note, cls) {
     const sec = document.createElement("div");
     sec.className = "bank-section" + (cls ? " " + cls : "");
     const h = document.createElement("h5");
@@ -644,12 +661,12 @@ function renderBankSheet() {
       p.textContent = note;
       sec.appendChild(p);
     }
-    card.appendChild(sec);
+    parent.appendChild(sec);
     return sec;
   }
 
   // ---- the twelve banks ----
-  const moveSec = bankSection("move banks", "Drag a bank onto another to move it. A dashed bank has staged changes.");
+  const moveSec = bankSection(main, "move banks", "Drag a bank onto another to move it. A dashed bank has staged changes.");
   const grid = document.createElement("div");
   grid.className = "bank-grid";
   moveSec.appendChild(grid);
@@ -712,7 +729,7 @@ function renderBankSheet() {
   });
 
   // ---- one setting in every bank ----
-  const setSec = bankSection("set in every bank", "Pick a setting and a value, then stage it. Every bank gets that value; nothing else in them changes.");
+  const setSec = bankSection(main, "set in every bank", "Pick a setting and a value, then stage it. Every bank gets that value; nothing else in them changes.");
   const stagedEdits = bulkStaged.map(e => ({ addr: e.addr, value: e.value }));
 
   // the picker: a setting, the value it takes, and a button to stage it
@@ -823,55 +840,26 @@ function renderBankSheet() {
   picker.appendChild(setBtn);
 
   // ---- profiles ----
-  const prof = bankSection("profiles", "A profile is a saved list of settings. Staging one sets those " +
-    "settings in every bank, the same as picking each above, and leaves everything else alone.");
-  const profiles = readProfiles();
-  if (!profiles.length) {
-    const none = document.createElement("p");
-    none.className = "bank-note";
-    none.textContent = "None yet. Stage some settings, then save them as a profile from the staged changes below.";
-    prof.appendChild(none);
-  }
-  profiles.forEach(pr => {
-    const row = document.createElement("div");
-    row.className = "bank-row";
-    const name = document.createElement("span");
-    name.className = "bank-row-name";
-    name.textContent = pr.name;
-    // what it sets, so a profile can be read before it is staged
-    const lines = pr.edits.map(e => {
-      const p = bankParams[e.addr];
-      return (paramLabel(p) || "address " + e.addr) + ": " + valueLabel(p, e.value, pr.edits);
-    });
-    const sub = document.createElement("span");
-    sub.className = "bank-row-sub";
-    sub.textContent = lines.slice(0, 3).join("; ") + (lines.length > 3 ? "; and " + (lines.length - 3) + " more" : "");
-    sub.title = lines.join("\n");
+  const prof = bankSection(main, "profiles", "A profile is a named set of settings, kept in this browser. " +
+    "Save what you have staged as a profile, then stage it again whenever you like, on this minichord or another. " +
+    "Export one to share it as a file, or import a file someone shared.");
 
-    const use = mkBankBtn("stage", "Stage this profile's settings in every bank. Nothing is written yet.");
-    use.addEventListener("click", () => {
-      const r = stageProfile(pr);
-      const bits = [r.staged + (r.staged === 1 ? " setting" : " settings") + " staged"];
-      if (r.already) bits.push(r.already + " already matching");
-      if (r.unknown) bits.push(r.unknown + " not on this firmware");
-      bankAnnounce(pr.name + ": " + bits.join(", "));
-      renderBankSheet();
-    });
-    const out = mkBankBtn("export", "Save this profile to a file to share", "quiet");
-    out.addEventListener("click", () => {
-      downloadJson({ profiles: [pr] }, (pr.name.replace(/[^\w.-]+/g, "-") || "profile") + ".profile.json");
-    });
-    const del = mkBankBtn("×", "Forget this profile", "bank-x");
-    del.addEventListener("click", () => {
-      if (!confirm("Forget the profile “" + pr.name + "”?")) return;
-      writeProfiles(readProfiles().filter(x => x.name !== pr.name));
-      renderBankSheet();
-    });
-    row.append(name, use, out, del, sub);
-    prof.appendChild(row);
+  const toolbar = document.createElement("div");
+  toolbar.className = "bank-toolbar";
+  const saveBtn = mkBankBtn("save staged settings as a profile…", "Keep the staged settings as a named profile you can stage again", "secondary");
+  saveBtn.disabled = !bulkStaged.length;
+  saveBtn.addEventListener("click", () => {
+    const name = (prompt("Name this profile", "") || "").trim().slice(0, 40);
+    if (!name) return;
+    const edits = bulkStaged.map(e => ({ addr: e.addr, value: e.value }));
+    const next = readProfiles().filter(pr => pr.name !== name);
+    next.push({ name, edits });
+    if (!writeProfiles(next)) { bankAnnounce("Couldn't save that profile"); return; }
+    bankAnnounce("Saved the profile “" + name + "”. The settings are still staged.");
+    renderBankSheet();
   });
 
-  const importBtn = mkBankBtn("import a profile file", "Load profiles from a file someone shared", "quiet");
+  const importBtn = mkBankBtn("import a profile file…", "Load profiles from a file someone shared", "secondary");
   importBtn.addEventListener("click", () => {
     const inp = document.createElement("input");
     inp.type = "file"; inp.accept = "application/json,.json";
@@ -890,85 +878,152 @@ function renderBankSheet() {
           if (i >= 0) merged[i] = pr; else merged.push(pr);
         });
         if (!writeProfiles(merged)) { bankAnnounce("That file didn't look like profiles"); return; }
-        bankAnnounce("Imported " + arr.length + (arr.length === 1 ? " profile" : " profiles"));
+        bankAnnounce("Imported " + arr.length + (arr.length === 1 ? " profile" : " profiles") + ". Stage one to use it.");
         renderBankSheet();
       };
       r.readAsText(f);
     });
     inp.click();
   });
-  const profFoot = document.createElement("div");
-  profFoot.className = "bank-row";
-  profFoot.appendChild(importBtn);
-  prof.appendChild(profFoot);
+  toolbar.append(saveBtn, importBtn);
+  prof.appendChild(toolbar);
 
-  // ---- everything staged, in one place ----
-  const staged = bankSection("staged changes", "Not on the minichord yet. Take any of them back with ×.", "bank-staged");
+  const saveHint = document.createElement("p");
+  saveHint.className = "bank-note bank-small";
+  saveHint.textContent = bulkStaged.length
+    ? "Saving keeps the " + bulkStaged.length + (bulkStaged.length === 1 ? " setting" : " settings") +
+      " now staged. Bank moves aren't part of a profile."
+    : "To save a profile, stage some settings above first.";
+  prof.appendChild(saveHint);
+
+  // describing a profile in words, filled by describe.js when it is loaded. The
+  // sheet is rebuilt on every change, so the hook fills a fresh box each time.
+  const describe = document.createElement("div");
+  describe.id = "bank-describe";
+  describe.className = "bank-describe";
+  prof.appendChild(describe);
+  if (typeof renderBankDescribe === "function") renderBankDescribe(describe);
+
+  const profiles = readProfiles();
+  if (!profiles.length) {
+    const none = document.createElement("p");
+    none.className = "bank-note";
+    none.textContent = "No profiles saved yet.";
+    prof.appendChild(none);
+  }
+  profiles.forEach(pr => {
+    const item = document.createElement("div");
+    item.className = "bank-profile";
+    const name = document.createElement("span");
+    name.className = "bank-item-name";
+    name.textContent = pr.name;
+
+    const use = mkBankBtn("stage", "Stage this profile's settings in every bank. Nothing is written yet.", "primary");
+    use.addEventListener("click", () => {
+      const r = stageProfile(pr);
+      const bits = [r.staged + (r.staged === 1 ? " setting" : " settings") + " staged"];
+      if (r.already) bits.push(r.already + " already matching");
+      if (r.unknown) bits.push(r.unknown + " not on this firmware");
+      bankAnnounce(pr.name + ": " + bits.join(", "));
+      renderBankSheet();
+    });
+    const out = mkBankBtn("export", "Save this profile to a file to share", "secondary");
+    out.addEventListener("click", () => {
+      downloadJson({ profiles: [pr] }, (pr.name.replace(/[^\w.-]+/g, "-") || "profile") + ".profile.json");
+    });
+    const del = mkBankBtn("×", "Forget this profile", "bank-x");
+    del.addEventListener("click", () => {
+      if (!confirm("Forget the profile “" + pr.name + "”?")) return;
+      writeProfiles(readProfiles().filter(x => x.name !== pr.name));
+      renderBankSheet();
+    });
+
+    // what it sets, so a profile can be read before it is staged
+    const short = pr.edits.map(e => {
+      const p = bankParams[e.addr];
+      return (p ? p.name : "address " + e.addr) + " " + valueLabel(p, e.value, pr.edits);
+    });
+    const sub = document.createElement("span");
+    sub.className = "bank-item-sub";
+    sub.textContent = short.slice(0, 4).join(" · ") + (short.length > 4 ? " · and " + (short.length - 4) + " more" : "");
+    sub.title = pr.edits.map(e => {
+      const p = bankParams[e.addr];
+      return (paramLabel(p) || "address " + e.addr) + ": " + valueLabel(p, e.value, pr.edits);
+    }).join("\n");
+
+    item.append(name, use, out, del, sub);
+    prof.appendChild(item);
+  });
+
+  // ---- everything staged, in its own panel ----
   const moves = bankMoves();
+  const nothing = !moves.length && !bulkStaged.length;
+  const staged = bankSection(side, "staged changes", nothing
+    ? "Nothing staged yet. Whatever you move, set or stage collects here until you write it."
+    : "Not on the minichord yet. Take any of them back with ×.", "bank-staged");
+
   if (moves.length) {
-    const row = document.createElement("div");
-    row.className = "bank-row";
-    const label = document.createElement("span");
-    label.className = "bank-row-name";
-    label.textContent = "Banks moved";
-    const val = document.createElement("span");
-    val.className = "bank-row-val";
-    val.textContent = moves.map(m => (m.from + 1) + " → " + (m.to + 1)).join(", ");
-    const undo = mkBankBtn("×", "Put every bank back where it was", "bank-x");
-    undo.addEventListener("click", () => { unmoveBanks(); bankAnnounce("Banks put back"); renderBankSheet(); });
-    row.append(label, val, undo);
-    staged.appendChild(row);
+    const groupHead = document.createElement("div");
+    groupHead.className = "bank-group-head";
+    const h = document.createElement("h6");
+    h.textContent = "bank moves";
+    const back = mkBankBtn("put back", "Put every bank back where it was", "secondary");
+    back.addEventListener("click", () => { unmoveBanks(); bankAnnounce("Banks put back"); renderBankSheet(); });
+    groupHead.append(h, back);
+    staged.appendChild(groupHead);
+    const chips = document.createElement("div");
+    chips.className = "bank-chips";
+    moves.forEach(m => {
+      const chip = document.createElement("span");
+      chip.className = "bank-chip";
+      const arrow = document.createElement("span");
+      arrow.className = "bank-arrow";
+      arrow.textContent = " → ";
+      chip.append(String(m.from + 1), arrow, String(m.to + 1));
+      chip.title = "Bank " + (m.from + 1) + " moves to " + (m.to + 1);
+      chips.appendChild(chip);
+    });
+    staged.appendChild(chips);
+  }
+
+  if (bulkStaged.length) {
+    const groupHead = document.createElement("div");
+    groupHead.className = "bank-group-head";
+    const h = document.createElement("h6");
+    h.textContent = "settings, in every bank";
+    groupHead.appendChild(h);
+    staged.appendChild(groupHead);
   }
   bulkStaged.forEach((entry, i) => {
     const p = bankParams[entry.addr];
-    const row = document.createElement("div");
-    row.className = "bank-row";
-    const label = document.createElement("span");
-    label.className = "bank-row-name";
-    label.textContent = paramLabel(p) || ("address " + entry.addr);
+    const item = document.createElement("div");
+    item.className = "bank-item";
+    const name = document.createElement("span");
+    name.className = "bank-item-name";
+    name.textContent = p ? p.name : "address " + entry.addr;
     const val = document.createElement("span");
-    val.className = "bank-row-val";
+    val.className = "bank-item-val";
     val.textContent = valueLabel(p, entry.value, stagedEdits);
-    // how many banks this row actually changes, since some may already match
-    const n = entry.before.filter(b => b.value !== entry.value).length;
-    const count = document.createElement("span");
-    count.className = "bank-row-count";
-    count.textContent = n ? "in " + n + (n === 1 ? " bank" : " banks") : "already set";
     const undo = mkBankBtn("×", "Put this setting back to what each bank had", "bank-x");
     undo.addEventListener("click", () => { unstageSetting(i); renderBankSheet(); });
-    row.append(label, val, count, undo);
-    staged.appendChild(row);
+    // where the setting lives, and how many banks it actually changes, since some may already match
+    const n = entry.before.filter(b => b.value !== entry.value).length;
+    const sub = document.createElement("span");
+    sub.className = "bank-item-sub";
+    sub.textContent = [paramPath(p), n ? "changes " + n + (n === 1 ? " bank" : " banks") : "every bank already has it"]
+      .filter(Boolean).join(" · ");
+    item.append(name, val, undo, sub);
+    staged.appendChild(item);
   });
-  if (!moves.length && !bulkStaged.length) {
-    const none = document.createElement("p");
-    none.className = "bank-note";
-    none.textContent = "Nothing staged.";
-    staged.appendChild(none);
-  }
-  if (bulkStaged.length) {
-    const saveBtn = mkBankBtn("save these settings as a profile", "Keep the staged settings as a named profile you can stage again", "quiet");
-    saveBtn.addEventListener("click", () => {
-      const name = (prompt("Name this profile", "") || "").trim().slice(0, 40);
-      if (!name) return;
-      const edits = bulkStaged.map(e => ({ addr: e.addr, value: e.value }));
-      const next = readProfiles().filter(pr => pr.name !== name);
-      next.push({ name, edits });
-      if (!writeProfiles(next)) { bankAnnounce("Couldn't save that profile"); return; }
-      bankAnnounce("Saved the profile “" + name + "”. The settings are still staged.");
-      renderBankSheet();
-    });
-    const saveRow = document.createElement("div");
-    saveRow.className = "bank-row";
-    saveRow.appendChild(saveBtn);
-    staged.appendChild(saveRow);
-  }
 
   // ---- write / discard, kept in view ----
   const summary = document.createElement("span");
   summary.className = "bank-bar-summary";
-  summary.textContent = dirtyCount
-    ? dirtyCount + (dirtyCount === 1 ? " bank" : " banks") + " will be rewritten"
-    : "Nothing to write";
+  const dirtyNums = [];
+  bankState.slots.forEach((slot, i) => { if (slot.dirty) dirtyNums.push(i + 1); });
+  summary.textContent = !dirtyCount ? "Nothing to write"
+    : dirtyCount === BANK_COUNT ? "All twelve banks will be rewritten"
+    : (dirtyCount === 1 ? "Bank " : "Banks ") + dirtyNums.join(", ") + " will be rewritten";
 
   const writeBtn = mkBankBtn(dirtyCount ? "write " + dirtyCount + (dirtyCount === 1 ? " bank" : " banks") + " to the minichord" : "write to the minichord",
     "Write the staged changes to the minichord", "primary");
@@ -990,7 +1045,7 @@ function renderBankSheet() {
     renderBankSheet();
   });
 
-  const discardBtn = mkBankBtn("discard all", "Throw away every staged change", "quiet");
+  const discardBtn = mkBankBtn("discard all", "Throw away every staged change", "secondary");
   discardBtn.disabled = !dirtyCount && !bulkStaged.length;
   discardBtn.addEventListener("click", () => {
     if (!confirm("Throw away every staged change? Nothing has been written, so the banks stay as they are.")) return;
