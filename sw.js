@@ -17,6 +17,7 @@ const SHELL = [
   'banks.js',
   'describe.js',
   'commands.js',
+  'talk.js',
   'describe_data.json',
   'minichordcontroller.js',
   'parameters.json',

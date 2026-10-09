@@ -1352,8 +1352,12 @@ function disclaimer() {
   return el("p", "describe-disclaimer",
     "Not AI: the words are read by a script of rules, in this page. Nothing you type or say leaves this computer, " +
     "and recordings aren't kept anywhere: speaking is turned into text here by a small speech model, and the " +
-    "recording is dropped as soon as it has been read.");
+    "recording is dropped as soon as it has been read. The vocoder's robot voice is eSpeak, which works by rules " +
+    "too, and a line you record for it is held only while it loops.");
 }
+
+// the microphone chosen for speaking, which a recorded vocoder line uses too (talk.js)
+root.describeMic = () => voice.mic;
 
 // ---- suggestions: a phrase of each kind, tapped into the box ----
 // Each one reads cleanly: understood whole, nothing asked. A song comes from the whole list once
@@ -1559,6 +1563,13 @@ async function stageWords(text, box) {
     if (presetResult.understood.length || presetResult.questions.length) {
       if (presetResult.understood.length) stagedWords.push(text);
       presetText = "";
+    }
+    // a song that talks: its title is what the robot voice says, below
+    if (root.talk && D) {
+      const said = presetResult.understood.join(" | ");
+      const song = D.vocabulary.find(e => e.kind === "song" && said.includes(e.label) &&
+                                          /vocoder|talk/.test([e.both, e.chords, e.harp].join(" ")));
+      if (song) root.talk.phraseFrom(song.words[0]);
     }
     if (before === after && presetResult.understood.length && !presetResult.questions.length)
       presetResult.notes.unshift("that changes nothing: it's already so, in what's playing or what's staged");
@@ -1790,6 +1801,13 @@ function renderPresetDescribe(box) {
     acts.append(apply, clear);
     area.appendChild(acts);
     box.appendChild(area);
+  }
+  // the vocoder on, or staged: a voice to loop into it
+  if (root.talk) {
+    const live = stagePlaces.live;
+    const vocoderOn = (typeof currentValues !== "undefined" && currentValues[260] > 0) || !!(live && live.work[260] > 0);
+    const talkRow = root.talk.row(() => renderPresetDescribe(box), vocoderOn);
+    if (talkRow) box.appendChild(talkRow);
   }
   if (putBack && (Object.keys(putBack.live).length || Object.keys(putBack.banks).length)) {
     const back = button("put everything back", "restore every setting and bank that apply changed, as it was before", connected && !stageBusy);

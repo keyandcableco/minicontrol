@@ -916,6 +916,32 @@
       line-height: 1.4;
       opacity: 0.6;
     }
+    /* a voice on a loop into the minichord, for the vocoder (talk.js) */
+    .talk-row {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px dashed var(--track-color);
+      border-radius: 5px;
+    }
+    .talk-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .talk-phrase {
+      flex: 1 1 160px;
+      min-width: 0;
+      padding: 6px 8px;
+      border: 1px solid var(--track-color);
+      border-radius: 5px;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      font: inherit;
+    }
+    .talk-status:empty {
+      display: none;
+    }
     /* the staging area: what the words would change, before anything is sent */
     .describe-question {
       display: flex;
