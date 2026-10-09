@@ -153,7 +153,7 @@ function applyChanges(values, changes, reportAll) {
 // ---- the rules ----
 
 function normalise(text) {
-  let t = text.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/’/g, "'").replace(/&/g, " and ").replace(/\+/g, " plus ");
+  let t = text.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/colour/g, "color").replace(/’/g, "'").replace(/&/g, " and ").replace(/\+/g, " plus ");
   t = t.replace(/\b((?:[a-z]\.){2,})/g, m => m.replace(/\./g, ""));   // r.e.m. is rem
   t = t.replace(/\b(mr|mrs|ms|dr|st|jr|vs)\./g, "$1");                    // mr. blue sky
   t = t.replace(/(\d)\s*-\s*bit/g, "$1 bit");
