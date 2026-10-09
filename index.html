@@ -109,6 +109,13 @@
           </div>
         </div>
         <div class="section">
+          <h5 style="margin: 0; font-size: 1.1em;">describing:</h5>
+        </div>
+        <div class="controls">
+          <!-- a description in words changes the live sound; filled by describe.js -->
+          <div id="describe-preset" class="describe-box"></div>
+        </div>
+        <div class="section">
           <h5 style="margin: 0; font-size: 1.1em;">resetting:</h5>
         </div>
         <div class="controls">
@@ -4152,6 +4159,7 @@
   <script src="minichordcontroller.js"></script>
   <script src="index.js"></script>
   <script src="banks.js"></script>
+  <script src="describe.js"></script>
   <script>
     // installable, and opens offline once visited (see sw.js)
     if ('serviceWorker' in navigator) {

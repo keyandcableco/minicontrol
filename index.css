@@ -847,3 +847,59 @@
     [data-needs-firmware] {
       cursor: help;
     }
+
+    /* describing a sound or a profile in words (describe.js) */
+    .describe-box {
+      flex: 1 1 100%;
+      max-width: 700px;
+    }
+    .describe-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .describe-input {
+      flex: 1;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: 8px;
+      border: 1px solid var(--track-color);
+      border-radius: 5px;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      font: inherit;
+      resize: vertical;
+    }
+    .describe-input:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 1px;
+    }
+    .describe-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .describe-result {
+      margin-top: 6px;
+    }
+    .describe-line {
+      margin: 0 0 4px;
+      font-size: 0.9em;
+      line-height: 1.4;
+      opacity: 0.8;
+    }
+    .describe-unknown, .describe-note {
+      opacity: 0.65;
+    }
+    .bank-describe .describe-row {
+      margin-bottom: 4px;
+    }
+    @media (max-width: 600px) {
+      .describe-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .describe-buttons {
+        flex-direction: row;
+      }
+    }
