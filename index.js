@@ -82,6 +82,55 @@ function updateOptionHint(param, value) {
   hint.textContent = option ? option.label : '';
 }
 
+// Each knob's percent range and the control it sets the range of. The firmware sweeps a setting
+// from its value less that percent to its value plus it, so the page shows what that comes to
+// next to the percent. A setting of a few steps is swept across all of them, whatever the percent.
+const KNOB_RANGES = { 11: 10, 13: 12, 15: 14, 17: 16 };
+const SELECTOR_MAX_SPAN = 32; // as the firmware's generator decides which settings are steps
+
+function knobSpanText(rangeSysex) {
+  const target = findParameterBySysex(parseInt(currentValues[KNOB_RANGES[rangeSysex]]));
+  if (!target || target.follows_target != null) return { text: '', title: '' };
+  const steps = target.data_type === 'int' && target.max_value - target.min_value <= SELECTOR_MAX_SPAN;
+  if (steps) {
+    const label = v => (target.options || []).find(o => o.value === v)?.label ?? v;
+    return {
+      text: `→ every step`,
+      title: `${target.name} has a few steps, so the knob runs through all of them, ${label(target.min_value)} to ${label(target.max_value)}, and the percent is not used`
+    };
+  }
+  const value = currentValues[target.sysex_adress] ?? 0;
+  const percent = (currentValues[rangeSysex] ?? 100) / 100;
+  // as the firmware works it out, in whole sent units
+  const low = Math.trunc(Math.max(0, value * (1 - percent)));
+  const high = Math.trunc(value * (1 + percent));
+  const multiplier = getFloatMultiplier(target);
+  const shown = v => target.data_type === 'float' ? (v / multiplier).toFixed(decimalsFor(target)) : v;
+  const outside = low / multiplier < target.min_value || high / multiplier > target.max_value;
+  return {
+    text: `→ ${shown(low)} – ${shown(high)}${outside ? ` (beyond ${target.min_value}–${target.max_value})` : ''}`,
+    title: `the knob sweeps ${target.name} from ${shown(low)} to ${shown(high)}, around its value of ${shown(value)}` +
+      (outside ? `. That goes beyond its own range, ${target.min_value} to ${target.max_value}, and the minichord sends it anyway` : '')
+  };
+}
+
+function refreshKnobSpans() {
+  Object.keys(KNOB_RANGES).forEach(rangeSysex => {
+    const valueDisplay = document.getElementById(`value-${rangeSysex}`);
+    if (!valueDisplay) return;
+    let hint = document.getElementById(`hint-${rangeSysex}`);
+    if (!hint) {
+      hint = document.createElement('span');
+      hint.id = `hint-${rangeSysex}`;
+      hint.className = 'option-hint';
+      valueDisplay.insertAdjacentElement('afterend', hint);
+    }
+    const { text, title } = knobSpanText(parseInt(rangeSysex));
+    hint.textContent = text;
+    hint.title = title;
+  });
+}
+
 function applyOverrideDefaults(target = defaultValues) {
   [2, 3, 4, 5, 6].forEach(sysex => {
     const param = findParameterBySysex(sysex);
@@ -455,6 +504,7 @@ async function setupParameterControls() {
           const valuePercent = ((element.value - element.min) / (element.max - element.min)) * 100;
           element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, ${sliderTrackColor()} 0%, ${sliderTrackColor()} 100%)`;
           if (sysex === 20) updateUIColor();
+          refreshKnobSpans();
         });
         if (valueDisplay) {
           valueDisplay.addEventListener('input', () => {
@@ -476,6 +526,7 @@ async function setupParameterControls() {
             const valuePercent = ((element.value - element.min) / (element.max - element.min)) * 100;
             element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, ${sliderTrackColor()} 0%, ${sliderTrackColor()} 100%)`;
             if (sysex === 20) updateUIColor();
+            refreshKnobSpans();
             // console.log(`[text-input] Param ${sysex}, Value=${inputValue}`);
           });
         }
@@ -488,6 +539,7 @@ async function setupParameterControls() {
           markEdited();
           if (sysex === 20) updateUIColor();
           refreshFollower(sysex);
+          refreshKnobSpans();
         });
       } else if (uiType === 'switch') {
         element.addEventListener('input', () => {
@@ -514,6 +566,7 @@ async function setupParameterControls() {
       }
     });
   });
+  refreshKnobSpans();
   updateUIColor();
 }
 
@@ -637,6 +690,7 @@ async function updateUI(bankNumber) {
   Object.keys(params).forEach(group => params[group].forEach(param => {
     if (param.follows_target != null) applyUIValue(param, currentValues[param.sysex_adress] ?? param.default_value);
   }));
+  refreshKnobSpans();
   updateUIColor();
   refreshRhythmGrid();
     if (!isShowingNotification) {
