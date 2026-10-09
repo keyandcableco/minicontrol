@@ -153,7 +153,9 @@ function applyChanges(values, changes, reportAll) {
 // ---- the rules ----
 
 function normalise(text) {
-  let t = text.toLowerCase().replace(/’/g, "'").replace(/&/g, " and ").replace(/\+/g, " plus ");
+  let t = text.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/’/g, "'").replace(/&/g, " and ").replace(/\+/g, " plus ");
+  t = t.replace(/\b((?:[a-z]\.){2,})/g, m => m.replace(/\./g, ""));   // r.e.m. is rem
+  t = t.replace(/\b(mr|mrs|ms|dr|st|jr|vs)\./g, "$1");                    // mr. blue sky
   t = t.replace(/(\d)\s*-\s*bit/g, "$1 bit");
   t = t.replace(/\b([a-g])\s*#/g, "$1 sharp");
   t = t.replace(/(?<=[a-z])-(?=[a-z])/g, " ");
@@ -396,6 +398,9 @@ class Interpreter {
       const word = more ? "more " : { 1: "", 2: "lots of ", 0: "a touch of " }[strength];
       r.understood.push(`${prefix}${word}${entry.label}`);
       if (entry.note) r.notes.push(entry.note);
+    } else if (entry.kind === "song") {
+      this.song(entry, section, negate, prefix);
+      return;
     } else {
       if (negate) {
         if (entry.off != null) {
@@ -409,8 +414,45 @@ class Interpreter {
       this.apply(entry, section, 1, entry.label);
       r.understood.push(`${prefix}${entry.label}`);
       if (entry.note) r.notes.push(entry.note);
+      if (entry.base) {
+        if (this.profile) r.notes.push(`a profile can't start from a preset, so ${entry.label} was left out`);
+        else r.base = entry.base;
+      }
     }
     if (entry.hue != null && this.hue == null) this.hue = entry.hue;
+  }
+
+  // A song is its recipe: descriptions, in these same words, of its chords and harp, each read with
+  // its section held. Named for one section ("an Africa harp"), only that part is played.
+  song(entry, section, negate, prefix) {
+    const r = this.result;
+    if (negate) {
+      r.notes.push(`"not ${entry.label}": nothing to undo there; left alone`);
+      return;
+    }
+    if (entry.hue != null && this.hue == null) this.hue = entry.hue;
+    const marks = [r.understood.length, r.notes.length, r.unknown.slice()];
+    const outer = [this.applied, this.forced, this.pending, this.voidNext, this.lastValue];
+    this.applied = new Set(); this.pending = []; this.voidNext = false;
+    const used = [];
+    for (const [part, forced] of [["both", null], ["chords", "chord"], ["harp", "harp"]]) {
+      const text = entry[part];
+      if (!text || (forced && (section === "chord" || section === "harp") && forced !== section)) continue;
+      this.forced = forced;
+      used.push(`${part !== "both" ? part + ": " : ""}${text}`);
+      for (const clause of this.clauses(normalise(text))) this.clause(clause);
+    }
+    for (const w of r.unknown) if (!marks[2].includes(w)) r.problems.push([entry.label, w]);
+    r.understood.length = marks[0];
+    r.notes.length = marks[1];
+    r.unknown = marks[2];
+    [this.applied, this.forced, this.pending, this.voidNext, this.lastValue] = outer;
+    r.understood.push(`${prefix}${entry.label} (${used.join("; ")})`);
+    if (entry.note) r.notes.push(entry.note);
+    if (entry.base) {
+      if (this.profile) r.notes.push(`a profile can't start from a preset, so ${entry.label} was left out`);
+      else r.base = entry.base;
+    }
   }
 
   // ---- one control ----
@@ -520,7 +562,7 @@ class Interpreter {
   // ---- a whole description ----
 
   run(text, values, first) {
-    this.result = { changes: [], understood: [], unknown: [], notes: [], base: null, heardAs: [] };
+    this.result = { changes: [], understood: [], unknown: [], notes: [], base: null, heardAs: [], problems: [] };
     this.state = {};
     for (const k of Object.keys(PARAMS)) this.state[k] = toHuman(PARAMS[k], values[k] || 0);
     const start = Object.assign({}, this.state);
@@ -536,6 +578,7 @@ class Interpreter {
     this.pending = [];
     this.voidNext = false;
     this.lastValue = null;
+    this.forced = null;
     for (const clause of this.clauses(normalise(text))) this.clause(clause);
     const color = this.color != null ? this.color : (this.profile ? null : this.hue);
     if (color != null && this.result.understood.length && (first || this.color != null)) this.put(20, color, "bank color");
@@ -709,7 +752,7 @@ class Interpreter {
     i = 0;
     while (i < toks.length) {
       if (used[i]) { i++; continue; }
-      if (toks[i] in D.colors) {
+      if (toks[i] in D.colors && !this.find(toks, i, this.phrases)) {
         this.color = D.colors[toks[i]];
         r.understood.push(`bank color ${toks[i]}`);
         used[i] = true;
@@ -917,6 +960,7 @@ class Interpreter {
 
   sectionFor(i, anchors, entry) {
     if (entry.home === "global") return "global";
+    if (this.forced) return this.forced;
     let best = null;
     for (const a of anchors) {
       if (Math.abs(a[0] - i) > 4) continue;
@@ -953,7 +997,7 @@ class Interpreter {
   fixSpelling(text) {
     const out = [];
     const known = [...this.known].filter(k => k.length >= 4);
-    for (const t of text.match(/[A-Za-z][A-Za-z']*|[^A-Za-z]+/g) || []) {
+    for (const t of text.match(/[A-Za-z0-9][A-Za-z0-9']*|[^A-Za-z0-9]+/g) || []) {
       const w = t.toLowerCase();
       if (/^[a-z]+$/.test(w) && w.length >= 5 && !this.known.has(w) && !this.stopwords.has(w)) {
         const close = closeMatch(w, known, 0.84);
