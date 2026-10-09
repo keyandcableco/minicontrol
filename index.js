@@ -88,6 +88,13 @@ function updateOptionHint(param, value) {
 const KNOB_RANGES = { 11: 10, 13: 12, 15: 14, 17: 16 };
 const SELECTOR_MAX_SPAN = 32; // as the firmware's generator decides which settings are steps
 
+// whether a knob holds its sweep within the setting's own range (firmware 40); with no minichord
+// yet the page shows what the newest firmware does
+function knobsClamp() {
+  const firmware = Math.round((controller.firmware_version || 0) * 100);
+  return !firmware || firmware >= 40;
+}
+
 function knobSpanText(rangeSysex) {
   const target = findParameterBySysex(parseInt(currentValues[KNOB_RANGES[rangeSysex]]));
   if (!target || target.follows_target != null) return { text: '', title: '' };
@@ -101,16 +108,26 @@ function knobSpanText(rangeSysex) {
   }
   const value = currentValues[target.sysex_adress] ?? 0;
   const percent = (currentValues[rangeSysex] ?? 100) / 100;
-  // as the firmware works it out, in whole sent units
-  const low = Math.trunc(Math.max(0, value * (1 - percent)));
-  const high = Math.trunc(value * (1 + percent));
   const multiplier = getFloatMultiplier(target);
   const shown = v => target.data_type === 'float' ? (v / multiplier).toFixed(decimalsFor(target)) : v;
-  const outside = low / multiplier < target.min_value || high / multiplier > target.max_value;
+  // as the firmware works it out, in whole sent units
+  let low = Math.trunc(Math.max(0, value * (1 - percent)));
+  let high = Math.trunc(value * (1 + percent));
+  const min = Math.round(target.min_value * multiplier);
+  const max = Math.round(target.max_value * multiplier);
+  const outside = low < min || high > max;
+  const sweeps = `the knob sweeps ${target.name} from ${shown(Math.max(low, min))} to ${shown(Math.min(high, max))}, around its value of ${shown(value)}`;
+  if (!outside) return { text: `→ ${shown(low)} – ${shown(high)}`, title: sweeps };
+  if (knobsClamp()) {
+    return {
+      text: `→ ${shown(Math.max(low, min))} – ${shown(Math.min(high, max))}`,
+      title: `${sweeps}. The percent reaches ${shown(low)} to ${shown(high)}, past its own range, so the knob rests at the end for the rest of its travel`
+    };
+  }
   return {
-    text: `→ ${shown(low)} – ${shown(high)}${outside ? ` (beyond ${target.min_value}–${target.max_value})` : ''}`,
-    title: `the knob sweeps ${target.name} from ${shown(low)} to ${shown(high)}, around its value of ${shown(value)}` +
-      (outside ? `. That goes beyond its own range, ${target.min_value} to ${target.max_value}, and the minichord sends it anyway` : '')
+    text: `→ ${shown(low)} – ${shown(high)} (beyond ${target.min_value}–${target.max_value})`,
+    title: `the knob sweeps ${target.name} from ${shown(low)} to ${shown(high)}, around its value of ${shown(value)}. ` +
+      `That goes beyond its own range, ${target.min_value} to ${target.max_value}, and this firmware sends it anyway: firmware 40 holds it within`
   };
 }
 
