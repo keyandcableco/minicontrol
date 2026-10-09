@@ -1027,7 +1027,9 @@ function loadDescribeData() {
 }
 
 const api = { interpret, describePreset, describeProfile, decode, applyChanges, defaultValues, setData, loadDescribeData,
-              label: a => label(a), toHuman: (a, v) => toHuman(PARAMS[a], v), params: () => PARAMS };
+              label: a => label(a), toHuman: (a, v) => toHuman(PARAMS[a], v), params: () => PARAMS,
+              // for checking the speech model from a console: describe.hear(url of a recording)
+              hear: async url => (await loadSpeechModel())(url) };
 if (typeof module !== "undefined" && module.exports) module.exports = api;
 root.describe = api;
 
@@ -1051,6 +1053,186 @@ function resultLines(container, result, classes) {
   if (result.heardAs.length) add("Took " + result.heardAs.map(([h, t]) => `"${h}" as "${t}"`).join(", ") + ".");
   if (result.unknown.length) add("Not understood: " + result.unknown.join(", ") + ".", "describe-unknown");
   for (const n of result.notes) add(n.charAt(0).toUpperCase() + n.slice(1) + ".", "describe-note");
+}
+
+// ---- speaking a description ----
+// Whisper, run in the page by transformers.js: the library and a small English model (about 40 MB)
+// download once and the browser keeps them; the speech itself is turned into text here and goes
+// nowhere. The minichord is an audio input too, and often the computer's default one, which would
+// record the instrument instead of the player: an input named minichord is never picked unless
+// chosen in the list.
+
+const VOICE_LIB = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/dist/transformers.min.js";
+const VOICE_MODEL = "onnx-community/whisper-tiny.en";
+const MIC_KEY = "minicontrol_describe_mic";
+
+const voice = {
+  asr: null, loading: null, progress: null,   // the speech model, and how much of it has arrived
+  stream: null, recorder: null, chunks: [],
+  who: null,                                  // "preset" or "profile": the box that is listening
+  state: "idle",                              // idle, recording, listening
+  status: { preset: "", profile: "" },
+  mics: [], mic: null,
+};
+
+function voiceStatus(who, text) {
+  voice.status[who] = text;
+  const line = document.querySelector(`[data-describe="${who}"] .describe-voice-status`);
+  if (line) line.textContent = text;
+}
+
+function loadSpeechModel() {
+  if (!voice.loading) {
+    const files = {};
+    voice.loading = import(VOICE_LIB).then(({ pipeline }) =>
+      pipeline("automatic-speech-recognition", VOICE_MODEL, {
+        dtype: "q8",
+        device: "wasm",
+        progress_callback: info => {
+          if (info.status !== "progress" || !info.total) return;
+          files[info.file] = [info.loaded, info.total];
+          const [loaded, total] = Object.values(files).reduce((t, [l, n]) => [t[0] + l, t[1] + n], [0, 0]);
+          voice.progress = Math.round(100 * loaded / total);
+          if (voice.state === "listening" && voice.who)
+            voiceStatus(voice.who, `Loading the speech model, once (about 40 MB): ${voice.progress}%`);
+        },
+      })).then(asr => { voice.asr = asr; return asr; })
+      .catch(e => { voice.loading = null; throw e; });
+  }
+  return voice.loading;
+}
+
+async function listMics() {
+  try {
+    voice.mics = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "audioinput");
+  } catch (e) { voice.mics = []; }
+  let saved = null;
+  try { saved = localStorage.getItem(MIC_KEY); } catch (e) {}
+  if (saved && voice.mics.some(d => d.deviceId === saved)) voice.mic = saved;
+  else {
+    const named = voice.mics.find(d => d.label && !/minichord/i.test(d.label) &&
+                                       d.deviceId !== "default" && d.deviceId !== "communications");
+    voice.mic = named ? named.deviceId : null;
+  }
+}
+
+async function startSpeaking(who) {
+  if (voice.state !== "idle") return;
+  if (!navigator.mediaDevices || !window.MediaRecorder) {
+    voiceStatus(who, "This browser can't record from a microphone.");
+    return;
+  }
+  voice.who = who;
+  try {
+    if (!voice.mics.some(d => d.label)) {
+      // labels only come once a microphone has been allowed
+      const first = await navigator.mediaDevices.getUserMedia({ audio: true });
+      first.getTracks().forEach(t => t.stop());
+      await listMics();
+      rerenderVoice();
+    }
+    const audio = { channelCount: 1, echoCancellation: false, noiseSuppression: true, autoGainControl: true };
+    if (voice.mic) audio.deviceId = { exact: voice.mic };
+    voice.stream = await navigator.mediaDevices.getUserMedia({ audio });
+  } catch (e) {
+    voiceStatus(who, "No microphone: " + (e.name === "NotAllowedError" ? "it wasn't allowed." : e.message));
+    voice.who = null;
+    return;
+  }
+  voice.chunks = [];
+  try {
+    voice.recorder = new MediaRecorder(voice.stream);
+    voice.recorder.ondataavailable = e => { if (e.data.size) voice.chunks.push(e.data); };
+    voice.recorder.start();
+  } catch (e) {
+    voice.stream.getTracks().forEach(t => t.stop());
+    voiceStatus(who, "Couldn't record from that microphone: " + e.message);
+    voice.who = null;
+    return;
+  }
+  voice.state = "recording";
+  const mic = voice.mics.find(d => d.deviceId === (voice.stream.getAudioTracks()[0].getSettings().deviceId));
+  voiceStatus(who, `Recording${mic && mic.label ? " from " + mic.label : ""}… press stop when you're done.`);
+  rerenderVoice();
+  loadSpeechModel().catch(() => {});   // on its way while you talk
+}
+
+async function stopSpeaking() {
+  if (voice.state !== "recording") return;
+  const who = voice.who;
+  voice.state = "listening";
+  rerenderVoice();
+  await new Promise(resolve => { voice.recorder.onstop = resolve; voice.recorder.stop(); });
+  voice.stream.getTracks().forEach(t => t.stop());
+  let text = "";
+  try {
+    const buffer = await new Blob(voice.chunks).arrayBuffer();
+    const ctx = new AudioContext({ sampleRate: 16000 });
+    const decoded = await ctx.decodeAudioData(buffer);
+    ctx.close();
+    let samples = decoded.getChannelData(0);
+    if (decoded.numberOfChannels > 1) {
+      const other = decoded.getChannelData(1);
+      samples = samples.map((v, i) => (v + other[i]) / 2);
+    }
+    if (samples.length < 4000) {
+      voiceStatus(who, "That was too short to hear anything.");
+    } else {
+      voiceStatus(who, voice.asr ? "Listening back…" : `Loading the speech model, once (about 40 MB)${voice.progress != null ? ": " + voice.progress + "%" : "…"}`);
+      const asr = await loadSpeechModel();
+      voiceStatus(who, "Listening back…");
+      const out = await asr(samples);
+      text = (out && out.text || "").replace(/\[[^\]]*\]|\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
+      voiceStatus(who, text ? `Heard it: check the words in the box, then ${who === "preset" ? "describe" : "stage"}.`
+                            : "I didn't catch any words.");
+    }
+  } catch (e) {
+    console.warn("[describe] speech", e);
+    voiceStatus(who, "The speech model couldn't run here: " + e.message);
+  }
+  voice.state = "idle";
+  voice.who = null;
+  if (text) {
+    if (who === "preset") presetText = (presetText.trim() ? presetText.trim() + " " : "") + text;
+    else profileText = (profileText.trim() ? profileText.trim() + " " : "") + text;
+  }
+  rerenderVoice(who);
+}
+
+// The speak button, the microphone list once there is one, and the status line, for either box
+function voiceControls(who, buttonFor) {
+  const speak = buttonFor(voice.state === "recording" && voice.who === who ? "stop" :
+                          voice.state === "listening" && voice.who === who ? "listening…" : "speak");
+  speak.classList.add("always-on", "describe-speak");
+  if (voice.state === "recording" && voice.who === who) speak.classList.add("recording");
+  speak.disabled = voice.state === "listening" || (voice.state !== "idle" && voice.who !== who);
+  speak.title = "say the description: press, talk, then press stop. The speech is turned into text on this computer";
+  speak.addEventListener("click", () => (voice.state === "recording" ? stopSpeaking() : startSpeaking(who)));
+  const extra = el("div", "describe-voice");
+  const status = el("p", "describe-voice-status", voice.status[who]);
+  extra.appendChild(status);
+  if (voice.mics.some(d => d.label)) {
+    const pick = el("select", "describe-mic always-on");
+    pick.setAttribute("aria-label", "microphone");
+    for (const d of voice.mics) {
+      const o = el("option", "", (d.label || "microphone") + (/minichord/i.test(d.label) ? " (the minichord itself)" : ""));
+      o.value = d.deviceId;
+      if (d.deviceId === voice.mic) o.selected = true;
+      pick.appendChild(o);
+    }
+    pick.addEventListener("change", () => {
+      voice.mic = pick.value;
+      try { localStorage.setItem(MIC_KEY, pick.value); } catch (e) {}
+    });
+    extra.appendChild(pick);
+  }
+  return { speak, extra };
+}
+
+function rerenderVoice() {
+  const box = document.getElementById("describe-preset");
+  if (box) renderPresetDescribe(box);
+  if (typeof renderBankSheet === "function" && document.querySelector('[data-describe="profile"]')) renderBankSheet();
 }
 
 // ---- describing the live preset, on the main page ----
@@ -1104,6 +1286,8 @@ function renderPresetDescribe(box) {
   input.placeholder = "warm pad chords, plucky harp spread across the stereo field, the mod knob opens the filter…";
   input.setAttribute("aria-label", "describe the sound");
   input.value = presetText;
+  input.addEventListener("input", () => { presetText = input.value; });
+  box.dataset.describe = "preset";
   const go = el("button", "", "describe");
   go.setAttribute("version", "0.01");
   go.className = (controller.isConnected() ? "active" : "inactive");
@@ -1113,11 +1297,12 @@ function renderPresetDescribe(box) {
   undo.className = (controller.isConnected() && presetUndo ? "active" : "inactive");
   undo.title = "put back what the last description changed";
   undo.disabled = !presetUndo;
+  const { speak, extra } = voiceControls("preset", text => el("button", "active", text));
   const buttons = el("div", "describe-buttons");
-  buttons.append(go, undo);
+  buttons.append(go, speak, undo);
   row.append(input, buttons);
   const lines = el("div", "describe-result");
-  box.append(row, lines);
+  box.append(row, extra, lines);
   resultLines(lines, presetResult, "describe-line");
   go.addEventListener("click", () => {
     const text = input.value.trim();
@@ -1150,10 +1335,14 @@ root.renderBankDescribe = function (container) {
   input.setAttribute("aria-label", "describe a profile");
   input.value = profileText;
   input.addEventListener("input", () => { profileText = input.value; });
+  container.dataset.describe = "profile";
   const go = mkBankBtn("stage", "stage what the description sets, in every bank; take rows back with ×", "primary");
-  row.append(input, go);
+  const { speak, extra } = voiceControls("profile", text => mkBankBtn(text, "", "secondary"));
+  const buttons = el("div", "describe-buttons");
+  buttons.append(go, speak);
+  row.append(input, buttons);
   const lines = el("div", "describe-result");
-  container.append(row, lines);
+  container.append(row, extra, lines);
   resultLines(lines, profileResult, "bank-note bank-small");
   go.addEventListener("click", async () => {
     const text = input.value.trim();

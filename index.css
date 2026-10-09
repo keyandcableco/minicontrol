@@ -903,3 +903,38 @@
         flex-direction: row;
       }
     }
+    .describe-voice-status:empty {
+      display: none;
+    }
+    .describe-voice {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .describe-voice-status {
+      flex: 1 1 200px;
+      margin: 0;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+    .describe-mic {
+      max-width: 100%;
+      padding: 4px;
+      border-radius: 5px;
+      border: 1px solid var(--track-color);
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      font: inherit;
+      font-size: 0.85em;
+    }
+    .describe-speak.recording {
+      animation: describe-pulse 1s ease-in-out infinite;
+    }
+    @keyframes describe-pulse {
+      50% { opacity: 0.55; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .describe-speak.recording { animation: none; outline: 2px solid var(--primary-color); }
+    }
