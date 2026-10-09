@@ -114,6 +114,13 @@ def code(values):
     return base64.b64encode(";".join(str(v) for v in values).encode("ascii")).decode("ascii")
 
 
+def demo_file(i, preset):
+    """the demo recorded for a preset, if there is one: demos/NN-name.mp3"""
+    name = preset["name"].lower().replace(" & ", "-").replace(" ", "-")
+    path = f"demos/{i + 1:02d}-{name}.mp3"
+    return path if os.path.exists(os.path.join(HERE, path)) else None
+
+
 def control_lines(preset):
     return [f"- **{k}**: {v}" for k, v in preset["controls"].items()]
 
@@ -163,11 +170,16 @@ def main():
         "takes effect from where the knob sits when the preset loads; the stored value is the middle of its "
         "sweep.",
         "",
-        "| Bank | Preset | Shows |",
-        "|---|---|---|",
+        "The demos were recorded from the minichord's USB audio: the notes went in over MIDI, and the hand "
+        "and knobs were played by writing their settings as it recorded. So they are the sound and the "
+        "controls, but not the buttons' own voicings or the harp's touch.",
+        "",
+        "| Bank | Preset | Demo | Shows |",
+        "|---|---|---|---|",
     ]
     for i, p in enumerate(presets.PRESETS):
-        lines.append(f"| {i + 1} | {p['name']} | {', '.join(p['shows'])} |")
+        demo = demo_file(i, p)
+        lines.append(f"| {i + 1} | {p['name']} | {f'[listen]({demo})' if demo else ''} | {', '.join(p['shows'])} |")
     for i, (p, values) in enumerate(zip(presets.PRESETS, built)):
         lines += ["", f"## {i + 1}. {p['name']}", "", p["blurb"], "", *control_lines(p), "",
                   "<details><summary>Preset code</summary>", "", "```", code(values), "```", "", "</details>"]
