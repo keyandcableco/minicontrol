@@ -153,7 +153,7 @@ function applyChanges(values, changes, reportAll) {
 // ---- the rules ----
 
 function normalise(text) {
-  let t = text.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/colour/g, "color").replace(/’/g, "'").replace(/&/g, " and ").replace(/\+/g, " plus ");
+  let t = text.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/colour/g, "color").replace(/rythm/g, "rhythm").replace(/’/g, "'").replace(/&/g, " and ").replace(/\+/g, " plus ");
   t = t.replace(/\b((?:[a-z]\.){2,})/g, m => m.replace(/\./g, ""));   // r.e.m. is rem
   t = t.replace(/\b(mr|mrs|ms|dr|st|jr|vs)\./g, "$1");                    // mr. blue sky
   t = t.replace(/(\d)\s*-\s*bit/g, "$1 bit");
@@ -685,9 +685,10 @@ class Interpreter {
     const span = m => offsets.map((o, i) => [o, i]).filter(([o]) => m.index <= o && o < m.index + m[0].length).map(([, i]) => i);
     const take = m => { const idx = span(m); for (const i of idx) used[i] = true; return idx; };
 
-    for (const m of s.matchAll(/\b(\d{2,3}) ?(?:bpm|beats per minute)\b/g)) {
-      this.put(187, parseInt(m[1], 10), "tempo");
-      r.understood.push(`rhythm tempo ${parseInt(m[1], 10)} bpm`);
+    for (const m of s.matchAll(/\b(?:(?:tempo|speed)\s+(?:of\s+|at\s+|to\s+|is\s+)?|at\s+)?(\d{2,3}) ?(?:bpm|beats per minute)\b|\btempo\s+(?:of\s+|at\s+|to\s+|is\s+)?(\d{2,3})\b/g)) {
+      const bpm = parseInt(m[1] || m[2], 10);
+      this.put(187, bpm, "tempo");
+      r.understood.push(`rhythm tempo ${bpm} bpm`);
       take(m);
     }
     for (const m of s.matchAll(/\b(?:a ?= ?)?(4[34]\d)(?:\.0)? ?(?:hz|hertz)\b|\btuned? to (4[34]\d)\b/g)) {
