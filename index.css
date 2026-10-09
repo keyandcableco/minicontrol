@@ -937,6 +937,12 @@
       border: 1px solid var(--track-color);
       border-radius: 5px;
     }
+    .describe-stage-words {
+      margin: 0 0 6px;
+      font-size: 0.85em;
+      opacity: 0.7;
+      overflow-wrap: anywhere;
+    }
     .describe-stage-title, .describe-place-name {
       margin: 0 0 6px;
       font-size: 0.9em;

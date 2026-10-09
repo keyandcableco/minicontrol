@@ -1427,6 +1427,7 @@ function suggestionRow(input, onPick) {
 // the instructions and hands anything else to the description rules above.
 
 let presetText = "", presetResult = null;
+let stagedWords = [];          // what was said for what is staged, in order: each stage adds to it
 let stagePlaces = {};          // "live" or "b<bank>" -> {before, work, why}: what was there, what would be
 let putBack = null;            // {live: {addr: value}, banks: {bank: {addr: value}}}, before any apply
 let stageBusy = false;
@@ -1507,12 +1508,27 @@ async function readBanks(banks) {
   return got;
 }
 
+// The live sound changed by other means since staging began (a knob, a preset code, a bank
+// loaded): what is staged for it moves over onto what is playing now
+function rebaseLive() {
+  const live = stagePlaces.live;
+  if (!live) return;
+  const now = liveValues();
+  if (now.every((v, a) => a < 2 || a === VERSION_ADDRESS || v === live.before[a])) return;
+  const work = now.slice();
+  for (const [a, , v] of stagedRows("live")) work[a] = v;
+  stagePlaces.live = { before: now, work, why: live.why };
+}
+
 async function stageWords(text, box) {
-  if (stageBusy || !deviceReady()) return;
+  if (stageBusy) { showNotification("Still staging the last words", "info"); return; }
+  if (!deviceReady()) return;
   stageBusy = true;
+  renderPresetDescribe(box);
   try {
     await readyCommands();
     presetText = text;
+    rebaseLive();
     const bankNames = typeof bankNamesGet === "function" ? bankNamesGet() : [];
     const keys = root.commands.placesNamed(text, currentBankNumber, bankNames);
     const banks = keys.filter(k => k !== "live" && !stagePlaces[k]).map(bankOf);
@@ -1536,7 +1552,16 @@ async function stageWords(text, box) {
       },
       why: (key, a, reason) => { stagePlaces[key].why[a] = reason; },
     };
+    // each stage adds to what is staged: the words go on top of it, once, and leave the box
+    const before = JSON.stringify(Object.entries(stagePlaces).map(([k, p]) => [k, p.work]));
     presetResult = root.commands.plan(text, ctx);
+    const after = JSON.stringify(Object.entries(stagePlaces).map(([k, p]) => [k, p.work]));
+    if (presetResult.understood.length || presetResult.questions.length) {
+      if (presetResult.understood.length) stagedWords.push(text);
+      presetText = "";
+    }
+    if (before === after && presetResult.understood.length && !presetResult.questions.length)
+      presetResult.notes.unshift("that changes nothing: it's already so, in what's playing or what's staged");
   } catch (e) {
     console.warn("[describe] stage", e);
     showNotification("Couldn't stage that: " + e.message, "error");
@@ -1555,6 +1580,7 @@ function unstage(key, a) {
 function clearStage() {
   stagePlaces = {};
   presetResult = null;
+  stagedWords = [];
 }
 
 // What a setting is called and what a value reads as, the way the page shows them
@@ -1692,14 +1718,16 @@ function renderPresetDescribe(box) {
   input.setAttribute("aria-label", "describe a sound or say what to change");
   input.value = presetText;
   input.addEventListener("input", () => { presetText = input.value; });
+  // lit or greyed by class, as the page does every control when a minichord comes and goes; never
+  // the disabled flag, which the page doesn't clear, so a box drawn while disconnected would stay
+  // dead once connected. The handlers check the connection and whether a job is running.
   const button = (text, title, on) => {
     const b = el("button", on ? "active" : "inactive", text);
     b.setAttribute("version", "0.01");
     b.title = title;
-    b.disabled = !on;
     return b;
   };
-  const go = button("stage", "stage what the words change, to look over before anything is sent (ctrl+enter)", connected && !stageBusy);
+  const go = button(stageBusy ? "staging…" : "stage", "stage what the words change, on top of what's already staged; nothing is sent until you apply (ctrl+enter)", connected);
   const { speak, extra } = voiceControls("preset", text => el("button", "active", text));
   const buttons = el("div", "describe-buttons");
   buttons.append(go, speak);
@@ -1730,6 +1758,7 @@ function renderPresetDescribe(box) {
   if (keys.length) {
     const area = el("div", "describe-stage");
     area.appendChild(el("p", "describe-stage-title", "Staged: nothing is sent until you apply. × takes a row back."));
+    if (stagedWords.length) area.appendChild(el("p", "describe-stage-words", "From: " + stagedWords.map(w => `"${w}"`).join(", then ") + "."));
     for (const key of keys) {
       const place = stagePlaces[key];
       const group = el("div", "describe-place");
