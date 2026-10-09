@@ -264,8 +264,21 @@ function bankNumbers(list) {
 
 // Each place words name, taken out of the text and left as a marker «n», so a list like
 // "2, 4 and 6" isn't split into clauses. A place is {keys: ["live"] or ["b1", "b3"], from, text}.
-function markScopes(text, currentBank) {
+function escapeRe(t) { return t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+function markScopes(text, currentBank, bankNames) {
   const scopes = [];
+  // a bank by the name typed for it: "my Drone bank", "the bank called Drone", "bank Drone"
+  (bankNames || []).forEach((name, b) => {
+    const n = name ? words(normalise(name)).join(" ") : "";
+    if (!n || /^\d+$/.test(n)) return;
+    const nm = escapeRe(n).replace(/ /g, "\\s+");
+    const re = new RegExp(`\\b${PREP}(?:(?:banks?|presets?|slots?)\\s+(?:called\\s+|named\\s+)?${nm}|${nm}\\s+(?:bank|slot))\\b`, "g");
+    text = text.replace(re, (whole, prep) => {
+      scopes.push({ keys: ["b" + b], from: prep === "from" || prep === "of" || prep === "with", text: whole.trim() });
+      return ` «${scopes.length - 1}» `;
+    });
+  });
   for (const [kind, re] of SCOPE_PATTERNS) {
     text = text.replace(re, (whole, prep, a, b) => {
       let keys;
@@ -296,7 +309,7 @@ function scopeName(keys) {
 const VERB = "(?:turn|switch|set|make|put|assign|map|route|link|unassign|clear|disable|enable|activate|deactivate|" +
              "raise|lower|increase|decrease|reduce|boost|bump|double|halve|reset|restore|revert|copy|duplicate|change|" +
              "give|remove|mute|unmute|kill|bring|drop|use|have|let|crank|shorten|lengthen|cut|add)";
-const LEAD = /^(?:(?:and|also|then|now|so|ok|okay|please|plus|next|finally|lastly|first|after that|and then|can you|could you|would you|will you|i want(?: to)?|i d like(?: to)?|id like(?: to)?|i would like(?: to)?|lets|let us|go ahead and|try|maybe|just)\s+)+/;
+const LEAD = new RegExp(String.raw`^(?:(?:and|also|then|now|so|ok|okay|please|plus|next|finally|lastly|first|after that|and then|can you|could you|would you|will you|i want(?: to)?|i d like(?: to)?|id like(?: to)?|i would like(?: to)?|lets|let us|go ahead and|try|maybe|just(?=\s+${VERB}\b))\s+)+`);
 const TAIL = /\s+(?:please|too|as well|for me|thanks|thank you|if you can|instead)$/;
 
 // Sentences, then clauses at commas, semicolons and "then", and at an "and" that starts a new
@@ -480,11 +493,12 @@ class Planner {
   }
 
   run(text) {
-    const { text: marked, scopes } = markScopes(normalise(text), this.ctx.currentBank);
+    const { text: marked, scopes } = markScopes(this.markPresets(normalise(text)), this.ctx.currentBank, this.ctx.bankNames);
     this.scopes = scopes;
     for (const sentence of clauses(marked)) {
-      // a place goes with the clauses after it, "on bank 2, turn off hover, raise the reverb", and
-      // said at the end of a sentence, with all of it: "turn off hover, raise the reverb on bank 2"
+      // a place that starts a clause goes with the clauses after it, "on bank 2, turn off hover,
+      // raise the reverb"; one that ends a sentence, with all of it: "turn off hover, raise the
+      // reverb on bank 2"; one that ends another clause, with that clause alone
       const own = sentence.map(c => this.placesIn(c));
       const firstPlaced = own.findIndex(o => o.to);
       const atEnd = firstPlaced === own.length - 1 && /»\s*$/.test(sentence[firstPlaced]);
@@ -502,10 +516,15 @@ class Planner {
         const copying = /^(?:copy|duplicate|clone|transfer|bring|paste|take)\b|\b(?:like|same as|match|copy of)\b/.test(c);
         if (!places.to && places.from && !copying) places.to = places.from;
         const keys = places.to || last || ["live"];
-        if (places.to) last = places.to;
-        const s = c.replace(/«\d+»/g, " ").replace(/\s+/g, " ").trim().replace(LEAD, "").replace(TAIL, "").trim();
+        // "on bank 2, …" carries on to what follows; "… on bank 2" stays with its own clause
+        if (places.to && /^\s*«\d+»/.test(c)) last = places.to;
+        let s = c.replace(/«\d+»/g, " ").replace(/\s+/g, " ").trim().replace(LEAD, "").replace(TAIL, "").trim();
         if (!s && !places.copy) return;
-        const done = this.command(s, keys, places, lastVerb);
+        let done = this.preset(s, keys);
+        if (!done) {
+          s = this.unmarkPresets(s);
+          done = this.command(s, keys, places, lastVerb);
+        }
         if (done) {
           flush();
           lastVerb = done === true ? null : done;
@@ -917,6 +936,68 @@ class Planner {
     return i < 0 ? 0 : i;
   }
 
+  // ---- a minishop preset by name: "load Twin Green", "Lonely Nights on bank 5", "copy Ice Cream
+  // to bank 2", "make it like Moonlight but darker". The preset replaces the place's sound, then
+  // anything else said goes on top. A name that is also a word for a sound ("Jump", the song)
+  // and has no cue asks which.
+
+  // A preset's name becomes a marker ‹n› before anything else reads the text, so "Default Preset 3"
+  // isn't taken for bank 3 and "Lonely Nights" isn't read as a mood
+  markPresets(text) {
+    const presets = this.ctx.presets || [];
+    this.presetIndex = presets.map((p, i) => ({ p, i, key: words(normalise(p.name)).join(" ") }))
+      .filter(x => x.key).sort((x, y) => y.key.length - x.key.length);
+    for (const x of this.presetIndex) {
+      text = text.replace(new RegExp(`\\b${escapeRe(x.key).replace(/ /g, "\\s+")}\\b`, "g"), ` ‹${x.i}› `);
+    }
+    return text;
+  }
+  unmarkPresets(text) {
+    return text.replace(/‹(\d+)›/g, (_, i) => words(normalise(this.ctx.presets[+i].name)).join(" ")).replace(/\s+/g, " ").trim();
+  }
+
+  preset(s, keys) {
+    const m = s.match(/(^|\s)(?:the\s+)?‹(\d+)›(?:\s+preset)?(?=\s|$)/);
+    if (!m) return false;
+    const p = this.ctx.presets[+m[2]];
+    const hit = { p, key: words(normalise(p.name)).join(" "), index: m.index, text: m[0] };
+    s = this.unmarkPresets(s.slice(0, m.index)) + m[0] + " " + this.unmarkPresets(s.slice(m.index + m[0].length));
+    s = s.replace(/\s+/g, " ");
+    hit.index = s.indexOf(m[0].trim());
+    hit.text = m[0].trim();
+    const rest = (s.slice(0, hit.index) + " " + s.slice(hit.index + hit.text.length)).replace(/\s+/g, " ").trim();
+    const cue = /\b(?:load|loads|use|using|start(?:ing)?\s+(?:from|with)|from|switch\s+to|go\s+to|apply|pick|choose|select|try|give\s+me|play|like|copy|put|preset|based\s+on|base|make\s+it|turn\s+it\s+into|change\s+to|minishop)\b/.test(s);
+    const alone = !rest || /^(?:the|a|preset|the preset)$/.test(rest);
+    if (!cue && !alone && hit.key.split(" ").length < 2) return false;
+    if (!cue) {
+      // "Jump" alone could be the song: ask
+      const probe = describe.interpret(hit.key, this.ctx.values(keys[0]), { first: false, presetNames: [] });
+      if (probe.understood.length && !probe.unknown.length) {
+        this.out.questions.push({ phrase: hit.p.name, keys, clause: a => a === "preset" ? `load the ${hit.key} preset${rest ? ", " + rest : ""}` : `sound like ${hit.key}${rest ? ", " + rest : ""}`,
+          choices: [{ addr: "preset", name: `the ${hit.p.name} preset` }, { addr: "words", name: probe.understood.join("; ") }] });
+        return true;
+      }
+    }
+    let values;
+    try { values = presetValues(hit.p.value); } catch (e) {
+      this.note(`couldn't read the ${hit.p.name} preset's code`);
+      return true;
+    }
+    for (const key of keys) {
+      const v = this.ctx.values(key);
+      for (let a = 2; a < v.length; a++) {
+        if (a === 7 || LOCKED.has(a) || values[a] === v[a]) continue;
+        v[a] = values[a];
+        this.ctx.why(key, a, `from ${hit.p.name}`);
+      }
+    }
+    this.say(keys, `the ${hit.p.name}${/preset/i.test(hit.p.name) ? "" : " preset"}${hit.p.author ? " by " + hit.p.author : ""}`);
+    // what follows the name, on top of it: "… but darker", "… with the mod knob on the filter"
+    const after = s.slice(hit.index + hit.text.length).trim().replace(/^(?:but|with|and|then|plus|only)\s+/, "");
+    if (after && !/^(?:preset|from the minishop|on|to|in|instead)$/.test(after)) this.describeText(after, keys);
+    return true;
+  }
+
   // ---- copying: "make bank 4 like bank 2", "copy the reverb from bank 1 to banks 3 and 5" ----
 
   copy(s, keys, places) {
@@ -972,14 +1053,26 @@ class Planner {
   }
 }
 
+// A shared preset's stored values. A code a field short (one in the list is) is padded first.
+function presetValues(code) {
+  try { return describe.decode(code); } catch (e) {
+    const fields = atob(code.replace(/\s+/g, "")).split(";");
+    if (fields.length >= 250 && fields.length < 256) {
+      while (fields.length < 256) fields.push("");
+      return describe.decode(btoa(fields.join(";")));
+    }
+    throw e;
+  }
+}
+
 function binary(a) {
   const p = PARAMS[a];
   return p.data_type !== "float" && p.max_value - p.min_value === 1;
 }
 
 // The places a text names, so the page can read those banks before planning
-function placesNamed(text, currentBank) {
-  const { scopes } = markScopes(normalise(text), currentBank);
+function placesNamed(text, currentBank, bankNames) {
+  const { scopes } = markScopes(normalise(text), currentBank, bankNames);
   const keys = new Set(["live"]);
   for (const s of scopes) for (const k of s.keys) keys.add(k);
   return [...keys];

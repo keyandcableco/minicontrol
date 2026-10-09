@@ -1276,6 +1276,7 @@ async function stopSpeaking() {
   let text = "";
   try {
     const buffer = await new Blob(voice.chunks).arrayBuffer();
+    voice.chunks = [];   // the recording is kept nowhere: gone once it is read
     const ctx = new AudioContext({ sampleRate: 16000 });
     const decoded = await ctx.decodeAudioData(buffer);
     ctx.close();
@@ -1291,6 +1292,7 @@ async function stopSpeaking() {
       const asr = await loadSpeechModel();
       voiceStatus(who, "Listening back…");
       const out = await asr(samples);
+      samples = null;
       text = (out && out.text || "").replace(/\[[^\]]*\]|\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
       voiceStatus(who, text ? `Heard it: check the words in the box, then stage.`
                             : "I didn't catch any words.");
@@ -1342,6 +1344,78 @@ function rerenderVoice() {
   const box = document.getElementById("describe-preset");
   if (box) renderPresetDescribe(box);
   if (typeof renderBankSheet === "function" && document.querySelector('[data-describe="profile"]')) renderBankSheet();
+}
+
+// What the box is and isn't, under both boxes
+function disclaimer() {
+  return el("p", "describe-disclaimer",
+    "Not AI: the words are read by a script of rules, in this page. Nothing you type or say leaves this computer, " +
+    "and recordings aren't kept anywhere: speaking is turned into text here by a small speech model, and the " +
+    "recording is dropped as soon as it has been read.");
+}
+
+// ---- suggestions: a phrase of each kind, tapped into the box ----
+// Each one reads cleanly: understood whole, nothing asked. A song comes from the whole list once
+// describe_data.json has arrived.
+const SUGGESTIONS = {
+  song: ["make it sound like Purple Rain", "Blue Monday on bank 4", "Take On Me chords with an Africa harp",
+         "Mr Blue Sky but darker", "Stranger Things with more reverb", "Clint Eastwood on every bank",
+         "Billie Jean, mod knob opens the filter"],
+  instrument: ["electric piano chords and concert harp", "music box harp with a choir pad", "accordion chords, kalimba harp",
+               "make it a theremin", "harpsichord on bank 3", "steel drum harp, marimba chords",
+               "vibraphone harp with vibrato", "church organ chords", "string quartet with pizzicato harp",
+               "make the chords a choir and the harp a kalimba", "sound like a Juno", "fretless ribbon harp"],
+  sound: ["warmer and more spacious", "an eerie pad with a slow attack", "lo-fi and detuned", "punchier and drier",
+          "bells harp, long and spacious", "make it sweet and calm"],
+  control: ["turn off hover", "hover controls the filter", "assign the mod knob to key signature",
+            "double tap starts the looper", "double tap 2 switches chromatic mode", "the chord knob does nothing",
+            "mod knob to the delay on banks 1 to 6"],
+  setting: ["set the chord attack to 200 ms", "key signature to E minor", "harp in minor pentatonic", "waltz at 100 bpm",
+            "meantone tuning", "just intonation", "put the harp up an octave", "raise the harp release a lot", "reverb to 40%",
+            "dim the leds", "swing at 90 bpm"],
+  minishop: ["load Twin Green", "Lonely Nights on bank 5", "make it like Moonlight but darker",
+             "Jazzy Rhodes with the mod knob on the filter", "copy Neon Sunset to bank 8"],
+  banks: ["make bank 5 like bank 2", "darker on all banks", "reset the reverb on every bank", "swap banks 2 and 3",
+          "copy the envelope from bank 3 to bank 4", "turn off hover on every bank except 1", "make bank 12 red"],
+};
+let suggestionPicks = null;
+
+function pickSuggestions() {
+  const any = list => list[Math.floor(Math.random() * list.length)];
+  const songs = D ? D.vocabulary.filter(e => e.kind === "song" && e.words && e.words.length) : [];
+  const shop = SHARED.filter(p => !/^default preset/i.test(p.name));
+  const shopPhrase = name => any([`load ${name}`, `${name} on bank ${1 + Math.floor(Math.random() * 12)}`,
+                                  `make it like ${name} but warmer`, `start from ${name} and turn off hover`]);
+  suggestionPicks = Object.entries(SUGGESTIONS).map(([kind, list]) =>
+    [kind, kind === "song" && songs.length && Math.random() < 0.6 ? `make it sound like ${any(songs).words[0]}`
+         : kind === "minishop" && shop.length && Math.random() < 0.7 ? shopPhrase(any(shop).name) : any(list)]);
+}
+
+// A row of suggestions: tapping one puts it in the box, after anything already there; staging
+// it is still the player's
+function suggestionRow(input, onPick) {
+  if (!suggestionPicks) pickSuggestions();
+  const row = el("div", "describe-suggestions");
+  row.appendChild(el("span", "describe-line", "Try:"));
+  for (const [kind, text] of suggestionPicks) {
+    const chip = el("button", "describe-suggestion always-on", text);
+    chip.type = "button";
+    chip.title = `${kind === "banks" ? "a change across banks" : kind === "minishop" ? "a preset from the minishop, by name" : "a " + kind}: tap to add it to the box`;
+    chip.addEventListener("click", () => {
+      const now = input.value.trim();
+      input.value = now ? `${now.replace(/[.,;]$/, "")}, ${text}` : text;
+      input.dispatchEvent(new Event("input"));
+      input.focus();
+      onPick();
+    });
+    row.appendChild(chip);
+  }
+  const more = el("button", "describe-more always-on", "more ideas");
+  more.type = "button";
+  more.title = "other suggestions";
+  more.addEventListener("click", () => { pickSuggestions(); onPick(); });
+  row.appendChild(more);
+  return row;
 }
 
 // ---- instructions for the live sound or any banks, on the main page ----
@@ -1438,7 +1512,8 @@ async function stageWords(text, box) {
   try {
     await readyCommands();
     presetText = text;
-    const keys = root.commands.placesNamed(text, currentBankNumber);
+    const bankNames = typeof bankNamesGet === "function" ? bankNamesGet() : [];
+    const keys = root.commands.placesNamed(text, currentBankNumber, bankNames);
     const banks = keys.filter(k => k !== "live" && !stagePlaces[k]).map(bankOf);
     if (banks.length) {
       const read = await readBanks(banks);
@@ -1448,6 +1523,8 @@ async function stageWords(text, box) {
     const ctx = {
       currentBank: currentBankNumber,
       presetNames: SHARED.map(p => p.name),
+      presets: SHARED,          // the minishop's presets, by name
+      bankNames,                // the names typed for the banks, so "my Drone bank" is one
       values: key => {
         if (!stagePlaces[key]) {
           if (key !== "live") throw new Error(key + " wasn't read");
@@ -1610,7 +1687,7 @@ function renderPresetDescribe(box) {
   const input = el("textarea", "describe-input");
   input.rows = 3;
   input.placeholder = "turn off hover · assign the mod knob to key signature on banks 2 and 4 · set the chord attack to " +
-                      "200 ms · warm pad chords, plucky harp · make bank 5 like bank 2…";
+                      "200 ms · warm pad chords, plucky harp · load Twin Green from the minishop · make bank 5 like bank 2…";
   input.setAttribute("aria-label", "describe a sound or say what to change");
   input.value = presetText;
   input.addEventListener("input", () => { presetText = input.value; });
@@ -1627,7 +1704,7 @@ function renderPresetDescribe(box) {
   buttons.append(go, speak);
   row.append(input, buttons);
   const lines = el("div", "describe-result");
-  box.append(row, extra, lines);
+  box.append(row, extra, suggestionRow(input, () => renderPresetDescribe(box)), disclaimer(), lines);
   resultLines(lines, presetResult, "describe-line");
   // a word that could name several settings: the player picks
   if (presetResult) {
@@ -1720,7 +1797,7 @@ root.renderBankDescribe = function (container) {
   buttons.append(go, speak);
   row.append(input, buttons);
   const lines = el("div", "describe-result");
-  container.append(row, extra, lines);
+  container.append(row, extra, disclaimer(), lines);
   resultLines(lines, profileResult, "bank-note bank-small");
   go.addEventListener("click", async () => {
     const text = input.value.trim();

@@ -891,6 +891,31 @@
     .describe-unknown, .describe-note {
       opacity: 0.65;
     }
+    /* suggestions under the describe box, and what the box is */
+    .describe-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .describe-suggestions .describe-line {
+      margin: 0;
+    }
+    .describe-suggestion, .describe-more {
+      font-size: 0.85em;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    .describe-more {
+      opacity: 0.75;
+    }
+    .describe-disclaimer {
+      margin: 8px 0 4px;
+      font-size: 0.8em;
+      line-height: 1.4;
+      opacity: 0.6;
+    }
     /* the staging area: what the words would change, before anything is sent */
     .describe-question {
       display: flex;
