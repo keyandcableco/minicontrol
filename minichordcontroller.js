@@ -45,6 +45,8 @@ class MiniChordController {
   async handleMIDIAccess(midiAccess) {
     let foundOutput = false;
     let foundInput = false;
+    // listened for whether or not the minichord is here yet, so plugging it in later connects
+    midiAccess.onstatechange = (e) => this.handleStateChange(e);
 
     for (const output of midiAccess.outputs.values()) {
       if (output.name.toLowerCase().includes("minichord")) {
@@ -78,7 +80,6 @@ class MiniChordController {
       }
       return false;
     }
-    midiAccess.onstatechange = (e) => this.handleStateChange(e);
     if (this.onConnectionChange) {
       this.onConnectionChange(true, "minichord connected");
     }
@@ -103,7 +104,8 @@ class MiniChordController {
       }
     }
     if (event.port.state === "connected" && !this.device && name.includes("minichord")) {
-      this.initialize(); // Note: This is async, but we don’t await it here to avoid blocking
+      // a moment's wait, so both of its ports have appeared and it isn't reported missing first
+      setTimeout(() => { if (!this.device) this.initialize(); }, 300);
     }
   }
 
@@ -353,9 +355,10 @@ deliverDump(processedData) {
     this.sendParameter(0, 0);   // the minichord reports back, and the page follows
   }
 
-  resetCurrentBank() {
-    if (!this.device || this.active_bank_number === -1) return;
-    this.sendSysEx([0, 0, 3, this.active_bank_number]);
+  // Put a bank back to its factory settings (control command 3). The minichord moves to it.
+  resetBank(bankNumber) {
+    if (!this.device || bankNumber < 0) return;
+    this.sendSysEx([0, 0, 3, bankNumber]);
   }
 
   resetMemory() {

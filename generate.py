@@ -550,6 +550,7 @@ html_template = '''<!DOCTYPE html>
         </span>
       </div>
     </div>
+    <div id="firmware-note" role="status" hidden></div>
     <div id="header">
       <div class="controls-container">
         <div class="section">
@@ -576,7 +577,7 @@ html_template = '''<!DOCTYPE html>
             </div>
           </div>
           <div class="button_div">
-            <button id="save-to-bank-btn" class="inactive" version="0.01">save to bank</button>
+            <button id="save-to-bank-btn" class="inactive" version="0.01" title="save the live settings into the target bank">save to bank</button>
           </div>
           <div class="button_div">
             <button id="load-bank-btn" class="inactive" version="0.21" title="switch the minichord to the target bank">load bank</button>
@@ -587,10 +588,10 @@ html_template = '''<!DOCTYPE html>
         </div>
         <div class="controls">
           <div class="button_div">
-            <button id="export-settings-btn" class="inactive" version="0.01">export settings</button>
+            <button id="export-settings-btn" class="inactive" version="0.01" title="copy the live settings to the clipboard as a preset code">copy preset code</button>
           </div>
           <div class="button_div">
-            <button id="load-settings-btn" class="inactive" version="0.01">load settings</button>
+            <button id="load-settings-btn" class="inactive" version="0.01" title="paste a preset code over the live settings; save to a bank to keep it">paste preset code</button>
           </div>
         </div>
         <div class="section">
@@ -598,10 +599,10 @@ html_template = '''<!DOCTYPE html>
         </div>
         <div class="controls">
           <div class="button_div">
-            <button id="reset-bank-btn" class="inactive" version="0.01">reset bank</button>
+            <button id="reset-bank-btn" class="inactive" version="0.01" title="erase the target bank, back to its factory settings">reset bank</button>
           </div>
           <div class="button_div">
-            <button id="reset-all-banks-btn" class="inactive" version="0.01">reset all banks</button>
+            <button id="reset-all-banks-btn" class="inactive" version="0.01" title="erase all twelve banks, back to their factory settings">reset all banks</button>
           </div>
         </div>
         <div class="section">
@@ -640,7 +641,7 @@ html_template = '''<!DOCTYPE html>
         </div>
         <div class="controls">
           <div class="button_div">
-            <button id="randomise_btn" class="inactive" version="0.01">randomise</button>
+            <button id="randomise_btn" class="inactive" version="0.01" title="replace the live sound with a random one near a shared preset; save to a bank to keep it">randomise</button>
           </div>
         </div>
         <div class="section">
@@ -659,7 +660,7 @@ html_template = '''<!DOCTYPE html>
         <img src="themes/arcade-minichord-wide.svg" alt="Minichord, in pixels" class="arcade-only">
       </div>
     </div>
-    <details>
+    <details id="connection-help">
       <summary style="width: fit-content; font-size: 1.1em; font-weight: bold; cursor: pointer;">Connection instruction</summary>
       <ul style="padding-left: 20px;">
         <li>provide the system authorization for MIDI control</li>
@@ -669,9 +670,10 @@ html_template = '''<!DOCTYPE html>
       <div tabindex="1" id="information_zone">
         <strong id="information_text"></strong>
       </div>
-    </div>
+    </details>
     <div id="instruction_zone" style="margin: 2px 0;">
       A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>, with themes by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>.<br>
+      Its newer tools need the <a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a>, which is experimental and unofficial: it isn't made or endorsed by Ben Poilve.<br>
       For instruction on how to use this tool, please refer to the 
       <a href="https://minichord.com/user_manual/#custom-presets">minichord documentation.</a><br>
       To test and load user-submitted presets, visit the 
@@ -681,7 +683,7 @@ html_template = '''<!DOCTYPE html>
       {parameter_sections}
     </div>
     <footer id="page-footer">
-      <p>A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>. The bank tools, knob layer, double tap pairs and the other newer settings need the unofficial <a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a> for the minichord.</p>
+      <p>A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>. The bank tools, knob layer, double tap pairs and the other newer settings need the unofficial <a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a> for the minichord. It is experimental and may have bugs, and it isn't made or endorsed by Ben Poilve: back up your banks before installing it.</p>
       <p>Made by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>. Source on <a href="https://github.com/keyandcableco/minicontrol">GitHub</a>.</p>
     </footer>
   </div>

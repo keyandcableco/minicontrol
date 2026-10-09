@@ -753,3 +753,18 @@
       background-color: var(--background-color);
       color: var(--text-primary);
     }
+    #firmware-note {
+      line-height: 1.35;
+      margin: 0 0 12px;
+      padding: 8px;
+      max-width: 60em;
+      border-radius: 5px;
+      border: 2px solid orange;
+      /* over the minichord drawing, which spills up past its box */
+      position: relative;
+      z-index: 1;
+      background-color: var(--background-color);
+    }
+    [data-needs-firmware] {
+      cursor: help;
+    }

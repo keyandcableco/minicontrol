@@ -150,14 +150,17 @@ async function readAllBanks(onProgress) {
   const startingBank = controller.active_bank_number;
   const names = bankNamesGet();
   const slots = [], original = [];
-  for (let b = 0; b < BANK_COUNT; b++) {
-    if (onProgress) onProgress(b, BANK_COUNT);
-    const values = await controller.readBank(b, 3000, true);
-    const copy = Array.from(values, v => (v == null ? 0 : v));
-    slots.push({ id: b, values: copy, dirty: false, name: names[b] });
-    original[b] = copy.slice();
+  try {
+    for (let b = 0; b < BANK_COUNT; b++) {
+      if (onProgress) onProgress(b, BANK_COUNT);
+      const values = await controller.readBank(b, 3000, true);
+      const copy = Array.from(values, v => (v == null ? 0 : v));
+      slots.push({ id: b, values: copy, dirty: false, name: names[b] });
+      original[b] = copy.slice();
+    }
+  } finally {
+    await returnToBank(startingBank);
   }
-  await returnToBank(startingBank);
   bankState.slots = slots;
   bankState.original = original;
   bankState.originalNames = names;
@@ -167,11 +170,14 @@ async function readAllBanks(onProgress) {
   return slots;
 }
 
-// Leave the minichord on the bank it was on, and let the page show it once.
+// Leave the minichord on the bank it was on, and let the page show it once. Every bank load on
+// the way dropped the live edits and the snapshot, so the page lets go of them too.
 async function returnToBank(bank) {
   if (bank >= 0 && bank < BANK_COUNT) {
     try { await controller.readBank(bank, 3000, true); } catch (e) { }
   }
+  snapshotBank = -1;
+  markClean();
   controller.requestCurrentData();
 }
 
@@ -202,20 +208,23 @@ async function writeBankChanges(onProgress) {
   bankState.slots.forEach((slot, i) => { if (slot.dirty) dirty.push(i); });
   if (!dirty.length) return 0;
   const startingBank = controller.active_bank_number;
-  for (let n = 0; n < dirty.length; n++) {
-    const i = dirty[n];
-    if (onProgress) onProgress(n, dirty.length);
-    const slot = bankState.slots[i];
-    await writeBank(i, slot.values);
-    slot.dirty = false;
-    bankState.original[i] = slot.values.slice();
-    bankState.originalNames[i] = slot.name || "";
+  try {
+    for (let n = 0; n < dirty.length; n++) {
+      const i = dirty[n];
+      if (onProgress) onProgress(n, dirty.length);
+      const slot = bankState.slots[i];
+      await writeBank(i, slot.values);
+      slot.dirty = false;
+      bankState.original[i] = slot.values.slice();
+      bankState.originalNames[i] = slot.name || "";
+    }
+  } finally {
+    await returnToBank(startingBank);
   }
   // what was written is now what is in each bank: it is the new starting
   // point, and the staged rows no longer describe anything to go back to
   bankState.slots.forEach((slot, i) => { slot.id = i; });
   bulkStaged = [];
-  await returnToBank(startingBank);
   return dirty.length;
 }
 
@@ -234,12 +243,15 @@ async function backupAllBanks(onProgress) {
   const startingBank = controller.active_bank_number;
   const names = bankNamesGet();
   const banks = [];
-  for (let b = 0; b < BANK_COUNT; b++) {
-    if (onProgress) onProgress(b, BANK_COUNT);
-    const values = await controller.readBank(b, 3000, true);
-    banks.push({ bank: b, name: names[b] || "", values: Array.from(values, v => (v == null ? 0 : v)) });
+  try {
+    for (let b = 0; b < BANK_COUNT; b++) {
+      if (onProgress) onProgress(b, BANK_COUNT);
+      const values = await controller.readBank(b, 3000, true);
+      banks.push({ bank: b, name: names[b] || "", values: Array.from(values, v => (v == null ? 0 : v)) });
+    }
+  } finally {
+    await returnToBank(startingBank);
   }
-  await returnToBank(startingBank);
   const address_names = {};
   bankParamOrder.forEach(p => { address_names[p.sysex_adress] = paramLabel(p); });
   return {
@@ -273,50 +285,66 @@ async function restoreAllBanks(data, onProgress) {
   if (!controller.isConnected()) throw new Error("no minichord connected");
   const startingBank = controller.active_bank_number;
   const names = bankNamesGet();
-  for (let i = 0; i < data.banks.length; i++) {
-    const entry = data.banks[i];
-    if (onProgress) onProgress(i, data.banks.length);
-    const values = entry.values.slice();
-    // Backups from Sound Lab test firmware that kept master tuning as device
-    // state, at address 255, carry the tuning in every bank and nothing at 109.
-    // Give each such bank that tuning, so a tuned device stays tuned.
-    const legacyTuning = values[255];
-    if (!values[109] && legacyTuning >= 4320 && legacyTuning <= 4460) values[109] = legacyTuning;
-    // A backup from before page 1 restores with page 1 at its defaults, as the minichord loads a
-    // preset file of page 0 alone, rather than keeping what the bank had there.
-    if (values.length <= controller.page_size && controller.has_page1) {
-      Object.entries(controller.page1_defaults).forEach(([a, v]) => { values[a] = v; });
+  try {
+    for (let i = 0; i < data.banks.length; i++) {
+      const entry = data.banks[i];
+      if (onProgress) onProgress(i, data.banks.length);
+      const values = entry.values.slice();
+      // Backups from Sound Lab test firmware that kept master tuning as device
+      // state, at address 255, carry the tuning in every bank and nothing at 109.
+      // Give each such bank that tuning, so a tuned device stays tuned.
+      const legacyTuning = values[255];
+      if (!values[109] && legacyTuning >= 4320 && legacyTuning <= 4460) values[109] = legacyTuning;
+      // A backup from before page 1 restores with page 1 at its defaults, as the minichord loads a
+      // preset file of page 0 alone, rather than keeping what the bank had there.
+      if (values.length <= controller.page_size && controller.has_page1) {
+        Object.entries(controller.page1_defaults).forEach(([a, v]) => { values[a] = v; });
+      }
+      await writeBank(entry.bank, values);
+      if (typeof entry.name === "string") names[entry.bank] = entry.name.slice(0, 24);
     }
-    await writeBank(entry.bank, values);
-    if (typeof entry.name === "string") names[entry.bank] = entry.name.slice(0, 24);
+  } finally {
+    // the banks written so far are written, names and all, even if a later one failed
+    bankNamesSet(names);
+    bankCacheStale();
+    await returnToBank(startingBank);
   }
-  bankNamesSet(names);
-  bankCacheStale();
-  await returnToBank(startingBank);
 }
 
 function bankStatus(text, type) {
   showNotification(text, type || "info");
 }
 
+// for a confirm that already asks about the banks: the live edits it would also drop
+function unsavedNote() {
+  return unsavedEdits ? "\n\nThe unsaved changes to bank " + (currentBankNumber + 1) + " will be lost too." : "";
+}
+
+// whether anything here would be lost by leaving: staged changes, or a walk partway through
+function bankWorkPending() {
+  return bankState.busy || bulkStaged.length > 0 || (!!bankState.slots && bankState.slots.some(s => s.dirty));
+}
+window.addEventListener("beforeunload", e => {
+  if (bankWorkPending()) { e.preventDefault(); e.returnValue = ""; }
+});
+
 async function backup_all_banks() {
-  if (!controller.isConnected()) { bankStatus("Connect a minichord first", "error"); return; }
-  if (bankState.busy) return;
+  if (!deviceReady()) return;
+  if (!okToDropEdits("Back up all banks? Reading them loads each bank in turn.")) return;
   bankState.busy = true;
   try {
-    bankStatus("Reading all twelve banks\u2026");
-    const data = await backupAllBanks();
+    const data = await backupAllBanks((i, n) => showProgress("Backing up bank " + (i + 1) + " of " + n + "\u2026"));
     downloadJson(data, "minichord-backup-" + data.created.slice(0, 10) + ".json");
     bankStatus("Backed up all twelve banks", "success");
   } catch (e) {
     bankStatus("Backup failed: " + e.message, "error");
   }
+  showProgress(null);
   bankState.busy = false;
 }
 
 function restore_all_banks() {
-  if (!controller.isConnected()) { bankStatus("Connect a minichord first", "error"); return; }
-  if (bankState.busy) return;
+  if (!deviceReady()) return;
   const inp = document.createElement("input");
   inp.type = "file"; inp.accept = "application/json,.json";
   inp.addEventListener("change", async () => {
@@ -334,15 +362,17 @@ function restore_all_banks() {
         " and this minichord has firmware " + fw + ". Settings may have moved between versions."
       : "";
     if (!confirm("Replace " + (count === BANK_COUNT ? "all twelve banks" : count + (count === 1 ? " bank" : " banks")) +
-      " on the minichord with this backup?" + note)) return;
+      " on the minichord with this backup? What " + (count === 1 ? "it holds" : "they hold") + " now is erased." +
+      note + unsavedNote())) return;
+    if (!deviceReady()) return;   // a backup or read may have started while the file was picked
     bankState.busy = true;
     try {
-      bankStatus("Writing " + count + (count === 1 ? " bank" : " banks") + "\u2026");
-      await restoreAllBanks(data);
+      await restoreAllBanks(data, (i, n) => showProgress("Restoring bank " + (i + 1) + " of " + n + "\u2026"));
       bankStatus("Restored " + count + (count === 1 ? " bank" : " banks"), "success");
     } catch (e) {
       bankStatus("Restore failed: " + e.message + ". Some banks may already have been written.", "error");
     }
+    showProgress(null);
     bankState.busy = false;
   });
   inp.click();
@@ -550,7 +580,10 @@ function renderBankSheet() {
     const readBtn = mkBankBtn("read banks", "Read all twelve banks off the minichord", "primary");
     readBtn.addEventListener("click", async () => {
       if (!controller.isConnected()) { bankAnnounce("Connect a minichord first"); return; }
+      if (bankState.busy) { bankAnnounce("Wait till the banks are done"); return; }
+      if (!okToDropEdits("Read the banks? Reading them loads each bank in turn.")) return;
       readBtn.disabled = true;
+      bankState.busy = true;
       try {
         await loadBankParams();
         await readAllBanks((i, n) => { intro.textContent = "Reading bank " + (i + 1) + " of " + n + "…"; });
@@ -559,6 +592,7 @@ function renderBankSheet() {
         bankAnnounce("Couldn't read the banks: " + e.message +
           ". Loading a bank from here needs firmware with the load bank command.");
       }
+      bankState.busy = false;
       renderBankSheet();
     });
     actions.appendChild(readBtn);
@@ -577,13 +611,17 @@ function renderBankSheet() {
       : "A bank has been written since these were read, so this list is out of date. ";
     const reread = mkBankBtn("read again", "Read all twelve banks off the minichord again");
     reread.addEventListener("click", async () => {
-      if (dirtyCount && !confirm("Read the banks again? The staged changes will be discarded.")) return;
+      if (bankState.busy) { bankAnnounce("Wait till the banks are done"); return; }
+      if (dirtyCount && !confirm("Read the banks again? The staged changes will be discarded." + unsavedNote())) return;
+      if (!dirtyCount && !okToDropEdits("Read the banks again? Reading them loads each bank in turn.")) return;
       reread.disabled = true;
+      bankState.busy = true;
       try {
         await readAllBanks((i, n) => { intro.textContent = "Reading bank " + (i + 1) + " of " + n + "…"; });
       } catch (e) {
         bankAnnounce("Couldn't read the banks: " + e.message);
       }
+      bankState.busy = false;
       renderBankSheet();
     });
     warn.appendChild(reread);
@@ -939,7 +977,7 @@ function renderBankSheet() {
     if (!controller.isConnected()) { bankAnnounce("Connect a minichord first"); return; }
     if (!confirm("Write " + dirtyCount + (dirtyCount === 1 ? " bank" : " banks") +
       " to the minichord? What is in " + (dirtyCount === 1 ? "it" : "them") +
-      " now is replaced. Back up first if you want to keep it.")) return;
+      " now is replaced. Back up first if you want to keep it." + unsavedNote())) return;
     bankState.busy = true;
     writeBtn.disabled = true;
     try {
@@ -955,6 +993,7 @@ function renderBankSheet() {
   const discardBtn = mkBankBtn("discard all", "Throw away every staged change", "quiet");
   discardBtn.disabled = !dirtyCount && !bulkStaged.length;
   discardBtn.addEventListener("click", () => {
+    if (!confirm("Throw away every staged change? Nothing has been written, so the banks stay as they are.")) return;
     bankState.slots = bankState.original.map((values, i) =>
       ({ id: i, values: values.slice(), dirty: false, name: bankState.originalNames[i] }));
     bankNamesSet(bankState.originalNames);

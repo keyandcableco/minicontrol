@@ -14,6 +14,12 @@ const BASE_ADDRESS_RHYTHM = 220;
 let notificationQueue = [];
 let isShowingNotification = false;
 let snapshotBank = -1; // the bank a snapshot was taken on, -1 when none is held
+// Changes made from the page that the bank doesn't hold yet. While the page is connected the
+// minichord doesn't save on changing bank, so they are dropped when it does: the page says so.
+let unsavedEdits = false;
+let handEdits = false;         // edits by hand since the last whole preset came in, which a code or randomise replaces
+let unsavedAtSnapshot = false; // what unsavedEdits was when the snapshot was taken, for a revert to put back
+let progressText = null;       // a long job's progress, held in the bubble till it is done
 // RANDOMISE leaves these alone: device, MIDI, tuning, double tap and hover settings, the looper
 // (an action, not a setting) and the vocoder, which silences what it carries with nothing coming in
 const RANDOMISE_FIXED = [32, 33, 34, 35, 41, 97, 106, 107, 108, 109, 110, 117, 197, 200, 201, 209, 210, 211, 212, 237, 238,
@@ -139,14 +145,23 @@ function updateConnectionStatus(connected, message) {
   minichord_device = connected;
   if (!isShowingNotification) {
     bubbleElement.className = connected ? 'connected' : 'disconnected';
-    const bankText = currentBankNumber >= 0 ? ` | Bank ${currentBankNumber + 1}` : '';
-    textElement.textContent = connected ? `minichord connected${bankText}` : "minichord disconnected";
+    const bankText = currentBankNumber >= 0 ? ` | Bank ${currentBankNumber + 1}${unsavedEdits ? ' (unsaved changes)' : ''}` : '';
+    textElement.textContent = !connected ? "minichord disconnected" : progressText || `minichord connected${bankText}`;
     bubbleElement.style.display = 'flex';
   }
   if (message && !isShowingNotification) {
     showNotification(message, connected ? "success" : "error");
   }
   if (!connected) {
+    // the buttons have all gone grey: say what they are waiting for
+    const help = document.getElementById("connection-help");
+    if (help) help.open = true;
+    // greyed for want of a minichord now, not of firmware
+    showFirmwareNote(0, 0);
+    document.querySelectorAll("[data-needs-firmware]").forEach(holder => {
+      delete holder.dataset.needsFirmware;
+      holder.removeAttribute("title");
+    });
     document.querySelectorAll('input:not(.always-on), button:not(.always-on), select:not(.always-on)').forEach(element => {
       element.classList.add("inactive");
       element.classList.remove("active");
@@ -190,7 +205,58 @@ function displayNextNotification() {
     isShowingNotification = false; // Set to false before updating connection status
     updateConnectionStatus(controller.isConnected(), null);
     displayNextNotification();
-  }, 3000);
+  }, type === 'error' ? 5000 : 3000); // what went wrong is given longer to be read
+}
+
+// whether a snapshot can replace the one held, and is dropped on any change of bank (firmware 39)
+function snapshotReplaces() {
+  return Math.round((controller.firmware_version || 0) * 100) >= 39;
+}
+
+function refreshStatus() {
+  if (!isShowingNotification) updateConnectionStatus(controller.isConnected(), null);
+}
+
+function showProgress(text) {
+  progressText = text;
+  refreshStatus();
+}
+
+// A change made here, which the bank doesn't hold until it is saved. `byHand` is false for a whole
+// preset arriving at once (a code, a randomise), which replaces hand edits rather than being one.
+function markEdited(byHand = true) {
+  const was = unsavedEdits;
+  unsavedEdits = true;
+  handEdits = byHand;
+  if (!was) refreshStatus();
+}
+
+// the live settings are now what a bank holds: saved, loaded or reset
+function markClean() {
+  unsavedEdits = false;
+  handEdits = false;
+  refreshStatus();
+}
+
+// Anything that loads a bank over the live settings asks first while they hold unsaved edits.
+function okToDropEdits(action) {
+  if (!unsavedEdits) return true;
+  return confirm(`${action}\n\nThe changes made to bank ${currentBankNumber + 1} since it was last saved will be lost. ` +
+    `Save to a bank first to keep them.`);
+}
+
+// Whether a button that talks to the minichord can go ahead: connected, and not in the middle of
+// walking the banks, which a stray load or save would throw off
+function deviceReady() {
+  if (!controller.isConnected()) {
+    showNotification("No minichord connected", "error");
+    return false;
+  }
+  if (typeof bankState !== 'undefined' && bankState.busy) {
+    showNotification("Wait till the banks are done", "error");
+    return false;
+  }
+  return true;
 }
 
 // Black or white, whichever reads better on the bank colour. Choosing by hue alone gave
@@ -385,6 +451,7 @@ async function setupParameterControls() {
           if (valueDisplay) valueDisplay.value = p.data_type === 'float' ? uiValue.toFixed(decimalsFor(p)) : deviceValue;
           updateOptionHint(param, deviceValue);
           controller.sendParameter(sysex, deviceValue);
+          markEdited();
           const valuePercent = ((element.value - element.min) / (element.max - element.min)) * 100;
           element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, ${sliderTrackColor()} 0%, ${sliderTrackColor()} 100%)`;
           if (sysex === 20) updateUIColor();
@@ -405,6 +472,7 @@ async function setupParameterControls() {
             valueDisplay.value = p.data_type === 'float' ? inputValue.toFixed(decimalsFor(p)) : inputValue;
             updateOptionHint(param, deviceValue);
             controller.sendParameter(sysex, deviceValue);
+            markEdited();
             const valuePercent = ((element.value - element.min) / (element.max - element.min)) * 100;
             element.style.background = `linear-gradient(to right, var(--primary-color) 0%, var(--primary-color) ${valuePercent}%, ${sliderTrackColor()} 0%, ${sliderTrackColor()} 100%)`;
             if (sysex === 20) updateUIColor();
@@ -417,6 +485,7 @@ async function setupParameterControls() {
           tempValues[sysex] = value;
           currentValues[sysex] = value;
           controller.sendParameter(sysex, value);
+          markEdited();
           if (sysex === 20) updateUIColor();
           refreshFollower(sysex);
         });
@@ -426,6 +495,7 @@ async function setupParameterControls() {
           tempValues[sysex] = value;
           currentValues[sysex] = value;
           controller.sendParameter(sysex, value);
+          markEdited();
         });
       } else if (uiType === 'degrees') {
         // each box is one bit of the value: assemble the mask from the whole row and send it
@@ -438,6 +508,7 @@ async function setupParameterControls() {
             tempValues[sysex] = mask;
             currentValues[sysex] = mask;
             controller.sendParameter(sysex, mask);
+            markEdited();
           });
         });
       }
@@ -453,6 +524,13 @@ function handleDataReceived(data) {
     showNotification("Invalid firmware version", "error");
     return;
   }
+  // the minichord changed bank by itself (its own buttons), which drops what wasn't saved
+  if (currentBankNumber >= 0 && data.bankNumber !== currentBankNumber && unsavedEdits) {
+    showNotification(`Now on bank ${data.bankNumber + 1}: the unsaved changes to bank ${currentBankNumber + 1} were dropped`, "error");
+    unsavedEdits = handEdits = false;
+  }
+  // from firmware 39 any change of bank drops the snapshot, not only a load from here
+  if (data.bankNumber !== currentBankNumber && snapshotReplaces()) snapshotBank = -1;
   currentValues = {};
   data.parameters.forEach((value, sysex) => {
     if (value !== undefined) {
@@ -464,18 +542,71 @@ function handleDataReceived(data) {
   rhythmPattern = data.rhythmData.map(bits => bits.reduce((acc, bit, i) => acc | (bit ? (1 << i) : 0), 0));
   targetBank = data.bankNumber;
   updateUI(data.bankNumber);
-  // Toggle active/inactive based on firmware version
+  // Toggle active/inactive based on firmware version. A control too new for this firmware
+  // takes no pointer, so what holds it says why, on hover and on a click.
+  const firmware = Math.round(data.firmwareVersion * 100);
+  let newest = 0; // the newest firmware a greyed control asks for
   document.querySelectorAll('input:not(.always-on), button:not(.always-on), select:not(.always-on)').forEach(element => {
     const requiredVersion = parseFloat(element.getAttribute('version') || 0.01);
+    const holder = element.closest('.button_div, .degree-row') || element.parentElement;
     if (requiredVersion <= data.firmwareVersion) {
       element.classList.add('active');
       element.classList.remove('inactive');
+      if (holder?.dataset.needsFirmware) {
+        delete holder.dataset.needsFirmware;
+        holder.removeAttribute('title');
+      }
     } else {
       element.classList.add('inactive');
       element.classList.remove('active');
+      const needed = Math.round(requiredVersion * 100);
+      newest = Math.max(newest, needed);
+      if (holder) {
+        holder.dataset.needsFirmware = needed;
+        holder.title = firmwareNeed(needed, firmware);
+      }
     }
   });
+  showFirmwareNote(firmware, newest);
 }
+
+// Ben Poilve's newest firmware. Past it is the test-allFeatures fork, which this page's newer
+// controls are for.
+const OFFICIAL_FIRMWARE = 9;
+const TEST_FIRMWARE_LINK = '<a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a>';
+const TEST_FIRMWARE_CAVEAT = "It is experimental and may have bugs, and it isn't made or endorsed by Ben Poilve. Back up your banks before installing it.";
+
+function firmwareNeed(needed, firmware) {
+  return (needed > OFFICIAL_FIRMWARE ? `Needs the test-allFeatures firmware, version ${needed} or later.` : `Needs firmware ${needed} or later.`) +
+    ` This minichord has ${firmware}.`;
+}
+
+// what the greyed controls are waiting for, above them, while there are any
+function showFirmwareNote(firmware, newest) {
+  const note = document.getElementById("firmware-note");
+  if (!note) return;
+  note.hidden = !newest;
+  if (!newest) return;
+  if (newest <= OFFICIAL_FIRMWARE) {
+    note.innerHTML = `This minichord has firmware ${firmware}, so the greyed-out controls are off: they need firmware ${newest} or later. ` +
+      `The <a href="https://minichord.com/user_manual/">minichord documentation</a> says how to update it.`;
+  } else if (firmware <= OFFICIAL_FIRMWARE) {
+    note.innerHTML = `This minichord has the official firmware (${firmware}), so the greyed-out controls are off: ` +
+      `they need the ${TEST_FIRMWARE_LINK}, version ${newest} or later. ${TEST_FIRMWARE_CAVEAT}`;
+  } else {
+    note.innerHTML = `This minichord has version ${firmware} of the ${TEST_FIRMWARE_LINK}, so the greyed-out controls are off: ` +
+      `they need version ${newest} or later. ${TEST_FIRMWARE_CAVEAT}`;
+  }
+}
+
+// a click on a greyed control lands on what holds it: say why nothing happens
+document.addEventListener("click", e => {
+  const holder = e.target.closest?.("[data-needs-firmware]");
+  if (!holder || !controller.isConnected()) return;
+  e.preventDefault();
+  e.stopPropagation();
+  showNotification(holder.title, "error");
+}, true);
 
 async function updateUI(bankNumber) {
   if (bankNumber < 0) {
@@ -483,9 +614,12 @@ async function updateUI(bankNumber) {
     return;
   }
   console.log(`[updateUI] Bank ${bankNumber + 1}, targetBank=${targetBank + 1}`);
+  // The target follows the minichord to a new bank, but is otherwise left as picked: every
+  // randomise or preset code reports back, and that used to put a picked target back silently.
+  const bankChanged = bankNumber !== currentBankNumber;
   currentBankNumber = bankNumber;
   const bankSelect = document.getElementById("bank_number_selection");
-  if (bankSelect && parseInt(bankSelect.value) !== bankNumber) {
+  if (bankSelect && bankChanged) {
     bankSelect.value = bankNumber;
   }
   const params = await loadParameters();
@@ -597,11 +731,8 @@ function normalRandom(mean, sigma) {
 }
 
 async function generateRandomPreset() {
-  if (!controller.isConnected()) {
-    document.getElementById("information_zone")?.focus();
-    showNotification("No device connected", "error");
-    return;
-  }
+  if (!deviceReady()) return;
+  if (handEdits && !confirm(`Randomise? It replaces the changes made to bank ${currentBankNumber + 1}, which aren't saved.`)) return;
   
   const parameterRanges = await loadParameterRanges();
   const weirdness_factor = 0.10;
@@ -643,8 +774,9 @@ async function generateRandomPreset() {
   }
   
   controller.sendParameter(0, 0);
+  markEdited(false);
   console.log("[generateRandomPreset] Random preset applied");
-  showNotification("Random preset applied", "success");
+  showNotification("Random preset applied: save to a bank to keep it", "success");
 }
 
 function setupRhythmGridControls() {
@@ -663,6 +795,7 @@ function setupRhythmGridControls() {
           rhythmPattern[step] = patternValue;
           currentValues[sysexAddress] = patternValue;
           controller.sendParameter(sysexAddress, patternValue);
+          markEdited();
           // console.log(`[rhythm-checkbox] Step ${step}, Voice ${voice}, Pattern ${patternValue}`);
         });
       }
@@ -688,55 +821,53 @@ document.getElementById("bank_number_selection")?.addEventListener("change", (e)
 });
 
 document.getElementById("save-to-bank-btn")?.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    console.warn("[save-to-bank-btn] No device connected");
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
+  if (!deviceReady()) return;
   const bankSelect = document.getElementById("bank_number_selection");
   const saveBank = parseInt(bankSelect.value);
+  // saving over another bank replaces it, and the minichord moves to it
+  if (saveBank !== currentBankNumber && !confirm(`Save the settings from bank ${currentBankNumber + 1} over bank ${saveBank + 1}?\n\n` +
+      `What bank ${saveBank + 1} holds now is replaced, and the minichord moves to bank ${saveBank + 1}.`)) return;
   console.log(`[save-to-bank-btn] Saving to bank ${saveBank + 1}`);
   controller.saveCurrentSettings(saveBank);
   bankCacheStale();
-  showNotification(`Saved to bank ${saveBank + 1}`, "success");
+  markClean();
+  if (snapshotBank >= 0) unsavedAtSnapshot = true; // the bank no longer holds what the snapshot does
+  showNotification(saveBank === currentBankNumber ? `Saved to bank ${saveBank + 1}`
+    : `Saved to bank ${saveBank + 1}, and moved to it`, "success");
 });
 
 document.getElementById("load-bank-btn")?.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    console.warn("[load-bank-btn] No device connected");
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
+  if (!deviceReady()) return;
   const bank = parseInt(document.getElementById("bank_number_selection").value);
+  if (!okToDropEdits(`Load bank ${bank + 1}?`)) return;
   console.log(`[load-bank-btn] Loading bank ${bank + 1}`);
   // the minichord reports the bank's settings back by itself once it has loaded it
   controller.sendSysEx([0, 0, 4, bank]);
   snapshotBank = -1; // loading a bank drops the snapshot
+  markClean();
   showNotification(`Loaded bank ${bank + 1}`, "success");
 });
 
 document.getElementById("snapshot-btn")?.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    console.warn("[snapshot-btn] No device connected");
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
+  if (!deviceReady()) return;
+  // From firmware 39 a snapshot can replace the one held, which is also what clears one the page
+  // has lost track of (it was reloaded). Before that the minichord keeps the first.
+  const replaces = snapshotReplaces();
   if (snapshotBank >= 0) {
-    // the minichord keeps the first snapshot and ignores another until it is reverted
-    showNotification("A snapshot is already held: revert to it first", "error");
-    return;
+    if (!replaces) {
+      showNotification(`A snapshot from bank ${snapshotBank + 1} is held: revert to it or load a bank first`, "error");
+      return;
+    }
+    if (!confirm(`Replace the snapshot taken on bank ${snapshotBank + 1}? The settings it holds can't be got back.`)) return;
   }
-  controller.sendSysEx([0, 0, 5, 0]);
+  controller.sendSysEx([0, 0, 5, replaces ? 1 : 0]);
   snapshotBank = currentBankNumber;
+  unsavedAtSnapshot = unsavedEdits;
   showNotification("Snapshot taken", "success");
 });
 
 document.getElementById("revert-btn")?.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    console.warn("[revert-btn] No device connected");
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
+  if (!deviceReady()) return;
   if (snapshotBank < 0) {
     showNotification("No snapshot taken", "error");
     return;
@@ -748,39 +879,46 @@ document.getElementById("revert-btn")?.addEventListener("click", () => {
   // the minichord puts the settings back and reports them, which refreshes the page
   controller.sendSysEx([0, 0, 6, 0]);
   snapshotBank = -1;
+  unsavedEdits = handEdits = unsavedAtSnapshot;
+  refreshStatus();
   showNotification("Reverted to snapshot", "success");
 });
 
 document.getElementById("reset-bank-btn")?.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    console.warn("[reset-bank-btn] No device connected");
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
-  console.log(`[reset-bank-btn] Resetting bank ${currentBankNumber + 1}`);
-  controller.resetCurrentBank();
+  if (!deviceReady()) return;
+  const bank = parseInt(document.getElementById("bank_number_selection").value);
+  // resetting another bank moves the minichord to it, which drops what wasn't saved here
+  const away = bank !== currentBankNumber;
+  const after = away
+    ? ` The minichord moves to bank ${bank + 1}` + (unsavedEdits ? `, and the unsaved changes to bank ${currentBankNumber + 1} are lost.` : ".")
+    : (unsavedEdits ? " The unsaved changes go with it." : "");
+  if (!confirm(`Reset bank ${bank + 1} to its factory settings?\n\n` +
+      `What bank ${bank + 1} holds now is erased. This can't be undone.${after}`)) return;
+  console.log(`[reset-bank-btn] Resetting bank ${bank + 1}`);
+  controller.resetBank(bank);
   bankCacheStale();
-  showNotification(`Reset bank ${currentBankNumber + 1}`, "success");
+  markClean();
+  // the name was for the preset that is gone
+  const names = bankNamesGet();
+  names[bank] = "";
+  bankNamesSet(names);
+  showNotification(away ? `Reset bank ${bank + 1}, and moved to it` : `Reset bank ${bank + 1}`, "success");
 });
 
 document.getElementById("reset-all-banks-btn")?.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    console.warn("[reset-all-banks-btn] No device connected");
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
+  if (!deviceReady()) return;
+  if (!confirm("Reset all twelve banks to their factory settings?\n\n" +
+      "Every preset on the minichord is erased. This can't be undone: use \"back up all banks\" first to keep a copy.")) return;
   console.log("[reset-all-banks-btn] Resetting all banks");
   controller.resetMemory();
   bankCacheStale();
-  showNotification("Reset all banks", "success");
+  markClean();
+  bankNamesSet([]);
+  showNotification("Reset all banks: the minichord is on bank 1", "success");
 });
 
-document.getElementById("export-settings-btn")?.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    console.warn("[export-settings-btn] No device connected");
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
+document.getElementById("export-settings-btn")?.addEventListener("click", async () => {
+  if (!deviceReady()) return;
   const sysexArray = Array(controller.parameter_size).fill(0);
   Object.entries(currentValues).forEach(([sysex, value]) => {
     sysexArray[parseInt(sysex)] = value;
@@ -794,35 +932,38 @@ document.getElementById("export-settings-btn")?.addEventListener("click", () => 
   const codeLength = page1AtDefaults || !controller.has_page1 ? controller.page_size : controller.parameter_size;
   const outputBase64 = sysexArray.slice(0, codeLength).join(";");
   const encoded = btoa(outputBase64);
-  navigator.clipboard.writeText(encoded);
   console.log(`[export-settings-btn] Exported settings: ${encoded}`);
-  showNotification("Preset code copied to clipboard", "success");
+  try {
+    await navigator.clipboard.writeText(encoded);
+    showNotification("Preset code copied to clipboard", "success");
+  } catch (error) {
+    // no clipboard (permission, or a page not in focus): hand the code over to copy by hand
+    prompt("Copy this preset code", encoded);
+  }
 });
 
 document.getElementById("load-settings-btn")?.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    console.warn("[load-settings-btn] No device connected");
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
+  if (!deviceReady()) return;
   const presetCode = prompt("Paste preset code");
   if (!presetCode) return;
   try {
-    const parameters = atob(presetCode).split(";").map(v => parseFloat(v));
+    const parameters = atob(presetCode.trim()).split(";").map(v => parseFloat(v));
     // page 0 alone (every code from before the array grew) or both pages
     if (parameters.length !== controller.page_size && parameters.length !== controller.parameter_size) {
       console.warn("[load-settings-btn] Malformed preset code");
       showNotification("Malformed preset code", "error");
       return;
     }
+    if (handEdits && !confirm(`Load this preset? It replaces the changes made to bank ${currentBankNumber + 1}, which aren't saved.`)) return;
     controller.applyPreset(parameters, (i, value) => {
       if (!findParameterBySysex(i)) return;
       value = Math.round(value);
       controller.sendParameter(i, value);
       currentValues[i] = value;
     });
+    markEdited(false);
     console.log("[load-settings-btn] Loaded settings");
-    showNotification("Preset loaded", "success");
+    showNotification("Preset loaded: save to a bank to keep it", "success");
   } catch (error) {
     console.warn("[load-settings-btn] Invalid preset code:", error);
     showNotification("Invalid preset code", "error");
@@ -834,10 +975,7 @@ document.getElementById("randomise_btn")?.addEventListener("click", generateRand
 // The looper: each button writes setting 256 once, an action the minichord takes and forgets
 // (1 record, 2 play, 3 stop, 4 clear, 5 overdub on or off)
 document.querySelectorAll(".looper-btn").forEach(button => button.addEventListener("click", () => {
-  if (!controller.isConnected()) {
-    document.getElementById("information_zone")?.focus();
-    return;
-  }
+  if (!deviceReady()) return;
   controller.sendParameter(256, parseInt(button.dataset.looperAction));
 }));
 
