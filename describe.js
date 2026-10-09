@@ -1156,8 +1156,8 @@ function resultLines(container, result, classes) {
   container.textContent = "";
   if (!result) return;
   const add = (text, extra) => container.appendChild(el("p", classes + (extra ? " " + extra : ""), text));
-  if (!result.understood.length) add("Nothing in that matched a word it knows.");
-  else add("Understood: " + result.understood.join("; ") + ".");
+  if (result.understood.length) add("Understood: " + result.understood.join("; ") + ".");
+  else if (!(result.questions || []).length) add("Nothing in that matched a word it knows.");
   if (result.heardAs.length) add("Took " + result.heardAs.map(([h, t]) => `"${h}" as "${t}"`).join(", ") + ".");
   if (result.unknown.length) add("Not understood: " + result.unknown.join(", ") + ".", "describe-unknown");
   for (const n of result.notes) add(n.charAt(0).toUpperCase() + n.slice(1) + ".", "describe-note");
@@ -1291,7 +1291,7 @@ async function stopSpeaking() {
       voiceStatus(who, "Listening back…");
       const out = await asr(samples);
       text = (out && out.text || "").replace(/\[[^\]]*\]|\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
-      voiceStatus(who, text ? `Heard it: check the words in the box, then ${who === "preset" ? "describe" : "stage"}.`
+      voiceStatus(who, text ? `Heard it: check the words in the box, then stage.`
                             : "I didn't catch any words.");
     }
   } catch (e) {
@@ -1343,9 +1343,18 @@ function rerenderVoice() {
   if (typeof renderBankSheet === "function" && document.querySelector('[data-describe="profile"]')) renderBankSheet();
 }
 
-// ---- describing the live preset, on the main page ----
+// ---- instructions for the live sound or any banks, on the main page ----
+// Words become staged changes first, never straight changes: each row says where (the live
+// sound, or a bank), which setting, what it was and what it would be, and why. Apply sends
+// them, writing a bank only when the words named one; "put everything back" restores what
+// apply replaced, live and banks alike, for as long as the page stays open. commands.js reads
+// the instructions and hands anything else to the description rules above.
 
-let presetText = "", presetResult = null, presetUndo = null;
+let presetText = "", presetResult = null;
+let stagePlaces = {};          // "live" or "b<bank>" -> {before, work, why}: what was there, what would be
+let putBack = null;            // {live: {addr: value}, banks: {bank: {addr: value}}}, before any apply
+let stageBusy = false;
+let commandsReady = null;
 
 function liveValues() {
   const values = new Array(PARAMETER_SIZE).fill(0);
@@ -1362,70 +1371,330 @@ function sendValues(changes) {
   controller.sendParameter(0, 0);   // the minichord reports back, and the page follows
 }
 
-async function describeLive(text, box) {
-  if (!deviceReady()) return;
-  await loadDescribeData();
-  const before = liveValues();
-  const result = describePreset(text, before, { first: false });
-  presetText = text;
-  presetResult = result;
-  let changes;
-  if (result.base) {
-    if (handEdits && !confirm(`Start from ${result.base}? It replaces the changes made to bank ${currentBankNumber + 1}, which aren't saved.`)) return;
-    changes = result.values.map((v, a) => [a, v]).filter(([a, v]) => a >= 2 && a !== VERSION_ADDRESS && v !== before[a]);
-  } else {
-    changes = result.made.map(([a, , v]) => [a, v]);
+function readyCommands() {
+  if (!commandsReady) {
+    commandsReady = Promise.all([loadDescribeData(), loadParameters(), loadBankParams()])
+      .then(([data, parameters]) => { root.commands.setup(data, parameters); })
+      .catch(e => { commandsReady = null; throw e; });
   }
-  presetUndo = changes.length ? changes.map(([a]) => [a, before[a]]) : presetUndo;
-  if (changes.length) {
-    sendValues(changes);
-    markEdited(true);
-    showNotification(`${changes.length} ${changes.length === 1 ? "setting" : "settings"} changed: save to a bank to keep ${changes.length === 1 ? "it" : "them"}`, "success");
+  return commandsReady;
+}
+
+const pause = ms => new Promise(r => setTimeout(r, ms));
+const bankOf = key => +key.slice(1);
+
+// The changes staged in one place: [[addr, before, after]], in address order
+function stagedRows(key) {
+  const place = stagePlaces[key];
+  if (!place) return [];
+  const rows = [];
+  for (let a = 2; a < place.work.length; a++) {
+    if (a === VERSION_ADDRESS || place.work[a] === place.before[a]) continue;
+    rows.push([a, place.before[a], place.work[a]]);
   }
-  renderPresetDescribe(box);
+  return rows;
+}
+function stagedKeys() {
+  return Object.keys(stagePlaces).filter(k => stagedRows(k).length)
+    .sort((x, y) => (x === "live" ? -1 : y === "live" ? 1 : bankOf(x) - bankOf(y)));
+}
+
+// Read the banks the words name, unless the bulk edit sheet already holds them as they are
+async function readBanks(banks) {
+  const need = banks.filter(b => !(bankState.read && !bankState.stale && bankState.original && bankState.original[b]));
+  const got = {};
+  for (const b of banks) if (!need.includes(b)) got[b] = bankState.original[b].slice();
+  if (!need.length) return got;
+  if (unsavedEdits && !confirm(`Reading ${need.length === 1 ? "bank " + (need[0] + 1) : need.length + " banks"} loads ` +
+                               `each one on the minichord.${unsavedNote()}`)) return null;
+  const startingBank = controller.active_bank_number;
+  bankState.busy = true;
+  try {
+    for (let n = 0; n < need.length; n++) {
+      showProgress(`Reading bank ${need[n] + 1} (${n + 1} of ${need.length})…`);
+      const values = await controller.readBank(need[n], 3000, true);
+      got[need[n]] = Array.from(values, v => (v == null ? 0 : v));
+    }
+  } finally {
+    await returnToBank(startingBank);
+    bankState.busy = false;
+    showProgress(null);
+  }
+  await pause(300);   // the starting bank's report, so the live values are its own again
+  // the live sound is the bank as saved now: what was staged for it moves over onto that
+  const live = stagePlaces.live;
+  if (live) {
+    const before = liveValues(), work = before.slice();
+    for (const [a, , v] of stagedRows("live")) work[a] = v;
+    stagePlaces.live = { before, work, why: live.why };
+  }
+  return got;
+}
+
+async function stageWords(text, box) {
+  if (stageBusy || !deviceReady()) return;
+  stageBusy = true;
+  try {
+    await readyCommands();
+    presetText = text;
+    const keys = root.commands.placesNamed(text, currentBankNumber);
+    const banks = keys.filter(k => k !== "live" && !stagePlaces[k]).map(bankOf);
+    if (banks.length) {
+      const read = await readBanks(banks);
+      if (!read) return;
+      for (const [b, values] of Object.entries(read)) stagePlaces["b" + b] = { before: values, work: values.slice(), why: {} };
+    }
+    const ctx = {
+      currentBank: currentBankNumber,
+      presetNames: SHARED.map(p => p.name),
+      values: key => {
+        if (!stagePlaces[key]) {
+          if (key !== "live") throw new Error(key + " wasn't read");
+          const before = liveValues();
+          stagePlaces.live = { before, work: before.slice(), why: {} };
+        }
+        return stagePlaces[key].work;
+      },
+      why: (key, a, reason) => { stagePlaces[key].why[a] = reason; },
+    };
+    presetResult = root.commands.plan(text, ctx);
+  } catch (e) {
+    console.warn("[describe] stage", e);
+    showNotification("Couldn't stage that: " + e.message, "error");
+  } finally {
+    stageBusy = false;
+    renderPresetDescribe(box);
+  }
+}
+
+function unstage(key, a) {
+  const place = stagePlaces[key];
+  if (!place) return;
+  place.work[a] = place.before[a];
+}
+
+function clearStage() {
+  stagePlaces = {};
+  presetResult = null;
+}
+
+// What a setting is called and what a value reads as, the way the page shows them
+function rowName(a) {
+  const p = typeof bankParams !== "undefined" && bankParams && bankParams[a];
+  return p ? paramLabel(p) : root.commands.nameOf(a);
+}
+function rowValue(a, v, work) {
+  const p = typeof bankParams !== "undefined" && bankParams && bankParams[a];
+  if (!p) return String(v);
+  const edits = p.follows_target != null ? [{ addr: p.follows_target, value: work[p.follows_target] }] : [];
+  return valueLabel(p, v, edits);
+}
+
+function placeName(key) {
+  if (key === "live") return `Live sound (bank ${currentBankNumber + 1}, until it's saved)`;
+  const b = bankOf(key);
+  const names = typeof bankNamesGet === "function" ? bankNamesGet() : [];
+  return `Bank ${b + 1}${names[b] ? " · " + names[b] : ""} (written to the bank)`;
+}
+
+async function applyStage(box) {
+  if (stageBusy || !deviceReady()) return;
+  const keys = stagedKeys();
+  if (!keys.length) return;
+  const writable = key => stagedRows(key).filter(([a]) => controller.canWrite(a));
+  const banks = keys.filter(k => k !== "live").map(bankOf);
+  if (banks.length && !confirm(`Write ${root.commands.scopeName(banks.map(b => "b" + b))}? Each is loaded, changed and saved. ` +
+                               `"Put everything back" undoes it while this page stays open.${keys.includes("live") ? "" : unsavedNote()}`)) return;
+  stageBusy = true;
+  putBack = putBack || { live: {}, banks: {} };
+  let written = 0, sent = 0;
+  try {
+    if (banks.length) {
+      const startingBank = controller.active_bank_number;
+      bankState.busy = true;
+      try {
+        for (let n = 0; n < banks.length; n++) {
+          const b = banks[n];
+          showProgress(`Writing bank ${b + 1} (${n + 1} of ${banks.length})…`);
+          // the bank as it is now, so only the staged settings change in it
+          const fresh = Array.from(await controller.readBank(b, 3000, true), v => (v == null ? 0 : v));
+          const was = putBack.banks[b] = putBack.banks[b] || {};
+          for (const [a, , v] of writable("b" + b)) {
+            if (!(a in was)) was[a] = fresh[a];
+            fresh[a] = v;
+          }
+          await writeBank(b, fresh);
+          written++;
+        }
+      } finally {
+        await returnToBank(startingBank);
+        bankState.busy = false;
+        showProgress(null);
+        bankCacheStale();
+      }
+      await pause(300);
+    }
+    if (keys.includes("live")) {
+      const rows = writable("live");
+      for (const [a] of rows) if (!(a in putBack.live)) putBack.live[a] = Math.round(currentValues[a] || 0);
+      sendValues(rows.map(([a, , v]) => [a, v]));
+      if (rows.length) markEdited(true);
+      sent = rows.length;
+    }
+    const parts = [];
+    if (sent) parts.push(`${sent} live ${sent === 1 ? "setting" : "settings"} changed: save to a bank to keep ${sent === 1 ? "it" : "them"}`);
+    if (written) parts.push(`${written === 1 ? "bank" : "banks"} ${banks.map(b => b + 1).join(", ")} written`);
+    showNotification(parts.join("; ") || "Nothing to change", "success");
+    clearStage();
+  } catch (e) {
+    console.warn("[describe] apply", e);
+    showNotification("Stopped partway: " + e.message + ". \"Put everything back\" restores what was changed.", "error");
+  } finally {
+    stageBusy = false;
+    renderPresetDescribe(box);
+  }
+}
+
+async function restoreAll(box) {
+  if (stageBusy || !putBack || !deviceReady()) return;
+  const banks = Object.keys(putBack.banks).map(Number).sort((x, y) => x - y);
+  const live = Object.entries(putBack.live).map(([a, v]) => [+a, v]);
+  const what = [];
+  if (live.length) what.push(`${live.length} live ${live.length === 1 ? "setting" : "settings"}`);
+  if (banks.length) what.push(root.commands.scopeName(banks.map(b => "b" + b)));
+  if (!confirm(`Put back everything applied here: ${what.join(" and ")}, as they were before?`)) return;
+  stageBusy = true;
+  try {
+    if (banks.length) {
+      const startingBank = controller.active_bank_number;
+      bankState.busy = true;
+      try {
+        for (let n = 0; n < banks.length; n++) {
+          const b = banks[n];
+          showProgress(`Putting back bank ${b + 1} (${n + 1} of ${banks.length})…`);
+          const fresh = Array.from(await controller.readBank(b, 3000, true), v => (v == null ? 0 : v));
+          for (const [a, v] of Object.entries(putBack.banks[b])) fresh[+a] = v;
+          await writeBank(b, fresh);
+          delete putBack.banks[b];
+        }
+      } finally {
+        await returnToBank(startingBank);
+        bankState.busy = false;
+        showProgress(null);
+        bankCacheStale();
+      }
+      await pause(300);
+    }
+    if (live.length) {
+      sendValues(live);
+      markEdited(true);
+    }
+    putBack = null;
+    showNotification("Put back as it was", "success");
+  } catch (e) {
+    console.warn("[describe] put back", e);
+    showNotification("Stopped partway putting back: " + e.message + "; press it again to finish", "error");
+  } finally {
+    stageBusy = false;
+    renderPresetDescribe(box);
+  }
 }
 
 function renderPresetDescribe(box) {
   if (!box) return;
   box.textContent = "";
+  box.dataset.describe = "preset";
+  const connected = controller.isConnected();
   const row = el("div", "describe-row");
   const input = el("textarea", "describe-input");
   input.rows = 3;
-  input.placeholder = "warm pad chords, plucky harp spread across the stereo field, the mod knob opens the filter…";
-  input.setAttribute("aria-label", "describe the sound");
+  input.placeholder = "turn off hover · assign the mod knob to key signature on banks 2 and 4 · set the chord attack to " +
+                      "200 ms · warm pad chords, plucky harp · make bank 5 like bank 2…";
+  input.setAttribute("aria-label", "describe a sound or say what to change");
   input.value = presetText;
   input.addEventListener("input", () => { presetText = input.value; });
-  box.dataset.describe = "preset";
-  const go = el("button", "", "describe");
-  go.setAttribute("version", "0.01");
-  go.className = (controller.isConnected() ? "active" : "inactive");
-  go.title = "change the live sound by the description, starting from what's loaded; save to a bank to keep it";
-  const undo = el("button", "", "undo");
-  undo.setAttribute("version", "0.01");
-  undo.className = (controller.isConnected() && presetUndo ? "active" : "inactive");
-  undo.title = "put back what the last description changed";
-  undo.disabled = !presetUndo;
+  const button = (text, title, on) => {
+    const b = el("button", on ? "active" : "inactive", text);
+    b.setAttribute("version", "0.01");
+    b.title = title;
+    b.disabled = !on;
+    return b;
+  };
+  const go = button("stage", "stage what the words change, to look over before anything is sent (ctrl+enter)", connected && !stageBusy);
   const { speak, extra } = voiceControls("preset", text => el("button", "active", text));
   const buttons = el("div", "describe-buttons");
-  buttons.append(go, speak, undo);
+  buttons.append(go, speak);
   row.append(input, buttons);
   const lines = el("div", "describe-result");
   box.append(row, extra, lines);
   resultLines(lines, presetResult, "describe-line");
+  // a word that could name several settings: the player picks
+  if (presetResult) {
+    for (const q of presetResult.questions) {
+      const ask = el("div", "describe-question");
+      ask.appendChild(el("span", "describe-line", `"${q.phrase}" could be: `));
+      for (const c of q.choices) {
+        const pick = el("button", "describe-choice always-on", c.name);
+        pick.type = "button";
+        pick.addEventListener("click", () => {
+          const where = q.keys.length === 1 && q.keys[0] === "live" ? "" : " on " + root.commands.scopeName(q.keys);
+          q.choices = [];
+          stageWords(q.clause(c.addr) + where, box);
+        });
+        ask.appendChild(pick);
+      }
+      if (q.choices.length) lines.appendChild(ask);
+    }
+  }
+  // the staging area
+  const keys = stagedKeys();
+  if (keys.length) {
+    const area = el("div", "describe-stage");
+    area.appendChild(el("p", "describe-stage-title", "Staged: nothing is sent until you apply. × takes a row back."));
+    for (const key of keys) {
+      const place = stagePlaces[key];
+      const group = el("div", "describe-place");
+      group.appendChild(el("p", "describe-place-name", placeName(key)));
+      const table = el("div", "describe-rows");
+      for (const [a, before, after] of stagedRows(key)) {
+        const line = el("div", "describe-staged" + (controller.canWrite(a) ? "" : " describe-cant"));
+        const name = el("span", "describe-setting", rowName(a));
+        const why = controller.canWrite(a) ? (place.why[a] || "") : "this firmware can't take it";
+        if (why) name.appendChild(el("span", "describe-why", why));
+        line.appendChild(name);
+        line.appendChild(el("span", "describe-change", `${rowValue(a, before, place.before)} → ${rowValue(a, after, place.work)}`));
+        const x = el("button", "describe-unstage always-on", "×");
+        x.type = "button";
+        x.title = "take this change back";
+        x.setAttribute("aria-label", `take back ${rowName(a)}`);
+        x.addEventListener("click", () => { unstage(key, a); renderPresetDescribe(box); });
+        line.appendChild(x);
+        table.appendChild(line);
+      }
+      group.appendChild(table);
+      area.appendChild(group);
+    }
+    const acts = el("div", "describe-stage-buttons");
+    const apply = button("apply", "send the live changes and write the banks named", connected && !stageBusy);
+    apply.addEventListener("click", () => applyStage(box));
+    const clear = button("clear", "drop everything staged; nothing has been sent", !stageBusy);
+    clear.addEventListener("click", () => { clearStage(); renderPresetDescribe(box); });
+    acts.append(apply, clear);
+    area.appendChild(acts);
+    box.appendChild(area);
+  }
+  if (putBack && (Object.keys(putBack.live).length || Object.keys(putBack.banks).length)) {
+    const back = button("put everything back", "restore every setting and bank that apply changed, as it was before", connected && !stageBusy);
+    back.classList.add("describe-putback");
+    back.addEventListener("click", () => restoreAll(box));
+    box.appendChild(back);
+  }
   go.addEventListener("click", () => {
     const text = input.value.trim();
-    if (text) describeLive(text, box);
+    if (text) stageWords(text, box);
   });
   input.addEventListener("keydown", e => {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); go.click(); }
-  });
-  undo.addEventListener("click", () => {
-    if (!presetUndo || !deviceReady()) return;
-    sendValues(presetUndo);
-    presetUndo = null;
-    presetResult = null;
-    showNotification("Put back what the last description changed", "success");
-    renderPresetDescribe(box);
   });
 }
 

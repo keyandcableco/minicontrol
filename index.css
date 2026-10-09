@@ -891,6 +891,74 @@
     .describe-unknown, .describe-note {
       opacity: 0.65;
     }
+    /* the staging area: what the words would change, before anything is sent */
+    .describe-question {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin: 4px 0 8px;
+    }
+    .describe-question .describe-line {
+      margin: 0;
+    }
+    .describe-choice {
+      font-size: 0.85em;
+      padding: 3px 8px;
+    }
+    .describe-stage {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid var(--track-color);
+      border-radius: 5px;
+    }
+    .describe-stage-title, .describe-place-name {
+      margin: 0 0 6px;
+      font-size: 0.9em;
+    }
+    .describe-place-name {
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .describe-rows {
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .describe-staged {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 3px 0;
+      border-top: 1px solid var(--track-color);
+      font-size: 0.85em;
+    }
+    .describe-setting, .describe-change {
+      overflow-wrap: anywhere;
+    }
+    .describe-why {
+      display: block;
+      font-size: 0.9em;
+      opacity: 0.65;
+    }
+    .describe-cant {
+      opacity: 0.65;
+    }
+    .describe-cant .describe-change {
+      text-decoration: line-through;
+    }
+    .describe-unstage {
+      padding: 0 8px;
+      line-height: 1.6;
+    }
+    .describe-stage-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .describe-putback {
+      margin-top: 10px;
+    }
     .bank-describe .describe-row {
       margin-bottom: 4px;
     }
