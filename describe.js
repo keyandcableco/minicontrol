@@ -119,7 +119,7 @@ function applyChanges(values, changes, reportAll) {
       const target = pyRound(c.value);
       if (target !== 0) {
         const t = PARAMS[target];
-        let ok = (t != null && !LOCKED.has(target) && t.group !== "hidden") || [256, 287, 315, 323].includes(target);
+        let ok = (t != null && !LOCKED.has(target) && t.group !== "hidden") || [256, 287, 315, 323, 332].includes(target);
         if (KNOB_TARGETS.has(a)) ok = ok && target !== 256 && t.controls === "all";
         else ok = ok && (target === 256 || t.controls === "all" || t.controls === "tap");
         if (!ok) {
@@ -583,6 +583,8 @@ class Interpreter {
       r.understood.push(`double tap${slot} → ${what}`);
     } else if (role === "revert" || role === "panic") r.understood.push(`double tap${slot} → ` +
       (role === "revert" ? "the preset back as it was saved" : "the panic: every voice stopped, All Notes Off"));
+    else if (role === "tape_stop" || role === "grab") r.understood.push(`double tap${slot} → ` +
+      (role === "tape_stop" ? "the tape stop, and the song back in the next time" : "a second of the song grabbed onto the harp"));
     else r.understood.push(`double tap${slot} → ${lbl} to ${fmtG(value)}, and back on the next double tap`);
     if (index > 0 && !this.tapNote) {
       this.tapNote = true;
