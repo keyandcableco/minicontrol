@@ -21,7 +21,7 @@ The presets and demos were made by Claude (Anthropic's AI), on a minichord, with
 | 1 | Open Hand Pad | [listen](demos/01-open-hand-pad.mp3) | hover on the chord filter, chord ensemble, pentatonic chosen per chord, string spread (ping-pong), alternate chord layout on the double tap |
 | 2 | Concert Harp | [listen](demos/02-concert-harp.mp3) | plucked string model, scale chosen per chord (glissandi), touch velocity, strum velocity, palm mute, string spread (by pitch), string quartet samples, pluck on lift on the double tap |
 | 3 | Jazz Piano | [listen](demos/03-jazz-piano.mp3) | piano samples, voice leading, scale chosen per chord, touch velocity, alternate chord layout, hover as a sustain pedal |
-| 4 | Cantus Choir | [listen](demos/04-cantus-choir.mp3) | 31-EDO, formants, voice leading, cantus (the harp sets the soprano), scale chosen per chord, just chords (harmonic seventh) on the double tap |
+| 4 | Cantus Choir | [listen](demos/04-cantus-choir.mp3) | 31-EDO, choir samples, cantus (the harp sets the soprano), voice leading, plucked string model, scale chosen per chord, formants, hover crescendo, just chords (harmonic seventh) on the double tap |
 | 5 | Chamber Strings | [listen](demos/05-chamber-strings.mp3) | strict voice leading, 31-EDO, string quartet and pizzicato samples, hover tremolo, scale chosen per chord, touch velocity, string spread, harp voice on the double tap |
 | 6 | Folk Guitar & Bass | [listen](demos/06-folk-guitar-bass.mp3) | plucked string model as a guitar, strum velocity, palm mute, touch velocity, monophonic chords as a bass, the looper on the double tap |
 | 7 | Wah Clav & Bass | [listen](demos/07-wah-clav-bass.mp3) | hover as a wah pedal, the looper on the double tap, generator scale (minor pentatonic on each chord), touch velocity, rhythm mode funk pattern |
@@ -91,19 +91,20 @@ MDswOzUwOzUwOzUxMjs1MTI7NTEyOzQwOzA7MDsxODQ7MTAwOzI1MjsxMDA7MTQzOzg1OzQ3OzEwMDsw
 
 ## 4. Cantus Choir
 
-A synth choir sung through formants, in 31-tone equal temperament, whose thirds are within a cent of pure: the chords ring the way a choir tunes them. The mod knob moves the vowel from ah through eh, ee and oh to oo. The voices move like a choir's, and the first note of each harp gesture becomes the sopranos' note, passing tones and all, so the right hand sings the melody. Double tap for the just chords: the seventh button rings a true harmonic seventh.
+A sampled choir on the chord buttons, in 31-tone equal temperament, whose thirds are within a cent of pure: the chords ring the way a choir tunes them. The voices move like a choir's, and the first note of each harp gesture becomes the sopranos' note, passing tones and all, so the harp leads the top line while the choir follows it. The harp is a concert harp that rings on under the voices. The mod knob shades the choir's vowel; a hand over the plate is a crescendo. Double tap for the just chords: the seventh button rings a true harmonic seventh.
 
-- **hover**: the singers lean in: more vibrato with a hand close over the plate
-- **mod knob**: the vowel: a, e, i, o, u
+- **hover**: a crescendo: the choir swells with a hand close over the plate
+- **mod knob**: the choir's vowel, shaded through a, e, i, o, u
 - **modifier + mod knob**: voice size, from children to basses
-- **modifier + chord knob**: how much of the chord goes through the formants
-- **modifier + harp knob**: harp reverb
+- **modifier + chord knob**: how much the vowel shades the choir
+- **modifier + harp knob**: how long the harp rings
 - **double tap**: the just chords: harmonic seventh on the 7th button, harmonic ninth on all three, sus4 on major and minor together (the sharp button rests while they are on)
+- **palm**: lay five fingers flat across the plate to stop the harp ringing
 
 <details><summary>Preset code</summary>
 
 ```
-MDswOzUwOzUwOzUxMjs1MTI7NTEyOzQwOzA7MDsxMTk7MTAwOzg1OzEwMDsxMTg7MTAwOzIzOTs4MDswOzA7Mjc1OzA7MDswOzkwOzMwOzQ1OzM1OzgwOzc1OzA7MDswOzA7MDswOzg7MDswOzA7MDsxNTswOzYwOzA7OTAwOzc1OzkwMDsxOzIwMDA7MTAwOzcwOzE7MDsxOzEwMDsxOzE7MDswOzA7MDswOzUzMDszOzUwMDsxOzE7MTAwOzE7MTsxMDA7MTsxOzE7MTs0MDswOzA7NzA7MDswOzA7MTAwOzA7NTA7MDswOzMwMDsxMDA7ODA7MTAwOzEwMDswOzA7MDswOzYwOzA7MjswOzA7MTs1OzMwOzA7MTsxOzA7NDQwMDswOzE7NzswOzA7NDsxOzA7NTA7ODU7MjsxNDs5OzEwMDs5Ozk7MTAwOzY7NDsyMDA7Mjs1MDs1MDs1MDs1MDswOzA7MjIwOzA7ODAwOzkwOzE0MDA7MTsyNjAwOzMwOzkwOzE7MDsxOzEwMDsxOzE7MDswOzA7MDswOzQwMDswOzA7MDs1MzA7MDszOzY1MDsxOzE7MTAwOzE7MTsxMDA7MTsxOzE7MTs1MDswOzA7NzA7MDswOzA7MTAwOzA7NTU7MDswOzgwOzE2OzQ7MTAwOzcwMDsyNTA7MTAwOzgwOzEwMDsxMDA7MjAwOzI7MDszOTsxOzE7MjsyMjs0OzU7MTI7MjY7MDsxOzA7MTswOzE1OzA7MDswOzMwMDszMDsxNjswOzY7NjszMjswOzY7MDsxNjswOzY7NjszMjswOzY7MDsyNzQxOzEyOzA7NDg7NjU7MDswOzA7MDswOzA7MDswOzE2MzsxMjs3OzA7MDswOzA7MDs0MDsxOzMwOzA7MDszMDswOzM7MDswOzc7OTswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MA==
+MDswOzUwOzUwOzUxMjs1MTI7NTEyOzQwOzA7MDsxMTk7MTAwOzIxODs4MDsxMTg7MTAwOzIzOTs4MDswOzA7Mjc1OzA7MDswOzkwOzMwOzQ1OzM1OzgwOzc1OzA7MDswOzA7MDswOzg7MDswOzA7MDsxNTswOzE7MDs1MDAwOzgwOzQwMDA7MTsxNDAwOzEwMDs3MDsxOzA7MTsxMDA7MTsxOzA7MDswOzA7MDswOzA7MTsxOzE7MTAwOzE7MTsxMDA7MTsxOzE7MTswOzA7MDs3MDswOzA7MDsxMDA7MDs0NTswOzA7NTAwOzEwMDs4MDsxMDA7MTAwOzA7MDswOzA7NzA7MDsyOzA7NTsxOzM7MTU7MDsxOzE7MDs0NDAwOzA7MTs3OzA7MDs0OzE7MDs1MDs0NTsyOzE1Ozg7MTAwOzE1OzA7MjAwOzA7MDs1MDswOzQ1OzQ1OzQ1OzYwOzA7MDsyNTA7MDs4MDA7OTU7MTYwMDsxOzUwMDA7MDs3MDsxOzA7MTsxMDA7MTsxOzA7MDswOzA7MDs0MDA7MDswOzA7MDswOzA7MTsxOzE7MTAwOzE7MTsxMDA7MTsxOzE7MTswOzA7MDs3MDswOzA7MDsxMDA7MDs1NTswOzA7ODA7MTY7NDsxMDA7NzAwOzI1MDsxMDA7ODA7MTAwOzEwMDs2MDsyOzA7Mzk7MTsxOzI7MjI7NDs1OzEyOzI2OzA7MTswOzE7NTs2MDswOzA7MTAwOzcwMDszMDsxNjswOzY7NjszMjswOzY7MDsxNjswOzY7NjszMjswOzY7MDsyNzQxOzEyOzA7NTA7NTA7MDswOzA7MDswOzA7MDswOzE5NzsxMjA7Nzs2MDswOzA7MDswOzUwOzA7MTU7MDswOzMwOzQwOzA7MzswOzc7OTswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MDswOzA7MA==
 ```
 
 </details>

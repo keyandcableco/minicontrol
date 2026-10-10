@@ -283,41 +283,42 @@ preset("Jazz Piano", 0,
 
 # 4 ------------------------------------------------------------------------------------------------
 preset("Cantus Choir", 275,
-       "A synth choir sung through formants, in 31-tone equal temperament, whose thirds are within a "
-       "cent of pure: the chords ring the way a choir tunes them. The mod knob moves the vowel from ah "
-       "through eh, ee and oh to oo. The voices move like a choir's, and the first note of each harp "
-       "gesture becomes the sopranos' note, passing tones and all, so the right hand sings the melody. "
+       "A sampled choir on the chord buttons, in 31-tone equal temperament, whose thirds are within a "
+       "cent of pure: the chords ring the way a choir tunes them. The voices move like a choir's, and "
+       "the first note of each harp gesture becomes the sopranos' note, passing tones and all, so the "
+       "harp leads the top line while the choir follows it. The harp is a concert harp that rings on "
+       "under the voices. The mod knob shades the choir's vowel; a hand over the plate is a crescendo. "
        "Double tap for the just chords: the seventh button rings a true harmonic seventh.",
-       ["31-EDO", "formants", "voice leading", "cantus (the harp sets the soprano)", "scale chosen per chord",
+       ["31-EDO", "choir samples", "cantus (the harp sets the soprano)", "voice leading",
+        "plucked string model", "scale chosen per chord", "formants", "hover crescendo",
         "just chords (harmonic seventh) on the double tap"],
-       {"hover": "the singers lean in: more vibrato with a hand close over the plate",
-        "mod knob": "the vowel: a, e, i, o, u",
+       {"hover": "a crescendo: the choir swells with a hand close over the plate",
+        "mod knob": "the choir's vowel, shaded through a, e, i, o, u",
         "modifier + mod knob": "voice size, from children to basses",
-        "modifier + chord knob": "how much of the chord goes through the formants",
-        "modifier + harp knob": "harp reverb",
+        "modifier + chord knob": "how much the vowel shades the choir",
+        "modifier + harp knob": "how long the harp rings",
         "double tap": "the just chords: harmonic seventh on the 7th button, harmonic ninth on all three, "
-                      "sus4 on major and minor together (the sharp button rests while they are on)"},
-       chord_osc(0.14, BL_SAW, 1.0, 0.09, BL_SAW, 1.0, 0.06, BL_PULSE, 2.0, noise=0.02),
-       chord_env(220, 0, 800, 0.9, 1400),
-       chord_filter(2600, 0.3, 0.9), chord_trem(),
-       chord_vib(5.3, 0.03, 0.5, att=650, sus=1.0),
-       chord_delay(),
-       chord_out(250, 0.8, 1.0, 1.0, 2.0),
-       chord_fx(0.55, ensemble=30),
-       {118: 50, 119: 85, 239: 48, 240: 65},
+                      "sus4 on major and minor together (the sharp button rests while they are on)",
+        "palm": "lay five fingers flat across the plate to stop the harp ringing"},
+       chord_sample(3), chord_env(250, 0, 800, 0.95, 1600),
+       {131: 0.45, 132: 0.45, 133: 0.45, 134: 0.6},        # the top voice, the harp's, a little forward
+       chord_filter(5000, 0.0, 0.7), chord_trem(), chord_vib(), chord_delay(),
+       chord_out(250, 0.8, 1.0, 1.0, 0.6),
+       chord_fx(0.55, ensemble=15),
+       {118: 50, 119: 45, 239: 50, 240: 50},
        {120: 2, 198: 2, 111: 1, 112: 7, 115: 4, 237: 12,
         202: 1, 203: 2, 204: 22, 205: 4, 206: 5, 207: 12, 208: 26},
-       harp_sample(3), harp_env(60, 0, 900, 0.75, 900),
-       harp_filter(2000, 1.0, 0.7), harp_trem(),
-       harp_vib(5.3, 0.03, 0.4, att=500),
-       harp_delay(),
-       harp_transient(0.0),
-       harp_out(300, 0.8, 1.0, 1.0, 0.6),
-       harp_fx(0.5, spread=40, pattern=1),
-       {36: 8},
+       harp_synth(SINE, 0.15, model=100), harp_string(7.0, 30),
+       harp_env(1, 0, 5000, 0.8, 4000),
+       harp_filter(1400, 1.0, 0.7),
+       harp_trem(), harp_vib(), harp_delay(),
+       harp_transient(0.05, SINE, 1, 3, 15, 0),
+       harp_out(500, 0.8, 1.0, 1.0, 0.7),
+       harp_fx(0.45, spread=50, pattern=0),
+       {36: 8, 252: 60, 263: 40, 213: 5, 214: 60},
        reverb_room(0.9, 0.3, 0.45, 0.35, 0.8), {29: 0.75},
-       hover(163, 0.12, 7),
-       knobs(chord_alt=(119, 100), harp_alt=(85, 100), mod=(118, 100), mod_alt=(239, 80)),
+       hover(197, 1.2, 7),
+       knobs(chord_alt=(119, 100), harp_alt=(218, 80), mod=(118, 100), mod_alt=(239, 80)),
        double_tap((39, 1)))
 
 # 5 ------------------------------------------------------------------------------------------------
