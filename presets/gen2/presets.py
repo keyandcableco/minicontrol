@@ -503,7 +503,7 @@ preset("Ribbon Lead", 180,
         "double tap": "back to a strummed harp, the same sound",
         "rhythm mode": "ballad: the pad pulsing in eighths under the lead"},
        chord_osc(0.08, BL_SAW, 1.0, 0.06, BL_PULSE, 1.0, 0.04, TRI, 0.5),
-       chord_env(500, 0, 1500, 0.8, 1800),
+       chord_env(120, 0, 1500, 0.8, 1800),                 # soft, but quick enough for rhythm mode's eighths
        chord_filter(600, 0.25, 1.2, fa=800, fd=1500, fs=0.4, fr=1500, sens=0.8),
        chord_trem(), chord_vib(), chord_delay(),
        chord_out(300, 0.8, 1.0, 1.0, 1.0),

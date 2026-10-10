@@ -119,10 +119,11 @@ def code(values):
     return base64.b64encode(";".join(str(v) for v in values).encode("ascii")).decode("ascii")
 
 
-def demo_file(i, preset):
-    """the demo recorded for a preset, if there is one: demos/NN-name.mp3"""
+def demo_file(i, preset, kind=""):
+    """a demo recorded for a preset, if there is one: demos/NN-name.mp3, or NN-name-rhythm.mp3 for its
+    rhythm style"""
     name = preset["name"].lower().replace(" & ", "-").replace(" ", "-")
-    path = f"demos/{i + 1:02d}-{name}.mp3"
+    path = f"demos/{i + 1:02d}-{name}{kind}.mp3"
     return path if os.path.exists(os.path.join(HERE, path)) else None
 
 
@@ -182,12 +183,16 @@ def main():
         "makes Midnight Raga something else entirely (the Ribbon Lead demo fakes its slides with quick runs). "
         "Play those two before judging them.",
         "",
-        "| Bank | Preset | Demo | Shows |",
-        "|---|---|---|---|",
+        "The rhythm demos play each preset's rhythm style, with rhythm mode switched on and the chords "
+        "sent in over MIDI (firmware 45 on), a short progression in the preset's own tempo.",
+        "",
+        "| Bank | Preset | Demo | Rhythm | Shows |",
+        "|---|---|---|---|---|",
     ]
     for i, p in enumerate(presets.PRESETS):
-        demo = demo_file(i, p)
-        lines.append(f"| {i + 1} | {p['name']} | {f'[listen]({demo})' if demo else ''} | {', '.join(p['shows'])} |")
+        demo, rhythm = demo_file(i, p), demo_file(i, p, "-rhythm")
+        lines.append(f"| {i + 1} | {p['name']} | {f'[listen]({demo})' if demo else ''} | "
+                     f"{f'[listen]({rhythm})' if rhythm else ''} | {', '.join(p['shows'])} |")
     for i, (p, values) in enumerate(zip(presets.PRESETS, built)):
         lines += ["", f"## {i + 1}. {p['name']}", "", p["blurb"], "", *control_lines(p), "",
                   "<details><summary>Preset code</summary>", "", "```", code(values), "```", "", "</details>"]
