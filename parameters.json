@@ -3877,6 +3877,174 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 270,
+      "group": "Oscillator",
+      "ui_type": "select",
+      "name": "first note voice",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 5,
+      "default_value": 0,
+      "tooltip": "what the first chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet. So the notes can be different instruments, say pizzicato in the bass under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
+      "method": "set_chord_note_source(0,value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.41,
+      "options": [
+        {
+          "value": 0,
+          "label": "As the chord voice"
+        },
+        {
+          "value": 1,
+          "label": "Synth"
+        },
+        {
+          "value": 2,
+          "label": "Piano"
+        },
+        {
+          "value": 3,
+          "label": "Pizzicato strings"
+        },
+        {
+          "value": 4,
+          "label": "Choir"
+        },
+        {
+          "value": 5,
+          "label": "String quartet"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 271,
+      "group": "Oscillator",
+      "ui_type": "select",
+      "name": "second note voice",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 5,
+      "default_value": 0,
+      "tooltip": "what the second chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet. So the notes can be different instruments, say pizzicato in the bass under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
+      "method": "set_chord_note_source(1,value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.41,
+      "options": [
+        {
+          "value": 0,
+          "label": "As the chord voice"
+        },
+        {
+          "value": 1,
+          "label": "Synth"
+        },
+        {
+          "value": 2,
+          "label": "Piano"
+        },
+        {
+          "value": 3,
+          "label": "Pizzicato strings"
+        },
+        {
+          "value": 4,
+          "label": "Choir"
+        },
+        {
+          "value": 5,
+          "label": "String quartet"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 272,
+      "group": "Oscillator",
+      "ui_type": "select",
+      "name": "third note voice",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 5,
+      "default_value": 0,
+      "tooltip": "what the third chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet. So the notes can be different instruments, say pizzicato in the bass under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
+      "method": "set_chord_note_source(2,value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.41,
+      "options": [
+        {
+          "value": 0,
+          "label": "As the chord voice"
+        },
+        {
+          "value": 1,
+          "label": "Synth"
+        },
+        {
+          "value": 2,
+          "label": "Piano"
+        },
+        {
+          "value": 3,
+          "label": "Pizzicato strings"
+        },
+        {
+          "value": 4,
+          "label": "Choir"
+        },
+        {
+          "value": 5,
+          "label": "String quartet"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 273,
+      "group": "Oscillator",
+      "ui_type": "select",
+      "name": "fourth note voice",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 5,
+      "default_value": 0,
+      "tooltip": "what the fourth chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet. So the notes can be different instruments, say pizzicato in the bass under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
+      "method": "set_chord_note_source(3,value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.41,
+      "options": [
+        {
+          "value": 0,
+          "label": "As the chord voice"
+        },
+        {
+          "value": 1,
+          "label": "Synth"
+        },
+        {
+          "value": 2,
+          "label": "Piano"
+        },
+        {
+          "value": 3,
+          "label": "Pizzicato strings"
+        },
+        {
+          "value": 4,
+          "label": "Choir"
+        },
+        {
+          "value": 5,
+          "label": "String quartet"
+        }
+      ],
+      "step": 1
     }
   ],
   "harp_parameter": [

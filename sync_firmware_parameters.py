@@ -137,6 +137,8 @@ UI_OVERRIDES = {
     240: control('chord_parameter', 'Formants', 'slider'),
     # chord: oscillators or a sampled instrument
     265: select('chord_parameter', 'Oscillator', VOICES),
+    # each chord note's own voice (firmware 41): 0 follows chord voice, then the voices one up
+    **{a: select('chord_parameter', 'Oscillator', ["As the chord voice"] + VOICES) for a in (270, 271, 272, 273)},
     # chord: the ensemble, a slow stereo chorus after the chord chain
     259: control('chord_parameter', 'Ensemble', 'slider'),
     # global: the vocoder, shaped by the sound coming in over USB

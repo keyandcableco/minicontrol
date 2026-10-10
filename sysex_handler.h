@@ -863,6 +863,18 @@ void apply_audio_parameter(int adress, int value) {
         case 269:
             generator_mode=value; rebuild_generator_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
             break;
+        case 270:
+            set_chord_note_source(0,value);
+            break;
+        case 271:
+            set_chord_note_source(1,value);
+            break;
+        case 272:
+            set_chord_note_source(2,value);
+            break;
+        case 273:
+            set_chord_note_source(3,value);
+            break;
         default:
             break;
     }
