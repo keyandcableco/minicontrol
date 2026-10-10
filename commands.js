@@ -24,7 +24,10 @@ let NAMES = null;      // a setting's names -> its addresses
 let SECTION = null;    // a section word -> "chord" or "harp"
 
 const BANKS = 12;
-const LOCKED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 241, 242, 243, 244, 256, 382, 383, 510, 511]);
+// 256 (the looper) and 287 (chord memory) are actions: writing one records, plays or stops, so
+// nothing here may write them, in a place or in every bank
+const LOCKED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 241, 242, 243, 244, 256, 287, 382, 383, 510, 511]);
+const ACTIONS = new Set([256, 287]);
 const RHYTHM_STEPS = [220, 235];
 const KNOBS = { mod: [14, 15], mod_alt: [16, 17], chord_knob: [10, 11], harp_knob: [12, 13] };
 const TAPS = [[200, 201], [209, 210], [211, 212]];
@@ -380,6 +383,9 @@ function resolve(phrase, section) {
   const key = rest.join(" ");
   // describe.js's words for a setting: "filter" is the cutoff, "echo" the delay, "attack" the envelope's
   const role = key ? targetRole(key) : null;
+  // the looper (256) and chord memory (287) are actions, not settings: describe.js gives a control
+  // to one, with the step its double tap takes, so neither is read as one of their settings
+  if (role && D.roles[role] && Object.values(D.roles[role]).some(a => ACTIONS.has(a))) return null;
   if (role && D.roles[role]) {
     const where = D.roles[role];
     let addrs = "global" in where ? [where.global] : Object.entries(where).filter(([sec]) => !sections.size || sections.has(sec)).map(([, a]) => a);
