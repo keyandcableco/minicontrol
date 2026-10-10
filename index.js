@@ -218,14 +218,20 @@ function noteBankName(bank, name) {
   try { localStorage.setItem(BANK_NAMES_SEEN_KEY, JSON.stringify(names)); } catch (e) { }
   paintBankNames();
 }
+// a bank's name as the page knows it, "" for none
+function bankNameShown(bank) {
+  const names = namesOnDevice() ? bankNamesSeen() : typeof bankNamesGet === "function" ? bankNamesGet() : [];
+  return names[bank] || "";
+}
 function paintBankNames() {
   const select = document.getElementById("bank_number_selection");
   if (!select) return;
-  const names = namesOnDevice() ? bankNamesSeen() : typeof bankNamesGet === "function" ? bankNamesGet() : [];
   for (const option of select.options) {
     const bank = parseInt(option.value);
-    option.textContent = (bank + 1) + (names[bank] ? " · " + names[bank] : "");
+    const name = bankNameShown(bank);
+    option.textContent = (bank + 1) + (name ? " · " + name : "");
   }
+  labelResetBank();
 }
 
 // " · Warm pad" after the bank number: the live sound's own name, or before firmware 50 the
@@ -1034,7 +1040,9 @@ document.getElementById("revert-btn")?.addEventListener("click", () => {
 function labelResetBank() {
   const button = document.getElementById("reset-bank-btn");
   const select = document.getElementById("bank_number_selection");
-  if (button && select) button.textContent = `reset bank ${parseInt(select.value) + 1}`;
+  if (!button || !select) return;
+  const bank = parseInt(select.value), name = bankNameShown(bank);
+  button.textContent = `reset bank ${bank + 1}` + (name ? ` · ${name}` : "");
 }
 document.getElementById("bank_number_selection")?.addEventListener("change", labelResetBank);
 document.getElementById("settings-drawer")?.addEventListener("toggle", e => {
@@ -1059,7 +1067,8 @@ document.getElementById("reset-bank-btn")?.addEventListener("click", () => {
   const after = away
     ? ` The minichord moves to bank ${bank + 1}` + (unsavedEdits ? `, and the unsaved changes to bank ${currentBankNumber + 1} are lost.` : ".")
     : (unsavedEdits ? " The unsaved changes go with it." : "");
-  if (!confirm(`Reset bank ${bank + 1} to its factory settings?\n\n` +
+  const name = bankNameShown(bank);
+  if (!confirm(`Reset bank ${bank + 1}${name ? ` (${name})` : ""} to its factory settings?\n\n` +
       `What bank ${bank + 1} holds now is erased. This can't be undone.${after}`)) return;
   console.log(`[reset-bank-btn] Resetting bank ${bank + 1}`);
   controller.resetBank(bank);
