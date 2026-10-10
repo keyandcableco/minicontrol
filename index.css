@@ -70,6 +70,7 @@
     .disconnected#notification-bubble {
       background: lightcoral;
       border: 3px solid red;
+      color: #5c0000;
     }
     .connected#notification-bubble #dot {
       margin-right: 8px;
@@ -1226,4 +1227,162 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .describe-speak.recording { animation: none; outline: 2px solid var(--primary-color); }
+    }
+
+    /* the rhythm pattern: sixteen steps across, a checkbox for each of the seven voices down */
+    .rhythm-grid {
+      display: grid;
+      grid-template-columns: repeat(16, 15px);
+      gap: 5px;
+      margin: 10px 0;
+    }
+    .rhythm-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Phones. The page is one column here, so what took room beside something else on a wider
+       window (the margins, the panels' padding, the drawing) gives it back to the controls. */
+    @media screen and (max-width: 600px) {
+      body {
+        margin: 12px;
+      }
+      .status-header,
+      #header {
+        padding: 8px;
+      }
+      /* the settings button goes under a title too wide to sit beside (arcade's marquee) */
+      .status-header {
+        flex-wrap: wrap;
+      }
+      [data-theme="arcade"] .status-header .settings-toggle {
+        margin: 16px auto 0;
+      }
+      #header {
+        margin: 10px 0;
+      }
+      /* arcade sizes its own title to the window */
+      html:not([data-theme="arcade"]) .status-header h1 {
+        margin: 4px 0 8px;
+        font-size: 1.7em;
+      }
+      #notification-bubble {
+        padding: 5px 12px;
+        border-width: 2px !important;
+        border-radius: 14px;
+        font-size: 0.9em;
+      }
+      #notification-bubble #dot {
+        margin-right: 6px;
+        font-size: 1em !important;
+      }
+      #connection-text {
+        font-size: 1em;
+      }
+      .toolbar {
+        gap: 12px 20px;
+      }
+      .describe-group {
+        margin-top: 8px;
+      }
+      /* the drawing fits the width, rather than spilling off the left */
+      .svg-container {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        justify-content: center;
+      }
+      .svg-container img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 160px;
+      }
+      #instruction_zone {
+        font-size: 0.9em;
+        line-height: 1.4;
+      }
+
+      /* the sections: smaller names, closer together, and less padding nested inside padding */
+      #parameters {
+        gap: 4px;
+      }
+      #parameters > details {
+        margin: 6px 0 !important;
+      }
+      #parameters > details > summary {
+        font-size: 1.3em !important;
+      }
+      .section-suffix {
+        display: none;
+      }
+      #parameters > details > div {
+        padding: 4px 0 !important;
+      }
+      #parameters details details.submenu > summary {
+        font-size: 1.1em !important;
+        padding: 8px 0;
+      }
+      #parameters details details.submenu > .submenu-body {
+        margin-left: 2px;
+        padding-left: 10px;
+      }
+      #parameters h3 {
+        margin: 18px 0 6px !important;
+      }
+
+      /* a row: the label, then the control taking the rest of the width */
+      #parameters div[style*="display: flex"] > label {
+        width: 112px !important;
+      }
+      #parameters input[type="range"],
+      #parameters select {
+        flex: 1 1 auto;
+        max-width: none;
+        margin: 0 6px !important;
+      }
+      #parameters input[type="number"] {
+        width: 44px !important;
+      }
+      #parameters input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* sixteen steps share the width */
+      .rhythm-grid {
+        grid-template-columns: repeat(16, minmax(0, 1fr));
+        gap: 2px;
+      }
+      #parameters .rhythm-grid input[type="checkbox"] {
+        width: 100%;
+        max-width: 18px;
+        margin: 2px 0 !important;
+      }
+    }
+
+    /* a slider thumb a finger can find */
+    @media (pointer: coarse) {
+      input[type="range"] {
+        height: 8px;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        width: 22px;
+        height: 22px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 22px;
+        height: 22px;
+      }
+      [data-theme="arcade"] input[type="range"]::-webkit-slider-thumb {
+        width: 16px;
+        height: 22px;
+      }
+      [data-theme="arcade"] input[type="range"]::-moz-range-thumb {
+        width: 14px;
+        height: 20px;
+      }
+      #parameters div[style*="display: flex"] {
+        min-height: 36px;
+      }
     }

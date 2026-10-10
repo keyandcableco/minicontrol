@@ -347,10 +347,11 @@ def generate_rhythm_grid_html():
     rhythm_params = [p for p in parameters.get('rhythm_parameter', []) if 220 <= p['sysex_adress'] <= 235]
     if not rhythm_params:
         return ''
-    html = ['<div style="display: grid; grid-template-columns: repeat(16, 15px); gap: 5px; margin: 10px 0;">']
+    # sized in index.css, which lets the sixteen steps share a phone's width
+    html = ['<div class="rhythm-grid">']
     rhythm_version = rhythm_params[0].get('introduction_version', 0.01) if rhythm_params else 0.01
     for step in range(16):
-        html.append(f'<div style="display: flex; flex-direction: column; align-items: center;">')
+        html.append(f'<div class="rhythm-step">')
         for voice in range(7):
             sysex_address = 220 + step
             html.append(f'''
@@ -433,25 +434,29 @@ def generate_details_html(group_name, params):
             grouped_params[param_group],
             key=lambda p: param_order.index(p['sysex_adress']) if p['sysex_adress'] in param_order else len(param_order) + p['sysex_adress']
         )
-        subgroup_html[param_group] = (f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{param_group}</h3>'
-                                      + ''.join(generate_param_html(param) for param in sorted_params))
+        subgroup_html[param_group] = ''.join(generate_param_html(param) for param in sorted_params)
         if group_name == 'rhythm_parameter' and param_group == 'Pattern':
             subgroup_html[param_group] += generate_rhythm_grid_html()
+
+    def heading(g):
+        return f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{g}</h3>'
 
     param_html = []
     placed = set()
     for title, members in submenus.get(group_name, []):
-        body = [subgroup_html[g] for g in members if g in subgroup_html]
+        # a subgroup named as its submenu is ("Pattern" in Pattern) needs no heading of its own
+        body = [('' if g == title else heading(g)) + subgroup_html[g] for g in members if g in subgroup_html]
         placed.update(members)
         if body:
             param_html.append(submenu_html(title, ''.join(body)))
     # anything no submenu claims, so a new subgroup still shows up somewhere
-    param_html.extend(html for g, html in subgroup_html.items() if g not in placed)
+    param_html.extend(heading(g) + html for g, html in subgroup_html.items() if g not in placed)
 
     if not param_html:
         return ''
     
-    display_name = group_name.replace('_parameter', '').replace('_', ' ').title() + ' Parameters'
+    # "Parameters" goes on a phone (index.css), where every section name would wrap with it
+    display_name = group_name.replace('_parameter', '').replace('_', ' ').title() + '<span class="section-suffix"> Parameters</span>'
     return f'''
         <details style="width: fit-content; margin: 20px 0; padding: 8px; border: none; border-radius: 5px;">
             <summary style="width: fit-content; font-size: 1.6em; font-weight: bold; cursor: pointer;">{display_name}</summary>
@@ -709,8 +714,6 @@ html_template = '''<!DOCTYPE html>
       </div>
     </div>
     <div id="instruction_zone" style="margin: 2px 0;">
-      A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>, with themes by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>.<br>
-      Its newer tools need the <a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a>, which is experimental and unofficial: it isn't made or endorsed by Ben Poilve.<br>
       For instruction on how to use this tool, please refer to the 
       <a href="https://minichord.com/user_manual/#custom-presets">minichord documentation.</a><br>
       To test and load user-submitted presets, visit the 

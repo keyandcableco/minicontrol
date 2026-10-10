@@ -193,6 +193,7 @@
 }
 
 [data-theme="arcade"] #instruction_zone,
+[data-theme="arcade"] #page-footer,
 [data-theme="arcade"] details > ul { font-size: .55rem; color: var(--dim); }
 
 /* each parameter section is a cabinet */
