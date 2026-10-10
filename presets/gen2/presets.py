@@ -528,20 +528,21 @@ preset("Ribbon Lead", 180,
 # Each chord note its own instrument: pizzicato basses, the string quartet in the middle two, the choir
 # on top; the mod knob changes who plays the top line, sweeping the fourth note's instrument (273):
 # as the chords (the quartet), a flute (the voice's own oscillators: a sine with breath), piano,
-# pizzicato, choir, quartet. The harp is a celesta, an octave up, in the scale of each chord.
+# pizzicato, choir, quartet. The harp is a plucked string (73%) with a celesta's bell, an octave up, in the
+# scale of each chord.
 preset("Pocket Orchestra", 90,
        "A small orchestra on the chord buttons: plucked basses, a string quartet in the middle and a "
        "choir on the top line, voiced like an arrangement. The mod knob hands the top line to another "
-       "section: flute, piano, pizzicato, choir or strings. The harp is a celesta in the scale of each "
-       "chord. A hand over the plate brightens the whole orchestra, as it plays louder; double tap and "
-       "the basses take up their bows.",
+       "section: flute, piano, pizzicato, choir or strings. The harp is a plucked harp string with a "
+       "celesta's bell in it, in the scale of each chord. A hand over the plate brightens the whole "
+       "orchestra, as it plays louder; double tap and the basses take up their bows.",
        ["each chord note its own instrument", "voice leading", "31-EDO", "piano, pizzicato, choir and "
-        "string samples", "scale chosen per chord", "hover brightness"],
+        "string samples", "plucked string model", "scale chosen per chord", "hover brightness"],
        {"hover": "the orchestra brightens with a hand close over the plate, as if playing louder",
         "mod knob": "who plays the top line: strings, flute, piano, pizzicato, choir",
         "modifier + mod knob": "articulation: from marcato to a slow legato swell",
         "modifier + chord knob": "the hall: reverb",
-        "modifier + harp knob": "how long the celesta rings",
+        "modifier + harp knob": "how long the harp rings",
         "double tap": "the basses bow: arco in place of pizzicato",
         "rhythm mode": "habanera, the pizzicato basses on its dotted rhythm"},
        chord_osc(0.14, SINE, 1.0, 0.03, TRI, 2.0, 0.0, SINE, 0.5, noise=0.025),   # the flute, for the top line
@@ -554,11 +555,12 @@ preset("Pocket Orchestra", 90,
        chord_out(250, 0.85, 1.0, 1.0, 0.5),
        chord_fx(0.5, ensemble=15),
        {120: 2, 198: 2, 111: 1, 112: 7, 237: 12},
-       harp_synth(SINE, 0.15), harp_env(1, 0, 1200, 0.0, 1200),
+       harp_synth(SINE, 0.15, model=73), harp_string(3.0, 30),   # mostly plucked string, the celesta's bell in it
+       harp_env(1, 0, 2500, 0.0, 1500),
        harp_filter(2000, 1.0, 0.7),
        harp_trem(), harp_vib(), harp_delay(),
        harp_transient(0.12, SINE, 1, 2, 12, 12),            # the hammer's strike, an octave up
-       harp_out(500, 0.8, 1.0, 1.0, 0.43),
+       harp_out(500, 0.8, 1.0, 1.0, 1.0),
        harp_fx(0.45, spread=40, pattern=0),
        {36: 8, 99: 3, 252: 50},
        reverb_room(0.85, 0.3, 0.45, 0.35, 0.8), {29: 0.75},
