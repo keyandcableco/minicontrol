@@ -78,6 +78,8 @@ UI_OVERRIDES = {
     106: select('global_parameter', 'MIDI', [str(i) for i in range(1, 17)], start=1),
     107: select('global_parameter', 'MIDI', [str(i) for i in range(1, 17)], start=1),
     108: control('global_parameter', 'MIDI', 'switch'),
+    # the rhythm's clock out to other gear (firmware 43)
+    266: select('global_parameter', 'MIDI', ["Off", "Port 1 (the chords')", "Port 2 (the harp's)", "Both ports"]),
     110: control('global_parameter', 'MIDI', 'switch'),
     238: control('global_parameter', 'MIDI', 'switch'),
     8: control('global_parameter', 'MIDI', 'switch'),

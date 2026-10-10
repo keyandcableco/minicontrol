@@ -890,6 +890,40 @@
       "curve": "linear",
       "introduction_version": 0.34,
       "step": 1
+    },
+    {
+      "sysex_adress": 266,
+      "group": "MIDI",
+      "ui_type": "select",
+      "name": "MIDI clock out",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "sends rhythm mode's tempo out as MIDI clock (24 a beat), so a drum machine, a looper pedal or a computer plays in time with the minichord. 0 off, 1 on port 1 (the chords' by default), 2 on port 2 (the harp's), 3 on both. Only in rhythm mode: Start as it comes on (on the first beat of a bar), Stop as it goes off. Tap tempo and the default bpm move it. Nothing goes out while a MIDI clock is coming in: the minichord follows that one instead",
+      "method": "midi_clock_out=value; acc_clock_out_changed();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.43,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "Port 1 (the chords')"
+        },
+        {
+          "value": 2,
+          "label": "Port 2 (the harp's)"
+        },
+        {
+          "value": 3,
+          "label": "Both ports"
+        }
+      ],
+      "step": 1
     }
   ],
   "chord_parameter": [

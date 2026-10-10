@@ -118,6 +118,7 @@
   "117": "global: knobs: knob layer",
   "215": "global: midi: harp note-off on lift",
   "238": "global: midi: knobs send MIDI",
+  "266": "global: midi: MIDI clock out",
   "8": "global: midi: MIDI in plays",
   "110": "global: midi: MPE output",
   "260": "global: vocoder: vocoder",
