@@ -30,6 +30,10 @@
   --text-primary: var(--t-ink);
 }
 
+/* the bank sheet, drawn on the page's colour; a theme whose ink is for its panels rather than its
+   page (choir and omnichord: dark ink on parchment, over dark wood) gives it the parchment */
+[data-themed] .bank-sheet-card { --background-color: var(--t-sheet, var(--t-page)); }
+
 [data-themed] body {
   font-family: var(--t-font);
   font-size: var(--t-size);

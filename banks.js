@@ -515,6 +515,9 @@ function downloadJson(data, filename) {
 
 //-->>the sheet
 let bankSheetEl = null, bankSheetPrevFocus = null;
+// the slot whose bank has been picked up to move with a tap rather than a drag, which a
+// phone doesn't start from a touch; null when none is
+let bankPicked = null;
 
 function bankSheetOpen() {
   return !!bankSheetEl && bankSheetEl.classList.contains("open");
@@ -666,13 +669,16 @@ function renderBankSheet() {
   }
 
   // ---- the twelve banks ----
-  const moveSec = bankSection(main, "move banks", "Drag a bank onto another to move it. A dashed bank has staged changes.");
+  if (bankPicked !== null && !bankState.slots[bankPicked]) bankPicked = null;
+  const moveSec = bankSection(main, "move banks", bankPicked !== null
+    ? "Bank " + (bankPicked + 1) + " is picked up: tap the bank whose place it takes, or its own number to put it down."
+    : "Drag a bank onto another to move it, or tap its number, then the bank whose place it takes. A dashed bank has staged changes.");
   const grid = document.createElement("div");
-  grid.className = "bank-grid";
+  grid.className = "bank-grid" + (bankPicked !== null ? " picking" : "");
   moveSec.appendChild(grid);
   bankState.slots.forEach((slot, i) => {
     const cell = document.createElement("div");
-    cell.className = "bank-cell" + (slot.dirty ? " dirty" : "");
+    cell.className = "bank-cell" + (slot.dirty ? " dirty" : "") + (bankPicked === i ? " picked" : "");
     cell.draggable = true;
     cell.dataset.index = String(i);
 
@@ -681,10 +687,14 @@ function renderBankSheet() {
     const hue = slot.values[BANK_HUE_ADDRESS];
     if (hue != null) swatch.style.background = "hsl(" + hue + ", 100%, 50%)";
 
-    const num = document.createElement("span");
+    // the number picks the bank up, to move it with a tap
+    const num = document.createElement("button");
+    num.type = "button";
     num.className = "bank-num";
     num.textContent = String(i + 1);
-    if (slot.id !== i) num.title = "was bank " + (slot.id + 1);
+    num.title = (slot.id !== i ? "was bank " + (slot.id + 1) + ". " : "") +
+      (bankPicked === null ? "Pick this bank up to move it" : bankPicked === i ? "Put this bank down where it is" : "Move bank " + (bankPicked + 1) + " here");
+    num.setAttribute("aria-pressed", String(bankPicked === i));
 
     const name = document.createElement("input");
     name.className = "bank-name";
@@ -711,7 +721,22 @@ function renderBankSheet() {
     });
 
     cell.append(swatch, num, name);
+    // with a bank picked up, a tap anywhere on another bank puts it there, so the names are
+    // left alone meanwhile rather than opened for typing
+    if (bankPicked !== null) { name.readOnly = true; name.tabIndex = -1; }
+    cell.addEventListener("click", e => {
+      if (bankPicked === null && e.target !== num) return;
+      if (bankPicked === null) bankPicked = i;
+      else {
+        if (bankPicked !== i) moveBankSlot(bankPicked, i);
+        bankPicked = null;
+      }
+      renderBankSheet();
+      const again = bankSheetEl.querySelector('.bank-cell[data-index="' + i + '"] .bank-num');
+      if (again) again.focus();
+    });
     cell.addEventListener("dragstart", e => {
+      bankPicked = null;
       e.dataTransfer.setData("text/plain", String(i));
       cell.classList.add("dragging");
     });
@@ -1071,6 +1096,7 @@ function alwaysOn(root) {
 function open_bank_sheet() {
   if (!controller.isConnected()) { bankStatus("Connect a minichord first", "error"); return; }
   bankSheetPrevFocus = document.activeElement;
+  bankPicked = null;
   if (!bankSheetEl) bankSheetEl = buildBankSheet();
   loadBankParams().catch(() => { }).then(() => {
     renderBankSheet();

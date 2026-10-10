@@ -702,13 +702,36 @@
       border-radius: 50%;
       border: 1px solid var(--text-primary);
     }
-    .bank-num {
-      flex: 0 0 1.6em;
+    /* the number is a button, which picks the bank up to move it with a tap; drawn as the plain
+       number it was, over the themes' buttons */
+    .bank-cell .bank-num {
+      flex: 0 0 1.8em;
+      padding: 2px 0 !important;
+      border: none !important;
+      border-radius: 4px;
+      background: none !important;
+      box-shadow: none !important;
+      transform: none !important;
+      color: var(--text-primary) !important;
+      font: inherit;
       font-weight: bold;
+      text-align: left;
+      text-transform: none;
+    }
+    .bank-cell .bank-num:hover {
+      text-decoration: underline;
+    }
+    .bank-cell.picked {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 1px;
+    }
+    .bank-grid.picking .bank-cell:not(.picked) {
+      cursor: pointer;
     }
     .bank-name {
       flex: 1;
       min-width: 0;
+      text-overflow: ellipsis;
       font: inherit;
       border: none !important;
       border-bottom: 1px solid transparent !important;
@@ -1383,6 +1406,58 @@
         height: 20px;
       }
       #parameters div[style*="display: flex"] {
+        min-height: 36px;
+      }
+    }
+
+    /* The bank sheet on a phone: the whole screen rather than a card over the page, with the
+       close button kept at the top and the write bar at the foot however far it scrolls. */
+    @media screen and (max-width: 600px) {
+      .bank-sheet {
+        padding: 0;
+        background-color: var(--background-color);
+      }
+      .bank-sheet-card {
+        min-height: 100%;
+        padding: 0 16px 16px;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .bank-sheet-head {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        margin: 0 -16px;
+        padding: 10px 16px;
+        background: var(--background-color);
+        border-bottom: 1px solid var(--track-color);
+      }
+      .bank-sheet-head h5 {
+        font-size: 1.3em;
+      }
+      .bank-sheet-actions {
+        bottom: 0;
+        margin: 18px -16px -16px;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        border-radius: 0;
+      }
+      .bank-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .bank-cell {
+        gap: 4px;
+      }
+      .bank-section.bank-staged {
+        padding: 0 10px 8px;
+      }
+    }
+    /* the small buttons in the sheet, big enough for a finger */
+    @media (pointer: coarse) {
+      .bank-cell .bank-num {
+        min-height: 32px;
+      }
+      .bank-btn.bank-x {
+        min-width: 36px;
         min-height: 36px;
       }
     }
