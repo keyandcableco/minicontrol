@@ -605,6 +605,15 @@ html_template = '''<!DOCTYPE html>
               </div>
             </div>
           </div>
+          <!-- the live sound's name (firmware 50), which save keeps with the preset as every setting -->
+          <div class="tool-group" role="group" aria-labelledby="tool-name">
+            <label class="tool-label" id="tool-name" for="preset-name">name</label>
+            <div class="tool-buttons">
+              <div class="button_div">
+                <input type="text" id="preset-name" class="inactive" version="0.5" maxlength="24" placeholder="no name" autocomplete="off" spellcheck="false" title="the live sound's name, up to 24 plain letters: save to a bank to keep it with the preset">
+              </div>
+            </div>
+          </div>
           <div class="tool-group" role="group" aria-labelledby="tool-sound">
             <span class="tool-label" id="tool-sound">sound</span>
             <div class="tool-buttons">

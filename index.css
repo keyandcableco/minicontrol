@@ -158,6 +158,26 @@
     .looper-buttons button {
       min-width: 2.4em;
     }
+    /* the live sound's name, beside the bank it would be saved into */
+    #preset-name {
+      width: 13em;
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 7px 8px;
+      border: 1px solid var(--track-color);
+      border-radius: 5px;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      font: inherit;
+    }
+    #preset-name:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 1px;
+    }
+    #preset-name.inactive {
+      opacity: 0.5;
+      pointer-events: none;
+    }
     /* symbols drawn from a system font, which every theme's own font may not have */
     .glyph {
       font-family: system-ui, "Segoe UI Symbol", "Noto Sans Symbols 2", sans-serif;

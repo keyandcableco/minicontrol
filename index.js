@@ -688,6 +688,7 @@ function handleDataReceived(data) {
   applyOverrideDefaults(currentValues);
   if (!unsavedEdits) noteBankName(data.bankNumber, presetName(currentValues));
   paintBankNames();
+  showPresetName();
   rhythmPattern = data.rhythmData.map(bits => bits.reduce((acc, bit, i) => acc | (bit ? (1 << i) : 0), 0));
   targetBank = data.bankNumber;
   updateUI(data.bankNumber);
@@ -985,6 +986,32 @@ document.getElementById("save-to-bank-btn")?.addEventListener("click", () => {
   if (snapshotBank >= 0) unsavedAtSnapshot = true; // the bank no longer holds what the snapshot does
   showNotification(saveBank === currentBankNumber ? `Saved to bank ${saveBank + 1}`
     : `Saved to bank ${saveBank + 1}, and moved to it`, "success");
+});
+
+// The name box in the toolbar: the live sound's name, sent once it is typed (Enter, or leaving the
+// box) and kept with the preset by save, as any other change. Escape puts back what it was.
+const presetNameBox = document.getElementById("preset-name");
+function showPresetName() {
+  if (presetNameBox && document.activeElement !== presetNameBox) presetNameBox.value = presetName(currentValues);
+}
+presetNameBox?.addEventListener("change", () => {
+  if (!deviceReady() || !namesOnDevice()) return;
+  const name = plainName(presetNameBox.value);
+  presetNameBox.value = name;
+  if (name === presetName(currentValues)) return;
+  const values = [];
+  setPresetName(values, name);
+  for (let k = 0; k < NAME_SLOTS; k++) {
+    const a = NAME_FIRST + k;
+    currentValues[a] = values[a];
+    controller.sendParameter(a, values[a]);
+  }
+  markEdited();
+  refreshStatus();   // the bubble gives the new name
+});
+presetNameBox?.addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); presetNameBox.blur(); }
+  if (e.key === "Escape") { e.preventDefault(); presetNameBox.value = presetName(currentValues); presetNameBox.blur(); }
 });
 
 document.getElementById("load-bank-btn")?.addEventListener("click", () => {
