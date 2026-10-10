@@ -47,7 +47,7 @@ function toHuman(p, stored) { return isFloat(p) ? round2(stored / 100) : Math.tr
 function storedBounds(p) { return [toStored(p, p.min_value), toStored(p, p.max_value)]; }
 function storedDefault(p) { return toStored(p, p.default_value); }
 
-const KNOB_TARGETS = new Set([10, 12, 14, 16, 249]);
+const KNOB_TARGETS = new Set([10, 12, 14, 16, 249, 303, 307, 325]);   // what sweeps: knobs, hover, the phone, alternate hover
 const TAP_TARGETS = new Set([200, 209, 211]);
 const LOCKED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 241, 242, 243, 244, 256]);
 const RESERVED = new Set([382, 383, 510, 511]);
@@ -119,7 +119,7 @@ function applyChanges(values, changes, reportAll) {
       const target = pyRound(c.value);
       if (target !== 0) {
         const t = PARAMS[target];
-        let ok = (t != null && !LOCKED.has(target) && t.group !== "hidden") || target === 256 || target === 287;
+        let ok = (t != null && !LOCKED.has(target) && t.group !== "hidden") || [256, 287, 315, 323].includes(target);
         if (KNOB_TARGETS.has(a)) ok = ok && target !== 256 && t.controls === "all";
         else ok = ok && (target === 256 || t.controls === "all" || t.controls === "tap");
         if (!ok) {
@@ -520,15 +520,40 @@ class Interpreter {
       return;
     }
     const value = this.tapValue(role, a, words);
-    if (control === "hover") {
+    if (control === "hover" || control === "alt_hover") {
       if (role === "looper" || p.controls !== "all") {
         r.notes.push(`hover can't move ${lbl}; try the double tap`);
         return;
       }
-      this.put(249, a, `hover → ${lbl}`);
-      this.putRaw(250, value, "hover value");
-      this.lastValue = [250, a];
-      r.understood.push(`hover → ${lbl}, toward ${fmtG(value)} with a hand 2 cm over the plate`);
+      const [ca, va] = control === "hover" ? [249, 250] : [325, 326];
+      this.put(ca, a, `${names} → ${lbl}`);
+      this.putRaw(va, value, `${names} value`);
+      this.lastValue = [va, a];
+      const held = control === "hover" ? "" : ", with the modifier held";
+      r.understood.push(`${names} → ${lbl}, toward ${fmtG(value)} with a hand 2 cm over the plate${held}`);
+      return;
+    }
+    if (control === "phone") {
+      if (p.controls !== "all") {
+        r.notes.push(`the phone's sound can't move ${lbl}; try the double tap`);
+        return;
+      }
+      if (this.nextPhone >= D.phone_slots.length) {
+        r.notes.push(`the phone's sound has two followers; ${lbl} was left out`);
+        return;
+      }
+      const [ca, va, ba, ra] = D.phone_slots[this.nextPhone];
+      this.nextPhone++;
+      const band = words.some(w => D.phone_bands[0].includes(w)) ? 1 : words.some(w => D.phone_bands[1].includes(w)) ? 2 : 0;
+      const release = band === 2 ? 40 : role === "level" ? 250 : 120;
+      this.put(ca, a, `the phone's sound → ${lbl}`);
+      this.putRaw(va, value, "phone follow value");
+      this.put(ba, band, "phone follow band");
+      this.put(ra, release, "phone follow release");
+      this.lastValue = [va, a];
+      const what = ["the whole sound", "the kick (bass)", "the hats (treble)"][band];
+      r.understood.push(`the phone's sound, ${what} → ${lbl}, toward ${fmtG(value)} at its loudest, back over ${release} ms`);
+      if (!r.notes.includes(D.phone_note)) r.notes.push(D.phone_note);
       return;
     }
     if (index == null) index = this.nextTap;
@@ -551,6 +576,13 @@ class Interpreter {
                                                      "the minichord's own looper is left alone");
     else if (role === "chord_memory") r.understood.push(`double tap${slot} → the chord memory: record a progression in time, ` +
                                                         "then it plays back by itself (it turns rhythm mode on)");
+    else if (["rhythm_fill", "rhythm_break", "rhythm_ending"].includes(role)) {
+      const what = { rhythm_fill: "a fill into the next bar line (and style B, if set)",
+                     rhythm_break: "a break: the rhythm rests to the bar line",
+                     rhythm_ending: "the ending: a fill, the last chord, and rhythm mode off" }[role];
+      r.understood.push(`double tap${slot} → ${what}`);
+    } else if (role === "revert" || role === "panic") r.understood.push(`double tap${slot} → ` +
+      (role === "revert" ? "the preset back as it was saved" : "the panic: every voice stopped, All Notes Off"));
     else r.understood.push(`double tap${slot} → ${lbl} to ${fmtG(value)}, and back on the next double tap`);
     if (index > 0 && !this.tapNote) {
       this.tapNote = true;
@@ -565,9 +597,12 @@ class Interpreter {
       const pairs = control.includes(":") ? [D.tap_pairs[parseInt(control.slice(4), 10)]] : D.tap_pairs;
       for (const [c] of pairs) this.put(c, 0, "double tap cleared");
       r.understood.push(`double tap${control.includes(":") ? " slot " + (parseInt(control.slice(4), 10) + 1) : ""} does nothing`);
-    } else if (control === "hover") {
-      this.put(249, 0, "hover cleared");
-      r.understood.push("hover does nothing");
+    } else if (control === "hover" || control === "alt_hover") {
+      this.put(control === "hover" ? 249 : 325, 0, `${D.control_names[control]} cleared`);
+      r.understood.push(`${D.control_names[control]} does nothing`);
+    } else if (control === "phone") {
+      for (const slot of D.phone_slots) this.put(slot[0], 0, "phone follower cleared");
+      r.understood.push("the phone's sound moves nothing");
     } else {
       this.put(D.knob_addresses[control][0], 0, `${D.control_names[control]} cleared`);
       r.understood.push(`${D.control_names[control]} does nothing`);
@@ -589,7 +624,8 @@ class Interpreter {
     const p = PARAMS[a];
     const cur = this.state[a];
     const down = intersects(new Set(["dark", "darker", "close", "closes", "muffle", "muffles", "muffled", "down",
-      "lower", "less", "off", "mute", "mutes", "silence", "silences", "kill", "kills", "cut", "cuts"]), words);
+      "lower", "less", "off", "mute", "mutes", "silence", "silences", "kill", "kills", "cut", "cuts", "duck", "ducks",
+      "ducking", "pump", "pumps", "pumping"]), words);
     if (role === "cutoff") {
       const [lo, hi] = D.sweep.cutoff[a === 49 ? "harp" : "chord"];
       if (down) return lo * 2;
@@ -598,7 +634,7 @@ class Interpreter {
     }
     if (role === "level") return down ? 0 : 1.6;
     if (role === "octave") return down ? Math.max(p.min_value, cur - 1) : Math.min(p.max_value, cur + 1);
-    if (role in D.tap) return down && !["looper", "looper_pc", "chord_memory"].includes(role) ? 0 : D.tap[role];
+    if (role in D.tap) return down && !D.tap_actions.includes(role) ? 0 : D.tap[role];
     return p.max_value;
   }
 
@@ -614,6 +650,7 @@ class Interpreter {
     this.color = null;
     this.tapsUsed = 0;
     this.nextTap = 0;
+    this.nextPhone = 0;
     this.tapNote = false;
     this.applied = new Set();
     this.touched = new Set();
@@ -746,11 +783,7 @@ class Interpreter {
         const idx = span(m);
         if (!idx.length || idx.some(i => used[i])) continue;
         take(m);
-        if (control === "alt_hover") {
-          const note = "there's only one hover, so an alternate hover can't be set";
-          if (!r.notes.includes(note)) r.notes.push(note);
-          sawAltHover = true;
-        } else if (control === "two_knobs") {
+        if (control === "two_knobs") {
           found.push([idx[0], "chord_knob"], [idx[0] + 0.5, "harp_knob"]);
         } else if (control === "tap_n") {
           const w = m[0].split(/\s+/).find(x => x in tapNumbers);
