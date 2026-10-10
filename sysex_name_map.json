@@ -120,6 +120,7 @@
   "285": "global: looper: looper click",
   "286": "global: looper: looper click level",
   "284": "global: looper: looper count-in",
+  "288": "global: looper: looper length",
   "283": "global: looper: looper quantize",
   "215": "global: midi: harp note-off on lift",
   "238": "global: midi: knobs send MIDI",

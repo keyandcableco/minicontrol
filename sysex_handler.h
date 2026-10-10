@@ -920,6 +920,9 @@ void apply_audio_parameter(int adress, int value) {
         case 287:
             chord_memory_action(value);
             break;
+        case 288:
+            looper_length=value;
+            break;
         default:
             break;
     }

@@ -1042,6 +1042,92 @@
       "curve": "linear",
       "introduction_version": 0.46,
       "step": 1
+    },
+    {
+      "sysex_adress": 288,
+      "group": "Looper",
+      "ui_type": "select",
+      "name": "looper length",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 16,
+      "default_value": 0,
+      "tooltip": "how long a loop is, in bars: 0 as long as you play it, closed by the next step; 1 to 16 bars, and the recording closes by itself on that bar line and plays on without a gap, so a press to record is all it takes. A step before then closes it on the nearest bar line, recording on till it. Its bars are the rhythm style's, at rhythm mode's tempo, or the default bpm from where the loop starts. Pair it with looper count-in and looper click to hear where the bars fall",
+      "method": "looper_length=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.48,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off: as long as it is played"
+        },
+        {
+          "value": 1,
+          "label": "One bar"
+        },
+        {
+          "value": 2,
+          "label": "2 bars"
+        },
+        {
+          "value": 3,
+          "label": "3 bars"
+        },
+        {
+          "value": 4,
+          "label": "4 bars"
+        },
+        {
+          "value": 5,
+          "label": "5 bars"
+        },
+        {
+          "value": 6,
+          "label": "6 bars"
+        },
+        {
+          "value": 7,
+          "label": "7 bars"
+        },
+        {
+          "value": 8,
+          "label": "8 bars"
+        },
+        {
+          "value": 9,
+          "label": "9 bars"
+        },
+        {
+          "value": 10,
+          "label": "10 bars"
+        },
+        {
+          "value": 11,
+          "label": "11 bars"
+        },
+        {
+          "value": 12,
+          "label": "12 bars"
+        },
+        {
+          "value": 13,
+          "label": "13 bars"
+        },
+        {
+          "value": 14,
+          "label": "14 bars"
+        },
+        {
+          "value": 15,
+          "label": "15 bars"
+        },
+        {
+          "value": 16,
+          "label": "16 bars"
+        }
+      ],
+      "step": 1
     }
   ],
   "chord_parameter": [

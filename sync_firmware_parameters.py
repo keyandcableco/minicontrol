@@ -212,6 +212,9 @@ UI_OVERRIDES = {
     285: select('global_parameter', 'Looper', ["Off", "The count-in", "The count-in and the recording",
                                                "The count-in, the recording and the playing"]),
     286: control('global_parameter', 'Looper', 'slider'),
+    # the looper's phrase in bars (firmware 48)
+    288: select('global_parameter', 'Looper', ["Off: as long as it is played", "One bar"]
+                + [f"{n} bars" for n in range(2, 17)]),
     # chords sent in over MIDI play the accompaniment (firmware 45)
     282: select('rhythm_parameter', 'Rhythm', ["Off: notes in do as MIDI in plays says",
                                                 "On: notes in on the chord channel choose the chords"]),
