@@ -1066,10 +1066,11 @@ document.getElementById("load-settings-btn")?.addEventListener("click", () => {
 document.getElementById("randomise_btn")?.addEventListener("click", generateRandomPreset);
 
 // The looper: each button writes setting 256 once, an action the minichord takes and forgets
-// (1 record, 2 play, 3 stop, 4 clear, 5 overdub on or off)
+// (1 record, 2 play, 3 stop, 4 clear, 5 overdub on or off). Chord memory's buttons work the same
+// way on setting 287 (data-address).
 document.querySelectorAll(".looper-btn").forEach(button => button.addEventListener("click", () => {
   if (!deviceReady()) return;
-  controller.sendParameter(256, parseInt(button.dataset.looperAction));
+  controller.sendParameter(parseInt(button.dataset.address || "256"), parseInt(button.dataset.looperAction));
 }));
 
 initialize();

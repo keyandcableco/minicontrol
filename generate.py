@@ -46,7 +46,7 @@ group_order = [
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Effects', 'Vocoder', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
+    'global_parameter': ['General', 'Key and tuning', 'Effects', 'Vocoder', 'MIDI', 'Looper', 'Knobs', 'Hover', 'Double tap'],
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
@@ -375,6 +375,7 @@ submenus = {
         ('Key and tuning', ['Key and tuning']),
         ('Effects', ['Effects', 'Vocoder']),
         ('Knobs, hover and double tap', ['Knobs', 'Hover', 'Double tap']),
+        ('Looper', ['Looper']),
     ],
     'chord_parameter': [
         ('Playing', ['General', 'Buttons']),
@@ -495,6 +496,17 @@ LOOPER_ACTIONS = [
 looper_buttons = '\n'.join(f'''            <div class="button_div">
               <button class="looper-btn inactive" data-looper-action="{action}" version="0.32" aria-label="{name}" title="{name}: {title}">{label}</button>
             </div>''' for action, label, name, title in LOOPER_ACTIONS)
+# Chord memory (setting 287, firmware 47 on), as on an Omnichord: a progression recorded in time with
+# rhythm mode, played back by itself. An action like the looper's, written once a button.
+CHORD_MEMORY_ACTIONS = [
+    (1, '<span class="glyph">●</span>', 'record', 'record a chord progression in time with rhythm mode, from the next bar line (it turns rhythm mode on); press again to close it on the nearest bar line and play it'),
+    (2, '<span class="glyph">▶</span>', 'play', 'play the progression from the next bar line, the accompaniment and the harp following it, or close one being recorded and play it'),
+    (3, '<span class="glyph">■</span>', 'stop', 'stop the progression, or close one being recorded and stop'),
+    (4, 'clear', 'clear', 'forget the progression'),
+]
+chord_memory_buttons = '\n'.join(f'''            <div class="button_div">
+              <button class="looper-btn inactive" data-looper-action="{action}" data-address="287" version="0.47" aria-label="chord memory {name}" title="chord memory {name}: {title}">{label}</button>
+            </div>''' for action, label, name, title in CHORD_MEMORY_ACTIONS)
 token_themes = json.dumps([t['id'] for t in THEMES if t.get('tokens')])
 all_themes = json.dumps([t['id'] for t in THEMES])
 
@@ -615,6 +627,12 @@ html_template = '''<!DOCTYPE html>
             <span class="tool-label" id="tool-looper">looper <a class="tool-link" href="https://chordlab.keyandcable.com/looper/" target="_blank" rel="noopener" title="the Minichord Lab's looper: layers, a click, and the minichord's sound and MIDI together">full looper ↗</a></span>
             <div class="tool-buttons looper-buttons">
 {looper_buttons}
+            </div>
+          </div>
+          <div class="tool-group" role="group" aria-labelledby="tool-chord-memory">
+            <span class="tool-label" id="tool-chord-memory" title="as on an Omnichord: a progression recorded in time with rhythm mode, played back by itself while both hands play the harp">chord memory</span>
+            <div class="tool-buttons looper-buttons">
+{chord_memory_buttons}
             </div>
           </div>
         </div>
@@ -779,6 +797,7 @@ html_content = html_template.format(
     theme_options=theme_options,
     theme_taglines=theme_taglines,
     looper_buttons=looper_buttons,
+    chord_memory_buttons=chord_memory_buttons,
     token_themes=token_themes,
     all_themes=all_themes
 )

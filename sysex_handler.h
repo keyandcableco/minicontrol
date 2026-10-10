@@ -905,6 +905,21 @@ void apply_audio_parameter(int adress, int value) {
         case 282:
             midi_chords=value; if (!value) midi_chords_clear();
             break;
+        case 283:
+            looper_quantize=value;
+            break;
+        case 284:
+            looper_count_in=value;
+            break;
+        case 285:
+            looper_click=value;
+            break;
+        case 286:
+            looper_click_level=value;
+            break;
+        case 287:
+            chord_memory_action(value);
+            break;
         default:
             break;
     }

@@ -206,6 +206,12 @@ UI_OVERRIDES = {
     280: control('rhythm_parameter', 'Rhythm', 'slider'),
     # tap tempo on the hold button (firmware 44)
     281: select('rhythm_parameter', 'Rhythm', ["A tap a beat", "A tap an eighth (two to the beat)"]),
+    # the looper in time (firmware 46)
+    283: select('global_parameter', 'Looper', ["Off: as played", "Quarter notes", "Eighths", "Sixteenths", "Eighth triplets"]),
+    284: select('global_parameter', 'Looper', ["None: records at once", "One bar", "Two bars"]),
+    285: select('global_parameter', 'Looper', ["Off", "The count-in", "The count-in and the recording",
+                                               "The count-in, the recording and the playing"]),
+    286: control('global_parameter', 'Looper', 'slider'),
     # chords sent in over MIDI play the accompaniment (firmware 45)
     282: select('rhythm_parameter', 'Rhythm', ["Off: notes in do as MIDI in plays says",
                                                 "On: notes in on the chord channel choose the chords"]),

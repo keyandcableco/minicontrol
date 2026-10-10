@@ -924,6 +924,124 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 283,
+      "group": "Looper",
+      "ui_type": "select",
+      "name": "looper quantize",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4,
+      "default_value": 0,
+      "tooltip": "moves each looped note to the nearest point of a grid, so the loop plays back in time: 0 off, as played; 1 quarter notes; 2 eighths (the off one where shuffle value puts it); 3 sixteenths; 4 eighth triplets. The first pass plays as played and the loop is corrected as it closes; an overdub's notes as they come. Each note keeps its length. The grid is the looper's beat: rhythm mode's, or its own at the default bpm from where the loop starts",
+      "method": "looper_quantize=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.46,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off: as played"
+        },
+        {
+          "value": 1,
+          "label": "Quarter notes"
+        },
+        {
+          "value": 2,
+          "label": "Eighths"
+        },
+        {
+          "value": 3,
+          "label": "Sixteenths"
+        },
+        {
+          "value": 4,
+          "label": "Eighth triplets"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 284,
+      "group": "Looper",
+      "ui_type": "select",
+      "name": "looper count-in",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "bars counted in before a recording starts: 0 none, it starts at once as before; 1 or 2 bars. The recording starts on the bar line after them (in rhythm mode, the first bar line at least that far off); a note played just before it, reaching for the downbeat, starts the loop. The LED flashes red on the beats. Pair it with looper click to hear them",
+      "method": "looper_count_in=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.46,
+      "options": [
+        {
+          "value": 0,
+          "label": "None: records at once"
+        },
+        {
+          "value": 1,
+          "label": "One bar"
+        },
+        {
+          "value": 2,
+          "label": "Two bars"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 285,
+      "group": "Looper",
+      "ui_type": "select",
+      "name": "looper click",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "a metronome tick on the beats, higher on the first of a bar: 0 off; 1 through the count-in; 2 the count-in and the recording; 3 those and the loop playing. On the speaker and headphones only: the USB recording never has it. Its tempo is rhythm mode's, or the default bpm (control change 103 taps it too)",
+      "method": "looper_click=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.46,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "The count-in"
+        },
+        {
+          "value": 2,
+          "label": "The count-in and the recording"
+        },
+        {
+          "value": 3,
+          "label": "The count-in, the recording and the playing"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 286,
+      "group": "Looper",
+      "ui_type": "slider",
+      "name": "looper click level",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 50,
+      "tooltip": "how loud the looper's click is",
+      "method": "looper_click_level=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.46,
+      "step": 1
     }
   ],
   "chord_parameter": [
@@ -6900,6 +7018,23 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.32,
+      "step": 1
+    },
+    {
+      "sysex_adress": 287,
+      "group": "hidden",
+      "ui_type": "discrete_slider",
+      "name": "chord memory",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 5,
+      "default_value": 0,
+      "tooltip": "the chord memory, as on an Omnichord: a progression recorded in time with rhythm mode, then played back by itself, the accompaniment and the harp following it, so both hands are free for the strings. Writing it does one thing and it goes back to 0, never kept in a preset: 1 record, 2 play, 3 stop, 4 clear, 5 the next step. Control changes 104-108 do the same on any channel. Assign the double tap to it (double tap control 287) and each double tap takes the next step: record, play, stop, then record anew. It turns rhythm mode on. Recording starts on a bar line and each chord goes in on the nearest beat; it closes on the nearest bar line and plays on from there. A chord pressed while it plays stands until its next. The LED is violet, pulsing while it records",
+      "method": "chord_memory_action(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.47,
       "step": 1
     }
   ]

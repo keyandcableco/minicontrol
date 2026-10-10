@@ -1,4 +1,5 @@
 {
+  "287": "chord memory",
   "204": "chord: alternate layout: alt layout 7th",
   "208": "chord: alternate layout: alt layout all three",
   "202": "chord: alternate layout: alt layout maj",
@@ -116,6 +117,10 @@
   "237": "global: key and tuning: temperament",
   "30": "global: key and tuning: transpose",
   "117": "global: knobs: knob layer",
+  "285": "global: looper: looper click",
+  "286": "global: looper: looper click level",
+  "284": "global: looper: looper count-in",
+  "283": "global: looper: looper quantize",
   "215": "global: midi: harp note-off on lift",
   "238": "global: midi: knobs send MIDI",
   "266": "global: midi: MIDI clock out",
