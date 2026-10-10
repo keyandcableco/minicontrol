@@ -6762,6 +6762,32 @@
       "curve": "linear",
       "introduction_version": 0.42,
       "step": 1
+    },
+    {
+      "sysex_adress": 281,
+      "group": "Rhythm",
+      "ui_type": "select",
+      "name": "tap tempo counts",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "what a tap on the hold button counts in rhythm mode. 0: a tap a beat, as before. 1: a tap an eighth, two to the beat, for tapping along with the pulse the pattern moves in. Either way the second tap sets the tempo, the next few refine it, and each tap puts the beat (or the eighth) where it fell",
+      "method": "tap_counts=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.44,
+      "options": [
+        {
+          "value": 0,
+          "label": "A tap a beat"
+        },
+        {
+          "value": 1,
+          "label": "A tap an eighth (two to the beat)"
+        }
+      ],
+      "step": 1
     }
   ],
   "hidden": [
