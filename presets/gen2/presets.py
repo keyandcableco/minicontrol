@@ -325,9 +325,10 @@ preset("Cantus Choir", 275,
 preset("Chamber Strings", 340,
        "A string quartet that keeps strict four-part voice leading, with no parallel fifths or "
        "octaves, in 31-tone equal temperament so its thirds ring pure, as a quartet tunes them. "
-       "Pizzicato on the harp, in the scale of each chord. Hold a hand over the plate and the quartet "
-       "goes into tremolo.",
-       ["strict voice leading", "31-EDO", "string quartet and pizzicato samples", "hover tremolo",
+       "The bass line is plucked under the bowed upper three, and the harp is pizzicato too, in the "
+       "scale of each chord. Hold a hand over the plate and the quartet goes into tremolo.",
+       ["strict voice leading", "31-EDO", "string quartet and pizzicato samples",
+        "a chord note's own instrument (pizzicato bass)", "hover tremolo",
         "scale chosen per chord",
         "touch velocity", "string spread", "harp voice on the double tap"],
        {"hover": "bowed tremolo, stronger the closer the hand",
@@ -336,7 +337,8 @@ preset("Chamber Strings", 340,
         "modifier + chord knob": "bowing: from a soft swell to a sharp attack",
         "modifier + harp knob": "harp reverb",
         "double tap": "the harp bows too: the quartet, cello low to violin high"},
-       chord_sample(4), chord_env(260, 0, 900, 0.95, 900),
+       chord_sample(4), {270: 3},                           # the bass plucked, the upper three bowed
+       chord_env(90, 0, 900, 0.95, 900),                   # quick enough that the pluck speaks
        chord_filter(2200, 0.0, 0.7),
        chord_trem(11.0, 0.0, SINE), chord_vib(), chord_delay(),
        chord_out(300, 0.75, 1.0, 1.0, 0.45),
@@ -355,11 +357,12 @@ preset("Chamber Strings", 340,
 
 # 6 ------------------------------------------------------------------------------------------------
 preset("Folk Guitar & Bass", 25,
-       "The chord buttons play an upright bass, one note, the chord's root; the harp is a nylon-string "
+       "The chord buttons play a plucked double bass (the pizzicato sample on the bass note alone), "
+       "the chord's root; the harp is a nylon-string "
        "guitar an octave lower than usual. Strum fast for a loud strum, lay the palm across the plate to "
        "mute. The double tap works the looper.",
        ["plucked string model as a guitar", "strum velocity", "palm mute", "touch velocity",
-        "monophonic chords as a bass", "the looper on the double tap"],
+        "a chord note's own instrument (pizzicato bass)", "the looper on the double tap"],
        {"hover": "unassigned",
         "mod knob": "the guitar strings: steel and bright to nylon and warm",
         "modifier + mod knob": "how long the strings ring",
@@ -368,11 +371,12 @@ preset("Folk Guitar & Bass", 25,
         "double tap": "the looper: record, play, stop, then a new recording",
         "palm": "lay four or more fingers across the plate to mute, like a guitarist's palm"},
        chord_osc(0.22, TRI, 1.0, 0.13, SINE, 1.0, 0.0, SINE, 0.5),
+       {270: 3},                                            # the bass note: pizzicato
        {131: 0.75, 132: 0.0, 133: 0.0, 134: 0.0, 120: 0, 198: 1, 111: 0},
-       chord_env(2, 0, 900, 0.35, 220),
-       chord_filter(380, 0.6, 1.2, fa=1, fd=220, fs=0.2, fr=150, sens=1.4),
+       chord_env(1, 0, 1500, 1.0, 220),                     # the sample rings as it was plucked
+       chord_filter(1200, 0.5, 0.8),
        chord_trem(), chord_vib(), chord_delay(),
-       chord_out(120, 0.9, 1.0, 1.0, 2.0),
+       chord_out(120, 0.9, 1.0, 1.0, 0.95),
        chord_fx(0.15),
        harp_synth(SINE, 0.15, model=100), harp_string(2.6, 50),
        harp_env(1, 0, 3500, 0.6, 700),
@@ -489,37 +493,45 @@ preset("Ribbon Lead", 180,
        double_tap((245, 0)))
 
 # 10 -----------------------------------------------------------------------------------------------
-preset("Meantone Organ", 90,
-       "A pipe organ and a harpsichord in quarter-comma meantone, the tuning of Renaissance and early "
-       "Baroque keyboards: pure, beatless major thirds around C, rougher in far keys. Double tap to hear "
-       "the same chords in equal temperament. A hand over the plate opens the swell box.",
-       ["temperament (quarter-comma meantone)", "equal temperament on the double tap",
-        "plucked string model as a harpsichord", "scale chosen per chord", "hover as an organ swell"],
-       {"hover": "the swell box: the organ grows louder and brighter with a hand close over the plate",
-        "mod knob": "the 4' stop: from the 8' alone to a bright, full principal chorus",
-        "modifier + mod knob": "tremulant depth",
-        "modifier + chord knob": "the 16' bourdon, from none to a deep floor under the chords",
-        "modifier + harp knob": "how long the harpsichord rings, a buff stop at one end",
-        "double tap": "equal temperament, to compare"},
-       chord_osc(0.12, SINE, 1.0, 0.07, TRI, 2.0, 0.06, SINE, 0.5, noise=0.012),
-       chord_env(45, 0, 120, 1.0, 220),
-       chord_filter(1300, 0.4, 0.8),
-       chord_trem(5.6, 0.12, SINE), chord_vib(), chord_delay(),
-       chord_out(250, 0.85, 1.0, 1.0, 1.0),
-       chord_fx(0.6),
-       {120: 2, 198: 2, 237: 1},
-       harp_synth(BL_SAW, 0.15, model=100), harp_string(2.2, 6),
-       harp_env(1, 0, 2500, 0.55, 220),
-       harp_filter(2000, 1.6, 0.9),
+# Each chord note its own instrument: pizzicato basses, the string quartet in the middle two, the choir
+# on top; the mod knob changes who plays the top line, sweeping the fourth note's instrument (273):
+# as the chords (the quartet), a flute (the voice's own oscillators: a sine with breath), piano,
+# pizzicato, choir, quartet. The harp is a celesta, an octave up, in the scale of each chord.
+preset("Pocket Orchestra", 90,
+       "A small orchestra on the chord buttons: plucked basses, a string quartet in the middle and a "
+       "choir on the top line, voiced like an arrangement. The mod knob hands the top line to another "
+       "section: flute, piano, pizzicato, choir or strings. The harp is a celesta in the scale of each "
+       "chord. A hand over the plate brightens the whole orchestra, as it plays louder; double tap and "
+       "the basses take up their bows.",
+       ["each chord note its own instrument", "voice leading", "31-EDO", "piano, pizzicato, choir and "
+        "string samples", "scale chosen per chord", "hover brightness"],
+       {"hover": "the orchestra brightens with a hand close over the plate, as if playing louder",
+        "mod knob": "who plays the top line: strings, flute, piano, pizzicato, choir",
+        "modifier + mod knob": "articulation: from marcato to a slow legato swell",
+        "modifier + chord knob": "the hall: reverb",
+        "modifier + harp knob": "how long the celesta rings",
+        "double tap": "the basses bow: arco in place of pizzicato"},
+       chord_osc(0.14, SINE, 1.0, 0.03, TRI, 2.0, 0.0, SINE, 0.5, noise=0.025),   # the flute, for the top line
+       chord_sample(4),
+       {270: 3, 271: 5, 272: 5, 273: 4},
+       {131: 0.5, 132: 0.4, 133: 0.4, 134: 0.5},
+       chord_env(100, 0, 900, 0.95, 1200),
+       chord_filter(2200, 0.3, 0.7),
+       chord_trem(), chord_vib(), chord_delay(),
+       chord_out(250, 0.85, 1.0, 1.0, 0.5),
+       chord_fx(0.5, ensemble=15),
+       {120: 2, 198: 2, 111: 1, 112: 7, 237: 12},
+       harp_synth(SINE, 0.15), harp_env(1, 0, 1200, 0.0, 1200),
+       harp_filter(2000, 1.0, 0.7),
        harp_trem(), harp_vib(), harp_delay(),
-       harp_transient(0.15, BL_SAW, 1, 2, 8, 12),
-       harp_out(700, 0.5, 1.0, 1.0, 0.9),
-       harp_fx(0.35, spread=45, pattern=0),
-       {36: 8, 252: 30},
-       reverb_room(0.92, 0.35, 0.4, 0.3, 0.85), {29: 0.7},
-       hover(143, 4500, 8),
-       knobs(chord_alt=(127, 100), harp_alt=(218, 80), mod=(124, 100), mod_alt=(159, 100)),
-       double_tap((237, 0)))
+       harp_transient(0.12, SINE, 1, 2, 12, 12),            # the hammer's strike, an octave up
+       harp_out(500, 0.8, 1.0, 1.0, 0.43),
+       harp_fx(0.45, spread=40, pattern=0),
+       {36: 8, 99: 3, 252: 50},
+       reverb_room(0.85, 0.3, 0.45, 0.35, 0.8), {29: 0.75},
+       hover(143, 5000, 8),
+       knobs(chord_alt=(184, 100), harp_alt=(45, 90), mod=(273, 100), mod_alt=(137, 100)),
+       double_tap((270, 5)))
 
 # 11 -----------------------------------------------------------------------------------------------
 # A raga over a tanpura, in 31-EDO. The chords drone the tanpura's strings: the root, the fifth and

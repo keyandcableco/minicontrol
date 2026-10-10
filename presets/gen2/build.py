@@ -22,7 +22,9 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 import presets  # noqa: E402
 
-FIRMWARE = 40          # the firmware these were made and measured on, stamped at address 7
+FIRMWARE = 41          # the firmware these were made and measured on, stamped at address 7: firmware
+                       # newer than a preset resets the settings that came after it, so this must cover
+                       # every setting the presets use (the chord notes' own instruments are 41)
 PARAMETER_SIZE = 512
 RESERVED = {0, 1, 382, 383, 510, 511}
 # the instrument's, not the preset's: a restore keeps what each bank has
@@ -78,6 +80,9 @@ def build(preset, params):
             problems.append(f"address {a} isn't a setting")
             continue
         p = params[a]
+        if round(float(p.get("introduction_version") or 0) * 100) > FIRMWARE:
+            problems.append(f"{label(p)} came in firmware {p['introduction_version']}, after the stamp ({FIRMWARE}): "
+                            f"a minichord loading the preset would reset it")
         if a in KNOB_TARGETS | TAP_TARGETS and v:
             t = params.get(v)
             if a in KNOB_TARGETS:
@@ -154,7 +159,7 @@ def main():
         "",
         "A draft: the set is still being tuned by ear, and may change before it is final.",
         "",
-        "They need firmware 40 or later, from the test-allFeatures branch.",
+        "They need firmware 41 or later, from the test-allFeatures branch.",
         "",
         "**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         "`gen2.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, "
