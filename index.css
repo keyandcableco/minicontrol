@@ -94,6 +94,8 @@
     #connection-text {
       font-size: 1.1em;
       font-weight: bold;
+      min-width: 0;
+      overflow-wrap: anywhere;   /* a bank's name with no spaces in it wraps rather than widening the page */
     }
     #header {
       margin: 20px 0;
@@ -158,10 +160,13 @@
     .looper-buttons button {
       min-width: 2.4em;
     }
-    /* the live sound's name, beside the bank it would be saved into */
+    /* the live sound's name, beside the bank it would be saved into: as wide as the name, so the
+       whole of it shows (the size index.js sets is for browsers without field-sizing) */
     #preset-name {
-      width: 13em;
-      max-width: 100%;
+      field-sizing: content;
+      min-width: 8em;
+      /* the page's margins and the toolbar's padding off the window, which its box grows with */
+      max-width: calc(100vw - 48px);
       box-sizing: border-box;
       padding: 7px 8px;
       border: 1px solid var(--track-color);

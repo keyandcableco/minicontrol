@@ -993,11 +993,18 @@ document.getElementById("save-to-bank-btn")?.addEventListener("click", () => {
 const presetNameBox = document.getElementById("preset-name");
 function showPresetName() {
   if (presetNameBox && document.activeElement !== presetNameBox) presetNameBox.value = presetName(currentValues);
+  fitPresetName();
 }
+// as wide as the name, for browsers without CSS field-sizing
+function fitPresetName() {
+  if (presetNameBox) presetNameBox.size = Math.max(presetNameBox.value.length, presetNameBox.placeholder.length) + 1;
+}
+presetNameBox?.addEventListener("input", fitPresetName);
 presetNameBox?.addEventListener("change", () => {
   if (!deviceReady() || !namesOnDevice()) return;
   const name = plainName(presetNameBox.value);
   presetNameBox.value = name;
+  fitPresetName();
   if (name === presetName(currentValues)) return;
   const values = [];
   setPresetName(values, name);
@@ -1011,7 +1018,7 @@ presetNameBox?.addEventListener("change", () => {
 });
 presetNameBox?.addEventListener("keydown", e => {
   if (e.key === "Enter") { e.preventDefault(); presetNameBox.blur(); }
-  if (e.key === "Escape") { e.preventDefault(); presetNameBox.value = presetName(currentValues); presetNameBox.blur(); }
+  if (e.key === "Escape") { e.preventDefault(); presetNameBox.value = presetName(currentValues); fitPresetName(); presetNameBox.blur(); }
 });
 
 document.getElementById("load-bank-btn")?.addEventListener("click", () => {
