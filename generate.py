@@ -651,6 +651,9 @@ html_template = '''<!DOCTYPE html>
               <div class="button_div">
                 <button id="load-settings-btn" class="inactive" version="0.01" title="paste a preset code over the live settings; save to a bank to keep it">paste</button>
               </div>
+              <div class="button_div">
+                <button id="minishop-btn" class="inactive" version="0.01" title="pick a preset from the minishop to hear on the minichord; save to a bank to keep it">minishop</button>
+              </div>
             </div>
           </div>
           <div class="tool-group" role="group" aria-labelledby="tool-looper">
@@ -675,6 +678,24 @@ html_template = '''<!DOCTYPE html>
       <div class="svg-container">
         <img src="{svg_file}" alt="Minichord Logo" class="default-only">
         <img src="themes/arcade-minichord-wide.svg" alt="Minichord, in pixels" class="arcade-only">
+      </div>
+    </div>
+    <!-- the minishop's presets, to hear one on the minichord and save it to a bank (index.js fills
+         the list). The idea is Sound Lab's. -->
+    <div id="minishop-sheet" class="minishop-sheet" popover aria-labelledby="minishop-title">
+      <div class="minishop-head">
+        <h2 id="minishop-title">minishop</h2>
+        <button type="button" class="settings-close always-on" popovertarget="minishop-sheet" popovertargetaction="hide" aria-label="close the minishop"><span class="glyph">✕</span></button>
+      </div>
+      <p class="settings-hint">Presets players have shared. Load one to hear it on the minichord, then save it to a bank to keep it.
+        The idea comes from <a href="https://minichorddrawn.github.io/minichord-soundlab/" target="_blank" rel="noopener">MinichordDrawn's Sound Lab</a>.</p>
+      <div id="minishop-list" class="minishop-list"></div>
+      <div class="minishop-foot">
+        <span id="minishop-loaded" class="minishop-loaded" aria-live="polite">nothing loaded from here yet</span>
+        <span class="minishop-save">
+          <select id="minishop-bank" class="always-on" aria-label="the bank to save to" title="the target bank, as in the toolbar"></select>
+          <button type="button" id="minishop-save-btn" class="always-on" title="save the live settings into this bank">save</button>
+        </span>
       </div>
     </div>
     <!-- what is reached for now and then, out of the way until the settings button opens it -->

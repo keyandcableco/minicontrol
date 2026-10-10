@@ -32,7 +32,8 @@
 
 /* the bank sheet, drawn on the page's colour; a theme whose ink is for its panels rather than its
    page (choir and omnichord: dark ink on parchment, over dark wood) gives it the parchment */
-[data-themed] .bank-sheet-card { --background-color: var(--t-sheet, var(--t-page)); }
+[data-themed] .bank-sheet-card,
+[data-themed] .minishop-sheet { --background-color: var(--t-sheet, var(--t-page)); }
 
 [data-themed] body {
   font-family: var(--t-font);
@@ -107,6 +108,7 @@
 /* dropdowns and number boxes */
 [data-themed] #parameters select,
 [data-themed] #parameters select.inactive,
+[data-themed] #minishop-bank,
 [data-themed] input[type="number"],
 [data-themed] input[type="number"].active,
 [data-themed] input[type="number"].inactive {

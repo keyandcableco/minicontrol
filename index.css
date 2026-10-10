@@ -281,6 +281,124 @@
       color: #ff7070 !important;
       box-shadow: inset 0 0 0 1.5px #ff7070 !important;
     }
+    /* the minishop: a card over the dimmed page, its list scrolling between the title and the
+       save button; on a phone, the whole screen */
+    .minishop-sheet {
+      width: min(560px, calc(100vw - 32px));
+      max-height: 85dvh;
+      margin: auto;
+      padding: 18px 22px 0;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      box-sizing: border-box;
+      flex-direction: column;
+    }
+    .minishop-sheet:popover-open {
+      display: flex;
+    }
+    .minishop-sheet::backdrop {
+      background-color: rgba(0, 0, 0, 0.45);
+    }
+    .minishop-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .minishop-head h2 {
+      margin: 0;
+      font-size: 1.3em;
+    }
+    .minishop-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      margin: 0 -22px;
+      padding: 0 22px;
+    }
+    .minishop-list h3 {
+      margin: 14px 0 4px;
+      font-size: 0.85em;
+      font-weight: normal;
+      text-transform: lowercase;
+      opacity: 0.7;
+    }
+    .minishop-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-top: 1px solid var(--track-color);
+    }
+    .minishop-item.loaded .minishop-by::after {
+      content: " · loaded";
+      font-weight: bold;
+    }
+    .minishop-text {
+      flex: 1;
+      min-width: 0;
+      line-height: 1.35;
+    }
+    .minishop-name {
+      font-weight: bold;
+    }
+    .minishop-by,
+    .minishop-about {
+      font-size: 0.85em;
+      opacity: 0.75;
+    }
+    .minishop-about {
+      display: block;
+    }
+    .minishop-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 -22px;
+      padding: 12px 22px calc(12px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--track-color);
+    }
+    .minishop-loaded {
+      font-size: 0.9em;
+      opacity: 0.75;
+    }
+    .minishop-save {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    #minishop-bank {
+      max-width: 12em;
+      text-overflow: ellipsis;
+      padding: 8px;
+      border: 1px solid var(--track-color);
+      border-radius: 5px;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+    @media screen and (max-width: 600px) {
+      .minishop-sheet {
+        width: 100vw;
+        max-width: none;
+        height: 100dvh;
+        max-height: none;
+        padding: 12px 16px 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .minishop-list,
+      .minishop-foot {
+        margin: 0 -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+
     /* how to connect, a section that opens on its own while no minichord is connected */
     #connection-help summary {
       cursor: pointer;

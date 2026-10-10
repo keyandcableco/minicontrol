@@ -971,7 +971,8 @@ document.getElementById("bank_number_selection")?.addEventListener("change", (e)
   console.log(`[bank_number_selection] Selected target bank ${targetBank + 1}`);
 });
 
-document.getElementById("save-to-bank-btn")?.addEventListener("click", () => {
+document.getElementById("save-to-bank-btn")?.addEventListener("click", saveToTargetBank);
+function saveToTargetBank() {
   if (!deviceReady()) return;
   const bankSelect = document.getElementById("bank_number_selection");
   const saveBank = parseInt(bankSelect.value);
@@ -986,7 +987,7 @@ document.getElementById("save-to-bank-btn")?.addEventListener("click", () => {
   if (snapshotBank >= 0) unsavedAtSnapshot = true; // the bank no longer holds what the snapshot does
   showNotification(saveBank === currentBankNumber ? `Saved to bank ${saveBank + 1}`
     : `Saved to bank ${saveBank + 1}, and moved to it`, "success");
-});
+}
 
 // The name box in the toolbar: the live sound's name, sent once it is typed (Enter, or leaving the
 // box) and kept with the preset by save, as any other change. Escape puts back what it was.
@@ -1182,6 +1183,113 @@ document.getElementById("load-settings-btn")?.addEventListener("click", () => {
     console.warn("[load-settings-btn] Invalid preset code:", error);
     showNotification("Invalid preset code", "error");
   }
+});
+
+// The minishop: the presets players have shared (shared_presets.json), to load one over the live
+// sound and save it to a bank, without leaving the page. The idea is Sound Lab's (MinichordDrawn).
+// A code is read as "load Twin Green" reads it, by describe.decode, which gives a code from older
+// firmware the settings added since at their defaults. From firmware 50 the preset's name comes
+// with it, so saving it names the bank.
+const minishopSheet = document.getElementById("minishop-sheet");
+const minishopBank = document.getElementById("minishop-bank");
+let minishopPresets = null;   // read once, when the sheet first opens
+
+async function fillMinishop() {
+  const list = document.getElementById("minishop-list");
+  if (minishopPresets || !list) return;
+  try {
+    const [presets] = await Promise.all([
+      fetch("shared_presets.json").then(r => r.json()).then(j => j.shared_presets || []),
+      describe.loadDescribeData(),
+    ]);
+    minishopPresets = presets;
+  } catch (error) {
+    console.warn("[minishop] Couldn't read the presets:", error);
+    list.textContent = "Couldn't read the minishop's presets.";
+    return;
+  }
+  const isFactory = p => /^default preset/i.test(p.name);
+  for (const [title, presets] of [["shared by players", minishopPresets.filter(p => !isFactory(p))],
+                                  ["the factory presets", minishopPresets.filter(isFactory)]]) {
+    const heading = document.createElement("h3");
+    heading.textContent = title;
+    list.append(heading);
+    for (const preset of presets) {
+      const row = document.createElement("div");
+      row.className = "minishop-item";
+      const text = document.createElement("div");
+      text.className = "minishop-text";
+      const name = document.createElement("span");
+      name.className = "minishop-name";
+      name.textContent = preset.name;
+      const by = document.createElement("span");
+      by.className = "minishop-by";
+      by.textContent = preset.author ? ` by ${preset.author}` : "";
+      text.append(name, by);
+      if (preset.description && !isFactory(preset)) {
+        const about = document.createElement("span");
+        about.className = "minishop-about";
+        about.textContent = preset.description;
+        text.append(about);
+      }
+      const load = document.createElement("button");
+      load.type = "button";
+      load.className = "always-on";
+      load.textContent = "load";
+      load.setAttribute("aria-label", `load ${preset.name}`);
+      load.addEventListener("click", () => loadMinishopPreset(preset, row));
+      row.append(text, load);
+      list.append(row);
+    }
+  }
+}
+
+function loadMinishopPreset(preset, row) {
+  if (!deviceReady()) return;
+  if (handEdits && !confirm(`Load ${preset.name}? It replaces the changes made to bank ${currentBankNumber + 1}, which aren't saved.`)) return;
+  let values;
+  try {
+    values = describe.decode(preset.value);
+  } catch (error) {
+    console.warn(`[minishop] Couldn't read ${preset.name}:`, error);
+    showNotification(`Couldn't read the ${preset.name} preset`, "error");
+    return;
+  }
+  if (namesOnDevice()) setPresetName(values, preset.name);
+  controller.applyPreset(values, (i, value) => {
+    if (!findParameterBySysex(i)) return;
+    value = Math.round(value);
+    controller.sendParameter(i, value);
+    currentValues[i] = value;
+  });
+  markEdited(false);
+  minishopSheet?.querySelectorAll(".minishop-item.loaded").forEach(el => el.classList.remove("loaded"));
+  row.classList.add("loaded");
+  document.getElementById("minishop-loaded").textContent = `last loaded: ${preset.name}`;
+  console.log(`[minishop] Loaded ${preset.name}`);
+  showNotification(`Loaded ${preset.name}: save to a bank to keep it`, "success");
+}
+
+// the sheet's bank list is the toolbar's, names and all, and choosing in either is choosing in both
+function syncMinishopBank() {
+  const select = document.getElementById("bank_number_selection");
+  if (!minishopBank || !select) return;
+  minishopBank.innerHTML = select.innerHTML;
+  minishopBank.value = select.value;
+}
+minishopBank?.addEventListener("change", () => {
+  const select = document.getElementById("bank_number_selection");
+  select.value = minishopBank.value;
+  select.dispatchEvent(new Event("change"));
+});
+document.getElementById("minishop-save-btn")?.addEventListener("click", () => {
+  saveToTargetBank();
+  syncMinishopBank();   // the saved name is on the bank now
+});
+document.getElementById("minishop-btn")?.addEventListener("click", () => {
+  syncMinishopBank();
+  minishopSheet?.showPopover();
+  fillMinishop();
 });
 
 document.getElementById("randomise_btn")?.addEventListener("click", generateRandomPreset);
