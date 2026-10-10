@@ -200,6 +200,14 @@ function findParameterBySysex(sysex) {
   return null;
 }
 
+// " · Warm pad" after the bank number: the live sound's own name, or before firmware 50 the
+// name this browser keeps for the bank
+function liveName() {
+  const name = namesOnDevice() ? presetName(currentValues)
+    : typeof bankNamesGet === "function" ? bankNamesGet()[currentBankNumber] : "";
+  return name ? " · " + name : "";
+}
+
 function updateConnectionStatus(connected, message) {
   console.log(`[updateConnectionStatus] Called with connected: ${connected}, message: ${message}`);
   const bubbleElement = document.getElementById("notification-bubble");
@@ -211,7 +219,7 @@ function updateConnectionStatus(connected, message) {
   minichord_device = connected;
   if (!isShowingNotification) {
     bubbleElement.className = connected ? 'connected' : 'disconnected';
-    const bankText = currentBankNumber >= 0 ? ` | Bank ${currentBankNumber + 1}${unsavedEdits ? ' (unsaved changes)' : ''}` : '';
+    const bankText = currentBankNumber >= 0 ? ` | Bank ${currentBankNumber + 1}${liveName()}${unsavedEdits ? ' (unsaved changes)' : ''}` : '';
     textElement.textContent = !connected ? "minichord disconnected" : progressText || `minichord connected${bankText}`;
     bubbleElement.style.display = 'flex';
   }
@@ -277,6 +285,41 @@ function displayNextNotification() {
 // whether a snapshot can replace the one held, and is dropped on any change of bank (firmware 39)
 function snapshotReplaces() {
   return Math.round((controller.firmware_version || 0) * 100) >= 39;
+}
+
+// A preset's name, kept in the preset itself from firmware 50: two letters to each of the twelve
+// settings from 290, the first in the low seven bits, plain ASCII, and the first 0 ends it. The
+// minichord only keeps it. Before 50 the bank sheet keeps names in this browser instead.
+const NAME_FIRST = 290, NAME_SLOTS = 12, NAME_LENGTH = 2 * NAME_SLOTS;
+function namesOnDevice() {
+  return Math.round((controller.firmware_version || 0) * 100) >= 50;
+}
+function isNameAddress(a) {
+  return a >= NAME_FIRST && a < NAME_FIRST + NAME_SLOTS;
+}
+// what a name can be on the minichord: plain letters (accents taken off), at most 24 of them
+function plainName(text) {
+  return String(text || "").normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^\x20-\x7e]/g, "").replace(/\s+/g, " ").trim().slice(0, NAME_LENGTH);
+}
+// the name in a preset's values (an array, or currentValues), "" for none
+function presetName(values) {
+  let out = "";
+  for (let k = 0; k < NAME_SLOTS; k++) {
+    const v = values[NAME_FIRST + k] || 0;
+    for (const c of [v & 127, (v >> 7) & 127]) {
+      if (c < 32) return out.trim();
+      out += String.fromCharCode(c);
+    }
+  }
+  return out.trim();
+}
+function setPresetName(values, name) {
+  const s = plainName(name);
+  for (let k = 0; k < NAME_SLOTS; k++) {
+    const first = s.charCodeAt(2 * k) || 0, second = s.charCodeAt(2 * k + 1) || 0;
+    values[NAME_FIRST + k] = first ? first + 128 * second : 0;
+  }
 }
 
 function refreshStatus() {
@@ -1020,8 +1063,10 @@ document.getElementById("export-settings-btn")?.addEventListener("click", async 
     sysexArray[BASE_ADDRESS_RHYTHM + i] = rhythmPattern[i] || 0;
   }
   // A code holds page 0 alone while page 1 is all at its defaults, as every code from before the
-  // array grew did, so an editor that knows only page 0 still reads it; both pages otherwise.
-  const page1AtDefaults = Object.entries(controller.page1_defaults).every(([sysex, value]) => sysexArray[sysex] === value);
+  // array grew did, so an editor that knows only page 0 still reads it; both pages otherwise. A
+  // name alone doesn't make it the longer code: it goes with the code only when page 1 does.
+  const page1AtDefaults = Object.entries(controller.page1_defaults)
+    .every(([sysex, value]) => isNameAddress(+sysex) || sysexArray[sysex] === value);
   const codeLength = page1AtDefaults || !controller.has_page1 ? controller.page_size : controller.parameter_size;
   const outputBase64 = sysexArray.slice(0, codeLength).join(";");
   const encoded = btoa(outputBase64);

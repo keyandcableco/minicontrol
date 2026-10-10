@@ -67,7 +67,9 @@ function bankCacheStale() {
   if (bankSheetOpen()) renderBankSheet();
 }
 
-//-->>names: typed by the player, kept in this browser, and following the bank when it moves
+//-->>names: typed by the player, and following the bank when it moves. From firmware 50 a name is
+// kept in the bank itself (presetName in index.js), so naming a bank is a change like any other,
+// staged and then written. Before, they are kept in this browser, by bank, and stand at once.
 const BANK_NAMES_KEY = "minicontrol_bank_names";
 function bankNamesGet() {
   let raw = [];
@@ -78,6 +80,30 @@ function bankNamesGet() {
 }
 function bankNamesSet(names) {
   try { localStorage.setItem(BANK_NAMES_KEY, JSON.stringify(names.slice(0, BANK_COUNT))); } catch (e) { }
+}
+// the names this browser kept, once they are on the minichord
+function bankNamesForget() {
+  try { localStorage.removeItem(BANK_NAMES_KEY); } catch (e) { }
+}
+// a slot's name changed since it was read, and what it was
+function nameBefore(slot) {
+  const was = bankState.original && bankState.original[slot.id];
+  return was ? presetName(was) : "";
+}
+function nameStaged(slot) {
+  return namesOnDevice() && presetName(slot.values) !== nameBefore(slot);
+}
+function renameSlot(slot, name) {
+  if (namesOnDevice()) {
+    setPresetName(slot.values, name);
+    slot.name = presetName(slot.values);
+    recomputeDirty();
+  } else {
+    slot.name = name;
+    // a name kept here is not staged: it stands even if the moves are discarded
+    bankState.originalNames[slot.id] = name;
+    bankNamesSet(bankState.slots.map(sl => sl.name || ""));
+  }
 }
 
 //-->>naming settings and values
@@ -162,15 +188,22 @@ async function readAllBanks(onProgress) {
       if (onProgress) onProgress(b, BANK_COUNT);
       const values = await controller.readBank(b, 3000, true);
       const copy = Array.from(values, v => (v == null ? 0 : v));
-      slots.push({ id: b, values: copy, dirty: false, name: names[b] });
       original[b] = copy.slice();
+      let name = names[b];
+      if (namesOnDevice()) {
+        // a name this browser kept from before the minichord could, staged to be written there
+        if (!presetName(copy) && names[b]) setPresetName(copy, names[b]);
+        name = presetName(copy);
+      }
+      slots.push({ id: b, values: copy, dirty: false, name });
     }
   } finally {
     await returnToBank(startingBank);
   }
   bankState.slots = slots;
   bankState.original = original;
-  bankState.originalNames = names;
+  bankState.originalNames = namesOnDevice() ? original.map(presetName) : names;
+  recomputeDirty();
   bankState.read = true;
   bankState.stale = false;
   bulkStaged = [];
@@ -228,6 +261,8 @@ async function writeBankChanges(onProgress) {
   } finally {
     await returnToBank(startingBank);
   }
+  // every name is on the minichord now, so this browser's copy has done its job
+  if (namesOnDevice()) bankNamesForget();
   // what was written is now what is in each bank: it is the new starting
   // point, and the staged rows no longer describe anything to go back to
   bankState.slots.forEach((slot, i) => { slot.id = i; });
@@ -254,7 +289,8 @@ async function backupAllBanks(onProgress) {
     for (let b = 0; b < BANK_COUNT; b++) {
       if (onProgress) onProgress(b, BANK_COUNT);
       const values = await controller.readBank(b, 3000, true);
-      banks.push({ bank: b, name: names[b] || "", values: Array.from(values, v => (v == null ? 0 : v)) });
+      const copy = Array.from(values, v => (v == null ? 0 : v));
+      banks.push({ bank: b, name: (namesOnDevice() && presetName(copy)) || names[b] || "", values: copy });
     }
   } finally {
     await returnToBank(startingBank);
@@ -307,12 +343,16 @@ async function restoreAllBanks(data, onProgress) {
       if (values.length <= controller.page_size && controller.has_page1) {
         Object.entries(controller.page1_defaults).forEach(([a, v]) => { values[a] = v; });
       }
+      // a backup from before names were kept in the bank brings its name along into it
+      if (namesOnDevice() && typeof entry.name === "string" && entry.name && !presetName(values)) {
+        setPresetName(values, entry.name);
+      }
       await writeBank(entry.bank, values);
       if (typeof entry.name === "string") names[entry.bank] = entry.name.slice(0, 24);
     }
   } finally {
     // the banks written so far are written, names and all, even if a later one failed
-    bankNamesSet(names);
+    if (!namesOnDevice()) bankNamesSet(names);
     bankCacheStale();
     await returnToBank(startingBank);
   }
@@ -392,7 +432,7 @@ function moveBankSlot(from, to) {
   const [moved] = slots.splice(from, 1);
   slots.splice(to, 0, moved);
   recomputeDirty();
-  bankNamesSet(slots.map(sl => sl.name || ""));   // the name belongs to the bank, not the slot
+  if (!namesOnDevice()) bankNamesSet(slots.map(sl => sl.name || ""));   // the name belongs to the bank, not the slot
 }
 
 // Put every bank back where it was read from. Staged settings stay with their
@@ -401,7 +441,7 @@ function unmoveBanks() {
   if (!bankState.slots) return;
   bankState.slots.sort((a, b) => a.id - b.id);
   recomputeDirty();
-  bankNamesSet(bankState.slots.map(sl => sl.name || ""));
+  if (!namesOnDevice()) bankNamesSet(bankState.slots.map(sl => sl.name || ""));
 }
 
 // "5 → 2" for each bank that sits somewhere other than where it was read from
@@ -699,21 +739,35 @@ function renderBankSheet() {
     const name = document.createElement("input");
     name.className = "bank-name";
     name.type = "text";
-    name.maxLength = 24;
+    name.maxLength = NAME_LENGTH;
     name.value = slot.name || "";
     name.placeholder = slot.id !== i ? "from " + (slot.id + 1) : "—";
     name.setAttribute("aria-label", "Name for bank " + (i + 1));
     // typing a name should not start a drag
     name.addEventListener("mousedown", e => e.stopPropagation());
     name.addEventListener("focus", () => { cell.draggable = false; });
-    name.addEventListener("blur", () => {
+    name.addEventListener("blur", e => {
       cell.draggable = true;
-      const v = name.value.trim().slice(0, 24);
-      if (v === (slot.name || "")) return;
-      slot.name = v;
-      // a name is not staged: it stands even if the moves are discarded
-      bankState.originalNames[slot.id] = v;
-      bankNamesSet(bankState.slots.map(sl => sl.name || ""));
+      const v = namesOnDevice() ? plainName(name.value) : name.value.trim().slice(0, NAME_LENGTH);
+      if (v === (slot.name || "")) { name.value = v; return; }
+      renameSlot(slot, v);
+      name.value = slot.name || "";
+      if (!namesOnDevice()) return;
+      // on the minichord a new name is staged, which the sheet shows. Focus going to a button is
+      // a click under way, which re-draws the sheet itself: till then the bank and the write bar
+      // are brought up to date where they are, so the click lands on what it was aimed at
+      cell.classList.toggle("dirty", slot.dirty);
+      bankSheetEl.paintBar();
+      const to = e.relatedTarget;
+      if (to && to.tagName === "BUTTON" && card.contains(to)) return;
+      const toCell = to && to.closest && to.closest(".bank-cell");
+      renderBankSheet();
+      // tabbing on to the next bank's name or number carries on there
+      if (toCell) {
+        const again = bankSheetEl.querySelector('.bank-cell[data-index="' + toCell.dataset.index + '"] ' +
+          (to.classList.contains("bank-num") ? ".bank-num" : ".bank-name"));
+        if (again) again.focus();
+      }
     });
     name.addEventListener("keydown", e => {
       if (e.key === "Enter") { e.preventDefault(); name.blur(); }
@@ -982,7 +1036,8 @@ function renderBankSheet() {
 
   // ---- everything staged, in its own panel ----
   const moves = bankMoves();
-  const nothing = !moves.length && !bulkStaged.length;
+  const renamed = bankState.slots.map((slot, i) => ({ slot, i })).filter(r => nameStaged(r.slot));
+  const nothing = !moves.length && !bulkStaged.length && !renamed.length;
   const staged = bankSection(side, "staged changes", nothing
     ? "Nothing staged yet. Whatever you move, set or stage collects here until you write it."
     : "Not on the minichord yet. Take any of them back with ×.", "bank-staged");
@@ -1010,6 +1065,33 @@ function renderBankSheet() {
     });
     staged.appendChild(chips);
   }
+
+  if (renamed.length) {
+    const groupHead = document.createElement("div");
+    groupHead.className = "bank-group-head";
+    const h = document.createElement("h6");
+    h.textContent = "names";
+    groupHead.appendChild(h);
+    staged.appendChild(groupHead);
+  }
+  renamed.forEach(({ slot, i }) => {
+    const item = document.createElement("div");
+    item.className = "bank-item";
+    const label = document.createElement("span");
+    label.className = "bank-item-name";
+    label.textContent = "bank " + (i + 1);
+    const val = document.createElement("span");
+    val.className = "bank-item-val";
+    val.textContent = presetName(slot.values) || "no name";
+    const undo = mkBankBtn("×", "Give this bank back the name it had", "bank-x");
+    undo.addEventListener("click", () => { renameSlot(slot, nameBefore(slot)); renderBankSheet(); });
+    const sub = document.createElement("span");
+    sub.className = "bank-item-sub";
+    const before = nameBefore(slot);
+    sub.textContent = before ? "was " + before : "had no name on the minichord";
+    item.append(label, val, undo, sub);
+    staged.appendChild(item);
+  });
 
   if (bulkStaged.length) {
     const groupHead = document.createElement("div");
@@ -1042,19 +1124,29 @@ function renderBankSheet() {
   });
 
   // ---- write / discard, kept in view ----
+  // painted again in place when a name changes, so a click on write straight after typing one
+  // lands on the button it was aimed at rather than on one the sheet has just replaced
   const summary = document.createElement("span");
   summary.className = "bank-bar-summary";
-  const dirtyNums = [];
-  bankState.slots.forEach((slot, i) => { if (slot.dirty) dirtyNums.push(i + 1); });
-  summary.textContent = !dirtyCount ? "Nothing to write"
-    : dirtyCount === BANK_COUNT ? "All twelve banks will be rewritten"
-    : (dirtyCount === 1 ? "Bank " : "Banks ") + dirtyNums.join(", ") + " will be rewritten";
-
-  const writeBtn = mkBankBtn(dirtyCount ? "write " + dirtyCount + (dirtyCount === 1 ? " bank" : " banks") + " to the minichord" : "write to the minichord",
-    "Write the staged changes to the minichord", "primary");
-  writeBtn.disabled = !dirtyCount || bankState.busy;
+  const writeBtn = mkBankBtn("", "Write the staged changes to the minichord", "primary");
+  const discardBtn = mkBankBtn("discard all", "Throw away every staged change", "secondary");
+  const paintBar = () => {
+    const dirtyNums = [];
+    bankState.slots.forEach((slot, i) => { if (slot.dirty) dirtyNums.push(i + 1); });
+    const n = dirtyNums.length;
+    summary.textContent = !n ? "Nothing to write"
+      : n === BANK_COUNT ? "All twelve banks will be rewritten"
+      : (n === 1 ? "Bank " : "Banks ") + dirtyNums.join(", ") + " will be rewritten";
+    writeBtn.textContent = n ? "write " + n + (n === 1 ? " bank" : " banks") + " to the minichord" : "write to the minichord";
+    writeBtn.disabled = !n || bankState.busy;
+    discardBtn.disabled = !n && !bulkStaged.length;
+  };
+  bankSheetEl.paintBar = paintBar;
+  paintBar();
   writeBtn.addEventListener("click", async () => {
     if (!controller.isConnected()) { bankAnnounce("Connect a minichord first"); return; }
+    const dirtyCount = bankState.slots.filter(s => s.dirty).length;
+    if (!dirtyCount) return;
     if (!confirm("Write " + dirtyCount + (dirtyCount === 1 ? " bank" : " banks") +
       " to the minichord? What is in " + (dirtyCount === 1 ? "it" : "them") +
       " now is replaced. Back up first if you want to keep it." + unsavedNote())) return;
@@ -1070,13 +1162,11 @@ function renderBankSheet() {
     renderBankSheet();
   });
 
-  const discardBtn = mkBankBtn("discard all", "Throw away every staged change", "secondary");
-  discardBtn.disabled = !dirtyCount && !bulkStaged.length;
   discardBtn.addEventListener("click", () => {
     if (!confirm("Throw away every staged change? Nothing has been written, so the banks stay as they are.")) return;
     bankState.slots = bankState.original.map((values, i) =>
       ({ id: i, values: values.slice(), dirty: false, name: bankState.originalNames[i] }));
-    bankNamesSet(bankState.originalNames);
+    if (!namesOnDevice()) bankNamesSet(bankState.originalNames);
     bulkStaged = [];
     bankAnnounce("Discarded the staged changes");
     renderBankSheet();
