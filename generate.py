@@ -56,7 +56,7 @@ subgroup_order = {
     'harp_potentiometer': ['Potentiometer'],
     'modulation_potentiometer': ['Potentiometer'],
     'sharp_button_parameter': ['General'],
-    'rhythm_parameter': ['Style', 'Sections', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
+    'rhythm_parameter': ['Style', 'Sections', 'Drums', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
 }
 
 DELAY = ['delay length', 'delay filter frequency', 'delay filter resonance', 'delay lowpass', 'delay bandpass',
@@ -67,6 +67,8 @@ parameter_name_order = {
     'rhythm_parameter': {
         'Style': ['rhythm style', 'rhythm bass', 'rhythm chords', 'rhythm articulation', 'rhythm accents'],
         'Sections': ['rhythm style B', 'fill on modifier and hold', 'rhythm intro', 'rhythm ending', 'rhythm palm break'],
+        'Drums': ['drums', 'drum groove', 'drum groove B', 'drum kit', 'drum level', 'drum humanize', 'count-in', 'drums only',
+                  'harp drums', 'drum MIDI out'],
         'Tempo': ['default bpm', 'tap tempo counts', 'shuffle value', 'MIDI clock out'],
         'Chord changes': ['rhythm follows hands', 'rhythm chord change', 'measure update', 'MIDI chords'],
         'Pattern': ['cycle length', 'note pushed duration'],  # then the grid of steps (SysEx 220–235)
@@ -79,7 +81,8 @@ parameter_name_order = {
         'Vocoder': ['vocoder', 'vocoder carrier', 'vocoder consonants'],
         'Phone': ['phone follow 1 control', 'phone follow 1 value', 'phone follow 1 band', 'phone follow 1 release',
                   'phone follow 2 control', 'phone follow 2 value', 'phone follow 2 band', 'phone follow 2 release',
-                  'phone beat', 'phone kick stab', 'phone kick note'],
+                  'phone beat', 'phone kick stab', 'phone kick note', 'phone filter', 'phone filter resonance', 'phone echo',
+                  'phone echo time', 'phone echo feedback', 'phone strum'],
         'MIDI': ['chord channel', 'harp channel', 'harp note-off on lift', 'single port mode', 'MPE output', 'knobs send MIDI',
                  'MIDI in plays'],
         'Knobs': ['knob layer'],
@@ -398,6 +401,8 @@ submenus = {
         ('Style', ['Style']),
         # style B, fills, the intro, the ending and the palm's break
         ('Fills and sections', ['Sections']),
+        # a synthesized kit on the rhythm's clock, its grooves, and the harp as its pads
+        ('Drums', ['Drums']),
         ('Tempo', ['Tempo']),
         ('Chord changes', ['Chord changes']),
         ('Pattern', ['Pattern']),

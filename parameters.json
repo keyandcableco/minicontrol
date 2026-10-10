@@ -1179,6 +1179,144 @@
       "controls": "none",
       "introduction_version": 0.58,
       "step": 1
+    },
+    {
+      "sysex_adress": 327,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone filter",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 200,
+      "default_value": 100,
+      "tooltip": "the DJ filter on the song coming in over USB, as it plays through the minichord (USB audio 1): below 100 a low pass, closing to 200 Hz at 0; above 100 a high pass, opening to 4 kHz at 200; 100 leaves the song as it is. A knob or hover swept across it sweeps the song from muffled to thin",
+      "method": "phone_dj_filter_value=value; phone_dj_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "all",
+      "introduction_version": 0.59,
+      "step": 1
+    },
+    {
+      "sysex_adress": 328,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone filter resonance",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 30,
+      "tooltip": "how much the DJ filter rings at its corner: 0 smooth, 100 a whistle",
+      "method": "phone_dj_resonance=value; phone_dj_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "all",
+      "introduction_version": 0.59,
+      "step": 1
+    },
+    {
+      "sysex_adress": 329,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone echo",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "how much of the song goes into an echo in time with the music: the double tap (or tap and hold) set to 100 throws the song into it, and the echoes carry on as it closes, a dub throw. 0 sends nothing",
+      "method": "phone_echo_send=value; phone_dj_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "all",
+      "introduction_version": 0.59,
+      "step": 1
+    },
+    {
+      "sysex_adress": 330,
+      "group": "Phone",
+      "ui_type": "select",
+      "name": "phone echo time",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4,
+      "default_value": 1,
+      "tooltip": "the echo's time, as a division of the beat: of the music's tempo where phone beat or phone strum has found it, of the rhythm's otherwise. 0 an eighth, 1 a dotted eighth, 2 a quarter, 3 a sixteenth, 4 an eighth triplet; at most 500 ms",
+      "method": "phone_echo_time=value; phone_dj_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.59,
+      "options": [
+        {
+          "value": 0,
+          "label": "An eighth"
+        },
+        {
+          "value": 1,
+          "label": "A dotted eighth"
+        },
+        {
+          "value": 2,
+          "label": "A quarter"
+        },
+        {
+          "value": 3,
+          "label": "A sixteenth"
+        },
+        {
+          "value": 4,
+          "label": "An eighth triplet"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 331,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone echo feedback",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 90,
+      "default_value": 45,
+      "tooltip": "how much of each echo comes round again: 0 one echo, 90 a long trail",
+      "method": "phone_echo_feedback=value; phone_dj_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "all",
+      "introduction_version": 0.59,
+      "step": 1
+    },
+    {
+      "sysex_adress": 333,
+      "group": "Phone",
+      "ui_type": "select",
+      "name": "phone strum",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "the harp strums the chord held on the beat of the music coming in over USB, six strings in the middle, low to high: 1 on every beat, 2 down on the beat and up between, in eighths. It finds the beat as phone beat does, a few seconds of it; a chord must be held (or kept with hold). 0 off",
+      "method": "phone_strum=value; phone_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.59,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "On every beat"
+        },
+        {
+          "value": 2,
+          "label": "Down and up, in eighths"
+        }
+      ],
+      "step": 1
     }
   ],
   "chord_parameter": [
@@ -4136,9 +4274,9 @@
       "name": "chord voice",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 4,
+      "max_value": 5,
       "default_value": 0,
-      "tooltip": "what each chord voice sounds: 0 its own oscillators, as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet. A sample runs through the voice's envelope and filter, so the preset still shapes it. Samples rendered by the midi-js-soundfonts project: the piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
+      "tooltip": "(5: the song, a second of what plays into the minichord over USB, grabbed with phone deck) what each chord voice sounds: 0 its own oscillators, as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet. A sample runs through the voice's envelope and filter, so the preset still shapes it. Samples rendered by the midi-js-soundfonts project: the piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
       "method": "set_chord_source(value);",
       "iterate": 1,
       "curve": "linear",
@@ -4163,6 +4301,10 @@
         {
           "value": 4,
           "label": "String quartet"
+        },
+        {
+          "value": 5,
+          "label": "The song: a second grabbed from the phone"
         }
       ],
       "step": 1
@@ -6223,9 +6365,9 @@
       "name": "harp voice",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 4,
+      "max_value": 5,
       "default_value": 0,
-      "tooltip": "what each harp string sounds: 0 its own synth (the oscillator and string model), as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet (cello low, viola in the middle, violin high). A sample runs through the string's envelope, filter and level, so the preset still shapes it, and follows the ribbon and the tuning. Samples rendered by the midi-js-soundfonts project: the piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
+      "tooltip": "(5: the song, a second of what plays into the minichord over USB, grabbed with phone deck) what each harp string sounds: 0 its own synth (the oscillator and string model), as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet (cello low, viola in the middle, violin high). A sample runs through the string's envelope, filter and level, so the preset still shapes it, and follows the ribbon and the tuning. Samples rendered by the midi-js-soundfonts project: the piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
       "method": "set_harp_source(value);",
       "iterate": 1,
       "curve": "linear",
@@ -6250,6 +6392,10 @@
         {
           "value": 4,
           "label": "String quartet"
+        },
+        {
+          "value": 5,
+          "label": "The song: a second grabbed from the phone"
         }
       ],
       "step": 1
@@ -7591,6 +7737,596 @@
       "controls": "tap",
       "introduction_version": 0.53,
       "step": 1
+    },
+    {
+      "sysex_adress": 334,
+      "group": "Drums",
+      "ui_type": "switch",
+      "name": "drums",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "rhythm mode plays drums with the accompaniment: a synthesized kit, a groove that follows the rhythm's tempo, tap, MIDI clock and the phone's beat, its own fills in the fills, silent in a break, a crash where a fill lands and on the ending's last chord. Without a groove chosen, each rhythm style plays its own drum part: a waltz waltz drums, the walking bass a swing ride, the bossa nova a bossa. 0 no drums, as before",
+      "method": "drums_on=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.6,
+      "step": 1
+    },
+    {
+      "sysex_adress": 335,
+      "group": "Drums",
+      "ui_type": "select",
+      "name": "drum groove",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 43,
+      "default_value": 0,
+      "tooltip": "the drums' groove instead of the rhythm style's own part: 1 rock, 2 pop eighths, 3 pop sixteenths, 4 ballad, 5 funk, 6 disco, 7 motown, 8 shuffle, 9 jazz swing, 10 waltz, 11 march, 12 second line, 13 country two-beat, 14 folk, 15 six eight, 16 habanera, 17 house, 18 trap, 19 amen-style break, 20 funky drummer-style, 21 think-style break, 22 boom bap, 23 drum and bass, 24 lo-fi, 25 son clave, 26 rumba clave, 27 bossa nova, 28 samba, 29 cumbia, 30 baiao, 31 salsa, 32 one drop, 33 dembow, 34 soca, 35 afrobeat, 36 12/8 bell, 37 highlife, 38 maqsum, 39 baladi, 40 saidi, 41 kehrwa, 42 dadra, 43 teental. Played in our own synthesized sounds; the famous breaks re-played, not sampled. One in another metre than the style keeps its own length. 0 the rhythm style's own drum part",
+      "method": "drum_groove=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.6,
+      "options": [
+        {
+          "value": 0,
+          "label": "The rhythm style's own"
+        },
+        {
+          "value": 1,
+          "label": "rock"
+        },
+        {
+          "value": 2,
+          "label": "pop eighths"
+        },
+        {
+          "value": 3,
+          "label": "pop sixteenths"
+        },
+        {
+          "value": 4,
+          "label": "ballad"
+        },
+        {
+          "value": 5,
+          "label": "funk"
+        },
+        {
+          "value": 6,
+          "label": "disco"
+        },
+        {
+          "value": 7,
+          "label": "motown"
+        },
+        {
+          "value": 8,
+          "label": "shuffle"
+        },
+        {
+          "value": 9,
+          "label": "jazz swing"
+        },
+        {
+          "value": 10,
+          "label": "waltz"
+        },
+        {
+          "value": 11,
+          "label": "march"
+        },
+        {
+          "value": 12,
+          "label": "second line"
+        },
+        {
+          "value": 13,
+          "label": "country two-beat"
+        },
+        {
+          "value": 14,
+          "label": "folk"
+        },
+        {
+          "value": 15,
+          "label": "six eight"
+        },
+        {
+          "value": 16,
+          "label": "habanera"
+        },
+        {
+          "value": 17,
+          "label": "house"
+        },
+        {
+          "value": 18,
+          "label": "trap"
+        },
+        {
+          "value": 19,
+          "label": "amen-style break"
+        },
+        {
+          "value": 20,
+          "label": "funky drummer-style"
+        },
+        {
+          "value": 21,
+          "label": "think-style break"
+        },
+        {
+          "value": 22,
+          "label": "boom bap"
+        },
+        {
+          "value": 23,
+          "label": "drum and bass"
+        },
+        {
+          "value": 24,
+          "label": "lo-fi"
+        },
+        {
+          "value": 25,
+          "label": "son clave"
+        },
+        {
+          "value": 26,
+          "label": "rumba clave"
+        },
+        {
+          "value": 27,
+          "label": "bossa nova"
+        },
+        {
+          "value": 28,
+          "label": "samba"
+        },
+        {
+          "value": 29,
+          "label": "cumbia"
+        },
+        {
+          "value": 30,
+          "label": "baiao"
+        },
+        {
+          "value": 31,
+          "label": "salsa"
+        },
+        {
+          "value": 32,
+          "label": "one drop"
+        },
+        {
+          "value": 33,
+          "label": "dembow"
+        },
+        {
+          "value": 34,
+          "label": "soca"
+        },
+        {
+          "value": 35,
+          "label": "afrobeat"
+        },
+        {
+          "value": 36,
+          "label": "12/8 bell"
+        },
+        {
+          "value": 37,
+          "label": "highlife"
+        },
+        {
+          "value": 38,
+          "label": "maqsum"
+        },
+        {
+          "value": 39,
+          "label": "baladi"
+        },
+        {
+          "value": 40,
+          "label": "saidi"
+        },
+        {
+          "value": 41,
+          "label": "kehrwa"
+        },
+        {
+          "value": 42,
+          "label": "dadra"
+        },
+        {
+          "value": 43,
+          "label": "teental"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 336,
+      "group": "Drums",
+      "ui_type": "select",
+      "name": "drum groove B",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 43,
+      "default_value": 0,
+      "tooltip": "the groove after a fill switches to rhythm style B: 0 as before the switch (the groove chosen, or style B's own drum part if none is), else one of drum groove's list",
+      "method": "drum_groove_b=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.6,
+      "options": [
+        {
+          "value": 0,
+          "label": "As style A has it"
+        },
+        {
+          "value": 1,
+          "label": "rock"
+        },
+        {
+          "value": 2,
+          "label": "pop eighths"
+        },
+        {
+          "value": 3,
+          "label": "pop sixteenths"
+        },
+        {
+          "value": 4,
+          "label": "ballad"
+        },
+        {
+          "value": 5,
+          "label": "funk"
+        },
+        {
+          "value": 6,
+          "label": "disco"
+        },
+        {
+          "value": 7,
+          "label": "motown"
+        },
+        {
+          "value": 8,
+          "label": "shuffle"
+        },
+        {
+          "value": 9,
+          "label": "jazz swing"
+        },
+        {
+          "value": 10,
+          "label": "waltz"
+        },
+        {
+          "value": 11,
+          "label": "march"
+        },
+        {
+          "value": 12,
+          "label": "second line"
+        },
+        {
+          "value": 13,
+          "label": "country two-beat"
+        },
+        {
+          "value": 14,
+          "label": "folk"
+        },
+        {
+          "value": 15,
+          "label": "six eight"
+        },
+        {
+          "value": 16,
+          "label": "habanera"
+        },
+        {
+          "value": 17,
+          "label": "house"
+        },
+        {
+          "value": 18,
+          "label": "trap"
+        },
+        {
+          "value": 19,
+          "label": "amen-style break"
+        },
+        {
+          "value": 20,
+          "label": "funky drummer-style"
+        },
+        {
+          "value": 21,
+          "label": "think-style break"
+        },
+        {
+          "value": 22,
+          "label": "boom bap"
+        },
+        {
+          "value": 23,
+          "label": "drum and bass"
+        },
+        {
+          "value": 24,
+          "label": "lo-fi"
+        },
+        {
+          "value": 25,
+          "label": "son clave"
+        },
+        {
+          "value": 26,
+          "label": "rumba clave"
+        },
+        {
+          "value": 27,
+          "label": "bossa nova"
+        },
+        {
+          "value": 28,
+          "label": "samba"
+        },
+        {
+          "value": 29,
+          "label": "cumbia"
+        },
+        {
+          "value": 30,
+          "label": "baiao"
+        },
+        {
+          "value": 31,
+          "label": "salsa"
+        },
+        {
+          "value": 32,
+          "label": "one drop"
+        },
+        {
+          "value": 33,
+          "label": "dembow"
+        },
+        {
+          "value": 34,
+          "label": "soca"
+        },
+        {
+          "value": 35,
+          "label": "afrobeat"
+        },
+        {
+          "value": 36,
+          "label": "12/8 bell"
+        },
+        {
+          "value": 37,
+          "label": "highlife"
+        },
+        {
+          "value": 38,
+          "label": "maqsum"
+        },
+        {
+          "value": 39,
+          "label": "baladi"
+        },
+        {
+          "value": 40,
+          "label": "saidi"
+        },
+        {
+          "value": 41,
+          "label": "kehrwa"
+        },
+        {
+          "value": 42,
+          "label": "dadra"
+        },
+        {
+          "value": 43,
+          "label": "teental"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 337,
+      "group": "Drums",
+      "ui_type": "select",
+      "name": "drum kit",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 11,
+      "default_value": 0,
+      "tooltip": "the kit the drums play: 1 808, 2 909, 3 CR-78, 4 studio, 5 brushes, 6 boom bap, 7 world percussion, 8 tabla and doumbek, 9 trap, 10 house, 11 glitch. Each groove has its own kit (the breaks the dusty boom bap kit, the son clave the world percussion, maqsum and teental the tabla and doumbek); this plays any groove on another. The trap kit's kick is an 808 bass on the chord's root. 0 the groove's own",
+      "method": "drum_kit=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "all",
+      "introduction_version": 0.6,
+      "options": [
+        {
+          "value": 0,
+          "label": "The groove's own"
+        },
+        {
+          "value": 1,
+          "label": "808"
+        },
+        {
+          "value": 2,
+          "label": "909"
+        },
+        {
+          "value": 3,
+          "label": "CR-78"
+        },
+        {
+          "value": 4,
+          "label": "studio"
+        },
+        {
+          "value": 5,
+          "label": "brushes"
+        },
+        {
+          "value": 6,
+          "label": "boom bap"
+        },
+        {
+          "value": 7,
+          "label": "world percussion"
+        },
+        {
+          "value": 8,
+          "label": "tabla and doumbek"
+        },
+        {
+          "value": 9,
+          "label": "trap"
+        },
+        {
+          "value": 10,
+          "label": "house"
+        },
+        {
+          "value": 11,
+          "label": "glitch"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 338,
+      "group": "Drums",
+      "ui_type": "slider",
+      "name": "drum level",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 70,
+      "tooltip": "how loud the drums are, beside the chords and the harp",
+      "method": "drum_level=value; drums_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "all",
+      "introduction_version": 0.6,
+      "step": 1
+    },
+    {
+      "sysex_adress": 339,
+      "group": "Drums",
+      "ui_type": "slider",
+      "name": "drum humanize",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "how loosely the drums play: each hit up to 15 ms late and 20% softer at 100, at random, as a drummer pushes and lays back. 0 dead on the grid",
+      "method": "drum_humanize=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "all",
+      "introduction_version": 0.6,
+      "step": 1
+    },
+    {
+      "sysex_adress": 340,
+      "group": "Drums",
+      "ui_type": "select",
+      "name": "drum MIDI out",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "each drum hit, and each pad on the harp in harp drums, goes out on MIDI channel 10 in General MIDI's drum map (kick 36, snare 38, side stick 37, clap 39, hats 42 and 46, crash 49, toms 45 and 50, congas 64 and 63, cowbell 56, maracas 70), so a computer records the drums or plays them on its own kit: 1 on port 1, 2 on port 2. 0 off",
+      "method": "drum_midi=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.6,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "Channel 10 on port 1"
+        },
+        {
+          "value": 2,
+          "label": "Channel 10 on port 2"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 341,
+      "group": "Drums",
+      "ui_type": "switch",
+      "name": "count-in",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "rhythm mode starts with a bar of sticks, a click on each beat and the first louder, before the intro or the groove, so a band can come in together. A MIDI clock's Start, or the bar starting on a press, counts itself. 0 straight in",
+      "method": "count_in=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.6,
+      "step": 1
+    },
+    {
+      "sysex_adress": 342,
+      "group": "Drums",
+      "ui_type": "switch",
+      "name": "drums only",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "with drums on, the accompaniment rests and the drums play alone, for playing the chords and the harp over a beat; fills, breaks and the ending as before. 0 both",
+      "method": "drums_only=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.6,
+      "step": 1
+    },
+    {
+      "sysex_adress": 343,
+      "group": "Drums",
+      "ui_type": "switch",
+      "name": "harp drums",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "the harp's twelve strings play the drum kit instead of notes, the lowest string the kick: kick, snare, side stick, clap, closed hat, open hat, cymbal, low tom, high tom, low conga, high conga, bell. As hard as they are struck, with or without rhythm mode, and out over MIDI with drum MIDI out. The kit is drum kit's, or the groove's. 0 the strings play notes, as before",
+      "method": "harp_drums=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.6,
+      "step": 1
     }
   ],
   "hidden": [
@@ -7932,6 +8668,23 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.56,
+      "step": 1
+    },
+    {
+      "sysex_adress": 332,
+      "group": "hidden",
+      "ui_type": "discrete_slider",
+      "name": "phone deck",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "writing it does one thing and it goes back to 0, never kept: 1 the tape stop, the song slowing to a stop over 0.8 s as a turntable does when its power goes, and the next time the song back in; 2 grabs the last second of the song onto the harp, as voice source 5, as loud as it goes. Assign the double tap to it (double tap control 332) with value 1 or 2",
+      "method": "phone_deck_action(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.59,
       "step": 1
     }
   ]

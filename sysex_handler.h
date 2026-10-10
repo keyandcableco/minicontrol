@@ -1001,6 +1001,57 @@ void apply_audio_parameter(int adress, int value) {
         case 326:
             hover_alt_value=value; hover_reapply=true;
             break;
+        case 327:
+            phone_dj_filter_value=value; phone_dj_set();
+            break;
+        case 328:
+            phone_dj_resonance=value; phone_dj_set();
+            break;
+        case 329:
+            phone_echo_send=value; phone_dj_set();
+            break;
+        case 330:
+            phone_echo_time=value; phone_dj_set();
+            break;
+        case 331:
+            phone_echo_feedback=value; phone_dj_set();
+            break;
+        case 332:
+            phone_deck_action(value);
+            break;
+        case 333:
+            phone_strum=value; phone_set();
+            break;
+        case 334:
+            drums_on=value;
+            break;
+        case 335:
+            drum_groove=value;
+            break;
+        case 336:
+            drum_groove_b=value;
+            break;
+        case 337:
+            drum_kit=value;
+            break;
+        case 338:
+            drum_level=value; drums_set();
+            break;
+        case 339:
+            drum_humanize=value;
+            break;
+        case 340:
+            drum_midi=value;
+            break;
+        case 341:
+            count_in=value;
+            break;
+        case 342:
+            drums_only=value;
+            break;
+        case 343:
+            harp_drums=value;
+            break;
         default:
             break;
     }

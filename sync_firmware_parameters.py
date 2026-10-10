@@ -49,6 +49,15 @@ def control(section, group, ui_type):
 ALT_LAYOUT = lambda: select('chord_parameter', 'Alternate layout', CHORD_TYPES)
 # what a harp string or chord voice sounds: its own synth, or a sampled instrument
 VOICES = ["Synth", "Piano", "Pizzicato strings", "Choir", "String quartet"]
+# a harp or chord voice can also play the song, a second grabbed from the phone (firmware 59)
+VOICES_AND_SONG = VOICES + ["The song: a second grabbed from the phone"]
+GROOVES = ["rock", "pop eighths", "pop sixteenths", "ballad", "funk", "disco", "motown", "shuffle", "jazz swing", "waltz",
+           "march", "second line", "country two-beat", "folk", "six eight", "habanera", "house", "trap",
+           "amen-style break", "funky drummer-style", "think-style break", "boom bap", "drum and bass", "lo-fi",
+           "son clave", "rumba clave", "bossa nova", "samba", "cumbia", "baiao", "salsa", "one drop", "dembow", "soca",
+           "afrobeat", "12/8 bell", "highlife", "maqsum", "baladi", "saidi", "kehrwa", "dadra", "teental"]
+KITS = ["808", "909", "CR-78", "studio", "brushes", "boom bap", "world percussion", "tabla and doumbek", "trap", "house",
+        "glitch"]
 
 UI_OVERRIDES = {
     # the firmware's name has an underscore
@@ -136,7 +145,7 @@ UI_OVERRIDES = {
     239: control('chord_parameter', 'Formants', 'slider'),
     240: control('chord_parameter', 'Formants', 'slider'),
     # chord: oscillators or a sampled instrument
-    265: select('chord_parameter', 'Oscillator', VOICES),
+    265: select('chord_parameter', 'Oscillator', VOICES_AND_SONG),
     # each chord note's own voice (firmware 41): 0 follows chord voice, then the voices one up
     **{a: select('chord_parameter', 'Oscillator', ["As the chord voice"] + VOICES) for a in (270, 271, 272, 273)},
     # chord: the ensemble, a slow stereo chorus after the chord chain
@@ -189,7 +198,7 @@ UI_OVERRIDES = {
     247: control('harp_parameter', 'Ribbon', 'slider'),
     248: control('harp_parameter', 'Ribbon', 'slider'),
     # harp: synth strings or a sampled instrument
-    264: select('harp_parameter', 'Oscillator', VOICES),
+    264: select('harp_parameter', 'Oscillator', VOICES_AND_SONG),
     # harp: the strings fanned across the stereo field
     257: control('harp_parameter', 'Spread', 'slider'),
     258: select('harp_parameter', 'Spread', ["By pitch: low strings left, high strings right",
@@ -259,6 +268,24 @@ UI_OVERRIDES = {
                                                "Climbs the inversions and comes back down", "An octave up, and back"]),
     325: {"section": "global_parameter", "group": "Hover", "ui_type": "select", "none_option": "none", "targets": "sweep"},
     326: control('global_parameter', 'Hover', 'slider'),
+    # firmware 59: the DJ box on the song, and the harp that plays it
+    327: control('global_parameter', 'Phone', 'slider'),
+    328: control('global_parameter', 'Phone', 'slider'),
+    329: control('global_parameter', 'Phone', 'slider'),
+    330: select('global_parameter', 'Phone', ["An eighth", "A dotted eighth", "A quarter", "A sixteenth", "An eighth triplet"]),
+    331: control('global_parameter', 'Phone', 'slider'),
+    333: select('global_parameter', 'Phone', ["Off", "On every beat", "Down and up, in eighths"]),
+    # firmware 60: the drums
+    334: control('rhythm_parameter', 'Drums', 'switch'),
+    335: select('rhythm_parameter', 'Drums', ["The rhythm style's own"] + GROOVES),
+    336: select('rhythm_parameter', 'Drums', ["As style A has it"] + GROOVES),
+    337: select('rhythm_parameter', 'Drums', ["The groove's own"] + KITS),
+    338: control('rhythm_parameter', 'Drums', 'slider'),
+    339: control('rhythm_parameter', 'Drums', 'slider'),
+    340: select('rhythm_parameter', 'Drums', ["Off", "Channel 10 on port 1", "Channel 10 on port 2"]),
+    341: control('rhythm_parameter', 'Drums', 'switch'),
+    342: control('rhythm_parameter', 'Drums', 'switch'),
+    343: control('rhythm_parameter', 'Drums', 'switch'),
 }
 # every waveform dropdown gets the same labels
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]
