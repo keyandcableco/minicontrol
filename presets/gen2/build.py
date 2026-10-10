@@ -22,9 +22,9 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 import presets  # noqa: E402
 
-FIRMWARE = 41          # the firmware these were made and measured on, stamped at address 7: firmware
+FIRMWARE = 42          # the firmware these were made and measured on, stamped at address 7: firmware
                        # newer than a preset resets the settings that came after it, so this must cover
-                       # every setting the presets use (the chord notes' own instruments are 41)
+                       # every setting the presets use (the chord notes' own instruments are 41, rhythm styles 42)
 PARAMETER_SIZE = 512
 RESERVED = {0, 1, 382, 383, 510, 511}
 # the instrument's, not the preset's: a restore keeps what each bank has
@@ -159,7 +159,7 @@ def main():
         "",
         "A draft: the set is still being tuned by ear, and may change before it is final.",
         "",
-        "They need firmware 41 or later, from the test-allFeatures branch.",
+        "They need firmware 42 or later, from the test-allFeatures branch.",
         "",
         "**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         "`gen2.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, "

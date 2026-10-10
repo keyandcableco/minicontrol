@@ -165,6 +165,20 @@ def rhythm(steps, bpm=None, length=16, update=4, swing=1.0, note_ms=None):
     return out
 
 
+STYLES = {1: "Alberti bass", 2: "waltz", 3: "boom-chick", 4: "walking bass", 5: "boogie", 6: "Travis picking",
+          7: "strummed guitar", 8: "bossa nova", 9: "arpeggio up", 10: "arpeggio up and down", 11: "ballad",
+          12: "reggae", 13: "6/8 arpeggio", 14: "habanera"}
+
+
+def style(n, bpm, bass=0, chords=0, follows=0, change=0, articulation=100, accents=100, swing=1.0):
+    """what rhythm mode plays (274-280, firmware 42), a written part that follows the held chord.
+    bass and chords: 0 play the style's part, 1 hold the chord, 2 rest. follows: 0 plays on, 1 only
+    while a chord is held, 2 the same with the bar starting from the press. change: a new chord on its
+    next note, beat or bar"""
+    return {274: n, 275: bass, 276: chords, 277: follows, 278: change, 279: articulation, 280: accents,
+            187: bpm, 190: swing}
+
+
 def merge(*ds):
     out = {}
     for d in ds:
@@ -194,7 +208,8 @@ preset("Open Hand Pad", 210,
         "modifier + mod knob": "chord release, short to long",
         "modifier + chord knob": "chord ensemble, from dry to a lush Juno chorus",
         "modifier + harp knob": "harp delay mix",
-        "double tap": "the suspended and extended chords (sus4, sus2, maj9, min9, add9, 6/9) on the same buttons"},
+        "double tap": "the suspended and extended chords (sus4, sus2, maj9, min9, add9, 6/9) on the same buttons",
+        "rhythm mode": "arpeggio up and down over a held bass, a synth pad's arpeggio"},
        chord_osc(0.12, BL_PULSE, 1.0, 0.09, BL_SAW, 1.0, 0.06, TRI, 0.5),
        chord_env(450, 0, 1500, 0.85, 2200),
        chord_filter(420, 0.3, 1.6, fa=900, fd=2200, fs=0.45, fr=2000, sens=1.0, lfo=(SINE, 0.22, 0.12)),
@@ -213,6 +228,7 @@ preset("Open Hand Pad", 210,
        {36: 9},
        reverb_room(0.78, 0.25, 0.5, 0.35, 0.7), {29: 0.7},
        hover(143, 3200, 8),
+       style(10, 96, bass=1, articulation=130, accents=50),
        knobs(chord_alt=(259, 100), harp_alt=(84, 100), mod=(137, 100), mod_alt=(141, 90)),
        double_tap((39, 1)))
 
@@ -231,6 +247,7 @@ preset("Concert Harp", 55,
         "modifier + chord knob": "the string section's attack",
         "modifier + harp knob": "harp reverb",
         "double tap": "pluck on lift: rest fingers on strings and they sound as you lift them, like a real harp",
+        "rhythm mode": "ballad: the strings pulse in eighths over a held bass, the harp free on top",
         "palm": "lay five or more fingers flat across the plate to stop the strings (six with pluck on lift)"},
        chord_sample(4), chord_env(380, 0, 1000, 0.85, 1500),
        chord_filter(3500, 0.0, 0.7), chord_trem(), chord_vib(), chord_delay(),
@@ -248,6 +265,7 @@ preset("Concert Harp", 55,
        {36: 8, 252: 70, 263: 50, 213: 5, 214: 40, 216: 0},
        reverb_room(0.82, 0.3, 0.45, 0.35, 0.75), {29: 0.65},
        hover(197, 0.9, 8),
+       style(11, 72, articulation=110, accents=60),
        knobs(chord_alt=(137, 100), harp_alt=(85, 100), mod=(219, 100), mod_alt=(218, 90)),
        double_tap((216, 1), (213, 6)))
 
@@ -263,10 +281,11 @@ preset("Jazz Piano", 0,
         "modifier + mod knob": "how long the harp's notes ring after the finger lifts",
         "modifier + chord knob": "chord reverb",
         "modifier + harp knob": "how much the harp follows touch",
-        "double tap": "maj9, min9, add9, 6/9 and sus chords on the same buttons"},
+        "double tap": "maj9, min9, add9, 6/9 and sus chords on the same buttons",
+        "rhythm mode": "walking bass under a Charleston comp, swung; the bass steps into the next chord on the bar"},
        chord_sample(1), chord_env(1, 0, 4000, 1.0, 450),
        chord_filter(2600, 0.3, 0.7), chord_trem(), chord_vib(), chord_delay(),
-       chord_out(300, 0.8, 1.0, 1.0, 0.56),
+       chord_out(300, 0.8, 1.0, 1.0, 0.45),
        chord_fx(0.3),
        {120: 2, 198: 2, 111: 1, 112: 7},
        harp_sample(1), harp_env(1, 0, 4000, 1.0, 650),
@@ -278,6 +297,7 @@ preset("Jazz Piano", 0,
        {36: 8, 252: 80, 263: 30},
        reverb_room(0.6, 0.35, 0.5, 0.4, 0.7), {29: 0.8},
        hover(141, 4000, 7),
+       style(4, 128, follows=2, change=2, articulation=90, swing=1.3),
        knobs(chord_alt=(184, 100), harp_alt=(252, 100), mod=(143, 85), mod_alt=(47, 100)),
        double_tap((39, 1)))
 
@@ -299,6 +319,7 @@ preset("Cantus Choir", 275,
         "modifier + harp knob": "how long the harp rings",
         "double tap": "the just chords: harmonic seventh on the 7th button, harmonic ninth on all three, "
                       "sus4 on major and minor together (the sharp button rests while they are on)",
+        "rhythm mode": "a legato 6/8 arpeggio, the choir rocking over its held bass",
         "palm": "lay five fingers flat across the plate to stop the harp ringing"},
        chord_sample(3), chord_env(250, 0, 800, 0.95, 1600),
        {131: 0.45, 132: 0.45, 133: 0.45, 134: 0.6},        # the top voice, the harp's, a little forward
@@ -318,6 +339,7 @@ preset("Cantus Choir", 275,
        {36: 8, 252: 60, 263: 40, 213: 5, 214: 60},
        reverb_room(0.9, 0.3, 0.45, 0.35, 0.8), {29: 0.75},
        hover(197, 1.2, 7),
+       style(13, 54, bass=1, articulation=170, accents=60),
        knobs(chord_alt=(119, 100), harp_alt=(218, 80), mod=(118, 100), mod_alt=(239, 80)),
        double_tap((39, 1)))
 
@@ -336,7 +358,8 @@ preset("Chamber Strings", 340,
         "modifier + mod knob": "ensemble width",
         "modifier + chord knob": "bowing: from a soft swell to a sharp attack",
         "modifier + harp knob": "harp reverb",
-        "double tap": "the harp bows too: the quartet, cello low to violin high"},
+        "double tap": "the harp bows too: the quartet, cello low to violin high",
+        "rhythm mode": "a waltz: the pizzicato bass on the one, the bowed upper voices on two and three"},
        chord_sample(4), {270: 3},                           # the bass plucked, the upper three bowed
        chord_env(90, 0, 900, 0.95, 900),                   # quick enough that the pluck speaks
        chord_filter(2200, 0.0, 0.7),
@@ -352,6 +375,7 @@ preset("Chamber Strings", 340,
        {36: 8, 252: 60},
        reverb_room(0.85, 0.3, 0.4, 0.35, 0.8), {29: 0.7},
        hover(159, 0.7, 8),
+       style(2, 132, follows=2, articulation=70),
        knobs(chord_alt=(137, 100), harp_alt=(85, 100), mod=(143, 80), mod_alt=(259, 100)),
        double_tap((264, 4)))
 
@@ -369,6 +393,7 @@ preset("Folk Guitar & Bass", 25,
         "modifier + chord knob": "bass tone",
         "modifier + harp knob": "guitar reverb",
         "double tap": "the looper: record, play, stop, then a new recording",
+        "rhythm mode": "boom-chick: the bass alternating root and fifth under your strumming",
         "palm": "lay four or more fingers across the plate to mute, like a guitarist's palm"},
        chord_osc(0.22, TRI, 1.0, 0.13, SINE, 1.0, 0.0, SINE, 0.5),
        {270: 3},                                            # the bass note: pizzicato
@@ -376,7 +401,7 @@ preset("Folk Guitar & Bass", 25,
        chord_env(1, 0, 1500, 1.0, 220),                     # the sample rings as it was plucked
        chord_filter(1200, 0.5, 0.8),
        chord_trem(), chord_vib(), chord_delay(),
-       chord_out(120, 0.9, 1.0, 1.0, 0.95),
+       chord_out(120, 0.9, 1.0, 1.0, 0.75),
        chord_fx(0.15),
        harp_synth(SINE, 0.15, model=100), harp_string(2.6, 50),
        harp_env(1, 0, 3500, 0.6, 700),
@@ -388,6 +413,7 @@ preset("Folk Guitar & Bass", 25,
        {99: 1, 252: 45, 263: 70, 213: 4, 214: 25},
        reverb_room(0.45, 0.4, 0.5, 0.45, 0.6), {29: 0.6},
        hover(0, 0),
+       style(3, 104, chords=2, follows=2, articulation=80),
        knobs(chord_alt=(143, 80), harp_alt=(85, 100), mod=(219, 100), mod_alt=(218, 80)),
        double_tap((256, 6)))
 
@@ -403,7 +429,8 @@ preset("Wah Clav & Bass", 300,
         "modifier + mod knob": "wah resonance",
         "modifier + chord knob": "clav decay",
         "modifier + harp knob": "bass filter",
-        "double tap": "the looper: record, play, stop, then a new recording"},
+        "double tap": "the looper: record, play, stop, then a new recording",
+        "rhythm mode": "its own funk pattern, sixteenths, starting the bar from the first chord"},
        chord_osc(0.12, BL_PULSE, 1.0, 0.06, BL_SAW, 2.0, 0.0, SINE, 0.5),
        chord_env(1, 10, 450, 0.25, 90),
        chord_filter(450, 0.4, 2.6, fa=1, fd=220, fs=0.15, fr=60, sens=1.8),
@@ -421,6 +448,7 @@ preset("Wah Clav & Bass", 300,
        {99: 0, 36: 13, 267: 7, 268: 5, 269: 3, 252: 60},
        reverb_room(0.35, 0.4, 0.5, 0.45, 0.5), {29: 0.65},
        hover(143, 2800, 8),
+       {274: 0, 277: 2},
        knobs(chord_alt=(139, 90), harp_alt=(49, 90), mod=(155, 100), mod_alt=(145, 70)),
        double_tap((256, 6)))
 
@@ -435,7 +463,8 @@ preset("Dub Melodica", 120,
         "modifier + mod knob": "the skank's echo feedback, for how long a throw repeats",
         "modifier + chord knob": "skank tone",
         "modifier + harp knob": "the melodica's echo time, for tape-style pitch bends",
-        "double tap": "the dub wash: a huge reverb on the chords"},
+        "double tap": "the dub wash: a huge reverb on the chords",
+        "rhythm mode": "reggae: the skank on every and"},
        chord_osc(0.12, BL_SQUARE, 1.0, 0.06, SINE, 2.0, 0.0, SINE, 0.5),
        chord_env(1, 0, 170, 0.0, 90),
        chord_filter(1400, 0.4, 1.3),
@@ -455,6 +484,7 @@ preset("Dub Melodica", 120,
        {36: 9, 252: 60, 253: 1},
        reverb_room(0.4, 0.45, 0.5, 0.5, 0.5), {29: 0.7},
        hover(183, 0.65, 8),
+       style(12, 150, bass=2, follows=2, articulation=40),
        knobs(chord_alt=(192, 70), harp_alt=(77, 50), mod=(84, 100), mod_alt=(179, 55)),
        double_tap((184, 0.9), (24, 1.0)))
 
@@ -470,7 +500,8 @@ preset("Ribbon Lead", 180,
         "modifier + mod knob": "ribbon snap: fretless to stepped",
         "modifier + chord knob": "pad brightness",
         "modifier + harp knob": "ribbon glide: quick to slurred",
-        "double tap": "back to a strummed harp, the same sound"},
+        "double tap": "back to a strummed harp, the same sound",
+        "rhythm mode": "ballad: the pad pulsing in eighths under the lead"},
        chord_osc(0.08, BL_SAW, 1.0, 0.06, BL_PULSE, 1.0, 0.04, TRI, 0.5),
        chord_env(500, 0, 1500, 0.8, 1800),
        chord_filter(600, 0.25, 1.2, fa=800, fd=1500, fs=0.4, fr=1500, sens=0.8),
@@ -489,6 +520,7 @@ preset("Ribbon Lead", 180,
        {245: 1, 246: 0, 247: 55, 248: 90, 36: 9, 252: 60, 253: 1},
        reverb_room(0.7, 0.3, 0.5, 0.4, 0.7), {29: 0.75},
        hover(0, 0),
+       style(11, 108, articulation=90, accents=70),
        knobs(chord_alt=(143, 80), harp_alt=(248, 100), mod=(64, 100), mod_alt=(247, 100)),
        double_tap((245, 0)))
 
@@ -510,7 +542,8 @@ preset("Pocket Orchestra", 90,
         "modifier + mod knob": "articulation: from marcato to a slow legato swell",
         "modifier + chord knob": "the hall: reverb",
         "modifier + harp knob": "how long the celesta rings",
-        "double tap": "the basses bow: arco in place of pizzicato"},
+        "double tap": "the basses bow: arco in place of pizzicato",
+        "rhythm mode": "habanera, the pizzicato basses on its dotted rhythm"},
        chord_osc(0.14, SINE, 1.0, 0.03, TRI, 2.0, 0.0, SINE, 0.5, noise=0.025),   # the flute, for the top line
        chord_sample(4),
        {270: 3, 271: 5, 272: 5, 273: 4},
@@ -530,6 +563,7 @@ preset("Pocket Orchestra", 90,
        {36: 8, 99: 3, 252: 50},
        reverb_room(0.85, 0.3, 0.45, 0.35, 0.8), {29: 0.75},
        hover(143, 5000, 8),
+       style(14, 72, follows=2, articulation=85),
        knobs(chord_alt=(184, 100), harp_alt=(45, 90), mod=(273, 100), mod_alt=(137, 100)),
        double_tap((270, 5)))
 
@@ -554,13 +588,13 @@ preset("Midnight Raga", 240,
         "modifier + chord knob": "how much the drone's overtones swirl",
         "modifier + harp knob": "ribbon snap: free meend to stepped notes",
         "double tap": "ribbon off: koto-style plucked strings on the same scale",
-        "rhythm mode": "the tanpura's cycle, Pa Sa' Sa' Sa, plucked"},
+        "rhythm mode": "the tanpura's plucked cycle, Pa Sa' Sa' Sa"},
        chord_osc(0.12, BL_SAW, 1.0, 0.05, BL_PULSE, 2.0, 0.05, SINE, 0.5, noise=0.008),
        {131: 0.5, 132: 0.0, 133: 0.45, 134: 0.4, 120: 0, 198: 2, 111: 0},
        chord_env(200, 0, 3000, 0.8, 3500),
        chord_filter(1100, 0.6, 2.4, fa=1, fd=2500, fs=0.5, fr=3000, sens=0.9, lfo=(SINE, 0.13, 0.6)),
        chord_trem(), chord_vib(), chord_delay(),
-       chord_out(200, 0.9, 1.0, 1.0, 1.6),
+       chord_out(200, 0.9, 1.0, 1.0, 2.0),
        chord_fx(0.5, ensemble=45),
        {118: 40, 119: 30, 239: 55, 240: 70},
        rhythm([4, 0, 8, 0, 8, 0, 1, 0, 0, 0], bpm=70, length=10, note_ms=1000),
@@ -570,11 +604,12 @@ preset("Midnight Raga", 240,
        harp_filter(1200, 1.2, 0.9),
        harp_trem(), harp_vib(), harp_delay(),
        harp_transient(0.12, SINE, 1, 2, 10, 0),
-       harp_out(500, 0.7, 1.0, 1.0, 0.95),
+       harp_out(500, 0.7, 1.0, 1.0, 1.2),
        harp_fx(0.3, spread=40, pattern=0),
        {36: 13, 267: 18, 268: 5, 269: 4, 252: 50, 245: 1, 246: 0, 247: 35, 248: 70},
        reverb_room(0.7, 0.3, 0.5, 0.4, 0.75), {29: 0.7},
        hover(143, 2600, 8),
+       {274: 0, 277: 0},
        knobs(chord_alt=(154, 100), harp_alt=(247, 100), mod=(145, 100), mod_alt=(218, 80)),
        double_tap((245, 0)))
 
@@ -591,7 +626,8 @@ preset("Talking Strings", 150,
         "modifier + mod knob": "vocoder consonants: how much of the voice's hiss comes through",
         "modifier + chord knob": "string brightness",
         "modifier + harp knob": "harp echo",
-        "double tap": "the vocoder: the chords take the shape of the sound coming in over USB"},
+        "double tap": "the vocoder: the chords take the shape of the sound coming in over USB",
+        "rhythm mode": "arpeggio up, the strings talking in sixteenths over a held bass"},
        chord_osc(0.13, BL_SAW, 1.0, 0.08, BL_SAW, 2.0, 0.0, SINE, 0.5),
        chord_env(140, 0, 600, 1.0, 900),
        chord_filter(3200, 0.3, 0.8), chord_trem(), chord_vib(), chord_delay(),
@@ -609,5 +645,12 @@ preset("Talking Strings", 150,
        {36: 9},
        reverb_room(0.6, 0.3, 0.5, 0.4, 0.7), {29: 0.75},
        hover(118, 100, 8),
+       style(9, 116, bass=1, articulation=70, accents=60),
        knobs(chord_alt=(143, 70), harp_alt=(84, 100), mod=(119, 100), mod_alt=(262, 100)),
        double_tap((260, 100), (121, 0.6)))
+
+
+# what rhythm mode plays, in each preset's list of what it shows
+for _p in PRESETS:
+    _n = _p["settings"].get(274, 0)
+    _p["shows"].append(f"rhythm style: {STYLES[_n]}" if _n else "rhythm mode: its own written pattern")
