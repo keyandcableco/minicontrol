@@ -5960,6 +5960,76 @@
       "curve": "linear",
       "introduction_version": 0.38,
       "step": 1
+    },
+    {
+      "sysex_adress": 289,
+      "group": "Pluck",
+      "ui_type": "select",
+      "name": "koto press",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 12,
+      "default_value": 0,
+      "tooltip": "with pluck on lift, a finger on a ringing string presses it instead of stopping it, the way a koto player presses a string beside the bridge, and the string bends up as far as it is pressed: this many semitones at a full press, 2 for a whole tone. Rest lightly, then press: easing off lets the pitch back down. Lifting a finger that pressed lets the string ring on at its own pitch; one that only rested on it plucks it again. Pluck with one hand and press with the other, or pluck a chord and bend one note of it. A ringing string is then stopped by a palm mute rather than a finger. On the stock strip and plates of twelve zones, not the ribbon or zipper 24. In MPE the bend goes out as the string's pitch bend. 0 is off: a finger stops a ringing string, as before",
+      "method": "koto_press=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.49,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off: a finger stops a ringing string"
+        },
+        {
+          "value": 1,
+          "label": "1 semitone"
+        },
+        {
+          "value": 2,
+          "label": "2 semitones, a whole tone"
+        },
+        {
+          "value": 3,
+          "label": "3 semitones"
+        },
+        {
+          "value": 4,
+          "label": "4 semitones"
+        },
+        {
+          "value": 5,
+          "label": "5 semitones"
+        },
+        {
+          "value": 6,
+          "label": "6 semitones"
+        },
+        {
+          "value": 7,
+          "label": "7 semitones"
+        },
+        {
+          "value": 8,
+          "label": "8 semitones"
+        },
+        {
+          "value": 9,
+          "label": "9 semitones"
+        },
+        {
+          "value": 10,
+          "label": "10 semitones"
+        },
+        {
+          "value": 11,
+          "label": "11 semitones"
+        },
+        {
+          "value": 12,
+          "label": "12 semitones, an octave"
+        }
+      ],
+      "step": 1
     }
   ],
   "chord_potentiometer": [

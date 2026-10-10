@@ -169,6 +169,10 @@ UI_OVERRIDES = {
     242: control('harp_parameter', 'Plate', 'slider'),
     # when a string sounds and how firmly it's touched, and how it stops
     216: control('harp_parameter', 'Pluck', 'switch'),
+    # a finger on a ringing string bends it as far as it is pressed (firmware 49)
+    289: select('harp_parameter', 'Pluck', ["Off: a finger stops a ringing string", "1 semitone",
+                                            "2 semitones, a whole tone"]
+                + [f"{n} semitones" for n in range(3, 12)] + ["12 semitones, an octave"]),
     252: control('harp_parameter', 'Pluck', 'slider'),
     253: select('harp_parameter', 'Pluck', ["Off", "Follow: swells and eases off", "Swell only: keeps the firmest"]),
     213: control('harp_parameter', 'Pluck', 'discrete_slider'),

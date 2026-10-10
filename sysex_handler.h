@@ -923,6 +923,9 @@ void apply_audio_parameter(int adress, int value) {
         case 288:
             looper_length=value;
             break;
+        case 289:
+            koto_press=value;
+            break;
         default:
             break;
     }
