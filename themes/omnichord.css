@@ -91,4 +91,4 @@
   font-weight: 700;
 }
 [data-theme="omnichord"] button:active { transform: translateY(2px); box-shadow: 0 1px 0 #2A1A0F; }
-[data-theme="omnichord"] .section h5 { text-transform: uppercase; letter-spacing: .1em; color: #C4501E; }
+[data-theme="omnichord"] .tool-label { text-transform: uppercase; letter-spacing: .1em; color: #C4501E; }

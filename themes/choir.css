@@ -41,7 +41,7 @@
 [data-theme="choir"] h1 { font-weight: 400; font-size: 3em; }
 [data-theme="choir"] h1::first-letter { color: #8E1B10; }
 [data-theme="choir"] .theme-tagline[data-for="choir"] { display: block; font-style: italic; font-size: 1.1em; }
-[data-theme="choir"] .section h5 { font-weight: 400; font-size: 1.3em !important; color: #8E1B10; }
+[data-theme="choir"] .tool-label { font-weight: 400; font-size: 1.3em !important; color: #8E1B10; text-transform: none; letter-spacing: normal; opacity: 1; }
 /* section names in red, with a gilded initial */
 [data-theme="choir"] details summary { font-weight: 400 !important; font-size: 1.9em !important; }
 [data-theme="choir"] #parameters details summary::first-letter {

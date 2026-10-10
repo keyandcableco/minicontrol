@@ -43,6 +43,7 @@
 /* title and the panels */
 [data-themed] .status-header,
 [data-themed] #header,
+[data-themed] .settings-panel,
 [data-themed] #parameters details {
   background: var(--t-panel);
   border: var(--t-panel-border);
@@ -51,6 +52,9 @@
   color: var(--t-ink);
 }
 [data-themed] .status-header { margin-bottom: 10px; }
+/* the drawer is the page under its panel, which fills it */
+[data-themed] .settings-drawer { background: var(--t-page); }
+[data-themed] .settings-panel { border-radius: 0 !important; border-width: 0 0 0 1px; }
 [data-themed] h1 {
   font-family: var(--t-display-font);
   color: var(--t-title);
@@ -59,7 +63,7 @@
   margin-top: 6px;
   color: var(--t-dim);
 }
-[data-themed] .section h5,
+[data-themed] .tool-label,
 [data-themed] details summary {
   font-family: var(--t-display-font);
   color: var(--t-heading);
@@ -149,11 +153,8 @@
 }
 
 /* text sitting straight on the page, outside the panels, which on some themes is dark */
-[data-themed] #container > details,
-[data-themed] #container > details summary,
 [data-themed] #instruction_zone { color: var(--t-page-ink, var(--t-dim)); }
-[data-themed] #instruction_zone a,
-[data-themed] #container > details summary:hover { color: var(--t-page-link, var(--t-link)); }
+[data-themed] #instruction_zone a { color: var(--t-page-link, var(--t-link)); }
 
 /* The open list of a dropdown. A theme whose buttons are see-through (chiptune, notebook) left the
    browser to draw the list on its default white, with the theme's ink still on the options: light

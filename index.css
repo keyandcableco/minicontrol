@@ -127,16 +127,163 @@
       object-fit: contain;
       filter: var(--svg-filter);
     }
-    .section {
-      margin-bottom: 2px;
-    }
-    .controls {
+    /* the toolbar: a few small labelled groups, wrapping as the window narrows */
+    .toolbar {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      align-items: flex-end;
+      gap: 14px 28px;
     }
-    .button_div {
-      margin-right: 10px;
+    .tool-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .tool-label {
+      margin: 0;
+      font-size: 0.75em;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+    .tool-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .looper-buttons button {
+      min-width: 2.4em;
+    }
+    /* symbols drawn from a system font, which every theme's own font may not have */
+    .glyph {
+      font-family: system-ui, "Segoe UI Symbol", "Noto Sans Symbols 2", sans-serif;
+      font-size: max(1.15em, 13px);
+      line-height: 1;
+    }
+    .describe-group {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--track-color);
+    }
+
+    /* the settings button, at the right of the title */
+    .status-header .settings-toggle {
+      margin-left: auto;
+      align-self: flex-start;
+      padding: 8px 14px;
+      font-size: 1em;
+      white-space: nowrap;
+    }
+
+    /* the settings drawer: a panel down the right, over a dimmed page */
+    .settings-drawer {
+      position: fixed;
+      inset: 0 0 0 auto;
+      width: min(400px, 100vw);
+      height: 100dvh;
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      box-shadow: -8px 0 30px rgba(0, 0, 0, 0.3);
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+    .settings-drawer::backdrop {
+      background-color: rgba(0, 0, 0, 0.45);
+    }
+    .settings-panel {
+      min-height: 100%;
+      padding: 18px 22px 28px;
+      box-sizing: border-box;
+    }
+    .settings-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .settings-head h2 {
+      margin: 0;
+      font-size: 1.3em;
+    }
+    .settings-close {
+      padding: 6px 10px;
+    }
+    .settings-section {
+      padding: 16px 0;
+      border-top: 1px solid var(--track-color);
+    }
+    .settings-head + .settings-section {
+      border-top: none;
+    }
+    .settings-section > .tool-label {
+      margin-bottom: 10px;
+    }
+    .settings-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .settings-buttons button {
+      width: 100%;
+      text-align: left;
+    }
+    .settings-hint {
+      margin: 0 0 10px;
+      font-size: 0.85em;
+      line-height: 1.4;
+      opacity: 0.7;
+    }
+    /* the reset buttons erase banks, so on light and dark they are outlined in red, never the bank
+       colour (index.js paints active buttons inline, hence !important); themes keep their own */
+    html:not([data-themed]):not([data-theme="arcade"]) .settings-danger button.active {
+      background-color: transparent !important;
+      color: #c62828 !important;
+      box-shadow: inset 0 0 0 1.5px #c62828;
+    }
+    html:not([data-themed]):not([data-theme="arcade"]) .settings-danger button.active:hover {
+      background-color: rgba(198, 40, 40, 0.08) !important;
+    }
+    [data-theme="dark"] .settings-danger button.active {
+      color: #ff7070 !important;
+      box-shadow: inset 0 0 0 1.5px #ff7070 !important;
+    }
+    /* how to connect, a section that opens on its own while no minichord is connected */
+    #connection-help summary {
+      cursor: pointer;
+      width: fit-content;
+    }
+    #connection-help ul {
+      margin: 10px 0 0;
+      padding-left: 20px;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+    /* the disconnected bubble opens the drawer at the connection help */
+    #notification-bubble.disconnected {
+      cursor: pointer;
+    }
+    /* a link beside a group's label, in the label's size but not its capitals */
+    .tool-link {
+      margin-left: 6px;
+      font-weight: 400;
+      letter-spacing: normal;
+      text-transform: none;
+      color: inherit;
+      white-space: nowrap;
+    }
+    .settings-drawer .talk-slot .describe-line {
+      margin-top: 0;
+    }
+    .settings-drawer .talk-row {
+      margin-top: 0;
     }
     button {
       padding: 8px;

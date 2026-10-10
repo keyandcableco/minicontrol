@@ -63,18 +63,18 @@
           <span id="connection-text"></span>
         </span>
       </div>
+      <button type="button" class="settings-toggle always-on" popovertarget="settings-drawer" title="how to connect, manage all banks, back up and restore, the vocoder voice, the theme, and reset"><span class="glyph">⚙</span> settings</button>
     </div>
     <div id="firmware-note" role="status" hidden></div>
     <div id="header">
       <div class="controls-container">
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">saving:</h5>
-        </div>
-        <div class="controls">
-          <div class="button_div">
-            <div class="select_container">
-              <span style="margin-right: 5px;">target bank:</span>
-              <select id="bank_number_selection" class="inactive" version="0.01">
+        <!-- what a session at the minichord reaches for; the rest is in the settings drawer below -->
+        <div class="toolbar">
+          <div class="tool-group" role="group" aria-labelledby="tool-bank">
+            <span class="tool-label" id="tool-bank">bank</span>
+            <div class="tool-buttons">
+              <div class="button_div">
+                <select id="bank_number_selection" class="inactive" version="0.01" aria-label="target bank" title="the target bank: the one load, save and reset act on">
                 <option value="0">1</option>
                 <option value="1">2</option>
                 <option value="2">3</option>
@@ -87,111 +87,115 @@
                 <option value="9">10</option>
                 <option value="10">11</option>
                 <option value="11">12</option>
-              </select>
+                </select>
+              </div>
+              <div class="button_div">
+                <button id="load-bank-btn" class="inactive" version="0.21" title="switch the minichord to the target bank">load</button>
+              </div>
+              <div class="button_div">
+                <button id="save-to-bank-btn" class="inactive" version="0.01" title="save the live settings into the target bank">save</button>
+              </div>
             </div>
           </div>
-          <div class="button_div">
-            <button id="save-to-bank-btn" class="inactive" version="0.01" title="save the live settings into the target bank">save to bank</button>
+          <div class="tool-group" role="group" aria-labelledby="tool-sound">
+            <span class="tool-label" id="tool-sound">sound</span>
+            <div class="tool-buttons">
+              <div class="button_div">
+                <button id="snapshot-btn" class="inactive" version="0.21" title="remember the live settings, so every change after this can be undone">snapshot</button>
+              </div>
+              <div class="button_div">
+                <button id="revert-btn" class="inactive" version="0.21" title="put back the settings as they were at the snapshot">revert</button>
+              </div>
+              <div class="button_div">
+                <button id="randomise_btn" class="inactive" version="0.01" title="replace the live sound with a random one near a shared preset; save to a bank to keep it">randomise</button>
+              </div>
+            </div>
           </div>
-          <div class="button_div">
-            <button id="load-bank-btn" class="inactive" version="0.21" title="switch the minichord to the target bank">load bank</button>
+          <div class="tool-group" role="group" aria-labelledby="tool-share">
+            <span class="tool-label" id="tool-share">preset code</span>
+            <div class="tool-buttons">
+              <div class="button_div">
+                <button id="export-settings-btn" class="inactive" version="0.01" title="copy the live settings to the clipboard as a preset code">copy</button>
+              </div>
+              <div class="button_div">
+                <button id="load-settings-btn" class="inactive" version="0.01" title="paste a preset code over the live settings; save to a bank to keep it">paste</button>
+              </div>
+            </div>
+          </div>
+          <div class="tool-group" role="group" aria-labelledby="tool-looper">
+            <span class="tool-label" id="tool-looper">looper <a class="tool-link" href="https://chordlab.keyandcable.com/looper/" target="_blank" rel="noopener" title="the Minichord Lab's looper: layers, a click, and the minichord's sound and MIDI together">full looper ↗</a></span>
+            <div class="tool-buttons looper-buttons">
+            <div class="button_div">
+              <button class="looper-btn inactive" data-looper-action="1" version="0.32" aria-label="record" title="record: record a new loop of what you play, in place of the last; press again to close it and play it"><span class="glyph">●</span></button>
+            </div>
+            <div class="button_div">
+              <button class="looper-btn inactive" data-looper-action="2" version="0.32" aria-label="play" title="play: play the loop from the top, or close one being recorded and play it"><span class="glyph">▶</span></button>
+            </div>
+            <div class="button_div">
+              <button class="looper-btn inactive" data-looper-action="3" version="0.32" aria-label="stop" title="stop: stop the loop, or close one being recorded and stop"><span class="glyph">■</span></button>
+            </div>
+            <div class="button_div">
+              <button class="looper-btn inactive" data-looper-action="5" version="0.32" aria-label="overdub" title="overdub: while the loop plays, add to it what you play; press again to stop adding">overdub</button>
+            </div>
+            <div class="button_div">
+              <button class="looper-btn inactive" data-looper-action="4" version="0.32" aria-label="clear" title="clear: forget the loop">clear</button>
+            </div>
+            </div>
           </div>
         </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">sharing:</h5>
-        </div>
-        <div class="controls">
-          <div class="button_div">
-            <button id="export-settings-btn" class="inactive" version="0.01" title="copy the live settings to the clipboard as a preset code">copy preset code</button>
-          </div>
-          <div class="button_div">
-            <button id="load-settings-btn" class="inactive" version="0.01" title="paste a preset code over the live settings; save to a bank to keep it">paste preset code</button>
-          </div>
-        </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">describing:</h5>
-        </div>
-        <div class="controls">
+        <div class="tool-group describe-group" role="group" aria-labelledby="tool-describe">
+          <span class="tool-label" id="tool-describe">describe</span>
           <!-- a description or an instruction in words, staged before it changes the live sound or any bank; filled by describe.js and commands.js -->
           <div id="describe-preset" class="describe-box"></div>
         </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">resetting:</h5>
+      </div>
+      <div class="svg-container">
+        <img src="minichord_layout_web.svg" alt="Minichord Logo" class="default-only">
+        <img src="themes/arcade-minichord-wide.svg" alt="Minichord, in pixels" class="arcade-only">
+      </div>
+    </div>
+    <!-- what is reached for now and then, out of the way until the settings button opens it -->
+    <div id="settings-drawer" class="settings-drawer" popover aria-labelledby="settings-title">
+      <div class="settings-panel">
+        <div class="settings-head">
+          <h2 id="settings-title">settings</h2>
+          <button type="button" class="settings-close always-on" popovertarget="settings-drawer" popovertargetaction="hide" aria-label="close settings"><span class="glyph">✕</span></button>
         </div>
-        <div class="controls">
-          <div class="button_div">
-            <button id="reset-bank-btn" class="inactive" version="0.01" title="erase the target bank, back to its factory settings">reset bank</button>
+        <section class="settings-section">
+          <details id="connection-help">
+            <summary class="tool-label">connecting</summary>
+            <ul>
+              <li>provide the system authorization for MIDI control</li>
+              <li>use a recent version of Chrome</li>
+              <li>connect the minichord with a USB cable and make sure it is on.</li>
+            </ul>
+            <div tabindex="1" id="information_zone">
+              <strong id="information_text"></strong>
+            </div>
+          </details>
+        </section>
+        <section class="settings-section">
+          <h5 class="tool-label">all banks</h5>
+          <div class="settings-buttons">
+            <div class="button_div">
+              <button id="bulk-edit-btn" class="inactive" version="0.21" onclick="open_bank_sheet()" data-close-settings title="read all twelve banks, then move them, set a setting in every one, or apply a profile">reorder and bulk edit</button>
+            </div>
+            <div class="button_div">
+              <button id="backup-btn" class="inactive" version="0.21" onclick="backup_all_banks()" data-close-settings title="read all twelve banks into one file">back up all banks</button>
+            </div>
+            <div class="button_div">
+              <button id="restore-btn" class="inactive" version="0.21" onclick="restore_all_banks()" data-close-settings title="write a backup file back to the banks, replacing what is there">restore from backup</button>
+            </div>
           </div>
-          <div class="button_div">
-            <button id="reset-all-banks-btn" class="inactive" version="0.01" title="erase all twelve banks, back to their factory settings">reset all banks</button>
-          </div>
-        </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">all banks:</h5>
-        </div>
-        <div class="controls">
-          <div class="button_div">
-            <button id="bulk-edit-btn" class="inactive" version="0.21" onclick="open_bank_sheet()" title="read all twelve banks, then move them, set a setting in every one, or apply a profile">reorder and bulk edit</button>
-          </div>
-          <div class="button_div">
-            <button id="backup-btn" class="inactive" version="0.21" onclick="backup_all_banks()" title="read all twelve banks into one file">back up all banks</button>
-          </div>
-          <div class="button_div">
-            <button id="restore-btn" class="inactive" version="0.21" onclick="restore_all_banks()" title="write a backup file back to the banks, replacing what is there">restore from backup</button>
-          </div>
-        </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">snapshot:</h5>
-        </div>
-        <div class="controls">
-          <div class="button_div">
-            <button id="snapshot-btn" class="inactive" version="0.21" title="remember the live settings, so every change after this can be undone">take snapshot</button>
-          </div>
-          <div class="button_div">
-            <button id="revert-btn" class="inactive" version="0.21" title="put back the settings as they were at the snapshot">revert to snapshot</button>
-          </div>
-        </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">looper:</h5>
-        </div>
-        <div class="controls">
-          <div class="button_div">
-            <button class="looper-btn inactive" data-looper-action="1" version="0.32" title="record a new loop of what you play, in place of the last; press again to close it and play it">record</button>
-          </div>
-          <div class="button_div">
-            <button class="looper-btn inactive" data-looper-action="2" version="0.32" title="play the loop from the top, or close one being recorded and play it">play</button>
-          </div>
-          <div class="button_div">
-            <button class="looper-btn inactive" data-looper-action="3" version="0.32" title="stop the loop, or close one being recorded and stop">stop</button>
-          </div>
-          <div class="button_div">
-            <button class="looper-btn inactive" data-looper-action="5" version="0.32" title="while the loop plays, add to it what you play; press again to stop adding">overdub</button>
-          </div>
-          <div class="button_div">
-            <button class="looper-btn inactive" data-looper-action="4" version="0.32" title="forget the loop">clear</button>
-          </div>
-        </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">vocoder voice:</h5>
-        </div>
-        <div class="controls">
+        </section>
+        <section class="settings-section">
+          <h5 class="tool-label">vocoder voice</h5>
           <!-- a voice looped into the minichord's USB speaker for the vocoder to shape; filled by talk.js -->
           <div id="talk-main" class="talk-slot"></div>
-        </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">randomising:</h5>
-        </div>
-        <div class="controls">
-          <div class="button_div">
-            <button id="randomise_btn" class="inactive" version="0.01" title="replace the live sound with a random one near a shared preset; save to a bank to keep it">randomise</button>
-          </div>
-        </div>
-        <div class="section">
-          <h5 style="margin: 0; font-size: 1.1em;">theme:</h5>
-        </div>
-        <div class="controls">
-          <div class="button_div">
-            <select id="theme-select" class="always-on" aria-label="theme" data-token-themes='["omnichord", "notebook", "choir", "chiptune", "contrast", "stage"]'>
+        </section>
+        <section class="settings-section">
+          <h5 class="tool-label"><label for="theme-select">theme</label></h5>
+          <select id="theme-select" class="always-on" data-token-themes='["omnichord", "notebook", "choir", "chiptune", "contrast", "stage"]'>
               <option value="light">light</option>
               <option value="dark">dark</option>
               <option value="arcade">arcade</option>
@@ -201,26 +205,22 @@
               <option value="chiptune">chiptune</option>
               <option value="contrast">high contrast</option>
               <option value="stage">stage</option>
-            </select>
+          </select>
+        </section>
+        <section class="settings-section settings-danger">
+          <h5 class="tool-label">reset</h5>
+          <p class="settings-hint">Back to factory settings. This erases what the bank holds and can't be undone.</p>
+          <div class="settings-buttons">
+            <div class="button_div">
+              <button id="reset-bank-btn" class="inactive" version="0.01" title="erase the target bank, back to its factory settings">reset bank</button>
+            </div>
+            <div class="button_div">
+              <button id="reset-all-banks-btn" class="inactive" version="0.01" title="erase all twelve banks, back to their factory settings">reset all banks</button>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="svg-container">
-        <img src="minichord_layout_web.svg" alt="Minichord Logo" class="default-only">
-        <img src="themes/arcade-minichord-wide.svg" alt="Minichord, in pixels" class="arcade-only">
+        </section>
       </div>
     </div>
-    <details id="connection-help">
-      <summary style="width: fit-content; font-size: 1.1em; font-weight: bold; cursor: pointer;">Connection instruction</summary>
-      <ul style="padding-left: 20px;">
-        <li>provide the system authorization for MIDI control</li>
-        <li>use a recent version of Chrome</li>
-        <li>connect the minichord with a USB cable and make sure it is on.</li>
-      </ul>
-      <div tabindex="1" id="information_zone">
-        <strong id="information_text"></strong>
-      </div>
-    </details>
     <div id="instruction_zone" style="margin: 2px 0;">
       A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>, with themes by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>.<br>
       Its newer tools need the <a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a>, which is experimental and unofficial: it isn't made or endorsed by Ben Poilve.<br>

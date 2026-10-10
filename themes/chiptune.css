@@ -49,8 +49,8 @@
 [data-theme="chiptune"] h1::before { content: "C:\\> "; color: var(--t-dim); }
 [data-theme="chiptune"] .theme-tagline[data-for="chiptune"] { display: block; color: #8CFF8C; }
 [data-theme="chiptune"] .theme-tagline::after { content: "█"; margin-left: 4px; animation: chip-blink 1s steps(2) infinite; }
-[data-theme="chiptune"] .section h5 { text-transform: uppercase; }
-[data-theme="chiptune"] .section h5::before { content: "## "; color: var(--t-dim); }
+[data-theme="chiptune"] .tool-label { text-transform: uppercase; }
+[data-theme="chiptune"] .tool-label::before { content: "## "; color: var(--t-dim); }
 [data-theme="chiptune"] details summary { text-transform: uppercase; font-weight: 700 !important; font-size: 1.15em !important; }
 [data-theme="chiptune"] #parameters h3 { text-transform: uppercase; font-size: 1em !important; font-weight: 700; }
 [data-theme="chiptune"] #parameters h3::before { content: "== "; color: var(--t-dim); }

@@ -955,6 +955,28 @@ document.getElementById("revert-btn")?.addEventListener("click", () => {
   showNotification("Reverted to snapshot", "success");
 });
 
+// The settings drawer: its reset button names the target bank it would erase, and a button that
+// opens something of its own (the bank sheet, a file) closes the drawer, which would sit over it
+function labelResetBank() {
+  const button = document.getElementById("reset-bank-btn");
+  const select = document.getElementById("bank_number_selection");
+  if (button && select) button.textContent = `reset bank ${parseInt(select.value) + 1}`;
+}
+document.getElementById("bank_number_selection")?.addEventListener("change", labelResetBank);
+document.getElementById("settings-drawer")?.addEventListener("toggle", e => {
+  if (e.newState === "open") labelResetBank();
+});
+document.getElementById("settings-drawer")?.addEventListener("click", e => {
+  if (e.target.closest("[data-close-settings]")) e.currentTarget.hidePopover();
+});
+// with no minichord, the bubble saying so opens the drawer at how to connect one
+document.getElementById("notification-bubble")?.addEventListener("click", () => {
+  if (minichord_device) return;
+  const help = document.getElementById("connection-help");
+  if (help) help.open = true;
+  document.getElementById("settings-drawer")?.showPopover();
+});
+
 document.getElementById("reset-bank-btn")?.addEventListener("click", () => {
   if (!deviceReady()) return;
   const bank = parseInt(document.getElementById("bank_number_selection").value);
