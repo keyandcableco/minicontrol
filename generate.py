@@ -46,17 +46,17 @@ group_order = [
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Effects', 'Vocoder', 'MIDI', 'Looper', 'Knobs', 'Hover', 'Double tap'],
+    'global_parameter': ['General', 'Key and tuning', 'Effects', 'Vocoder', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
-    'harp_parameter': ['Notes', 'Plate', 'Pluck', 'String model', 'Ribbon', 'Oscillator', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
+    'harp_parameter': ['Notes', 'Plate', 'Pluck', 'Ribbon', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
                        'Reverb', 'Crunch', 'Output filter', 'Spread'],
     'chord_potentiometer': ['Potentiometer'],
     'harp_potentiometer': ['Potentiometer'],
     'modulation_potentiometer': ['Potentiometer'],
     'sharp_button_parameter': ['General'],
-    'rhythm_parameter': ['Rhythm']
+    'rhythm_parameter': ['Style', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
 }
 
 DELAY = ['delay length', 'delay filter frequency', 'delay filter resonance', 'delay lowpass', 'delay bandpass',
@@ -65,14 +65,11 @@ DELAY = ['delay length', 'delay filter frequency', 'delay filter resonance', 'de
 # Define parameter order by name within each subgroup
 parameter_name_order = {
     'rhythm_parameter': {
-        'Rhythm': [
-            'default bpm',
-            'cycle length',
-            'measure update',
-            'shuffle value',
-            'note pushed duration',
-            'rythm pattern'  # Covers SysEx 220–235 (grid)
-        ]
+        'Style': ['rhythm style', 'rhythm bass', 'rhythm chords', 'rhythm articulation', 'rhythm accents'],
+        'Tempo': ['default bpm', 'tap tempo counts', 'shuffle value', 'MIDI clock out'],
+        'Chord changes': ['rhythm follows hands', 'rhythm chord change', 'measure update', 'MIDI chords'],
+        'Pattern': ['cycle length', 'note pushed duration'],  # then the grid of steps (SysEx 220–235)
+        'Looper': ['looper length', 'looper count-in', 'looper click', 'looper click level', 'looper quantize']
     },
     'global_parameter': {
         'General': ['bank color', 'led attenuation', 'usb audio'],
@@ -375,7 +372,6 @@ submenus = {
         ('Key and tuning', ['Key and tuning']),
         ('Effects', ['Effects', 'Vocoder']),
         ('Knobs, hover and double tap', ['Knobs', 'Hover', 'Double tap']),
-        ('Looper', ['Looper']),
     ],
     'chord_parameter': [
         ('Playing', ['General', 'Buttons']),
@@ -385,9 +381,17 @@ submenus = {
     ],
     'harp_parameter': [
         ('Notes', ['Notes']),
-        ('Playing', ['Plate', 'Pluck', 'String model', 'Ribbon']),
-        ('Sound', ['Oscillator', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
+        ('Playing', ['Plate', 'Pluck', 'Ribbon']),
+        ('Sound', ['Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
         ('Effects', ['Delay', 'Reverb', 'Crunch', 'Output filter', 'Spread']),
+    ],
+    # the looper sits with rhythm mode, whose beat and bars it keeps
+    'rhythm_parameter': [
+        ('Style', ['Style']),
+        ('Tempo', ['Tempo']),
+        ('Chord changes', ['Chord changes']),
+        ('Pattern', ['Pattern']),
+        ('Looper', ['Looper']),
     ],
 }
 
@@ -405,7 +409,7 @@ def generate_details_html(group_name, params):
     grouped_params = {}
     for param in params:
         param_group = param['group']
-        if param_group == 'hidden':
+        if param_group == 'hidden' or 220 <= param['sysex_adress'] <= 235:  # the rhythm grid's steps
             continue
         if param_group not in grouped_params:
             grouped_params[param_group] = []
@@ -424,10 +428,6 @@ def generate_details_html(group_name, params):
             for name in name_order
             if name in name_to_sysex[group_name].get(param_group, {})
         ]
-        # Special handling for rhythm pattern (SysEx 220–235)
-        if group_name == 'rhythm_parameter' and param_group == 'Rhythm':
-            rhythm_pattern_sysex = [p['sysex_adress'] for p in params if p['name'] == 'rythm pattern']
-            param_order.extend(rhythm_pattern_sysex)
         # Sort parameters by defined order or fallback to sysex_adress
         sorted_params = sorted(
             grouped_params[param_group],
@@ -435,6 +435,8 @@ def generate_details_html(group_name, params):
         )
         subgroup_html[param_group] = (f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{param_group}</h3>'
                                       + ''.join(generate_param_html(param) for param in sorted_params))
+        if group_name == 'rhythm_parameter' and param_group == 'Pattern':
+            subgroup_html[param_group] += generate_rhythm_grid_html()
 
     param_html = []
     placed = set()
@@ -744,50 +746,7 @@ parameter_sections = []
 for group_name in group_order:
     if group_name not in parameters or group_name == 'sysex_name_map' or group_name == 'hidden':
         continue
-    params = parameters[group_name]
-    if group_name == 'rhythm_parameter':
-        rhythm_params = [p for p in params if 220 <= p['sysex_adress'] <= 235]
-        other_rhythm_params = [p for p in params if p['sysex_adress'] < 220 or p['sysex_adress'] > 235]
-        if rhythm_params or other_rhythm_params:
-            param_html = []
-            if other_rhythm_params:
-                grouped_rhythm_params = {}
-                for param in other_rhythm_params:
-                    param_group = param['group']
-                    if param_group not in grouped_rhythm_params:
-                        grouped_rhythm_params[param_group] = []
-                    grouped_rhythm_params[param_group].append(param)
-                # Use defined subgroup order for rhythm_parameter
-                ordered_subgroups = subgroup_order.get(group_name, sorted(grouped_rhythm_params.keys()))
-                for param_group in ordered_subgroups:
-                    if param_group not in grouped_rhythm_params:
-                        continue
-                    # Convert name-based order to sysex_adress order
-                    name_order = parameter_name_order.get(group_name, {}).get(param_group, [])
-                    param_order = [
-                        name_to_sysex[group_name][param_group][name]
-                        for name in name_order
-                        if name in name_to_sysex[group_name].get(param_group, {})
-                    ]
-                    sorted_params = sorted(
-                        grouped_rhythm_params[param_group],
-                        key=lambda p: param_order.index(p['sysex_adress']) if p['sysex_adress'] in param_order else len(param_order) + p['sysex_adress']
-                    )
-                    param_html.append(f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{param_group}</h3>')
-                    param_html.extend([generate_param_html(param) for param in sorted_params])
-            if rhythm_params:
-                param_html.append('<h3 style="margin: 30px 0 10px; font-size: 1.5em;">Rhythm Pattern</h3>')
-                param_html.append(generate_rhythm_grid_html())
-            parameter_sections.append(f'''
-                <details style="width: fit-content; margin: 20px 0; padding: 8px; border: none; border-radius: 5px;">
-                    <summary style="width: fit-content; font-size: 1.6em; font-weight: bold; cursor: pointer;">Rhythm Parameters</summary>
-                    <div style="padding: 10px;">
-                        {''.join(param_html)}
-                    </div>
-                </details>
-            ''')
-    else:
-        parameter_sections.append(generate_details_html(group_name, params))
+    parameter_sections.append(generate_details_html(group_name, parameters[group_name]))
 
 # Insert into HTML
 html_content = html_template.format(

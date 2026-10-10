@@ -890,244 +890,6 @@
       "curve": "linear",
       "introduction_version": 0.34,
       "step": 1
-    },
-    {
-      "sysex_adress": 266,
-      "group": "MIDI",
-      "ui_type": "select",
-      "name": "MIDI clock out",
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 3,
-      "default_value": 0,
-      "tooltip": "sends rhythm mode's tempo out as MIDI clock (24 a beat), so a drum machine, a looper pedal or a computer plays in time with the minichord. 0 off, 1 on port 1 (the chords' by default), 2 on port 2 (the harp's), 3 on both. Only in rhythm mode: Start as it comes on (on the first beat of a bar), Stop as it goes off. Tap tempo and the default bpm move it. Nothing goes out while a MIDI clock is coming in: the minichord follows that one instead",
-      "method": "midi_clock_out=value; acc_clock_out_changed();",
-      "iterate": 1,
-      "curve": "linear",
-      "introduction_version": 0.43,
-      "options": [
-        {
-          "value": 0,
-          "label": "Off"
-        },
-        {
-          "value": 1,
-          "label": "Port 1 (the chords')"
-        },
-        {
-          "value": 2,
-          "label": "Port 2 (the harp's)"
-        },
-        {
-          "value": 3,
-          "label": "Both ports"
-        }
-      ],
-      "step": 1
-    },
-    {
-      "sysex_adress": 283,
-      "group": "Looper",
-      "ui_type": "select",
-      "name": "looper quantize",
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 4,
-      "default_value": 0,
-      "tooltip": "moves each looped note to the nearest point of a grid, so the loop plays back in time: 0 off, as played; 1 quarter notes; 2 eighths (the off one where shuffle value puts it); 3 sixteenths; 4 eighth triplets. The first pass plays as played and the loop is corrected as it closes; an overdub's notes as they come. Each note keeps its length. The grid is the looper's beat: rhythm mode's, or its own at the default bpm from where the loop starts",
-      "method": "looper_quantize=value;",
-      "iterate": 1,
-      "curve": "linear",
-      "introduction_version": 0.46,
-      "options": [
-        {
-          "value": 0,
-          "label": "Off: as played"
-        },
-        {
-          "value": 1,
-          "label": "Quarter notes"
-        },
-        {
-          "value": 2,
-          "label": "Eighths"
-        },
-        {
-          "value": 3,
-          "label": "Sixteenths"
-        },
-        {
-          "value": 4,
-          "label": "Eighth triplets"
-        }
-      ],
-      "step": 1
-    },
-    {
-      "sysex_adress": 284,
-      "group": "Looper",
-      "ui_type": "select",
-      "name": "looper count-in",
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 2,
-      "default_value": 0,
-      "tooltip": "bars counted in before a recording starts: 0 none, it starts at once as before; 1 or 2 bars. The recording starts on the bar line after them (in rhythm mode, the first bar line at least that far off); a note played just before it, reaching for the downbeat, starts the loop. The LED flashes red on the beats. Pair it with looper click to hear them",
-      "method": "looper_count_in=value;",
-      "iterate": 1,
-      "curve": "linear",
-      "introduction_version": 0.46,
-      "options": [
-        {
-          "value": 0,
-          "label": "None: records at once"
-        },
-        {
-          "value": 1,
-          "label": "One bar"
-        },
-        {
-          "value": 2,
-          "label": "Two bars"
-        }
-      ],
-      "step": 1
-    },
-    {
-      "sysex_adress": 285,
-      "group": "Looper",
-      "ui_type": "select",
-      "name": "looper click",
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 3,
-      "default_value": 0,
-      "tooltip": "a metronome tick on the beats, higher on the first of a bar: 0 off; 1 through the count-in; 2 the count-in and the recording; 3 those and the loop playing. On the speaker and headphones only: the USB recording never has it. Its tempo is rhythm mode's, or the default bpm (control change 103 taps it too)",
-      "method": "looper_click=value;",
-      "iterate": 1,
-      "curve": "linear",
-      "introduction_version": 0.46,
-      "options": [
-        {
-          "value": 0,
-          "label": "Off"
-        },
-        {
-          "value": 1,
-          "label": "The count-in"
-        },
-        {
-          "value": 2,
-          "label": "The count-in and the recording"
-        },
-        {
-          "value": 3,
-          "label": "The count-in, the recording and the playing"
-        }
-      ],
-      "step": 1
-    },
-    {
-      "sysex_adress": 286,
-      "group": "Looper",
-      "ui_type": "slider",
-      "name": "looper click level",
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 100,
-      "default_value": 50,
-      "tooltip": "how loud the looper's click is",
-      "method": "looper_click_level=value;",
-      "iterate": 1,
-      "curve": "linear",
-      "introduction_version": 0.46,
-      "step": 1
-    },
-    {
-      "sysex_adress": 288,
-      "group": "Looper",
-      "ui_type": "select",
-      "name": "looper length",
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 16,
-      "default_value": 0,
-      "tooltip": "how long a loop is, in bars: 0 as long as you play it, closed by the next step; 1 to 16 bars, and the recording closes by itself on that bar line and plays on without a gap, so a press to record is all it takes. A step before then closes it on the nearest bar line, recording on till it. Its bars are the rhythm style's, at rhythm mode's tempo, or the default bpm from where the loop starts. Pair it with looper count-in and looper click to hear where the bars fall",
-      "method": "looper_length=value;",
-      "iterate": 1,
-      "curve": "linear",
-      "introduction_version": 0.48,
-      "options": [
-        {
-          "value": 0,
-          "label": "Off: as long as it is played"
-        },
-        {
-          "value": 1,
-          "label": "One bar"
-        },
-        {
-          "value": 2,
-          "label": "2 bars"
-        },
-        {
-          "value": 3,
-          "label": "3 bars"
-        },
-        {
-          "value": 4,
-          "label": "4 bars"
-        },
-        {
-          "value": 5,
-          "label": "5 bars"
-        },
-        {
-          "value": 6,
-          "label": "6 bars"
-        },
-        {
-          "value": 7,
-          "label": "7 bars"
-        },
-        {
-          "value": 8,
-          "label": "8 bars"
-        },
-        {
-          "value": 9,
-          "label": "9 bars"
-        },
-        {
-          "value": 10,
-          "label": "10 bars"
-        },
-        {
-          "value": 11,
-          "label": "11 bars"
-        },
-        {
-          "value": 12,
-          "label": "12 bars"
-        },
-        {
-          "value": 13,
-          "label": "13 bars"
-        },
-        {
-          "value": 14,
-          "label": "14 bars"
-        },
-        {
-          "value": 15,
-          "label": "15 bars"
-        },
-        {
-          "value": 16,
-          "label": "16 bars"
-        }
-      ],
-      "step": 1
     }
   ],
   "chord_parameter": [
@@ -6353,7 +6115,7 @@
   "rhythm_parameter": [
     {
       "name": "default bpm",
-      "group": "Rhythm",
+      "group": "Tempo",
       "default_value": 80,
       "data_type": "int",
       "sysex_adress": 187,
@@ -6369,7 +6131,7 @@
     },
     {
       "name": "cycle length",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 16,
       "data_type": "int",
       "sysex_adress": 188,
@@ -6385,7 +6147,7 @@
     },
     {
       "name": "measure update",
-      "group": "Rhythm",
+      "group": "Chord changes",
       "default_value": 4,
       "data_type": "int",
       "sysex_adress": 189,
@@ -6435,7 +6197,7 @@
     },
     {
       "name": "shuffle value",
-      "group": "Rhythm",
+      "group": "Tempo",
       "default_value": 1,
       "data_type": "float",
       "sysex_adress": 190,
@@ -6451,7 +6213,7 @@
     },
     {
       "name": "note pushed duration",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 700,
       "data_type": "int",
       "sysex_adress": 191,
@@ -6467,7 +6229,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 16,
       "data_type": "int",
       "sysex_adress": 220,
@@ -6484,7 +6246,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 0,
       "data_type": "int",
       "sysex_adress": 221,
@@ -6501,7 +6263,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 6,
       "data_type": "int",
       "sysex_adress": 222,
@@ -6518,7 +6280,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 6,
       "data_type": "int",
       "sysex_adress": 223,
@@ -6535,7 +6297,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 32,
       "data_type": "int",
       "sysex_adress": 224,
@@ -6552,7 +6314,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 0,
       "data_type": "int",
       "sysex_adress": 225,
@@ -6569,7 +6331,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 6,
       "data_type": "int",
       "sysex_adress": 226,
@@ -6586,7 +6348,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 0,
       "data_type": "int",
       "sysex_adress": 227,
@@ -6603,7 +6365,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 16,
       "data_type": "int",
       "sysex_adress": 228,
@@ -6620,7 +6382,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 0,
       "data_type": "int",
       "sysex_adress": 229,
@@ -6637,7 +6399,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 6,
       "data_type": "int",
       "sysex_adress": 230,
@@ -6654,7 +6416,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 6,
       "data_type": "int",
       "sysex_adress": 231,
@@ -6671,7 +6433,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 32,
       "data_type": "int",
       "sysex_adress": 232,
@@ -6688,7 +6450,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 0,
       "data_type": "int",
       "sysex_adress": 233,
@@ -6705,7 +6467,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 6,
       "data_type": "int",
       "sysex_adress": 234,
@@ -6722,7 +6484,7 @@
     },
     {
       "name": "rythm pattern",
-      "group": "Rhythm",
+      "group": "Pattern",
       "default_value": 0,
       "data_type": "int",
       "sysex_adress": 235,
@@ -6738,8 +6500,42 @@
       "controls": "none"
     },
     {
+      "sysex_adress": 266,
+      "group": "Tempo",
+      "ui_type": "select",
+      "name": "MIDI clock out",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "sends rhythm mode's tempo out as MIDI clock (24 a beat), so a drum machine, a looper pedal or a computer plays in time with the minichord. 0 off, 1 on port 1 (the chords' by default), 2 on port 2 (the harp's), 3 on both. Only in rhythm mode: Start as it comes on (on the first beat of a bar), Stop as it goes off. Tap tempo and the default bpm move it. Nothing goes out while a MIDI clock is coming in: the minichord follows that one instead",
+      "method": "midi_clock_out=value; acc_clock_out_changed();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.43,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "Port 1 (the chords')"
+        },
+        {
+          "value": 2,
+          "label": "Port 2 (the harp's)"
+        },
+        {
+          "value": 3,
+          "label": "Both ports"
+        }
+      ],
+      "step": 1
+    },
+    {
       "sysex_adress": 274,
-      "group": "Rhythm",
+      "group": "Style",
       "ui_type": "select",
       "name": "rhythm style",
       "data_type": "int",
@@ -6817,7 +6613,7 @@
     },
     {
       "sysex_adress": 275,
-      "group": "Rhythm",
+      "group": "Style",
       "ui_type": "select",
       "name": "rhythm bass",
       "data_type": "int",
@@ -6847,7 +6643,7 @@
     },
     {
       "sysex_adress": 276,
-      "group": "Rhythm",
+      "group": "Style",
       "ui_type": "select",
       "name": "rhythm chords",
       "data_type": "int",
@@ -6877,7 +6673,7 @@
     },
     {
       "sysex_adress": 277,
-      "group": "Rhythm",
+      "group": "Chord changes",
       "ui_type": "select",
       "name": "rhythm follows hands",
       "data_type": "int",
@@ -6907,7 +6703,7 @@
     },
     {
       "sysex_adress": 278,
-      "group": "Rhythm",
+      "group": "Chord changes",
       "ui_type": "select",
       "name": "rhythm chord change",
       "data_type": "int",
@@ -6937,7 +6733,7 @@
     },
     {
       "sysex_adress": 279,
-      "group": "Rhythm",
+      "group": "Style",
       "ui_type": "slider",
       "name": "rhythm articulation",
       "data_type": "int",
@@ -6953,7 +6749,7 @@
     },
     {
       "sysex_adress": 280,
-      "group": "Rhythm",
+      "group": "Style",
       "ui_type": "slider",
       "name": "rhythm accents",
       "data_type": "int",
@@ -6969,7 +6765,7 @@
     },
     {
       "sysex_adress": 281,
-      "group": "Rhythm",
+      "group": "Tempo",
       "ui_type": "select",
       "name": "tap tempo counts",
       "data_type": "int",
@@ -6995,7 +6791,7 @@
     },
     {
       "sysex_adress": 282,
-      "group": "Rhythm",
+      "group": "Chord changes",
       "ui_type": "select",
       "name": "MIDI chords",
       "data_type": "int",
@@ -7015,6 +6811,210 @@
         {
           "value": 1,
           "label": "On: notes in on the chord channel choose the chords"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 283,
+      "group": "Looper",
+      "ui_type": "select",
+      "name": "looper quantize",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4,
+      "default_value": 0,
+      "tooltip": "moves each looped note to the nearest point of a grid, so the loop plays back in time: 0 off, as played; 1 quarter notes; 2 eighths (the off one where shuffle value puts it); 3 sixteenths; 4 eighth triplets. The first pass plays as played and the loop is corrected as it closes; an overdub's notes as they come. Each note keeps its length. The grid is the looper's beat: rhythm mode's, or its own at the default bpm from where the loop starts",
+      "method": "looper_quantize=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.46,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off: as played"
+        },
+        {
+          "value": 1,
+          "label": "Quarter notes"
+        },
+        {
+          "value": 2,
+          "label": "Eighths"
+        },
+        {
+          "value": 3,
+          "label": "Sixteenths"
+        },
+        {
+          "value": 4,
+          "label": "Eighth triplets"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 284,
+      "group": "Looper",
+      "ui_type": "select",
+      "name": "looper count-in",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "bars counted in before a recording starts: 0 none, it starts at once as before; 1 or 2 bars. The recording starts on the bar line after them (in rhythm mode, the first bar line at least that far off); a note played just before it, reaching for the downbeat, starts the loop. The LED flashes red on the beats. Pair it with looper click to hear them",
+      "method": "looper_count_in=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.46,
+      "options": [
+        {
+          "value": 0,
+          "label": "None: records at once"
+        },
+        {
+          "value": 1,
+          "label": "One bar"
+        },
+        {
+          "value": 2,
+          "label": "Two bars"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 285,
+      "group": "Looper",
+      "ui_type": "select",
+      "name": "looper click",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "a metronome tick on the beats, higher on the first of a bar: 0 off; 1 through the count-in; 2 the count-in and the recording; 3 those and the loop playing. On the speaker and headphones only: the USB recording never has it. Its tempo is rhythm mode's, or the default bpm (control change 103 taps it too)",
+      "method": "looper_click=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.46,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "The count-in"
+        },
+        {
+          "value": 2,
+          "label": "The count-in and the recording"
+        },
+        {
+          "value": 3,
+          "label": "The count-in, the recording and the playing"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 286,
+      "group": "Looper",
+      "ui_type": "slider",
+      "name": "looper click level",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 50,
+      "tooltip": "how loud the looper's click is",
+      "method": "looper_click_level=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.46,
+      "step": 1
+    },
+    {
+      "sysex_adress": 288,
+      "group": "Looper",
+      "ui_type": "select",
+      "name": "looper length",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 16,
+      "default_value": 0,
+      "tooltip": "how long a loop is, in bars: 0 as long as you play it, closed by the next step; 1 to 16 bars, and the recording closes by itself on that bar line and plays on without a gap, so a press to record is all it takes. A step before then closes it on the nearest bar line, recording on till it. Its bars are the rhythm style's, at rhythm mode's tempo, or the default bpm from where the loop starts. Pair it with looper count-in and looper click to hear where the bars fall",
+      "method": "looper_length=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.48,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off: as long as it is played"
+        },
+        {
+          "value": 1,
+          "label": "One bar"
+        },
+        {
+          "value": 2,
+          "label": "2 bars"
+        },
+        {
+          "value": 3,
+          "label": "3 bars"
+        },
+        {
+          "value": 4,
+          "label": "4 bars"
+        },
+        {
+          "value": 5,
+          "label": "5 bars"
+        },
+        {
+          "value": 6,
+          "label": "6 bars"
+        },
+        {
+          "value": 7,
+          "label": "7 bars"
+        },
+        {
+          "value": 8,
+          "label": "8 bars"
+        },
+        {
+          "value": 9,
+          "label": "9 bars"
+        },
+        {
+          "value": 10,
+          "label": "10 bars"
+        },
+        {
+          "value": 11,
+          "label": "11 bars"
+        },
+        {
+          "value": 12,
+          "label": "12 bars"
+        },
+        {
+          "value": 13,
+          "label": "13 bars"
+        },
+        {
+          "value": 14,
+          "label": "14 bars"
+        },
+        {
+          "value": 15,
+          "label": "15 bars"
+        },
+        {
+          "value": 16,
+          "label": "16 bars"
         }
       ],
       "step": 1

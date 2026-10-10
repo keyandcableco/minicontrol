@@ -78,8 +78,6 @@ UI_OVERRIDES = {
     106: select('global_parameter', 'MIDI', [str(i) for i in range(1, 17)], start=1),
     107: select('global_parameter', 'MIDI', [str(i) for i in range(1, 17)], start=1),
     108: control('global_parameter', 'MIDI', 'switch'),
-    # the rhythm's clock out to other gear (firmware 43)
-    266: select('global_parameter', 'MIDI', ["Off", "Port 1 (the chords')", "Port 2 (the harp's)", "Both ports"]),
     110: control('global_parameter', 'MIDI', 'switch'),
     238: control('global_parameter', 'MIDI', 'switch'),
     8: control('global_parameter', 'MIDI', 'switch'),
@@ -192,32 +190,40 @@ UI_OVERRIDES = {
     257: control('harp_parameter', 'Spread', 'slider'),
     258: select('harp_parameter', 'Spread', ["By pitch: low strings left, high strings right",
                                              "Alternating: neighbouring strings on opposite sides"]),
-    # rhythm styles (firmware 42): written parts that follow the chord, and how they play
-    274: select('rhythm_parameter', 'Rhythm',
+    # rhythm mode, in submenus as generate.py lays them out. What it plays: a written style that
+    # follows the chord (firmware 42), and how
+    274: select('rhythm_parameter', 'Style',
                 ["Pattern: the steps below, as always", "Alberti bass", "Waltz", "Boom-chick", "Walking bass",
                  "Boogie", "Travis picking", "Strummed guitar", "Bossa nova", "Arpeggio up",
                  "Arpeggio up and down", "Ballad", "Reggae", "6/8 arpeggio", "Habanera"]),
-    275: select('rhythm_parameter', 'Rhythm', ["Plays the style's bass", "Holds the chord's bass note", "Rests"]),
-    276: select('rhythm_parameter', 'Rhythm', ["Play the style's chords", "Hold the chord", "Rest"]),
-    277: select('rhythm_parameter', 'Rhythm', ["Plays on", "Only while a chord is held",
-                                                "While held, and the bar starts on the press"]),
-    278: select('rhythm_parameter', 'Rhythm', ["On its next note", "On the next beat", "On the next bar"]),
-    279: control('rhythm_parameter', 'Rhythm', 'slider'),
-    280: control('rhythm_parameter', 'Rhythm', 'slider'),
-    # tap tempo on the hold button (firmware 44)
-    281: select('rhythm_parameter', 'Rhythm', ["A tap a beat", "A tap an eighth (two to the beat)"]),
-    # the looper in time (firmware 46)
-    283: select('global_parameter', 'Looper', ["Off: as played", "Quarter notes", "Eighths", "Sixteenths", "Eighth triplets"]),
-    284: select('global_parameter', 'Looper', ["None: records at once", "One bar", "Two bars"]),
-    285: select('global_parameter', 'Looper', ["Off", "The count-in", "The count-in and the recording",
-                                               "The count-in, the recording and the playing"]),
-    286: control('global_parameter', 'Looper', 'slider'),
-    # the looper's phrase in bars (firmware 48)
-    288: select('global_parameter', 'Looper', ["Off: as long as it is played", "One bar"]
+    275: select('rhythm_parameter', 'Style', ["Plays the style's bass", "Holds the chord's bass note", "Rests"]),
+    276: select('rhythm_parameter', 'Style', ["Play the style's chords", "Hold the chord", "Rest"]),
+    279: control('rhythm_parameter', 'Style', 'slider'),
+    280: control('rhythm_parameter', 'Style', 'slider'),
+    # its tempo: tap tempo on the hold button (firmware 44), and the clock it sends other gear (firmware 43)
+    187: {"section": "rhythm_parameter", "group": "Tempo", "name": "default bpm"},  # the firmware has default_bpm
+    190: {"section": "rhythm_parameter", "group": "Tempo"},
+    281: select('rhythm_parameter', 'Tempo', ["A tap a beat", "A tap an eighth (two to the beat)"]),
+    266: select('rhythm_parameter', 'Tempo', ["Off", "Port 1 (the chords')", "Port 2 (the harp's)", "Both ports"]),
+    # when it plays and takes a new chord, from the buttons or from chords sent in over MIDI (firmware 45)
+    189: {"section": "rhythm_parameter", "group": "Chord changes"},
+    277: select('rhythm_parameter', 'Chord changes', ["Plays on", "Only while a chord is held",
+                                                       "While held, and the bar starts on the press"]),
+    278: select('rhythm_parameter', 'Chord changes', ["On its next note", "On the next beat", "On the next bar"]),
+    282: select('rhythm_parameter', 'Chord changes', ["Off: notes in do as MIDI in plays says",
+                                                       "On: notes in on the chord channel choose the chords"]),
+    # the step pattern style 0 plays: its length, its notes' length, and the grid of steps
+    188: {"section": "rhythm_parameter", "group": "Pattern"},
+    191: {"section": "rhythm_parameter", "group": "Pattern"},
+    **{a: {"section": "rhythm_parameter", "group": "Pattern"} for a in range(220, 236)},
+    # the looper, which keeps rhythm mode's beat and bars: in time (firmware 46), its phrase in bars (firmware 48)
+    283: select('rhythm_parameter', 'Looper', ["Off: as played", "Quarter notes", "Eighths", "Sixteenths", "Eighth triplets"]),
+    284: select('rhythm_parameter', 'Looper', ["None: records at once", "One bar", "Two bars"]),
+    285: select('rhythm_parameter', 'Looper', ["Off", "The count-in", "The count-in and the recording",
+                                                "The count-in, the recording and the playing"]),
+    286: control('rhythm_parameter', 'Looper', 'slider'),
+    288: select('rhythm_parameter', 'Looper', ["Off: as long as it is played", "One bar"]
                 + [f"{n} bars" for n in range(2, 17)]),
-    # chords sent in over MIDI play the accompaniment (firmware 45)
-    282: select('rhythm_parameter', 'Rhythm', ["Off: notes in do as MIDI in plays says",
-                                                "On: notes in on the chord channel choose the chords"]),
 }
 # every waveform dropdown gets the same labels
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]
