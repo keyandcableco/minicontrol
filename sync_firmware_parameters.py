@@ -206,6 +206,9 @@ UI_OVERRIDES = {
     280: control('rhythm_parameter', 'Rhythm', 'slider'),
     # tap tempo on the hold button (firmware 44)
     281: select('rhythm_parameter', 'Rhythm', ["A tap a beat", "A tap an eighth (two to the beat)"]),
+    # chords sent in over MIDI play the accompaniment (firmware 45)
+    282: select('rhythm_parameter', 'Rhythm', ["Off: notes in do as MIDI in plays says",
+                                                "On: notes in on the chord channel choose the chords"]),
 }
 # every waveform dropdown gets the same labels
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]
@@ -213,7 +216,7 @@ for address in WAVEFORM_ADDRESSES:
     UI_OVERRIDES.setdefault(address, {})["options"] = options(WAVEFORMS)
 
 # the rhythm section and the hidden values live in sections of their own here
-RHYTHM_ADDRESSES = set(range(187, 192)) | set(range(220, 236)) | set(range(274, 282))
+RHYTHM_ADDRESSES = set(range(187, 192)) | set(range(220, 236)) | set(range(274, 283))
 
 
 def guess_ui_type(param):

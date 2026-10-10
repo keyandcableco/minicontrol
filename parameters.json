@@ -6788,6 +6788,32 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 282,
+      "group": "Rhythm",
+      "ui_type": "select",
+      "name": "MIDI chords",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "lets a computer, a keyboard or a sequencer choose rhythm mode's chords. 1: in rhythm mode, notes sent in on the chords' port and channel (MIDI port and chord channel) play the accompaniment rather than sounding themselves: what is held is read as a chord, its root and kind and the bass under it, and the rhythm style plays it in the voicing it came in. A note held, or the sustain pedal, counts as a hand on the chord buttons for rhythm follows hands; held chord voices sound it. The harp still follows the buttons. 0: notes sent in do as MIDI in plays says. Don't send the minichord's own chord notes back to it",
+      "method": "midi_chords=value; if (!value) midi_chords_clear();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.45,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off: notes in do as MIDI in plays says"
+        },
+        {
+          "value": 1,
+          "label": "On: notes in on the chord channel choose the chords"
+        }
+      ],
+      "step": 1
     }
   ],
   "hidden": [

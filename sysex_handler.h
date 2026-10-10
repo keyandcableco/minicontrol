@@ -902,6 +902,9 @@ void apply_audio_parameter(int adress, int value) {
         case 281:
             tap_counts=value;
             break;
+        case 282:
+            midi_chords=value; if (!value) midi_chords_clear();
+            break;
         default:
             break;
     }
