@@ -663,7 +663,7 @@ void apply_audio_parameter(int adress, int value) {
             ws_sin_param=value;calculate_ws_array(); chord_waveshape.shape(wave_shape,257);
             break;
         case 187:
-            rythm_bpm=constrain(value,30,300);recalculate_timer();
+            rythm_bpm=constrain(value,30,300);
             break;
         case 188:
             rythm_loop_length=constrain(value,1,16);
@@ -672,7 +672,7 @@ void apply_audio_parameter(int adress, int value) {
             rythm_limit_change_to_every=constrain(value,1,8);
             break;
         case 190:
-            shuffle=value/100.0;recalculate_timer();
+            shuffle=value/100.0;
             break;
         case 191:
             note_pushed_duration=value;
@@ -874,6 +874,27 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 273:
             set_chord_note_source(3,value);
+            break;
+        case 274:
+            acc_style=value; acc_settings_changed();
+            break;
+        case 275:
+            acc_bass_part=value; acc_settings_changed();
+            break;
+        case 276:
+            acc_chord_part=value; acc_settings_changed();
+            break;
+        case 277:
+            acc_follow=value; acc_settings_changed();
+            break;
+        case 278:
+            acc_change=value;
+            break;
+        case 279:
+            acc_articulation=value;
+            break;
+        case 280:
+            acc_accents=value;
             break;
         default:
             break;

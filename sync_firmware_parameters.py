@@ -190,6 +190,18 @@ UI_OVERRIDES = {
     257: control('harp_parameter', 'Spread', 'slider'),
     258: select('harp_parameter', 'Spread', ["By pitch: low strings left, high strings right",
                                              "Alternating: neighbouring strings on opposite sides"]),
+    # rhythm styles (firmware 42): written parts that follow the chord, and how they play
+    274: select('rhythm_parameter', 'Rhythm',
+                ["Pattern: the steps below, as always", "Alberti bass", "Waltz", "Boom-chick", "Walking bass",
+                 "Boogie", "Travis picking", "Strummed guitar", "Bossa nova", "Arpeggio up",
+                 "Arpeggio up and down", "Ballad", "Reggae", "6/8 arpeggio", "Habanera"]),
+    275: select('rhythm_parameter', 'Rhythm', ["Plays the style's bass", "Holds the chord's bass note", "Rests"]),
+    276: select('rhythm_parameter', 'Rhythm', ["Play the style's chords", "Hold the chord", "Rest"]),
+    277: select('rhythm_parameter', 'Rhythm', ["Plays on", "Only while a chord is held",
+                                                "While held, and the bar starts on the press"]),
+    278: select('rhythm_parameter', 'Rhythm', ["On its next note", "On the next beat", "On the next bar"]),
+    279: control('rhythm_parameter', 'Rhythm', 'slider'),
+    280: control('rhythm_parameter', 'Rhythm', 'slider'),
 }
 # every waveform dropdown gets the same labels
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]
@@ -197,7 +209,7 @@ for address in WAVEFORM_ADDRESSES:
     UI_OVERRIDES.setdefault(address, {})["options"] = options(WAVEFORMS)
 
 # the rhythm section and the hidden values live in sections of their own here
-RHYTHM_ADDRESSES = set(range(187, 192)) | set(range(220, 236))
+RHYTHM_ADDRESSES = set(range(187, 192)) | set(range(220, 236)) | set(range(274, 281))
 
 
 def guess_ui_type(param):

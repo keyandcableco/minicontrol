@@ -6124,7 +6124,7 @@
       "max_value": 300,
       "tooltip": "default bpm of the rythm mode",
       "iterate": 1,
-      "method": "rythm_bpm=constrain(value,30,300);recalculate_timer();",
+      "method": "rythm_bpm=constrain(value,30,300);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -6206,7 +6206,7 @@
       "max_value": 1.5,
       "tooltip": "shuffles the time by giving unequal time between two subsequent beat. Select 1 for no shuffle",
       "iterate": 1,
-      "method": "shuffle=value;recalculate_timer();",
+      "method": "shuffle=value;",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -6498,6 +6498,236 @@
       "ui_type": "select",
       "step": 1,
       "controls": "none"
+    },
+    {
+      "sysex_adress": 274,
+      "group": "Rhythm",
+      "ui_type": "select",
+      "name": "rhythm style",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 14,
+      "default_value": 0,
+      "tooltip": "what rhythm mode plays. 0: the rythm pattern steps below, as it always has. The rest are written parts that follow whatever chord is held: 1 Alberti bass (lowest, top, middle, top in sixteenths), 2 waltz (oom-pah-pah, the bass alternating root and fifth), 3 boom-chick (root, chord, fifth, chord), 4 walking bass (root, third, fifth and a step into the next chord, under a Charleston comp), 5 boogie (root under a fifth rocking to the sixth), 6 Travis picking, 7 strummed guitar (down, down-up, up-down-up), 8 bossa nova, 9 arpeggio up, 10 arpeggio up and down, 11 ballad (bass held under chords pulsing in eighths), 12 reggae (chords on the offbeats), 13 6/8 arpeggio, 14 habanera. The first chord note is the bass part and the other three the chord part, each with its own note voice. Shuffle value swings them; voice leading makes the Alberti and the arpeggios move as a hand does",
+      "method": "acc_style=value; acc_settings_changed();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.42,
+      "options": [
+        {
+          "value": 0,
+          "label": "Pattern: the steps below, as always"
+        },
+        {
+          "value": 1,
+          "label": "Alberti bass"
+        },
+        {
+          "value": 2,
+          "label": "Waltz"
+        },
+        {
+          "value": 3,
+          "label": "Boom-chick"
+        },
+        {
+          "value": 4,
+          "label": "Walking bass"
+        },
+        {
+          "value": 5,
+          "label": "Boogie"
+        },
+        {
+          "value": 6,
+          "label": "Travis picking"
+        },
+        {
+          "value": 7,
+          "label": "Strummed guitar"
+        },
+        {
+          "value": 8,
+          "label": "Bossa nova"
+        },
+        {
+          "value": 9,
+          "label": "Arpeggio up"
+        },
+        {
+          "value": 10,
+          "label": "Arpeggio up and down"
+        },
+        {
+          "value": 11,
+          "label": "Ballad"
+        },
+        {
+          "value": 12,
+          "label": "Reggae"
+        },
+        {
+          "value": 13,
+          "label": "6/8 arpeggio"
+        },
+        {
+          "value": 14,
+          "label": "Habanera"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 275,
+      "group": "Rhythm",
+      "ui_type": "select",
+      "name": "rhythm bass",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "what the first chord note does under a rhythm style: 0 plays the style's bass part, 1 holds the chord's bass note as it does outside rhythm mode, 2 rests. Not for rhythm style 0",
+      "method": "acc_bass_part=value; acc_settings_changed();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.42,
+      "options": [
+        {
+          "value": 0,
+          "label": "Plays the style's bass"
+        },
+        {
+          "value": 1,
+          "label": "Holds the chord's bass note"
+        },
+        {
+          "value": 2,
+          "label": "Rests"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 276,
+      "group": "Rhythm",
+      "ui_type": "select",
+      "name": "rhythm chords",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "what the other three chord notes do under a rhythm style: 0 play the style's chord part, 1 hold the chord as outside rhythm mode (a bass line walking under a sustained pad), 2 rest (the bass line alone). Not for rhythm style 0",
+      "method": "acc_chord_part=value; acc_settings_changed();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.42,
+      "options": [
+        {
+          "value": 0,
+          "label": "Play the style's chords"
+        },
+        {
+          "value": 1,
+          "label": "Hold the chord"
+        },
+        {
+          "value": 2,
+          "label": "Rest"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 277,
+      "group": "Rhythm",
+      "ui_type": "select",
+      "name": "rhythm follows hands",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "whether rhythm mode plays only while a chord is held. 0: it plays on, as it always has. 1: it sounds while a chord button is down and stops when you let go, the beat running on underneath so it comes back in time. 2: the same, and a chord pressed from silence starts the bar, as an Omnichord's sync start (not while following a MIDI clock)",
+      "method": "acc_follow=value; acc_settings_changed();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.42,
+      "options": [
+        {
+          "value": 0,
+          "label": "Plays on"
+        },
+        {
+          "value": 1,
+          "label": "Only while a chord is held"
+        },
+        {
+          "value": 2,
+          "label": "While held, and the bar starts on the press"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 278,
+      "group": "Rhythm",
+      "ui_type": "select",
+      "name": "rhythm chord change",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "when a new chord comes into a rhythm style. 0: on its next note, and a chord pressed just after a beat (up to a quarter of a beat, 100 ms at most) still takes that beat. 1: on the next beat. 2: on the next bar, and a walking bass then steps into the chord waiting to come in. Rhythm style 0 keeps measure update",
+      "method": "acc_change=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.42,
+      "options": [
+        {
+          "value": 0,
+          "label": "On its next note"
+        },
+        {
+          "value": 1,
+          "label": "On the next beat"
+        },
+        {
+          "value": 2,
+          "label": "On the next bar"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 279,
+      "group": "Rhythm",
+      "ui_type": "slider",
+      "name": "rhythm articulation",
+      "data_type": "int",
+      "min_value": 10,
+      "max_value": 200,
+      "default_value": 100,
+      "tooltip": "how long a rhythm style's notes are held, in percent of their written length: lower is more staccato, higher more legato. Notes written to ring (the strummed guitar) ring until struck again whatever this is. Not for rhythm style 0, which has note pushed duration",
+      "method": "acc_articulation=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.42,
+      "step": 1
+    },
+    {
+      "sysex_adress": 280,
+      "group": "Rhythm",
+      "ui_type": "slider",
+      "name": "rhythm accents",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 100,
+      "tooltip": "how much a rhythm style's strong beats stand out from its weak ones, in percent of the written accents: 0 plays every note equally loud. Applies to the sound and to the midi velocity. Not for rhythm style 0",
+      "method": "acc_accents=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.42,
+      "step": 1
     }
   ],
   "hidden": [

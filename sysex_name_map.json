@@ -217,5 +217,12 @@
   "187": "rhythm: rhythm: default bpm",
   "189": "rhythm: rhythm: measure update",
   "191": "rhythm: rhythm: note pushed duration",
+  "280": "rhythm: rhythm: rhythm accents",
+  "279": "rhythm: rhythm: rhythm articulation",
+  "275": "rhythm: rhythm: rhythm bass",
+  "278": "rhythm: rhythm: rhythm chord change",
+  "276": "rhythm: rhythm: rhythm chords",
+  "277": "rhythm: rhythm: rhythm follows hands",
+  "274": "rhythm: rhythm: rhythm style",
   "190": "rhythm: rhythm: shuffle value"
 }
