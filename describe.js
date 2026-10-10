@@ -119,7 +119,7 @@ function applyChanges(values, changes, reportAll) {
       const target = pyRound(c.value);
       if (target !== 0) {
         const t = PARAMS[target];
-        let ok = (t != null && !LOCKED.has(target) && t.group !== "hidden") || target === 256;
+        let ok = (t != null && !LOCKED.has(target) && t.group !== "hidden") || target === 256 || target === 287;
         if (KNOB_TARGETS.has(a)) ok = ok && target !== 256 && t.controls === "all";
         else ok = ok && (target === 256 || t.controls === "all" || t.controls === "tap");
         if (!ok) {
@@ -547,6 +547,10 @@ class Interpreter {
     this.lastValue = [va, a];
     const slot = index === 0 ? "" : ` (slot ${index + 1})`;
     if (role === "looper") r.understood.push(`double tap${slot} → the looper: record, play, stop, then a new recording`);
+    else if (role === "looper_pc") r.understood.push(`double tap${slot} → a looper on the computer (control change 90 over USB); ` +
+                                                     "the minichord's own looper is left alone");
+    else if (role === "chord_memory") r.understood.push(`double tap${slot} → the chord memory: record a progression in time, ` +
+                                                        "then it plays back by itself (it turns rhythm mode on)");
     else r.understood.push(`double tap${slot} → ${lbl} to ${fmtG(value)}, and back on the next double tap`);
     if (index > 0 && !this.tapNote) {
       this.tapNote = true;
@@ -594,7 +598,7 @@ class Interpreter {
     }
     if (role === "level") return down ? 0 : 1.6;
     if (role === "octave") return down ? Math.max(p.min_value, cur - 1) : Math.min(p.max_value, cur + 1);
-    if (role in D.tap) return down && role !== "looper" ? 0 : D.tap[role];
+    if (role in D.tap) return down && !["looper", "looper_pc", "chord_memory"].includes(role) ? 0 : D.tap[role];
     return p.max_value;
   }
 
@@ -632,7 +636,7 @@ class Interpreter {
   }
 
   clauses(text) {
-    const parts = text.split(/(?<!\d)\.|\.(?!\d)|[,;:!?\n]+|\bbut\b|(?<!only )\bwhile\b|\bwhereas\b|\bthen\b|\bexcept\b/);
+    const parts = text.split(/(?<!\d)\.|\.(?!\d)|[,;:!?\n]+|\bbut\b|(?<!only )(?<!click )(?<!metronome )\bwhile\b|\bwhereas\b|\bthen\b|\bexcept\b/);
     const out = [];
     const sections = new Set(Object.values(D.section_words).flat());
     for (const part of parts) {
