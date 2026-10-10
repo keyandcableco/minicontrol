@@ -46,7 +46,7 @@ group_order = [
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Effects', 'Vocoder', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
+    'global_parameter': ['General', 'Key and tuning', 'Effects', 'Vocoder', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
@@ -56,7 +56,7 @@ subgroup_order = {
     'harp_potentiometer': ['Potentiometer'],
     'modulation_potentiometer': ['Potentiometer'],
     'sharp_button_parameter': ['General'],
-    'rhythm_parameter': ['Style', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
+    'rhythm_parameter': ['Style', 'Sections', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
 }
 
 DELAY = ['delay length', 'delay filter frequency', 'delay filter resonance', 'delay lowpass', 'delay bandpass',
@@ -66,6 +66,7 @@ DELAY = ['delay length', 'delay filter frequency', 'delay filter resonance', 'de
 parameter_name_order = {
     'rhythm_parameter': {
         'Style': ['rhythm style', 'rhythm bass', 'rhythm chords', 'rhythm articulation', 'rhythm accents'],
+        'Sections': ['rhythm style B', 'fill on modifier and hold', 'rhythm intro', 'rhythm ending', 'rhythm palm break'],
         'Tempo': ['default bpm', 'tap tempo counts', 'shuffle value', 'MIDI clock out'],
         'Chord changes': ['rhythm follows hands', 'rhythm chord change', 'measure update', 'MIDI chords'],
         'Pattern': ['cycle length', 'note pushed duration'],  # then the grid of steps (SysEx 220–235)
@@ -76,17 +77,20 @@ parameter_name_order = {
         'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament'],
         'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
         'Vocoder': ['vocoder', 'vocoder carrier', 'vocoder consonants'],
+        'Phone': ['phone follow 1 control', 'phone follow 1 value', 'phone follow 1 band', 'phone follow 1 release',
+                  'phone follow 2 control', 'phone follow 2 value', 'phone follow 2 band', 'phone follow 2 release',
+                  'phone beat', 'phone kick stab', 'phone kick note'],
         'MIDI': ['chord channel', 'harp channel', 'harp note-off on lift', 'single port mode', 'MPE output', 'knobs send MIDI',
                  'MIDI in plays'],
         'Knobs': ['knob layer'],
-        'Hover': ['hover control', 'hover value', 'hover reach'],
+        'Hover': ['hover control', 'hover value', 'hover reach', 'hover alternate control', 'hover alternate value'],
         'Double tap': ['double tap control', 'double tap value', 'double tap control 2', 'double tap value 2',
-                       'double tap control 3', 'double tap value 3']
+                       'double tap control 3', 'double tap value 3', 'double tap hold', 'modifier with up and down']
     },
     'chord_parameter': {
-        'General': ['octave change', 'chord shuffling', 'glide chords', 'inter-note delay', 'random note delay'],
+        'General': ['octave change', 'chord shuffling', 'glide chords', 'fingered glide', 'inter-note delay', 'random note delay'],
         'Buttons': ['retrigger chords', 'chord layout', 'chord frame shift', 'barry harris mode'],
-        'Voicing': ['chord inversion', 'chord spacing', 'voice leading', 'voice leading range'],
+        'Voicing': ['chord inversion', 'press again in hold', 'chord spacing', 'voice leading', 'voice leading range'],
         'Slash chords and cantus': ['slash level', 'slash voice', 'slash re-voice', 'cantus'],
         'Alternate layout': ['alt layout maj', 'alt layout min', 'alt layout 7th', 'alt layout maj+7th',
                              'alt layout min+7th', 'alt layout maj+min', 'alt layout all three'],
@@ -150,7 +154,8 @@ parameter_name_order = {
             'strum velocity',
             'palm mute',
             'palm mute release',
-            'change held strings'
+            'change held strings',
+            'hammer-on'
         ],
         'String model': ['string model', 'string decay', 'string damping'],
         'Ribbon': ['harp ribbon', 'ribbon span', 'ribbon snap', 'ribbon glide'],
@@ -372,6 +377,8 @@ submenus = {
         ('Device and MIDI', ['General', 'MIDI']),
         ('Key and tuning', ['Key and tuning']),
         ('Effects', ['Effects', 'Vocoder']),
+        # what plays into the minichord over USB, moving settings and keeping the rhythm on its beat
+        ('The phone\'s sound', ['Phone']),
         ('Knobs, hover and double tap', ['Knobs', 'Hover', 'Double tap']),
     ],
     'chord_parameter': [
@@ -389,6 +396,8 @@ submenus = {
     # the looper sits with rhythm mode, whose beat and bars it keeps
     'rhythm_parameter': [
         ('Style', ['Style']),
+        # style B, fills, the intro, the ending and the palm's break
+        ('Fills and sections', ['Sections']),
         ('Tempo', ['Tempo']),
         ('Chord changes', ['Chord changes']),
         ('Pattern', ['Pattern']),

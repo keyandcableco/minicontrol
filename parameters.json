@@ -890,6 +890,295 @@
       "curve": "linear",
       "introduction_version": 0.34,
       "step": 1
+    },
+    {
+      "sysex_adress": 303,
+      "group": "Phone",
+      "ui_type": "select",
+      "name": "phone follow 1 control",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 511,
+      "default_value": 0,
+      "tooltip": "which setting the music coming in over USB moves, the way hover does: from as the preset has it with the music quiet to phone follow 1 value at its loudest. Works on whatever plays into the minichord, from a phone or a computer, heard through the minichord or not (USB audio 0 or 1, not 2). Loud is the music's own: it is measured against the loudest it has been in the last few seconds, so the phone's volume doesn't matter. Chord volume with value 0 and the bass band ducks the chords under every kick; the chord filter's cutoff with a high value and the treble band opens it on every hat. Any setting a knob can take. With knobs send MIDI on it also goes out as control change 26 on the chord channel. 0 leaves it unassigned",
+      "method": "phone_set_target(0,constrain(value,0,parameter_size-1));",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.52,
+      "none_option": "none",
+      "targets": "sweep"
+    },
+    {
+      "sysex_adress": 304,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone follow 1 value",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 0,
+      "tooltip": "the value phone follow 1 control's setting reaches with the music at its loudest. Above or below the preset's own value, so the music can open a filter or close it, swell a sound or duck it",
+      "method": "phone_follow[0].value=value; phone_follow[0].reapply=true;",
+      "iterate": 1,
+      "curve": "linear",
+      "follows_target": 303,
+      "controls": "none",
+      "introduction_version": 0.52,
+      "step": 1
+    },
+    {
+      "sysex_adress": 305,
+      "group": "Phone",
+      "ui_type": "select",
+      "name": "phone follow 1 band",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "what phone follow 1 listens to: 0 the whole sound, 1 the bass under 150 Hz (the kick drum and bass line), 2 the treble over 6 kHz (hats, cymbals and the hiss of consonants)",
+      "method": "phone_follow[0].band=constrain(value,0,2);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.52,
+      "options": [
+        {
+          "value": 0,
+          "label": "The whole sound"
+        },
+        {
+          "value": 1,
+          "label": "The bass, under 150 Hz: the kick"
+        },
+        {
+          "value": 2,
+          "label": "The treble, over 6 kHz: the hats"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 306,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone follow 1 release",
+      "data_type": "int",
+      "min_value": 10,
+      "max_value": 2000,
+      "default_value": 200,
+      "tooltip": "how slowly phone follow 1 falls back as the music drops, in milliseconds; it rises as fast as the music does. Short (20-50) follows each hit, for a filter that opens on every hat; a few hundred lets ducked chords swell back between kicks, the pumping of sidechain compression; longer follows the music's swells rather than its beats",
+      "method": "phone_follow[0].release_ms=constrain(value,10,2000);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.52,
+      "step": 1
+    },
+    {
+      "sysex_adress": 307,
+      "group": "Phone",
+      "ui_type": "select",
+      "name": "phone follow 2 control",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 511,
+      "default_value": 0,
+      "tooltip": "which setting the music coming in over USB moves, the way hover does: from as the preset has it with the music quiet to phone follow 2 value at its loudest. Works on whatever plays into the minichord, from a phone or a computer, heard through the minichord or not (USB audio 0 or 1, not 2). Loud is the music's own: it is measured against the loudest it has been in the last few seconds, so the phone's volume doesn't matter. Chord volume with value 0 and the bass band ducks the chords under every kick; the chord filter's cutoff with a high value and the treble band opens it on every hat. Any setting a knob can take. With knobs send MIDI on it also goes out as control change 27 on the chord channel. 0 leaves it unassigned",
+      "method": "phone_set_target(1,constrain(value,0,parameter_size-1));",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.52,
+      "none_option": "none",
+      "targets": "sweep"
+    },
+    {
+      "sysex_adress": 308,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone follow 2 value",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 0,
+      "tooltip": "the value phone follow 2 control's setting reaches with the music at its loudest. Above or below the preset's own value, so the music can open a filter or close it, swell a sound or duck it",
+      "method": "phone_follow[1].value=value; phone_follow[1].reapply=true;",
+      "iterate": 1,
+      "curve": "linear",
+      "follows_target": 307,
+      "controls": "none",
+      "introduction_version": 0.52,
+      "step": 1
+    },
+    {
+      "sysex_adress": 309,
+      "group": "Phone",
+      "ui_type": "select",
+      "name": "phone follow 2 band",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "what phone follow 2 listens to: 0 the whole sound, 1 the bass under 150 Hz (the kick drum and bass line), 2 the treble over 6 kHz (hats, cymbals and the hiss of consonants)",
+      "method": "phone_follow[1].band=constrain(value,0,2);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.52,
+      "options": [
+        {
+          "value": 0,
+          "label": "The whole sound"
+        },
+        {
+          "value": 1,
+          "label": "The bass, under 150 Hz: the kick"
+        },
+        {
+          "value": 2,
+          "label": "The treble, over 6 kHz: the hats"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 310,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone follow 2 release",
+      "data_type": "int",
+      "min_value": 10,
+      "max_value": 2000,
+      "default_value": 200,
+      "tooltip": "how slowly phone follow 2 falls back as the music drops, in milliseconds; it rises as fast as the music does. Short (20-50) follows each hit, for a filter that opens on every hat; a few hundred lets ducked chords swell back between kicks, the pumping of sidechain compression; longer follows the music's swells rather than its beats",
+      "method": "phone_follow[1].release_ms=constrain(value,10,2000);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.52,
+      "step": 1
+    },
+    {
+      "sysex_adress": 311,
+      "group": "Phone",
+      "ui_type": "switch",
+      "name": "phone beat",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "in rhythm mode, the rhythm follows the beat of the music coming in over USB: it finds the tempo (70 to 180 bpm) and, where a song could be heard at half or twice it, takes the one nearer the rhythm's own tempo, so set the tempo near the song's (or tap it once) to choose and is drawn onto the music's beats, as tap tempo draws it onto taps, and keeps following as the music speeds up or slows down. It takes a few seconds of steady beat to lock on, and lets go where there's no beat to find. It finds the beat, not the bar, so the pattern may start its bar on any beat. MIDI clock out and the looper in time follow along; a MIDI clock coming in has the rhythm instead. 0 off",
+      "method": "phone_beat=value; phone_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.52,
+      "step": 1
+    },
+    {
+      "sysex_adress": 312,
+      "group": "Phone",
+      "ui_type": "switch",
+      "name": "phone kick stab",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "each kick drum in the music coming in over USB strikes the chord held again, so the chord hand plays in the music's groove: hold a chord, or keep one with hold, and it sounds on every kick. Not in rhythm mode, which keeps its own time. 0 off",
+      "method": "phone_kick_stab=value; phone_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.52,
+      "step": 1
+    },
+    {
+      "sysex_adress": 313,
+      "group": "Phone",
+      "ui_type": "slider",
+      "name": "phone kick note",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 127,
+      "default_value": 0,
+      "tooltip": "each kick drum in the music coming in over USB sends this MIDI note on the chord channel, louder for a harder kick, so a drum machine or a computer can play along with the phone through the minichord. 36 is General MIDI's bass drum. 0 sends nothing",
+      "method": "phone_kick_note=value; phone_set();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.52,
+      "step": 1
+    },
+    {
+      "sysex_adress": 321,
+      "group": "Double tap",
+      "ui_type": "switch",
+      "name": "double tap hold",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "tap the modifier, then press it again and hold: the double tap's settings flip while it is held and flip back as it lets go, a momentary version of the double tap, for a filter thrown open or a sound muted for as long as the finger stays down. Let go as quickly as a tap and it latches, as a double tap does; a double tap already latched is let go while held, and comes back. The second press acts as it lands rather than as it lifts, and only with no chord held. While held so, the modifier doesn't sharpen a chord pressed meanwhile or switch the knobs to their alternates. The looper, chord memory and rhythm fill take their step as the press lands. 0: a held second press does nothing, as before",
+      "method": "double_tap_hold=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.55,
+      "step": 1
+    },
+    {
+      "sysex_adress": 322,
+      "group": "Double tap",
+      "ui_type": "switch",
+      "name": "modifier with up and down",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "holding the modifier, the preset buttons do two things for a performance going wrong: down reverts, putting the preset back as it was saved and dropping whatever the knobs, an editor or the double tap changed since it loaded (nothing is left to save); up is the panic, every voice stopped at once, the looper and chord memory stopped (keeping what they hold), and All Notes Off sent on every channel of both MIDI ports, while rhythm mode and hold stay as they are. Neither changes the preset. 0: the modifier makes no difference to up and down, as before",
+      "method": "modifier_preset_combo=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.56,
+      "step": 1
+    },
+    {
+      "sysex_adress": 325,
+      "group": "Hover",
+      "ui_type": "select",
+      "name": "hover alternate control",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 511,
+      "default_value": 0,
+      "tooltip": "which setting hover moves on the knobs' alternate layer, as each knob has its alternate control: while the modifier is held (with no chord, or under one) or with knob layer at 1, a hand over the harp moves this one instead, from as the preset has it with no hand near to hover alternate value 2 cm above the plate, and hover's own setting goes back as the preset has it. Hover reach, the hold while playing and control change 25 are shared. Any setting a knob can take but the double tap's and USB audio. 0: hover moves its own setting on both layers, as before",
+      "method": "hover_alt_target=constrain(value,0,parameter_size-1); hover_reapply=true;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.58,
+      "none_option": "none",
+      "targets": "sweep"
+    },
+    {
+      "sysex_adress": 326,
+      "group": "Hover",
+      "ui_type": "slider",
+      "name": "hover alternate value",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 0,
+      "tooltip": "the value hover alternate control's setting reaches with a hand 2 cm above the plate, or nearer, above or below the preset's own",
+      "method": "hover_alt_value=value; hover_reapply=true;",
+      "iterate": 1,
+      "curve": "linear",
+      "follows_target": 325,
+      "controls": "none",
+      "introduction_version": 0.58,
+      "step": 1
     }
   ],
   "chord_parameter": [
@@ -4045,6 +4334,58 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 320,
+      "group": "General",
+      "ui_type": "switch",
+      "name": "fingered glide",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "the chords glide only when the fingers move to the next chord while still holding the last, as a monosynth's fingered portamento does: roll from one chord onto the next for a slide, lift first and press for a clean change. Sharpening a held chord with the modifier, adding or letting go of a slash chord's bass, or changing a column's kind with a second button glide too, since a finger stays down through them. With hold on, the chord ringing after the fingers lift doesn't count: the next press starts on its pitch. Glide chords sets how long the glide is. Not in rhythm mode, which glides as glide chords says. 0: every change glides, as before",
+      "method": "fingered_glide=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.54,
+      "step": 1
+    },
+    {
+      "sysex_adress": 324,
+      "group": "Voicing",
+      "ui_type": "select",
+      "name": "press again in hold",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "with hold on, what pressing the chord that is ringing again does. 0: strikes it again (with retrigger on), as before. 1: climbs it an inversion each press, up to root position an octave higher, then back to where it began. 2: climbs that far and comes back down an inversion at a time. 3: an octave up, and back down on the next press. The climb starts from chord inversion and starts over with any other chord; with voice leading on, the climbed voicing is kept as played and the next chord is led from it. It strikes as it moves when retrigger is on, and slides the voices there when it is off. Only a fresh press counts, not rolling onto the chord from another",
+      "method": "repress_mode=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.57,
+      "options": [
+        {
+          "value": 0,
+          "label": "Strikes it again, as always"
+        },
+        {
+          "value": 1,
+          "label": "Climbs the inversions, then starts over"
+        },
+        {
+          "value": 2,
+          "label": "Climbs the inversions and comes back down"
+        },
+        {
+          "value": 3,
+          "label": "An octave up, and back"
+        }
+      ],
+      "step": 1
     }
   ],
   "harp_parameter": [
@@ -6030,6 +6371,22 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 302,
+      "group": "Pluck",
+      "ui_type": "switch",
+      "name": "hammer-on",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "plucking on touch, a finger landing on the pad beside a string still held down takes that string over: it moves to the new note without being plucked again, the way a guitarist hammers onto the next fret, and slides on from pad to pad as the finger moves along the strip. Hold a string and tap the next one for a hammer-on or a trill: lifting the tapping finger pulls off back to the held note, and lifting the last finger lets the string ring out. Only a string that has rung for a moment (180 ms) is taken over, so a strum still plucks every string, but a string held beside where you start a strum is moved rather than another plucked. Over midi the new note starts just before the old one ends, so a synth set to legato slides or hammers too. On the stock strip and plates of twelve zones, not with pluck on lift, the ribbon or zipper 24. 0 is off: every pad plucks its own string, as before",
+      "method": "hammer_on=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.51,
+      "step": 1
     }
   ],
   "chord_potentiometer": [
@@ -7088,6 +7445,152 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 314,
+      "group": "Sections",
+      "ui_type": "select",
+      "name": "rhythm style B",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 14,
+      "default_value": 0,
+      "tooltip": "a second style for the same song, the way an arranger keyboard has a main A and B: each fill plays into the next bar line and then switches from rhythm style to this one, or back. A verse in Travis picking and a chorus strummed, a walking bass and then a boogie. It starts from its own first bar where it comes in. It must count the bar the way rhythm style does (four with four, three with three); one in another metre is never switched to, and the fills only fill. 0: no B, fills only fill",
+      "method": "acc_style_b=value; acc_settings_changed();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.53,
+      "options": [
+        {
+          "value": 0,
+          "label": "None: fills only fill"
+        },
+        {
+          "value": 1,
+          "label": "Alberti bass"
+        },
+        {
+          "value": 2,
+          "label": "Waltz"
+        },
+        {
+          "value": 3,
+          "label": "Boom-chick"
+        },
+        {
+          "value": 4,
+          "label": "Walking bass"
+        },
+        {
+          "value": 5,
+          "label": "Boogie"
+        },
+        {
+          "value": 6,
+          "label": "Travis picking"
+        },
+        {
+          "value": 7,
+          "label": "Strummed guitar"
+        },
+        {
+          "value": 8,
+          "label": "Bossa nova"
+        },
+        {
+          "value": 9,
+          "label": "Arpeggio up"
+        },
+        {
+          "value": 10,
+          "label": "Arpeggio up and down"
+        },
+        {
+          "value": 11,
+          "label": "Ballad"
+        },
+        {
+          "value": 12,
+          "label": "Reggae"
+        },
+        {
+          "value": 13,
+          "label": "6/8 arpeggio"
+        },
+        {
+          "value": 14,
+          "label": "Habanera"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 316,
+      "group": "Sections",
+      "ui_type": "switch",
+      "name": "fill on modifier and hold",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "in rhythm mode, holding the modifier and tapping hold plays a fill (see rhythm fill) instead of tapping the tempo, so a fill is there without giving up a double tap. With a chord held the modifier sharpens it, as always, so it is for a chord left playing. 0: hold taps the tempo whatever the modifier does, as before",
+      "method": "rhythm_fill_combo=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.53,
+      "step": 1
+    },
+    {
+      "sysex_adress": 317,
+      "group": "Sections",
+      "ui_type": "switch",
+      "name": "rhythm intro",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "rhythm mode starts with a bar of the style's fill, a pickup into the groove, before the pattern begins. With rhythm follows hands at 2 it plays from the press. 0: the pattern from the first beat, as before",
+      "method": "rhythm_intro=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.53,
+      "step": 1
+    },
+    {
+      "sysex_adress": 318,
+      "group": "Sections",
+      "ui_type": "switch",
+      "name": "rhythm ending",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "the long press on hold that turns rhythm mode off plays an ending first: the style's fill up to the next bar line, then the chord struck there and left ringing as rhythm mode goes off (hold the chord to keep it sounding). A second long press during the ending stops at once. 0: the long press stops it there and then, as before",
+      "method": "rhythm_ending=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.53,
+      "step": 1
+    },
+    {
+      "sysex_adress": 319,
+      "group": "Sections",
+      "ui_type": "switch",
+      "name": "rhythm palm break",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "in rhythm mode a palm mute on the harp stops the accompaniment too, the band's stop: every part rests up to the next bar line (or the one after, if less than a beat is left) and comes back on the downbeat. Needs palm mute on. 0: the palm stops only the strings, as before",
+      "method": "rhythm_palm_break=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.53,
+      "step": 1
     }
   ],
   "hidden": [
@@ -7395,6 +7898,40 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
+      "step": 1
+    },
+    {
+      "sysex_adress": 315,
+      "group": "hidden",
+      "ui_type": "discrete_slider",
+      "name": "rhythm fill",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "plays a fill, a break or the ending in rhythm mode: writing it does one thing and it goes back to 0, never kept in a preset. 1 a fill: the style's own fill bar from now to the next bar line (or the one after, if less than a beat is left), each style's in its own idiom and leading the bass into the chord there, then the other style if rhythm style B is set. 2 a break: every part rests up to the bar line and comes back on the downbeat. 3 the ending: a fill, then the chord struck on the bar line and left ringing, and rhythm mode goes off. Assign the double tap to it (double tap control 315) for a fill each double tap, or a break or the ending with double tap value 2 or 3. Control changes 109, 110 and 111 do the same on any channel",
+      "method": "rhythm_fill_action(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.53,
+      "step": 1
+    },
+    {
+      "sysex_adress": 323,
+      "group": "hidden",
+      "ui_type": "discrete_slider",
+      "name": "revert or panic",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "writing it does one thing and it goes back to 0, never kept in a preset: 1 reverts the preset to as it was saved, 2 is the panic (see modifier with up and down). Assign the double tap to it (double tap control 323) for a revert each double tap, or the panic with double tap value 2",
+      "method": "preset_action(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.56,
       "step": 1
     }
   ]

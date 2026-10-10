@@ -926,6 +926,81 @@ void apply_audio_parameter(int adress, int value) {
         case 289:
             koto_press=value;
             break;
+        case 302:
+            hammer_on=value;
+            break;
+        case 303:
+            phone_set_target(0,constrain(value,0,parameter_size-1));
+            break;
+        case 304:
+            phone_follow[0].value=value; phone_follow[0].reapply=true;
+            break;
+        case 305:
+            phone_follow[0].band=constrain(value,0,2);
+            break;
+        case 306:
+            phone_follow[0].release_ms=constrain(value,10,2000);
+            break;
+        case 307:
+            phone_set_target(1,constrain(value,0,parameter_size-1));
+            break;
+        case 308:
+            phone_follow[1].value=value; phone_follow[1].reapply=true;
+            break;
+        case 309:
+            phone_follow[1].band=constrain(value,0,2);
+            break;
+        case 310:
+            phone_follow[1].release_ms=constrain(value,10,2000);
+            break;
+        case 311:
+            phone_beat=value; phone_set();
+            break;
+        case 312:
+            phone_kick_stab=value; phone_set();
+            break;
+        case 313:
+            phone_kick_note=value; phone_set();
+            break;
+        case 314:
+            acc_style_b=value; acc_settings_changed();
+            break;
+        case 315:
+            rhythm_fill_action(value);
+            break;
+        case 316:
+            rhythm_fill_combo=value;
+            break;
+        case 317:
+            rhythm_intro=value;
+            break;
+        case 318:
+            rhythm_ending=value;
+            break;
+        case 319:
+            rhythm_palm_break=value;
+            break;
+        case 320:
+            fingered_glide=value;
+            break;
+        case 321:
+            double_tap_hold=value;
+            break;
+        case 322:
+            modifier_preset_combo=value;
+            break;
+        case 323:
+            preset_action(value);
+            break;
+        case 324:
+            repress_mode=value;
+            break;
+        case 325:
+            hover_alt_target=constrain(value,0,parameter_size-1); hover_reapply=true;
+            break;
+        case 326:
+            hover_alt_value=value; hover_reapply=true;
+            break;
         default:
             break;
     }
