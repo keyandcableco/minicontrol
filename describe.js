@@ -632,7 +632,7 @@ class Interpreter {
   }
 
   clauses(text) {
-    const parts = text.split(/(?<!\d)\.|\.(?!\d)|[,;:!?\n]+|\bbut\b|\bwhile\b|\bwhereas\b|\bthen\b|\bexcept\b/);
+    const parts = text.split(/(?<!\d)\.|\.(?!\d)|[,;:!?\n]+|\bbut\b|(?<!only )\bwhile\b|\bwhereas\b|\bthen\b|\bexcept\b/);
     const out = [];
     const sections = new Set(Object.values(D.section_words).flat());
     for (const part of parts) {
@@ -834,7 +834,7 @@ class Interpreter {
   }
 
   covered(toks, i) {
-    for (let j = Math.max(0, i - 3); j < i; j++) {
+    for (let j = Math.max(0, i - this.longest + 1); j < i; j++) {
       const hit = this.find(toks, j, this.phrases);
       if (hit && j + hit[1] > i) return true;
     }
