@@ -315,6 +315,9 @@
       pointer-events: auto;
     }
     #bank_number_selection {
+      /* the options carry the banks' names: a long one is cut off rather than widening the toolbar */
+      max-width: 16em;
+      text-overflow: ellipsis;
       padding: 8px;
       border: none;
       border-radius: 5px;
@@ -1282,6 +1285,24 @@
       [data-theme="arcade"] .status-header .settings-toggle {
         margin: 16px auto 0;
       }
+      /* elsewhere the title and the settings button share the top line, and the bubble has a
+         line of its own under them, however long a bank's name makes it */
+      html:not([data-theme="arcade"]) .title-container {
+        display: contents;
+      }
+      html:not([data-theme="arcade"]) .status-header h1 {
+        flex: 1 1 50%;
+      }
+      html:not([data-theme="arcade"]) .status-header .settings-toggle {
+        order: 1;
+      }
+      html:not([data-theme="arcade"]) .status-header .theme-tagline {
+        order: 2;
+        flex-basis: 100%;
+      }
+      html:not([data-theme="arcade"]) #notification-bubble {
+        order: 3;
+      }
       #header {
         margin: 10px 0;
       }
@@ -1305,6 +1326,9 @@
       }
       .toolbar {
         gap: 12px 20px;
+      }
+      #bank_number_selection {
+        max-width: 12em;
       }
       .describe-group {
         margin-top: 8px;

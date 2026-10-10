@@ -200,6 +200,34 @@ function findParameterBySysex(sysex) {
   return null;
 }
 
+// The names the bank dropdown shows. Before firmware 50 they are the ones this browser keeps for
+// the bank sheet. From 50 they are in the banks, which can only be read by loading each, so the
+// page notes each name as it sees one (a bank loaded, saved, reset, read or written by the bank
+// sheet, restored) and shows the last it saw, kept for the next visit.
+const BANK_NAMES_SEEN_KEY = "minicontrol_bank_names_seen";
+function bankNamesSeen() {
+  let raw = [];
+  try { raw = JSON.parse(localStorage.getItem(BANK_NAMES_SEEN_KEY)) || []; } catch (e) { raw = []; }
+  return Array.from({ length: 12 }, (_, i) => (typeof raw[i] === "string" ? raw[i] : ""));
+}
+function noteBankName(bank, name) {
+  if (!namesOnDevice() || bank < 0 || bank >= 12) return;
+  const names = bankNamesSeen();
+  if (names[bank] === (name || "")) return;
+  names[bank] = name || "";
+  try { localStorage.setItem(BANK_NAMES_SEEN_KEY, JSON.stringify(names)); } catch (e) { }
+  paintBankNames();
+}
+function paintBankNames() {
+  const select = document.getElementById("bank_number_selection");
+  if (!select) return;
+  const names = namesOnDevice() ? bankNamesSeen() : typeof bankNamesGet === "function" ? bankNamesGet() : [];
+  for (const option of select.options) {
+    const bank = parseInt(option.value);
+    option.textContent = (bank + 1) + (names[bank] ? " · " + names[bank] : "");
+  }
+}
+
 // " · Warm pad" after the bank number: the live sound's own name, or before firmware 50 the
 // name this browser keeps for the bank
 function liveName() {
@@ -652,6 +680,8 @@ function handleDataReceived(data) {
     }
   });
   applyOverrideDefaults(currentValues);
+  if (!unsavedEdits) noteBankName(data.bankNumber, presetName(currentValues));
+  paintBankNames();
   rhythmPattern = data.rhythmData.map(bits => bits.reduce((acc, bit, i) => acc | (bit ? (1 << i) : 0), 0));
   targetBank = data.bankNumber;
   updateUI(data.bankNumber);
@@ -943,6 +973,7 @@ document.getElementById("save-to-bank-btn")?.addEventListener("click", () => {
       `What bank ${saveBank + 1} holds now is replaced, and the minichord moves to bank ${saveBank + 1}.`)) return;
   console.log(`[save-to-bank-btn] Saving to bank ${saveBank + 1}`);
   controller.saveCurrentSettings(saveBank);
+  noteBankName(saveBank, presetName(currentValues));   // the live sound's name goes with it
   bankCacheStale();
   markClean();
   if (snapshotBank >= 0) unsavedAtSnapshot = true; // the bank no longer holds what the snapshot does
@@ -1038,6 +1069,7 @@ document.getElementById("reset-bank-btn")?.addEventListener("click", () => {
   const names = bankNamesGet();
   names[bank] = "";
   bankNamesSet(names);
+  noteBankName(bank, "");
   showNotification(away ? `Reset bank ${bank + 1}, and moved to it` : `Reset bank ${bank + 1}`, "success");
 });
 
@@ -1050,6 +1082,7 @@ document.getElementById("reset-all-banks-btn")?.addEventListener("click", () => 
   bankCacheStale();
   markClean();
   bankNamesSet([]);
+  for (let b = 0; b < 12; b++) noteBankName(b, "");
   showNotification("Reset all banks: the minichord is on bank 1", "success");
 });
 

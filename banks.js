@@ -80,6 +80,7 @@ function bankNamesGet() {
 }
 function bankNamesSet(names) {
   try { localStorage.setItem(BANK_NAMES_KEY, JSON.stringify(names.slice(0, BANK_COUNT))); } catch (e) { }
+  paintBankNames();
 }
 // the names this browser kept, once they are on the minichord
 function bankNamesForget() {
@@ -203,6 +204,7 @@ async function readAllBanks(onProgress) {
   bankState.slots = slots;
   bankState.original = original;
   bankState.originalNames = namesOnDevice() ? original.map(presetName) : names;
+  original.forEach((values, b) => noteBankName(b, presetName(values)));
   recomputeDirty();
   bankState.read = true;
   bankState.stale = false;
@@ -257,6 +259,7 @@ async function writeBankChanges(onProgress) {
       slot.dirty = false;
       bankState.original[i] = slot.values.slice();
       bankState.originalNames[i] = slot.name || "";
+      noteBankName(i, presetName(slot.values));
     }
   } finally {
     await returnToBank(startingBank);
@@ -348,6 +351,7 @@ async function restoreAllBanks(data, onProgress) {
         setPresetName(values, entry.name);
       }
       await writeBank(entry.bank, values);
+      noteBankName(entry.bank, presetName(values));
       if (typeof entry.name === "string") names[entry.bank] = entry.name.slice(0, 24);
     }
   } finally {
