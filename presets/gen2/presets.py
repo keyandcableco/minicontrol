@@ -179,6 +179,24 @@ def style(n, bpm, bass=0, chords=0, follows=0, change=0, articulation=100, accen
             187: bpm, 190: swing}
 
 
+GROOVES = {1: "rock", 2: "pop eighths", 3: "pop sixteenths", 4: "ballad", 5: "funk", 6: "disco", 7: "motown",
+           8: "shuffle", 9: "jazz swing", 10: "waltz", 11: "march", 12: "second line", 13: "country two-beat",
+           14: "folk", 15: "six eight", 16: "habanera", 17: "house", 18: "trap", 19: "amen-style break",
+           20: "funky drummer-style", 21: "think-style break", 22: "boom bap", 23: "drum and bass", 24: "lo-fi",
+           25: "son clave", 26: "rumba clave", 27: "bossa nova", 28: "samba", 29: "cumbia", 30: "baiao",
+           31: "salsa", 32: "one drop", 33: "dembow", 34: "soca", 35: "afrobeat", 36: "12/8 bell", 37: "highlife",
+           38: "maqsum", 39: "baladi", 40: "saidi", 41: "kehrwa", 42: "dadra", 43: "teental"}
+KITS = {1: "808", 2: "909", 3: "CR-78", 4: "studio", 5: "brushes", 6: "boom bap", 7: "world percussion",
+        8: "tabla and doumbek", 9: "trap", 10: "house", 11: "glitch"}
+
+
+def drums(groove, kit=0, level=70, humanize=0, groove_b=0):
+    """rhythm mode's drum machine (334-343, firmware 60): groove 0 plays the rhythm style's own drum part,
+    else one of GROOVES; kit 0 the groove's own, else one of KITS; level beside the chords and harp;
+    humanize 0 on the grid to 100 loose"""
+    return {334: 1, 335: groove, 336: groove_b, 337: kit, 338: level, 339: humanize}
+
+
 def merge(*ds):
     out = {}
     for d in ds:
@@ -229,6 +247,7 @@ preset("Open Hand Pad", 210,
        reverb_room(0.78, 0.25, 0.5, 0.35, 0.7), {29: 0.7},
        hover(143, 3200, 8),
        style(10, 96, bass=1, articulation=130, accents=50),
+       drums(3, kit=3, level=45),                   # pop sixteenths on a CR-78: the arpeggio's own drum machine
        knobs(chord_alt=(259, 100), harp_alt=(84, 100), mod=(137, 100), mod_alt=(141, 90)),
        double_tap((39, 1)))
 
@@ -266,6 +285,7 @@ preset("Concert Harp", 55,
        reverb_room(0.82, 0.3, 0.45, 0.35, 0.75), {29: 0.65},
        hover(197, 0.9, 8),
        style(11, 72, articulation=110, accents=60),
+       drums(4, kit=5, level=35, humanize=35),       # a ballad on brushes, under the harp
        knobs(chord_alt=(137, 100), harp_alt=(85, 100), mod=(219, 100), mod_alt=(218, 90)),
        double_tap((216, 1), (213, 6)))
 
@@ -298,6 +318,7 @@ preset("Jazz Piano", 0,
        reverb_room(0.6, 0.35, 0.5, 0.4, 0.7), {29: 0.8},
        hover(141, 4000, 7),
        style(4, 128, follows=2, change=2, articulation=90, swing=1.3),
+       drums(9, kit=5, level=55, humanize=40),       # the trio's swing ride, on brushes
        knobs(chord_alt=(184, 100), harp_alt=(252, 100), mod=(143, 85), mod_alt=(47, 100)),
        double_tap((39, 1)))
 
@@ -340,6 +361,7 @@ preset("Cantus Choir", 275,
        reverb_room(0.9, 0.3, 0.45, 0.35, 0.8), {29: 0.75},
        hover(197, 1.2, 7),
        style(13, 54, bass=1, articulation=170, accents=60),
+       drums(15, kit=5, level=30, humanize=40),      # six eight on brushes, barely there under the choir
        knobs(chord_alt=(119, 100), harp_alt=(218, 80), mod=(118, 100), mod_alt=(239, 80)),
        double_tap((39, 1)))
 
@@ -376,6 +398,7 @@ preset("Chamber Strings", 340,
        reverb_room(0.85, 0.3, 0.4, 0.35, 0.8), {29: 0.7},
        hover(159, 0.7, 8),
        style(2, 132, follows=2, articulation=70),
+       drums(10, kit=5, level=40, humanize=30),      # waltz on brushes, as a chamber band's
        knobs(chord_alt=(137, 100), harp_alt=(85, 100), mod=(143, 80), mod_alt=(259, 100)),
        double_tap((264, 4)))
 
@@ -414,6 +437,7 @@ preset("Folk Guitar & Bass", 25,
        reverb_room(0.45, 0.4, 0.5, 0.45, 0.6), {29: 0.6},
        hover(0, 0),
        style(3, 104, chords=2, follows=2, articulation=80),
+       drums(13, kit=5, level=55, humanize=25),      # the train beat: a country two-beat on brushes
        knobs(chord_alt=(143, 80), harp_alt=(85, 100), mod=(219, 100), mod_alt=(218, 80)),
        double_tap((256, 6)))
 
@@ -439,6 +463,7 @@ preset("Wah Clav & Bass", 300,
        chord_fx(0.12, crunch=0.12, crunch_type=0),
        {120: 2, 198: 2, 21: 1},
        rhythm([15, 0, 15, 15, 0, 15, 0, 15, 15, 0, 15, 0, 15, 15, 0, 15], bpm=100, note_ms=90),
+       drums(20, kit=4, level=65, humanize=20),      # the funky drummer-style break, on a live kit
        harp_synth(BL_SAW, 0.15), harp_env(1, 0, 400, 0.35, 160),
        harp_filter(180, 0.6, 2.2, fa=1, fd=200, fs=0.1, fr=80, sens=2.5),
        harp_trem(), harp_vib(), harp_delay(),
@@ -485,6 +510,7 @@ preset("Dub Melodica", 120,
        reverb_room(0.4, 0.45, 0.5, 0.5, 0.5), {29: 0.7},
        hover(183, 0.65, 8),
        style(12, 150, bass=2, follows=2, articulation=40),
+       drums(32, level=55, humanize=15),             # one drop: kick and rim on three
        knobs(chord_alt=(192, 70), harp_alt=(77, 50), mod=(84, 100), mod_alt=(179, 55)),
        double_tap((184, 0.9), (24, 1.0)))
 
@@ -521,6 +547,7 @@ preset("Ribbon Lead", 180,
        reverb_room(0.7, 0.3, 0.5, 0.4, 0.7), {29: 0.75},
        hover(0, 0),
        style(11, 108, articulation=90, accents=70),
+       drums(4, kit=1, level=55),                    # a power ballad on an 808, under the lead
        knobs(chord_alt=(143, 80), harp_alt=(248, 100), mod=(64, 100), mod_alt=(247, 100)),
        double_tap((245, 0)))
 
@@ -528,20 +555,21 @@ preset("Ribbon Lead", 180,
 # Each chord note its own instrument: pizzicato basses, the string quartet in the middle two, the choir
 # on top; the mod knob changes who plays the top line, sweeping the fourth note's instrument (273):
 # as the chords (the quartet), a flute (the voice's own oscillators: a sine with breath), piano,
-# pizzicato, choir, quartet. The harp is a celesta, an octave up, in the scale of each chord.
+# pizzicato, choir, quartet. The harp is a plucked string (73%) with a celesta's bell, an octave up, in the
+# scale of each chord.
 preset("Pocket Orchestra", 90,
        "A small orchestra on the chord buttons: plucked basses, a string quartet in the middle and a "
        "choir on the top line, voiced like an arrangement. The mod knob hands the top line to another "
-       "section: flute, piano, pizzicato, choir or strings. The harp is a celesta in the scale of each "
-       "chord. A hand over the plate brightens the whole orchestra, as it plays louder; double tap and "
-       "the basses take up their bows.",
+       "section: flute, piano, pizzicato, choir or strings. The harp is a plucked harp string with a "
+       "celesta's bell in it, in the scale of each chord. A hand over the plate brightens the whole "
+       "orchestra, as it plays louder; double tap and the basses take up their bows.",
        ["each chord note its own instrument", "voice leading", "31-EDO", "piano, pizzicato, choir and "
-        "string samples", "scale chosen per chord", "hover brightness"],
+        "string samples", "plucked string model", "scale chosen per chord", "hover brightness"],
        {"hover": "the orchestra brightens with a hand close over the plate, as if playing louder",
         "mod knob": "who plays the top line: strings, flute, piano, pizzicato, choir",
         "modifier + mod knob": "articulation: from marcato to a slow legato swell",
         "modifier + chord knob": "the hall: reverb",
-        "modifier + harp knob": "how long the celesta rings",
+        "modifier + harp knob": "how long the harp rings",
         "double tap": "the basses bow: arco in place of pizzicato",
         "rhythm mode": "habanera, the pizzicato basses on its dotted rhythm"},
        chord_osc(0.14, SINE, 1.0, 0.03, TRI, 2.0, 0.0, SINE, 0.5, noise=0.025),   # the flute, for the top line
@@ -554,16 +582,18 @@ preset("Pocket Orchestra", 90,
        chord_out(250, 0.85, 1.0, 1.0, 0.5),
        chord_fx(0.5, ensemble=15),
        {120: 2, 198: 2, 111: 1, 112: 7, 237: 12},
-       harp_synth(SINE, 0.15), harp_env(1, 0, 1200, 0.0, 1200),
+       harp_synth(SINE, 0.15, model=73), harp_string(3.0, 30),   # mostly plucked string, the celesta's bell in it
+       harp_env(1, 0, 2500, 0.0, 1500),
        harp_filter(2000, 1.0, 0.7),
        harp_trem(), harp_vib(), harp_delay(),
        harp_transient(0.12, SINE, 1, 2, 12, 12),            # the hammer's strike, an octave up
-       harp_out(500, 0.8, 1.0, 1.0, 0.43),
+       harp_out(500, 0.8, 1.0, 1.0, 1.0),
        harp_fx(0.45, spread=40, pattern=0),
        {36: 8, 99: 3, 252: 50},
        reverb_room(0.85, 0.3, 0.45, 0.35, 0.8), {29: 0.75},
        hover(143, 5000, 8),
        style(14, 72, follows=2, articulation=85),
+       drums(16, kit=7, level=40, humanize=30),      # the habanera on hand percussion
        knobs(chord_alt=(184, 100), harp_alt=(45, 90), mod=(273, 100), mod_alt=(137, 100)),
        double_tap((270, 5)))
 
@@ -598,6 +628,7 @@ preset("Midnight Raga", 240,
        chord_fx(0.5, ensemble=45),
        {118: 40, 119: 30, 239: 55, 240: 70},
        rhythm([4, 0, 8, 0, 8, 0, 1, 0, 0, 0], bpm=70, length=10, note_ms=1000),
+       drums(43, kit=8, level=30, humanize=40),      # a light teental on tabla, under the tanpura
        {237: 12},
        harp_synth(SINE, 0.15, model=100), harp_string(3.2, 15),
        harp_env(1, 0, 3000, 0.6, 600),
@@ -646,6 +677,7 @@ preset("Talking Strings", 150,
        reverb_room(0.6, 0.3, 0.5, 0.4, 0.7), {29: 0.75},
        hover(118, 100, 8),
        style(9, 116, bass=1, articulation=70, accents=60),
+       drums(6, kit=2, level=60),                    # disco on a 909, for the string machine and vocoder
        knobs(chord_alt=(143, 70), harp_alt=(84, 100), mod=(119, 100), mod_alt=(262, 100)),
        double_tap((260, 100), (121, 0.6)))
 
@@ -654,3 +686,7 @@ preset("Talking Strings", 150,
 for _p in PRESETS:
     _n = _p["settings"].get(274, 0)
     _p["shows"].append(f"rhythm style: {STYLES[_n]}" if _n else "rhythm mode: its own written pattern")
+    if _p["settings"].get(334):
+        _g, _k = _p["settings"].get(335, 0), _p["settings"].get(337, 0)
+        _groove = GROOVES[_g] if _g else "the style's own"
+        _p["shows"].append(f"drums: {_groove}" + (f" on the {KITS[_k]} kit" if _k else ""))

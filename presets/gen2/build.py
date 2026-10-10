@@ -22,9 +22,10 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 import presets  # noqa: E402
 
-FIRMWARE = 42          # the firmware these were made and measured on, stamped at address 7: firmware
+FIRMWARE = 60          # the firmware these were made and measured on, stamped at address 7: firmware
                        # newer than a preset resets the settings that came after it, so this must cover
-                       # every setting the presets use (the chord notes' own instruments are 41, rhythm styles 42)
+                       # every setting the presets use (the chord notes' own instruments are 41, rhythm
+                       # styles 42, the drums 60)
 PARAMETER_SIZE = 512
 RESERVED = {0, 1, 382, 383, 510, 511}
 # the instrument's, not the preset's: a restore keeps what each bank has
@@ -171,7 +172,9 @@ def main():
         "A draft: the set is still being tuned by ear, and may change before it is final.",
         "",
         "They need firmware 42 or later, from the test-allFeatures branch. From firmware 50 each one also "
-        "carries its name, which minicontrol shows in the bank dropdown and the name box.",
+        "carries its name, which minicontrol shows in the bank dropdown and the name box, and from firmware 60 "
+        "rhythm mode plays drums with it: a groove and kit chosen for each preset, softer under the gentle ones "
+        "(older firmware keeps the drum settings but plays no drums).",
         "",
         "**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         "`gen2.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, "
@@ -195,7 +198,8 @@ def main():
         "Play those two before judging them.",
         "",
         "The rhythm demos play each preset's rhythm style, with rhythm mode switched on and the chords "
-        "sent in over MIDI (firmware 45 on), a short progression in the preset's own tempo.",
+        "sent in over MIDI (firmware 45 on), a short progression in the preset's own tempo. They were "
+        "recorded before the drums, so they have none.",
         "",
         "| Bank | Preset | Demo | Rhythm | Shows |",
         "|---|---|---|---|---|",
