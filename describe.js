@@ -665,7 +665,7 @@ class Interpreter {
   anchored(toks) {
     const s = toks.join(" ");
     if (this.controls.some(([re]) => { re.lastIndex = 0; return re.test(s); })) return true;
-    return toks.some((_, i) => this.find(toks, i, this.sectionPhrases));
+    return toks.some((_, i) => this.find(toks, i, this.sectionPhrases) && !this.covered(toks, i));
   }
 
   find(toks, i, table) {
@@ -767,6 +767,7 @@ class Interpreter {
     this.voidNext = false;
     if (!controls.length && follows && this.pending.length) { controls = this.pending; carried = true; }
     if (!controls.length) {
+      this.noteVoices(s, take);
       this.switches(toks, used);
       this.namedNumbers(toks, used);
     }
@@ -958,6 +959,36 @@ class Interpreter {
       this.putRaw(va, n, "value");
       r.understood.push(`${va === 250 ? "hover" : "double tap"} value ${fmtG(n)} (${this.settingName(ta)})`);
       take(m);
+    }
+  }
+
+  // An instrument for some of the chord's notes: "choir on top", "piano bass", "pizzicato strings and choir on
+  // the chords" (the bass and top one, the middle two the other), "each note a different instrument"
+  noteVoices(s, take) {
+    const r = this.result;
+    const sets = [];
+    for (const m of s.matchAll(new RegExp(D.note_every, "g"))) sets.push([[0, 1, 2, 3], null, m]);
+    for (const m of s.matchAll(new RegExp(D.note_split, "g"))) {
+      sets.push([[0, 3], D.note_instruments[m[1]], m]);
+      sets.push([[1, 2], D.note_instruments[m[2]], m]);
+    }
+    for (const [pattern, gi, gp] of D.note_patterns)
+      for (const m of s.matchAll(new RegExp(pattern, "g"))) sets.push([D.note_positions[m[gp]], D.note_instruments[m[gi]], m]);
+    const done = [];
+    for (const [notes, voice, m] of sets) {
+      const start = m.index, end = m.index + m[0].length;
+      if (done.some(([s0, e]) => !(s0 === start && e === end) && start < e && s0 < end)) continue;
+      done.push([start, end]);
+      take(m);
+      for (const n of notes) this.put(270 + n, voice == null ? D.every_note[n] : voice, `${D.note_names[n]} voice`);
+      if (voice == null)
+        r.understood.push("chords: each note a different instrument (" +
+          [0, 1, 2, 3].map(n => `${D.note_names[n]} ${D.note_voice_names[D.every_note[n]]}`).join(", ") + ")");
+      else r.understood.push(`chords: ${D.note_voice_names[voice]} on the ` + notes.map(n => D.note_names[n]).join(" and "));
+    }
+    if (done.length) {
+      this.move(["min", "cutoff", 3000], "chord", 1, "for the sampled notes");
+      if (!r.notes.includes(D.note_voices_note)) r.notes.push(D.note_voices_note);
     }
   }
 
