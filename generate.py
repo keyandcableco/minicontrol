@@ -348,6 +348,27 @@ def generate_param_html(param):
                 </div>
             </div>
         ''')
+    elif ui_type == 'steps':
+        # one checkbox per step of the division this address holds, from its first step; the
+        # page hides the steps the live tuning doesn't have, and the rows in twelve
+        first = param['first_step']
+        bits = (max_value + 1).bit_length() - 1
+        boxes = ''.join(
+            f'''<label class="degree" title="step {first + bit}">
+                    <input type="checkbox" class="degree-box inactive" id="param-{sysex_address}-bit-{bit}"
+                           data-sysex-address="{sysex_address}" data-bit="{bit}" data-step="{first + bit}"
+                           version="{introduction_version}" {'checked' if default_value & (1 << bit) else ''}>
+                    <span>{first + bit}</span>
+                </label>'''
+            for bit in range(bits))
+        html.append(f'''
+            <div class="step-scale-line" data-first-step="{first}" style="display: flex; align-items: center; margin: 8px 0;">
+                <label style="width: 150px; font-weight: bold;" title="{html_escape(tooltip)}">{name}</label>
+                <div id="param-{sysex_address}" class="degree-row step-row" {' '.join(attrs)}>
+                    {boxes}
+                </div>
+            </div>
+        ''')
     return '\n'.join(html)
 
 # Generate rhythm grid HTML

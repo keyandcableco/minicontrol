@@ -23,7 +23,7 @@ PAGE_FILE = 'parameters.json'
 
 # taken from the firmware for every parameter
 FIRMWARE_FIELDS = ['name', 'data_type', 'min_value', 'max_value', 'default_value', 'tooltip',
-                   'method', 'iterate', 'curve', 'follows_target', 'controls']
+                   'method', 'iterate', 'curve', 'follows_target', 'controls', 'first_step']
 
 WAVEFORMS = ["Sine", "Sawtooth", "Square", "Triangle", "Bandlimited Pulse", "Pulse", "Reverse Sawtooth",
              "Sample and Hold", "Variable Triangle", "Bandlimited Sawtooth", "Reverse Bandlimited Sawtooth",
@@ -165,6 +165,8 @@ UI_OVERRIDES = {
     99: control('harp_parameter', 'Notes', 'discrete_slider'),
     116: select('harp_parameter', 'Notes', ["Steps 1-12", "Steps 13-24", "Steps 25-36"], start=1),
     236: control('harp_parameter', 'Notes', 'degrees'),
+    # the step scale: the custom scale in steps of 19, 24 or 31, eleven to an address
+    **{a: control('harp_parameter', 'Notes', 'steps') for a in (344, 345, 346)},
     # the generator scale: one interval stacked and folded into the octave
     267: control('harp_parameter', 'Notes', 'slider'),
     268: control('harp_parameter', 'Notes', 'slider'),
@@ -297,8 +299,8 @@ RHYTHM_ADDRESSES = set(range(187, 192)) | set(range(220, 236)) | set(range(274, 
 
 
 def guess_ui_type(param):
-    if param['data_type'] == 'degrees':
-        return 'degrees'
+    if param['data_type'] in ('degrees', 'steps'):
+        return param['data_type']
     if param['data_type'] == 'int' and param['min_value'] == 0 and param['max_value'] == 1:
         return 'switch'
     if param['data_type'] == 'int' and param['max_value'] - param['min_value'] <= 12:

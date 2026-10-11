@@ -545,12 +545,27 @@ function applyUIValue(param, value) {
     if (element.selectedIndex < 0 && param.none_option != null) element.value = 0;
   } else if (uiType === 'switch') {
     element.checked = value === 1;
-  } else if (uiType === 'degrees') {
-    for (let bit = 0; bit < 12; bit++) {
-      const box = document.getElementById(`param-${sysex}-bit-${bit}`);
-      if (box) box.checked = !!(value & (1 << bit));
-    }
+  } else if (uiType === 'degrees' || uiType === 'steps') {
+    element.querySelectorAll('.degree-box').forEach(box => {
+      box.checked = !!(value & (1 << parseInt(box.dataset.bit)));
+    });
   }
+  if (sysex === 237) refreshStepRows(value);
+}
+
+// The step scale's rows show the steps of the live division, each with its size in cents: none
+// in twelve, where the custom scale plays, 0-18 in 19, 0-23 in 24 and 0-30 in 31.
+const TEMPERAMENT_DIVISIONS = {10: 19, 11: 24, 12: 31};
+function refreshStepRows(temperament = currentValues[237] ?? 0) {
+  const division = TEMPERAMENT_DIVISIONS[temperament] ?? 12;
+  document.querySelectorAll('.step-scale-line').forEach(line => {
+    line.style.display = division > 12 && parseInt(line.dataset.firstStep) < division ? 'flex' : 'none';
+    line.querySelectorAll('.degree-box').forEach(box => {
+      const step = parseInt(box.dataset.step);
+      box.closest('.degree').style.display = step < division ? '' : 'none';
+      box.closest('.degree').title = `step ${step} of ${division}: ${Math.round(step * 1200 / division)} cents`;
+    });
+  });
 }
 
 // the double tap value that follows this control, if any
@@ -632,6 +647,7 @@ async function setupParameterControls() {
           controller.sendParameter(sysex, value);
           markEdited();
           if (sysex === 20) updateUIColor();
+          if (sysex === 237) refreshStepRows(value);
           refreshFollower(sysex);
           refreshKnobSpans();
         });
@@ -644,7 +660,7 @@ async function setupParameterControls() {
           markEdited();
           checkConflicts(sysex);
         });
-      } else if (uiType === 'degrees') {
+      } else if (uiType === 'degrees' || uiType === 'steps') {
         // each box is one bit of the value: assemble the mask from the whole row and send it
         element.querySelectorAll('.degree-box').forEach(box => {
           box.addEventListener('input', () => {

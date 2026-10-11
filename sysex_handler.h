@@ -77,7 +77,7 @@ void apply_audio_parameter(int adress, int value) {
             main_reverb.diffusion(value/100.0);
             break;
         case 29:
-            pan=value/100.0;apply_audio_parameter(85, current_sysex_parameters[85]);apply_audio_parameter(184, current_sysex_parameters[184]);
+            pan=value/100.0;apply_harp_bus();apply_chord_bus();apply_string_spreads();
             break;
         case 30:
             transpose_semitones=value;transpose_steps=(transpose_semitones*EDO+6)/12;midi_base_note_transposed=midi_base_note+transpose_semitones;
@@ -279,7 +279,7 @@ void apply_audio_parameter(int adress, int value) {
             strings_effect_mix.gain(1,value/100.0);strings_effect_mix_r.gain(1,value/100.0);
             break;
         case 85:
-            reverb_mixer.gain(0,value/100.0/2);reverb_mixer.gain(2,value/100.0/2);string_r_stereo_gain.amplitude((1-reverb_dry_proportion*value/100.0)*pan,100);string_l_stereo_gain.amplitude(1-reverb_dry_proportion*value/100.0,100);
+            reverb_mixer.gain(0,value/100.0/2);reverb_mixer.gain(2,value/100.0/2);string_dry=1-reverb_dry_proportion*value/100.0;apply_harp_bus();
             break;
         case 86:
             string_waveshaper_mix.gain(0,1-value/100.0);string_waveshaper_mix_r.gain(0,1-value/100.0);string_waveshaper_mix.gain(1,value/100.0);string_waveshaper_mix_r.gain(1,value/100.0);
@@ -654,7 +654,7 @@ void apply_audio_parameter(int adress, int value) {
             chords_effect_mix.gain(1,value/100.0);
             break;
         case 184:
-            reverb_mixer.gain(1,value/100.0);chords_r_stereo_gain.amplitude(1.0-reverb_dry_proportion*value/100.0,100);chords_l_stereo_gain.amplitude((1.0-reverb_dry_proportion*value/100.0)*pan,100);
+            reverb_mixer.gain(1,value/100.0);chord_dry=1.0-reverb_dry_proportion*value/100.0;apply_chord_bus();
             break;
         case 185:
             chord_waveshaper_mix.gain(0,1-value/100.0);chord_waveshaper_mix.gain(1,value/100.0);
@@ -714,7 +714,7 @@ void apply_audio_parameter(int adress, int value) {
             harp_pluck_on_lift=value;
             break;
         case 217:
-            for (int s=0;s<12;s++) string_pluck_array[s]->blend(value/100.0);
+            string_blend=value/100.0;apply_string_blend();
             break;
         case 218:
             for (int s=0;s<12;s++) string_pluck_array[s]->decay(value/100.0 > 0 ? value/100.0 : 3.0);
@@ -828,7 +828,7 @@ void apply_audio_parameter(int adress, int value) {
             looper_action(value);
             break;
         case 257:
-            string_spread=value; apply_string_spreads();
+            string_spread=value; apply_string_spreads(); apply_harp_bus();
             break;
         case 258:
             string_spread_pattern=value; apply_string_spreads();
@@ -1051,6 +1051,15 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 343:
             harp_drums=value;
+            break;
+        case 344:
+            step_scale_mask[0]=value; rebuild_custom_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
+            break;
+        case 345:
+            step_scale_mask[1]=value; rebuild_custom_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
+            break;
+        case 346:
+            step_scale_mask[2]=value; rebuild_custom_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
             break;
         default:
             break;
