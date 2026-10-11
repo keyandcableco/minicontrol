@@ -642,6 +642,7 @@ async function setupParameterControls() {
           currentValues[sysex] = value;
           controller.sendParameter(sysex, value);
           markEdited();
+          checkConflicts(sysex);
         });
       } else if (uiType === 'degrees') {
         // each box is one bit of the value: assemble the mask from the whole row and send it
@@ -662,6 +663,114 @@ async function setupParameterControls() {
   });
   refreshKnobSpans();
   updateUIColor();
+  refreshConflicts();
+}
+
+// Settings that get in each other's way. Turning one on by hand while the rest of its clash is on
+// brings up a pop-up that says why it may not be heard and offers to turn the others off; while
+// the clash lasts a ⚠ beside each of its settings says so too, for whoever wonders later.
+const CONFLICTS = [
+  {
+    settings: [245, 343],   // harp ribbon, harp drums
+    clash: v => v[245] === 1 && v[343] === 1,
+    why: "the ribbon and the drums both play the harp strip, so only one of them can be heard",
+  },
+];
+
+const settingName = sysex => findParameterBySysex(sysex)?.name ?? `setting ${sysex}`;
+const capital = text => text[0].toUpperCase() + text.slice(1);
+
+// a setting put back to off, by the pop-up's button
+function turnOff(sysex) {
+  const param = findParameterBySysex(sysex);
+  if (!param) return;
+  tempValues[sysex] = 0;
+  currentValues[sysex] = 0;
+  applyUIValue(param, 0);
+  controller.sendParameter(sysex, 0);
+  markEdited();
+}
+
+let conflictPopup = null;
+function closeConflictPopup() {
+  conflictPopup?.remove();
+  conflictPopup = null;
+}
+
+// the pop-up for a clash, as seen from one of its settings: the others are what is still on
+function showConflictPopup(conflict, from) {
+  closeConflictPopup();
+  const others = conflict.settings.filter(s => s !== from);
+  const still = others.map(settingName).join(" and ");
+  const box = document.createElement("div");
+  box.id = "conflict-popup";
+  box.dataset.conflict = String(CONFLICTS.indexOf(conflict));
+  box.setAttribute("role", "alertdialog");
+  box.setAttribute("aria-labelledby", "conflict-popup-title");
+  box.setAttribute("aria-describedby", "conflict-popup-text");
+  const title = document.createElement("strong");
+  title.id = "conflict-popup-title";
+  title.textContent = `⚠ ${capital(still)} ${others.length > 1 ? "are" : "is"} still on`;
+  const text = document.createElement("p");
+  text.id = "conflict-popup-text";
+  text.textContent = `${capital(settingName(from))} may not work while it is: ${conflict.why}.`;
+  const fix = document.createElement("button");
+  fix.type = "button";
+  fix.className = "always-on";
+  fix.textContent = `Turn ${still} off`;
+  fix.addEventListener("click", () => {
+    others.forEach(turnOff);
+    refreshConflicts();
+  });
+  const keep = document.createElement("button");
+  keep.type = "button";
+  keep.className = "always-on conflict-keep";
+  keep.textContent = "Keep both";
+  keep.addEventListener("click", closeConflictPopup);
+  const buttons = document.createElement("div");
+  buttons.className = "conflict-buttons";
+  buttons.append(fix, keep);
+  box.append(title, text, buttons);
+  document.body.appendChild(box);
+  conflictPopup = box;
+  fix.focus({ preventScroll: true });
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && conflictPopup) closeConflictPopup();
+});
+
+// a ⚠ beside each setting of a clash that is on, and none beside the rest
+function refreshConflicts() {
+  document.querySelectorAll(".conflict-mark").forEach(mark => mark.remove());
+  let popupStands = false;
+  CONFLICTS.forEach((conflict, index) => {
+    if (!conflict.clash(currentValues)) return;
+    if (conflictPopup?.dataset.conflict === String(index)) popupStands = true;
+    for (const sysex of conflict.settings) {
+      const element = document.getElementById(`param-${sysex}`);
+      if (!element) continue;
+      const others = conflict.settings.filter(s => s !== sysex).map(settingName).join(" and ");
+      const mark = document.createElement("button");
+      mark.type = "button";
+      mark.className = "conflict-mark always-on";
+      mark.textContent = "⚠";
+      mark.title = `${capital(others)} is on too: ${conflict.why}`;
+      mark.setAttribute("aria-label", mark.title);
+      mark.addEventListener("click", () => showConflictPopup(conflict, sysex));
+      element.after(mark);
+    }
+  });
+  // the clash it spoke of is over, however it ended
+  if (conflictPopup && !popupStands) closeConflictPopup();
+}
+
+// after a hand changes a setting: a clash it has just begun gets the pop-up
+function checkConflicts(sysex) {
+  const before = { ...currentValues, [sysex]: 0 };
+  const begun = CONFLICTS.find(c => c.settings.includes(sysex) && c.clash(currentValues) && !c.clash(before));
+  if (begun) showConflictPopup(begun, sysex);
+  refreshConflicts();
 }
 
 function handleDataReceived(data) {
@@ -790,6 +899,7 @@ async function updateUI(bankNumber) {
   refreshKnobSpans();
   updateUIColor();
   refreshRhythmGrid();
+  refreshConflicts();
     if (!isShowingNotification) {
     updateConnectionStatus(controller.isConnected(), null);
   }

@@ -1628,3 +1628,53 @@
         min-height: 36px;
       }
     }
+    /* settings that get in each other's way: a ⚠ beside each while they clash, and the pop-up */
+    :root {
+      --conflict-bg: #fff4d6;
+      --conflict-border: #c98a00;
+      --conflict-text: #4a3300;
+    }
+    [data-theme="dark"] {
+      --conflict-bg: #3a2c08;
+      --conflict-border: #e0a526;
+      --conflict-text: #f5e3b8;
+    }
+    button.conflict-mark {
+      padding: 0 6px;
+      background: none;
+      color: var(--conflict-border);
+      font-size: 1.2em;
+      line-height: 1;
+    }
+    button.conflict-mark:hover {
+      background: var(--conflict-bg);
+    }
+    #conflict-popup {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      z-index: 1000;
+      box-sizing: border-box;
+      width: min(440px, calc(100vw - 32px));
+      padding: 14px 16px;
+      background: var(--conflict-bg);
+      color: var(--conflict-text);
+      border: 2px solid var(--conflict-border);
+      border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+    }
+    #conflict-popup p {
+      margin: 6px 0 12px;
+      line-height: 1.4;
+    }
+    #conflict-popup .conflict-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    #conflict-popup button.conflict-keep {
+      background: none;
+      color: var(--conflict-text);
+      border: 1px solid var(--conflict-border);
+    }
