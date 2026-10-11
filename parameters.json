@@ -8320,7 +8320,7 @@
       "min_value": 0,
       "max_value": 1,
       "default_value": 0,
-      "tooltip": "the harp's twelve strings play the drum kit instead of notes, the lowest string the kick: kick, snare, side stick, clap, closed hat, open hat, cymbal, low tom, high tom, low conga, high conga, bell. As hard as they are struck, with or without rhythm mode, and out over MIDI with drum MIDI out. The kit is drum kit's, or the groove's. 0 the strings play notes, as before",
+      "tooltip": "the harp's twelve strings play the drum kit instead of notes, the lowest string the kick: kick, snare, side stick, clap, closed hat, open hat, cymbal, low tom, high tom, low conga, high conga, bell. As hard as they are struck, with or without rhythm mode, and out over MIDI with drum MIDI out. The kit is drum kit's, or the groove's. While on, the harp ribbon, the zipper plate, hammer-on and palm mute rest. 0 the strings play notes, as before",
       "method": "harp_drums=value;",
       "iterate": 1,
       "curve": "linear",

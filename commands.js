@@ -717,6 +717,16 @@ class Planner {
     if (!items) return false;
     // "turn on the delay": describe.js knows what an effect needs to be heard
     if (on && items.some(it => it.addrs && it.addrs.some(a => !binary(a)))) return false;
+    // "turn on the harp drums": a switch with words of its own in describe.js, which knows what else it
+    // needs (a drum level above 0) and what to say about it
+    if (on && items.every(it => it.addrs)) {
+      const addrs = items.flatMap(it => it.addrs);
+      const probe = describe.interpret(phrase, this.ctx.values(keys[0]), { first: false, presetNames: [] });
+      if (!probe.unknown.length && addrs.every(a => probe.changes.some(ch => ch.address === a && ch.value > 0))) {
+        this.describeText(phrase, keys);
+        return true;
+      }
+    }
     for (const it of items) {
       if (it.control) {
         if (on) { this.note(`say what ${CONTROL_NAME[it.control.kind]} should control: "${CONTROL_NAME[it.control.kind]} to the reverb"`); continue; }

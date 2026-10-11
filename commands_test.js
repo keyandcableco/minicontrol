@@ -15,6 +15,8 @@ commands.setup(data, JSON.parse(fs.readFileSync(here("parameters.json"))));
 
 const CASES = [
   ["turn off hover", { live: { 249: 0 } }, { before: { live: { 249: 143 } } }],
+  ["turn on harp drums", { live: { 343: 1 } }],
+  ["turn on the harp drums", { live: { 338: 70, 343: 1 } }, { before: { live: { 338: 0 } } }],
   ["assign mod pot to key signature on banks 2 and 4", { b1: { 14: 35 }, b3: { 14: 35 } }],
   ["set reverb to 40%", { live: { 85: 40, 184: 40 } }],
   ["set the chord attack to 200 ms", { live: { 137: 200 } }],
