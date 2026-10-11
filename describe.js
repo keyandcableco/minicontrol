@@ -37,6 +37,9 @@ function fmtG(v) {                         // Python's {:g}
   return String(parseFloat(Number(v).toPrecision(6)));
 }
 function setOf(a) { return new Set(a); }
+function join(names) {                     // a, b and c
+  return names.length === 1 ? names[0] : names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+}
 function intersects(set, list) { return list.some(w => set.has(w)); }
 
 // ---- settings: stored values (what the minichord keeps) and the units words use ----
@@ -314,6 +317,74 @@ class Interpreter {
     else if (kind === "add") next = cur + v;
     else return;
     this.put(a, next, why);
+    if (role === "voice" && section === "chord") this.wholeChord();
+  }
+
+  // ---- the sampled voices ----
+
+  // An instrument for the chords is every note's: a note given its own one goes back to the chord voice,
+  // unless this description gave it
+  wholeChord() {
+    const addrs = [0, 1, 2, 3].map(n => D.roles[`voice${n + 1}`].chord);
+    const notes = [0, 1, 2, 3].filter(n => this.state[addrs[n]] && !this.touched.has(addrs[n]));
+    const voice = this.state[D.roles.voice.chord] + 1;     // in the notes' own count
+    const had = new Map();
+    for (const n of notes) {
+      if (this.state[addrs[n]] !== voice) {
+        const name = D.note_voice_names[this.state[addrs[n]]];
+        if (!had.has(name)) had.set(name, []);
+        had.get(name).push(D.note_names[n]);
+      }
+      this.put(addrs[n], 0, "the chord voice");
+    }
+    if (had.size)
+      this.later.push("every chord note on the chord voice now (it had " + join(
+        [...had].map(([name, where]) => `${name} on ${where.length === 4 ? "all four notes" : "the " + join(where)}`)) + ")");
+  }
+  // The sampled instruments a section plays in place of its oscillators: none when any of its notes hears them
+  samples(section) {
+    const voice = this.state[D.roles.voice[section]] || 0;
+    if (section === "harp") return voice ? [D.voice_names[voice]] : [];
+    const heard = [];
+    for (let n = 0; n < 4; n++) {
+      const own = this.state[D.roles[`voice${n + 1}`].chord] || 0;
+      if (own === 1 || (own === 0 && voice === 0)) return [];
+      heard.push(own ? D.note_voice_names[own] : D.voice_names[voice]);
+    }
+    return [...new Set(heard)];
+  }
+  // A word for the oscillators, said of a section playing a sample: a waveform names the synth, so the section
+  // goes back to it, unless this description chose its instrument. Another word reaches a sample only in part,
+  // which is said once the description is read, of the instrument it ends on
+  oscillators(entry, section) {
+    if (this.profile) return;
+    for (const s of this.sections(section)) {
+      const roles = new Set(this.movesFor(entry.moves, s).map(m => m[1]));
+      if (![...roles].some(x => D.osc_roles.includes(x))) continue;
+      const samples = this.samples(s);
+      if (samples.length && [...roles].every(x => D.wave_roles.includes(x)) && !this.touched.has(D.roles.voice[s])) {
+        this.move(["exact", "voice", 0], s, 1, entry.label);
+        this.later.push(`${entry.label}: the ${s === "chord" ? "chords on their" : "harp on its"} own ` +
+                        `synth again, in place of the ${join(samples)}, since a waveform is the synth's`);
+      } else {
+        if (!this.unheard.has(s)) this.unheard.set(s, new Map());
+        this.unheard.get(s).set(entry.label, [...roles].every(x => D.osc_roles.includes(x)));
+      }
+    }
+  }
+  sayUnheard() {
+    for (const [s, words] of this.unheard) {
+      const samples = this.samples(s);
+      if (!samples.length) continue;
+      const [part, whose] = s === "chord" ? ["chords", "their"] : ["harp", "its"];
+      for (const [how, labels] of [["not", [...words].filter(([, all]) => all).map(([w]) => w)],
+                                   ["only partly", [...words].filter(([, all]) => !all).map(([w]) => w)]]) {
+        if (labels.length)   // the synth offered, unless the sample was asked for too
+          this.result.notes.push(`${join(labels)}: ${how} heard, since the ${part} play${s === "harp" ? "s" : ""} the ` +
+                                 `${join(samples)} and not ${whose} oscillators` +
+                                 (this.touched.has(D.roles.voice[s]) ? "" : `; say "synth ${part}" for all of it`));
+      }
+    }
   }
   movesFor(moves, section) {
     if (moves && !Array.isArray(moves)) return moves[section] || [];
@@ -364,6 +435,7 @@ class Interpreter {
         return;
       }
       const k = { 1: 1.0, 2: 1.6, 0: 0.5 }[strength];
+      this.oscillators(entry, section);
       this.apply(entry, section, k, entry.label);
       r.understood.push(`${prefix}${{ 1: "", 2: "very ", 0: "slightly " }[strength]}${entry.label}`);
     } else if (entry.kind === "effect") {
@@ -661,8 +733,11 @@ class Interpreter {
     this.voidNext = false;
     this.lastValue = null;
     this.forced = null;
+    this.unheard = new Map();
+    this.later = [];   // said once the whole description is read, so a song's recipe keeps them too
     for (const clause of this.clauses(normalise(text))) this.clause(clause);
-    this.result.notes = [...new Set(this.result.notes)];
+    this.sayUnheard();
+    this.result.notes = [...new Set(this.result.notes.concat(this.later))];
     const color = this.color != null ? this.color : (this.profile ? null : this.hue);
     if (color != null && this.result.understood.length && (first || this.color != null)) this.put(20, color, "bank color");
     const addrs = this.profile ? [...this.touched] : Object.keys(this.state).filter(a => this.state[a] !== start[a]);
