@@ -737,6 +737,7 @@ class Interpreter {
     this.later = [];   // said once the whole description is read, so a song's recipe keeps them too
     for (const clause of this.clauses(normalise(text))) this.clause(clause);
     this.sayUnheard();
+    if (!this.profile) this.later.push(...conflictNotes(start, this.state, this.selectors, a => this.settingName(a)));
     this.result.notes = [...new Set(this.result.notes.concat(this.later))];
     const color = this.color != null ? this.color : (this.profile ? null : this.hue);
     if (color != null && this.result.understood.length && (first || this.color != null)) this.put(20, color, "bank color");
@@ -1224,6 +1225,53 @@ class Interpreter {
   }
 }
 
+// The CONFLICTS rows (interpret.py) the change from start to state brought about, as notes. State is
+// keyed by address, in the description's own units.
+function conflictNotes(start, state, selectors, name) {
+  const val = a => state[a] != null ? state[a] : 0;
+  const target = a => {
+    if (a !== null && typeof a === "object") {
+      const t = Math.trunc(Number(val(a.at)) || 0);
+      return PARAMS[t] ? t : null;
+    }
+    return a;
+  };
+  const holds = ([a0, op, b0]) => {
+    const a = target(a0);
+    if (a === null) return false;
+    if (op === "selector" || op === "!selector") return selectors.has(a) === (op === "selector");
+    if (op === "sweepable" || op === "!sweepable") return (PARAMS[a].controls === "all") === (op === "sweepable");
+    const x = val(a);
+    let b = b0;
+    if (b !== null && typeof b === "object" && !Array.isArray(b)) b = "value" in b ? val(b.value) : b.values.map(val);
+    switch (op) {
+      case "==": return x === b;
+      case "!=": return x !== b;
+      case ">": return x > b;
+      case "<": return x < b;
+      case "in": return b.includes(x);
+      default: return !b.includes(x);
+    }
+  };
+  const isAt = a => a !== null && typeof a === "object" && !Array.isArray(a);
+  const notes = [];
+  for (const row of D.conflicts || []) {
+    const about = row.about.map(target);
+    if (!about.some(a => a !== null && val(a) !== (start[a] != null ? start[a] : 0))) continue;
+    if (!row.when.every(holds)) continue;
+    let note = row.note;
+    if (note.includes("{target}")) {
+      const w = row.when.find(t => isAt(t[0]));
+      const at = w ? w[0] : row.about.find(isAt);
+      const t = at ? target(at) : Math.trunc(Number(val(row.when[0][0])) || 0);
+      if (t === null || !PARAMS[t]) continue;
+      note = note.split("{target}").join(name(t));
+    }
+    notes.push(note);
+  }
+  return notes;
+}
+
 function interpret(text, values, opts) {
   opts = opts || {};
   const it = new Interpreter(opts.presetNames || [], opts.profile);
@@ -1281,7 +1329,15 @@ function loadDescribeData() {
   return loading;
 }
 
-const api = { interpret, describePreset, describeProfile, decode, applyChanges, defaultValues, setData, loadDescribeData,
+// The conflicts a change of stored values brings about (commands.js's direct changes)
+let namer = null;
+function conflicts(before, after) {
+  const human = v => { const st = {}; for (const k of Object.keys(PARAMS)) st[k] = toHuman(PARAMS[k], v[k] || 0); return st; };
+  namer = namer || new Interpreter([], false);
+  return conflictNotes(human(before), human(after), setOf(D.selectors), a => namer.settingName(a));
+}
+
+const api = { interpret, describePreset, describeProfile, decode, applyChanges, defaultValues, setData, loadDescribeData, conflicts,
               label: a => label(a), toHuman: (a, v) => toHuman(PARAMS[a], v), params: () => PARAMS,
               // for checking the speech model from a console: describe.hear(url of a recording)
               hear: async url => (await loadSpeechModel())(url) };

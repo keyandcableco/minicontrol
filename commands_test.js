@@ -111,6 +111,28 @@ for (const [text, want] of PRESET_CASES) {
     console.log(`FAIL "${text}"\n  want ${want}\n  got  ${got}`);
   }
 }
-const total = CASES.length + PRESET_CASES.length;
+// the warnings a change brings: [instruction, words its notes must hold ("" none), values before]
+const NOTE_CASES = [
+  ["turn on drums only", "a chord press makes no sound"],
+  ["turn on drums only", "", { 274: 3, 276: 1 }],
+  ["turn on voice leading", "the spacing isn't heard", { 38: 1 }],
+  ["turn on mpe and drums to midi", "play the drums as that string"],
+  ["set knob layer to 1", "the harp knob plays its alternate only"],
+  ["set the touch pressure to 1", "only its MIDI goes out"],
+  ["set the touch pressure to 1", "", { 252: 50 }],
+];
+for (const [text, want, before] of NOTE_CASES) {
+  const ctx = { currentBank: 2, presetNames: [], presets, bankNames, why: () => {}, work: {},
+                values(k) { if (!this.work[k]) { this.work[k] = describe.defaultValues();
+                              for (const [a, v] of Object.entries(before || {})) this.work[k][+a] = v; }
+                            return this.work[k]; } };
+  const notes = commands.plan(text, ctx).notes.join(" // ");
+  const ok = want ? notes.includes(want) : !/makes no sound|isn't heard|plays its alternate only|only its MIDI/.test(notes);
+  if (!ok) {
+    failed++;
+    console.log(`FAIL "${text}" ${JSON.stringify(before || {})}\n  want ${want ? "a note with: " + want : "no conflict note"}\n  notes: ${notes}`);
+  }
+}
+const total = CASES.length + PRESET_CASES.length + NOTE_CASES.length;
 console.log(`${total - failed} of ${total} instructions as expected`);
 process.exit(failed ? 1 : 0);

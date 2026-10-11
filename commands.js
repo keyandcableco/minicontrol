@@ -487,12 +487,14 @@ class Planner {
     const made = [];
     for (const key of keys) {
       const values = this.ctx.values(key);
+      const before = values.slice();
       const r = describe.applyChanges(values, changes, true);
       for (const n of r.notes) this.note(n);
       for (const [a, , v] of r.made) {
         values[a] = v;
         this.ctx.why(key, a, reason);
       }
+      for (const n of describe.conflicts(before, values)) this.note(n);   // what the change runs into
       made.push(...r.made);
     }
     return made;
