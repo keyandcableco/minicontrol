@@ -665,9 +665,9 @@
       "name": "temperament",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 12,
+      "max_value": 13,
       "default_value": 0,
-      "tooltip": "tuning of the notes: 0=equal, 1=quarter-comma meantone, 2=five-limit just (C major), 3=pythagorean, 4=werckmeister III, 5=kirnberger III, 6=vallotti, 7=young no. 2, 8=kellner, 9=sixth-comma meantone, 10=19-EDO, 11=24-EDO (quarter tones), 12=31-EDO. A keeps the master tuning pitch in the twelve-note ones, which are fixed to the keyboard, sweetest around C, so far keys sound progressively rougher, as they did historically. 10 and 11 divide the octave differently instead",
+      "tooltip": "tuning of the notes: 0=equal, 1=quarter-comma meantone, 2=five-limit just (C major), 3=pythagorean, 4=werckmeister III, 5=kirnberger III, 6=vallotti, 7=young no. 2, 8=kellner, 9=sixth-comma meantone, 10=19-EDO, 11=24-EDO (quarter tones), 12=31-EDO, 13=your own (own temperament C to B, which a Scala file or a MIDI Tuning Standard message from a computer also sets). A keeps the master tuning pitch in the twelve-note ones, which are fixed to the keyboard, sweetest around C, so far keys sound progressively rougher, as they did historically. 10 and 11 divide the octave differently instead",
       "method": "apply_temperament(value);",
       "iterate": 1,
       "curve": "linear",
@@ -724,6 +724,10 @@
         {
           "value": 12,
           "label": "31-EDO"
+        },
+        {
+          "value": 13,
+          "label": "Your own (own temperament)"
         }
       ],
       "step": 1
@@ -1314,6 +1318,379 @@
         {
           "value": 2,
           "label": "Down and up, in eighths"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 349,
+      "group": "Key and tuning",
+      "ui_type": "select",
+      "name": "modifier step",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "how far the modifier moves a note, in the divided octaves. 0 as the tuning has it: the chromatic semitone in 19 and 31, a quarter-tone in 24. 1 one step of the tuning: the diesis of 31 (C to C half-sharp, 39 cents), the quarter-tone of 24, the semitone of 19. 2 the chromatic semitone in every one, so 24 plays the semitones again. Key signatures still sharpen and flatten by the semitone. In twelve it changes nothing",
+      "method": "modifier_step_choice=value; apply_modifier_step();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.64,
+      "options": [
+        {
+          "value": 0,
+          "label": "As the tuning has it"
+        },
+        {
+          "value": 1,
+          "label": "One step of the tuning"
+        },
+        {
+          "value": 2,
+          "label": "The chromatic semitone"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 358,
+      "group": "Key and tuning",
+      "ui_type": "slider",
+      "name": "purity",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "draws every note from its tempered pitch toward the just interval it makes with the root of the chord being played, in percent: thirds toward 5/4 and 6/5, fifths toward 3/2, a dominant seventh's seventh toward 7/4, the neutral third of 31 toward 11/9, and the harp's notes toward the same root, so they sit in the chord. Put it on a knob or hover and a held chord goes from beating to still under the hand. The chord's root stays where the temperament puts it, so the tuning never drifts from chord to chord. Steps with no simple ratio near them keep their pitch. In MPE the pure pitch goes out as each voice's bend. 0 tempered, as before",
+      "method": "purity=value; rebuild_purity(); retune_active_voices();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.66,
+      "step": 1
+    },
+    {
+      "sysex_adress": 359,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament C",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's C: how far it sits from equal temperament, in tenths of a cent from 1000, so 1000 is equal, 863 is 13.7 cents flat and 1140 14 cents sharp (-100 to +100 cents). The twelve make your own temperament, as a Scala file of twelve notes does; the editor can read one in, and a MIDI Tuning Standard scale/octave or bulk dump message from a computer sets all twelve and selects it. A at 1000 keeps A on the master tuning pitch",
+      "method": "own_temperament_cents[0]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 360,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament C#",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's C#, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[1]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 361,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament D",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's D, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[2]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 362,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament Eb",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's Eb, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[3]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 363,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament E",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's E, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[4]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 364,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament F",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's F, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[5]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 365,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament F#",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's F#, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[6]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 366,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament G",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's G, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[7]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 367,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament Ab",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's Ab, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[8]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 368,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament A",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's A, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[9]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 369,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament Bb",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's Bb, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[10]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 370,
+      "group": "Own temperament",
+      "ui_type": "cents",
+      "name": "own temperament B",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 1000,
+      "tooltip": "temperament 13's B, in tenths of a cent from 1000 (see own temperament C)",
+      "method": "own_temperament_cents[11]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); }",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 371,
+      "group": "MIDI",
+      "ui_type": "switch",
+      "name": "MTS output",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "outside MPE, retunes each note's key just before it starts with a MIDI Tuning Standard message (single note tuning change, real time), so a synth that reads MTS (Surge, Pianoteq, Vital, many hardware synths) plays the divided octaves, the temperaments, purity, a string's bend and the master tuning as the minichord sounds them, on one channel. Two notes that leave as one key share its tuning: in 31, C# and Db are the same key. MPE output, when on, carries the pitch instead. 0 off, as before",
+      "method": "mts_output=value; mts_reset();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.67,
+      "step": 1
+    },
+    {
+      "sysex_adress": 372,
+      "group": "Drone",
+      "ui_type": "select",
+      "name": "drone",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 5,
+      "default_value": 0,
+      "tooltip": "a drone on the key's Sa under everything, to hear every interval against, as a raga or a maqam is learnt and played: 1 a tanpura, its four strings plucked in turn over and over, Pa below Sa, Sa, Sa, and Sa an octave down, each buzzing on its bridge as it rings; 2 the same with Ma in place of Pa (for ragas without Pa); 3 with Ni (for ragas like Marwa); 4 all Sa; 5 a shruti box, Sa, Pa and the Sa below as reeds, breathing slowly. Sa is C and the transpose, at the temperament's pitch, and the strings around it are tuned pure. It plays whether or not rhythm mode is on; put it under the double tap to bring it in and out. 0 off",
+      "method": "drone_set_mode(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.68,
+      "options": [
+        {
+          "value": 0,
+          "label": "Off"
+        },
+        {
+          "value": 1,
+          "label": "Tanpura: Pa, Sa, Sa, low Sa"
+        },
+        {
+          "value": 2,
+          "label": "Tanpura with Ma"
+        },
+        {
+          "value": 3,
+          "label": "Tanpura with Ni"
+        },
+        {
+          "value": 4,
+          "label": "Tanpura: all Sa"
+        },
+        {
+          "value": 5,
+          "label": "Shruti box: Sa and Pa"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 373,
+      "group": "Drone",
+      "ui_type": "slider",
+      "name": "drone level",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 50,
+      "tooltip": "how loud the drone is, in percent; at 50 it sits under the harp",
+      "method": "drum_machine.drone.level(value/100.0f);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.68,
+      "step": 1
+    },
+    {
+      "sysex_adress": 374,
+      "group": "Drone",
+      "ui_type": "slider",
+      "name": "drone pace",
+      "data_type": "int",
+      "min_value": 4,
+      "max_value": 30,
+      "default_value": 12,
+      "tooltip": "how long the tanpura player waits from one string to the next, in tenths of a second, with one more wait before each round: 12, the usual, plucks a round every six seconds. Not for the shruti box",
+      "method": "drum_machine.drone.pace(value/10.0f);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.68,
+      "step": 1
+    },
+    {
+      "sysex_adress": 375,
+      "group": "Drone",
+      "ui_type": "select",
+      "name": "drone register",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 1,
+      "tooltip": "where the drone's Sa sits: 0 low, from E2 to E3 (a male singer's tanpura), 1 middle, from A2 to A3, 2 high, from D3 to D4 (a female singer's). The lowest string is an octave below",
+      "method": "drone_register=value; drone_set_mode(drone_mode);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.68,
+      "options": [
+        {
+          "value": 0,
+          "label": "Low: Sa from E2"
+        },
+        {
+          "value": 1,
+          "label": "Middle: Sa from A2"
+        },
+        {
+          "value": 2,
+          "label": "High: Sa from D3"
         }
       ],
       "step": 1
@@ -4570,10 +4947,10 @@
       "default_value": 0,
       "data_type": "int",
       "min_value": 0,
-      "max_value": 13,
+      "max_value": 15,
       "sysex_adress": 36,
       "curve": "linear",
-      "tooltip": "what the harp strings play. 0=follows the chord (default), 1=Major, 2=Major Pentatonic, 3=Minor Pentatonic, 4=Diminished 6th, 5=Relative Natural Minor, 6=Relative Harmonic Minor, 7=Relative Minor Pentatonic, 8=scale chosen per chord, 9=as 8 but pentatonic, 10=your own scale rooted on the key, 11=your own scale rooted on the chord, 12=the generator scale rooted on the key, 13=the generator scale rooted on the chord",
+      "tooltip": "what the harp strings play. 0=follows the chord (default), 1=Major, 2=Major Pentatonic, 3=Minor Pentatonic, 4=Diminished 6th, 5=Relative Natural Minor, 6=Relative Harmonic Minor, 7=Relative Minor Pentatonic, 8=scale chosen per chord, 9=as 8 but pentatonic, 10=your own scale rooted on the key, 11=your own scale rooted on the chord, 12=the generator scale rooted on the key, 13=the generator scale rooted on the chord, 14=a maqam (see maqam) rooted on the key, 15=a maqam rooted on the chord",
       "iterate": 1,
       "method": "scalar_harp_selection=value; for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); }",
       "introduction_version": 0.09,
@@ -4635,6 +5012,14 @@
         {
           "value": 13,
           "label": "Generator Scale (chord root)"
+        },
+        {
+          "value": 14,
+          "label": "Maqam (key root)"
+        },
+        {
+          "value": 15,
+          "label": "Maqam (chord root)"
         }
       ]
     },
@@ -6584,6 +6969,207 @@
       "controls": "tap",
       "first_step": 22,
       "introduction_version": 0.63
+    },
+    {
+      "sysex_adress": 347,
+      "group": "Pluck",
+      "ui_type": "switch",
+      "name": "koto press steps",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "counts koto press in steps of the tuning rather than semitones, so in 24 a koto press of 1 bends a quarter-tone and in 31 a diesis, the notes between the semitones a bend in semitones passes over. In twelve they are the same. 0 semitones, as before",
+      "method": "koto_press_steps=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.64,
+      "step": 1
+    },
+    {
+      "sysex_adress": 348,
+      "group": "Pluck",
+      "ui_type": "slider",
+      "name": "koto press snap",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "holds a koto press bend on each step it passes (each semitone, or each step of the tuning with koto press steps): this much of each step's width, in percent, plays the step in tune, and between them the pitch slides the rest of the way, as ribbon snap holds the ribbon to its strings. A press then lands on the shrutis rather than past them, and still never jumps. 0 smooth, as before; 100 steps from one to the next",
+      "method": "koto_press_snap=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.64,
+      "step": 1
+    },
+    {
+      "sysex_adress": 350,
+      "group": "Ribbon",
+      "ui_type": "slider",
+      "name": "ribbon step snap",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "a second, lighter ribbon snap, for the notes between the strings: where two strings are more than one step of the tuning apart, the slide between them is held on each step it passes, this much of each step's width in percent. With ribbon snap high and this lower, the strings' notes are easy to find and the steps between them, a 31's dieses or a 24's quarter-tones, can still be landed on. 0 slides evenly between strings, as before",
+      "method": "ribbon_step_snap=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.64,
+      "step": 1
+    },
+    {
+      "sysex_adress": 351,
+      "group": "Notes",
+      "ui_type": "switch",
+      "name": "melodic direction",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "a scale that goes down by other notes than it goes up, as a raga's aroha and avaroha, a maqam or melodic minor do: with this on, in scalar harp modes 10, 11, 14 and 15 each string plucked lower than the one before (a strum down, a falling line) plays the scale's down form, and each plucked higher the up form; a string plucked again keeps the direction it had. On the ribbon the slide says, once it has turned back a quarter of a string. Strings already ringing keep their pitch. The custom scale's down form is custom scale down, or step scale down in 19, 24 and 31; a maqam has its own. 0 the scale is the same both ways, as before",
+      "method": "melodic_direction=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.65,
+      "step": 1
+    },
+    {
+      "sysex_adress": 352,
+      "group": "Notes",
+      "ui_type": "degrees",
+      "name": "custom scale down",
+      "data_type": "degrees",
+      "min_value": 0,
+      "max_value": 4095,
+      "default_value": 0,
+      "tooltip": "the custom scale's down form, for melodic direction: the degrees the harp plays while the melody falls, read by name in 19, 24 and 31 as the custom scale is. Raga Khamaj, say: up 1 3 4 5 6 7, down 1 2 3 4 5 6 b7. With none ticked the scale goes down as it went up",
+      "method": "custom_scale_down_mask=value; rebuild_custom_scale();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.65
+    },
+    {
+      "sysex_adress": 353,
+      "group": "Notes",
+      "ui_type": "steps",
+      "name": "step scale down 0-10",
+      "data_type": "steps",
+      "min_value": 0,
+      "max_value": 2047,
+      "default_value": 0,
+      "tooltip": "the step scale's down form, for melodic direction in 19, 24 and 31: steps 0 to 10 of the division, the next two carrying on to 30. With any ticked it serves in place of custom scale down",
+      "method": "step_scale_down_mask[0]=value; rebuild_custom_scale();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "first_step": 0,
+      "introduction_version": 0.65
+    },
+    {
+      "sysex_adress": 354,
+      "group": "Notes",
+      "ui_type": "steps",
+      "name": "step scale down 11-21",
+      "data_type": "steps",
+      "min_value": 0,
+      "max_value": 2047,
+      "default_value": 0,
+      "tooltip": "steps 11 to 21 of the step scale's down form (see step scale down 0-10)",
+      "method": "step_scale_down_mask[1]=value; rebuild_custom_scale();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "first_step": 11,
+      "introduction_version": 0.65
+    },
+    {
+      "sysex_adress": 355,
+      "group": "Notes",
+      "ui_type": "steps",
+      "name": "step scale down 22-30",
+      "data_type": "steps",
+      "min_value": 0,
+      "max_value": 511,
+      "default_value": 0,
+      "tooltip": "steps 22 to 30 of the step scale's down form, which only 24 and 31 reach (see step scale down 0-10)",
+      "method": "step_scale_down_mask[2]=value; rebuild_custom_scale();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "first_step": 22,
+      "introduction_version": 0.65
+    },
+    {
+      "sysex_adress": 356,
+      "group": "Notes",
+      "ui_type": "select",
+      "name": "maqam",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 7,
+      "default_value": 0,
+      "tooltip": "the maqam scalar harp modes 14 and 15 play, from the key or the chord's root: 0 Rast (C D E half-flat F G A B half-flat, coming down B flat), 1 Bayati (D E half-flat F G A Bb C), 2 Saba (D E half-flat F Gb A Bb C), 3 Hijaz (D Eb F# G A B half-flat C, coming down Bb), 4 Sikah (E half-flat F G A B half-flat C D), 5 Nahawand (C D Eb F G Ab B, coming down Bb), 6 Kurd (D Eb F G A Bb C), 7 Ajam (C D E F G A B). Written in quarter-tones: in 24 they are exact, in 31 within a few cents, in 12 and 19 approximate. The way down plays with melodic direction on",
+      "method": "maqam_selection=value; rebuild_maqam();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.65,
+      "options": [
+        {
+          "value": 0,
+          "label": "Rast"
+        },
+        {
+          "value": 1,
+          "label": "Bayati"
+        },
+        {
+          "value": 2,
+          "label": "Saba"
+        },
+        {
+          "value": 3,
+          "label": "Hijaz"
+        },
+        {
+          "value": 4,
+          "label": "Sikah"
+        },
+        {
+          "value": 5,
+          "label": "Nahawand"
+        },
+        {
+          "value": 6,
+          "label": "Kurd"
+        },
+        {
+          "value": 7,
+          "label": "Ajam"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 357,
+      "group": "Notes",
+      "ui_type": "switch",
+      "name": "maqam upper jins",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "swaps the maqam's upper jins for the one a player moves to, both ways: Rast to Suznak (Hijaz on G), Bayati to Husseini (B half-flat), Saba to Saba Zamzam, Hijaz to Hijazkar (C#), Sikah to Huzam, Nahawand to its Kurd form (Bb), Ajam to Nahawand on G (Bb); Kurd stays. Put it under the double tap to modulate as you play. 0 the maqam's own",
+      "method": "maqam_upper_jins=value; rebuild_maqam();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.65,
+      "step": 1
     }
   ],
   "chord_potentiometer": [

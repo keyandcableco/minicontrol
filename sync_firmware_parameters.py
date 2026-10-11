@@ -82,7 +82,22 @@ UI_OVERRIDES = {
     237: select('global_parameter', 'Key and tuning',
                 ["Equal", "Quarter-comma meantone", "Five-limit just (C major)", "Pythagorean",
                  "Werckmeister III", "Kirnberger III", "Vallotti", "Young no. 2", "Kellner",
-                 "Sixth-comma meantone", "19-EDO", "24-EDO (quarter tones)", "31-EDO"]),
+                 "Sixth-comma meantone", "19-EDO", "24-EDO (quarter tones)", "31-EDO",
+                 "Your own (own temperament)"]),
+    # how far the modifier moves a note in the divided octaves, and purity (firmware 64, 66)
+    349: select('global_parameter', 'Key and tuning',
+                ["As the tuning has it", "One step of the tuning", "The chromatic semitone"]),
+    358: control('global_parameter', 'Key and tuning', 'slider'),
+    # your own temperament, twelve offsets in cents, and a Scala file read into them (firmware 67)
+    **{a: control('global_parameter', 'Own temperament', 'cents') for a in range(359, 371)},
+    371: control('global_parameter', 'MIDI', 'switch'),
+    # the drone (firmware 68)
+    372: select('global_parameter', 'Drone',
+                ["Off", "Tanpura: Pa, Sa, Sa, low Sa", "Tanpura with Ma", "Tanpura with Ni", "Tanpura: all Sa",
+                 "Shruti box: Sa and Pa"]),
+    373: control('global_parameter', 'Drone', 'slider'),
+    374: control('global_parameter', 'Drone', 'slider'),
+    375: select('global_parameter', 'Drone', ["Low: Sa from E2", "Middle: Sa from A2", "High: Sa from D3"]),
     # global: MIDI
     106: select('global_parameter', 'MIDI', [str(i) for i in range(1, 17)], start=1),
     107: select('global_parameter', 'MIDI', [str(i) for i in range(1, 17)], start=1),
@@ -159,7 +174,15 @@ UI_OVERRIDES = {
                ["Chord Tones", "Major Scale", "Major Pentatonic", "Minor Pentatonic", "Diminished 6th",
                 "Relative Natural Minor", "Relative Harmonic Minor", "Relative Minor Pentatonic",
                 "Scale Per Chord", "Scale Per Chord (Pentatonic)", "Custom Scale (key root)",
-                "Custom Scale (chord root)", "Generator Scale (key root)", "Generator Scale (chord root)"]),
+                "Custom Scale (chord root)", "Generator Scale (key root)", "Generator Scale (chord root)",
+                "Maqam (key root)", "Maqam (chord root)"]),
+    # melodic direction, the down forms and the maqams (firmware 65)
+    351: control('harp_parameter', 'Notes', 'switch'),
+    352: control('harp_parameter', 'Notes', 'degrees'),
+    **{a: control('harp_parameter', 'Notes', 'steps') for a in (353, 354, 355)},
+    356: select('harp_parameter', 'Notes',
+                ["Rast", "Bayati", "Saba", "Hijaz", "Sikah", "Nahawand", "Kurd", "Ajam"]),
+    357: control('harp_parameter', 'Notes', 'switch'),
     40: control('harp_parameter', 'Notes', 'discrete_slider'),
     98: control('harp_parameter', 'Notes', 'switch'),
     99: control('harp_parameter', 'Notes', 'discrete_slider'),
@@ -184,6 +207,9 @@ UI_OVERRIDES = {
     289: select('harp_parameter', 'Pluck', ["Off: a finger stops a ringing string", "1 semitone",
                                             "2 semitones, a whole tone"]
                 + [f"{n} semitones" for n in range(3, 12)] + ["12 semitones, an octave"]),
+    # koto press in steps of the tuning, and its snap (firmware 64)
+    347: control('harp_parameter', 'Pluck', 'switch'),
+    348: control('harp_parameter', 'Pluck', 'slider'),
     252: control('harp_parameter', 'Pluck', 'slider'),
     253: select('harp_parameter', 'Pluck', ["Off", "Follow: swells and eases off", "Swell only: keeps the firmest"]),
     213: control('harp_parameter', 'Pluck', 'discrete_slider'),
@@ -199,6 +225,7 @@ UI_OVERRIDES = {
     246: control('harp_parameter', 'Ribbon', 'discrete_slider'),
     247: control('harp_parameter', 'Ribbon', 'slider'),
     248: control('harp_parameter', 'Ribbon', 'slider'),
+    350: control('harp_parameter', 'Ribbon', 'slider'),   # ribbon step snap (firmware 64)
     # harp: synth strings or a sampled instrument
     264: select('harp_parameter', 'Oscillator', VOICES_AND_SONG),
     # harp: the strings fanned across the stereo field

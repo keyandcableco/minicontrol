@@ -549,8 +549,11 @@ function applyUIValue(param, value) {
     element.querySelectorAll('.degree-box').forEach(box => {
       box.checked = !!(value & (1 << parseInt(box.dataset.bit)));
     });
+  } else if (uiType === 'cents') {
+    element.value = ((value - 1000) / 10).toFixed(1);
   }
   if (sysex === 237) refreshStepRows(value);
+  if (typeof refreshTuningCircle === 'function') refreshTuningCircle();
 }
 
 // The step scale's rows show the steps of the live division, each with its size in cents: none
@@ -648,6 +651,7 @@ async function setupParameterControls() {
           markEdited();
           if (sysex === 20) updateUIColor();
           if (sysex === 237) refreshStepRows(value);
+          if (typeof refreshTuningCircle === 'function') refreshTuningCircle();
           refreshFollower(sysex);
           refreshKnobSpans();
         });
@@ -659,6 +663,18 @@ async function setupParameterControls() {
           controller.sendParameter(sysex, value);
           markEdited();
           checkConflicts(sysex);
+        });
+      } else if (uiType === 'cents') {
+        // shown in cents, sent in tenths of a cent from 1000
+        element.addEventListener('change', () => {
+          const cents = Math.max(-100, Math.min(100, parseFloat(element.value) || 0));
+          const value = Math.round(cents * 10) + 1000;
+          element.value = cents.toFixed(1);
+          tempValues[sysex] = value;
+          currentValues[sysex] = value;
+          controller.sendParameter(sysex, value);
+          markEdited();
+          if (typeof refreshTuningCircle === 'function') refreshTuningCircle();
         });
       } else if (uiType === 'degrees' || uiType === 'steps') {
         // each box is one bit of the value: assemble the mask from the whole row and send it
@@ -672,6 +688,7 @@ async function setupParameterControls() {
             currentValues[sysex] = mask;
             controller.sendParameter(sysex, mask);
             markEdited();
+            if (typeof refreshTuningCircle === 'function') refreshTuningCircle();
           });
         });
       }

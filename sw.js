@@ -18,6 +18,7 @@ const SHELL = [
   'describe.js',
   'commands.js',
   'talk.js',
+  'tuning.js',
   'describe_data.json',
   'minichordcontroller.js',
   'parameters.json',

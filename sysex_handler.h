@@ -1061,6 +1061,93 @@ void apply_audio_parameter(int adress, int value) {
         case 346:
             step_scale_mask[2]=value; rebuild_custom_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
             break;
+        case 347:
+            koto_press_steps=value;
+            break;
+        case 348:
+            koto_press_snap=value;
+            break;
+        case 349:
+            modifier_step_choice=value; apply_modifier_step();
+            break;
+        case 350:
+            ribbon_step_snap=value;
+            break;
+        case 351:
+            melodic_direction=value;
+            break;
+        case 352:
+            custom_scale_down_mask=value; rebuild_custom_scale();
+            break;
+        case 353:
+            step_scale_down_mask[0]=value; rebuild_custom_scale();
+            break;
+        case 354:
+            step_scale_down_mask[1]=value; rebuild_custom_scale();
+            break;
+        case 355:
+            step_scale_down_mask[2]=value; rebuild_custom_scale();
+            break;
+        case 356:
+            maqam_selection=value; rebuild_maqam();
+            break;
+        case 357:
+            maqam_upper_jins=value; rebuild_maqam();
+            break;
+        case 358:
+            purity=value; rebuild_purity(); retune_active_voices();
+            break;
+        case 359:
+            own_temperament_cents[0]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 360:
+            own_temperament_cents[1]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 361:
+            own_temperament_cents[2]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 362:
+            own_temperament_cents[3]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 363:
+            own_temperament_cents[4]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 364:
+            own_temperament_cents[5]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 365:
+            own_temperament_cents[6]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 366:
+            own_temperament_cents[7]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 367:
+            own_temperament_cents[8]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 368:
+            own_temperament_cents[9]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 369:
+            own_temperament_cents[10]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 370:
+            own_temperament_cents[11]=(value-1000)/10.0f; if (temperament_selection==own_temperament) { purity_follow_chord(); retune_active_voices(); };
+            break;
+        case 371:
+            mts_output=value; mts_reset();
+            break;
+        case 372:
+            drone_set_mode(value);
+            break;
+        case 373:
+            drum_machine.drone.level(value/100.0f);
+            break;
+        case 374:
+            drum_machine.drone.pace(value/10.0f);
+            break;
+        case 375:
+            drone_register=value; drone_set_mode(drone_mode);
+            break;
         default:
             break;
     }

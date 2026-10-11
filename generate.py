@@ -46,7 +46,7 @@ group_order = [
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Effects', 'Vocoder', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
+    'global_parameter': ['General', 'Key and tuning', 'Own temperament', 'Drone', 'Effects', 'Vocoder', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
@@ -76,7 +76,8 @@ parameter_name_order = {
     },
     'global_parameter': {
         'General': ['bank color', 'led attenuation', 'usb audio'],
-        'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament'],
+        'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament',
+                           'modifier step', 'purity'],
         'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
         'Vocoder': ['vocoder', 'vocoder carrier', 'vocoder consonants'],
         'Phone': ['phone follow 1 control', 'phone follow 1 value', 'phone follow 1 band', 'phone follow 1 release',
@@ -348,6 +349,18 @@ def generate_param_html(param):
                 </div>
             </div>
         ''')
+    elif ui_type == 'cents':
+        # an own temperament's offset, shown in cents; the device takes tenths of a cent from 1000
+        first = sysex_address == 359
+        html.append(f'''
+            {SCALA_IMPORT_HTML if first else ''}
+            <div class="cents-line" style="display: flex; align-items: center; margin: 4px 0;">
+                <label style="width: 150px; font-weight: bold;" title="{html_escape(tooltip)}">{name.replace('own temperament ', '')}</label>
+                <input type="number" id="param-{sysex_address}" class="cents-input inactive" step="0.1" min="-100" max="100"
+                       value="{(default_value - 1000) / 10:.1f}" {' '.join(attrs)} style="width: 80px; margin: 0 8px;">
+                <span>cents</span>
+            </div>
+        ''')
     elif ui_type == 'steps':
         # one checkbox per step of the division this address holds, from its first step; the
         # page hides the steps the live tuning doesn't have, and the rows in twelve
@@ -370,6 +383,25 @@ def generate_param_html(param):
             </div>
         ''')
     return '\n'.join(html)
+
+# A Scala file (.scl) of twelve notes read into the own temperament (tuning.js)
+SCALA_IMPORT_HTML = '''
+            <div class="scala-import" style="margin: 8px 0 12px;">
+                <label style="font-weight: bold;" title="a Scala scale file of twelve notes, its first note on C: each note's offset from equal temperament goes into the twelve below, and the temperament becomes your own">Read a Scala file</label>
+                <input type="file" id="scala-file" accept=".scl,.txt" class="always-on" style="margin: 0 8px;">
+                <label title="move the offsets together so A stays on the master tuning pitch"><input type="checkbox" id="scala-keep-a" class="always-on" checked> keep A at the master pitch</label>
+                <button type="button" id="own-equal" class="always-on" style="margin-left: 8px;">all to equal</button>
+                <div id="scala-status" style="font-size: 0.85em; opacity: 0.8; margin-top: 4px;"></div>
+            </div>'''
+
+# The tuning circle (tuning.js): the octave as a circle, the live tuning's steps, the harp's scale,
+# and the notes the minichord plays as they sound
+TUNING_CIRCLE_HTML = '''
+            <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Tuning circle</h3>
+            <div class="tuning-circle" title="the octave as a circle, C at the top: a tick for each step of the tuning, a dot for each note of the harp's scale, and the notes the minichord plays as they sound (with MPE output or MTS output on, at their true pitch)">
+                <svg id="tuning-circle" viewBox="-120 -120 240 240" width="260" height="260" role="img" aria-label="tuning circle"></svg>
+                <div id="tuning-circle-caption" style="font-size: 0.85em; opacity: 0.8;"></div>
+            </div>'''
 
 # Generate rhythm grid HTML
 def generate_rhythm_grid_html():
@@ -399,7 +431,9 @@ def generate_rhythm_grid_html():
 submenus = {
     'global_parameter': [
         ('Device and MIDI', ['General', 'MIDI']),
-        ('Key and tuning', ['Key and tuning']),
+        ('Key and tuning', ['Key and tuning', 'Own temperament']),
+        # a tanpura or a shruti box on the key's Sa
+        ('Drone', ['Drone']),
         ('Effects', ['Effects', 'Vocoder']),
         # what plays into the minichord over USB, moving settings and keeping the rhythm on its beat
         ('The phone\'s sound', ['Phone']),
@@ -472,6 +506,8 @@ def generate_details_html(group_name, params):
         subgroup_html[param_group] = ''.join(generate_param_html(param) for param in sorted_params)
         if group_name == 'rhythm_parameter' and param_group == 'Pattern':
             subgroup_html[param_group] += generate_rhythm_grid_html()
+        if group_name == 'global_parameter' and param_group == 'Key and tuning':
+            subgroup_html[param_group] += TUNING_CIRCLE_HTML
 
     def heading(g):
         return f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{g}</h3>'
@@ -800,6 +836,7 @@ html_template = '''<!DOCTYPE html>
   <script src="describe.js"></script>
   <script src="commands.js"></script>
   <script src="talk.js"></script>
+  <script src="tuning.js"></script>
   <script>
     // installable, and opens offline once visited (see sw.js)
     if ('serviceWorker' in navigator) {{

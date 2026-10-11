@@ -67,10 +67,13 @@ class MiniChordController {
       }
     }
     for (const input of midiAccess.inputs.values()) {
-      if (input.name.toLowerCase().includes("minichord")) {
+      if (!input.name.toLowerCase().includes("minichord")) continue;
+      if (!foundInput) {
         input.onmidimessage = (msg) => this.processCurrentData(msg);
         foundInput = true;
-        break;
+      } else {
+        // its other port, where the harp's notes go by default: heard for the tuning circle only
+        input.onmidimessage = (msg) => { if (msg.data && this.onMidi) this.onMidi(msg.data); };
       }
     }
     if (!foundOutput || !foundInput) {
@@ -113,6 +116,13 @@ class MiniChordController {
   processCurrentData(midiMessage) {
   if (!midiMessage.data) {
     console.warn("[processCurrentData] No data received");
+    return;
+  }
+  // the notes it plays, its bends and its MTS tunings go to whoever listens (the tuning circle),
+  // not into the settings dump below
+  const status = midiMessage.data[0];
+  if (status < 0xF0 || (status === 0xF0 && midiMessage.data[1] === 0x7F && midiMessage.data[3] === 0x08)) {
+    if (this.onMidi) this.onMidi(midiMessage.data);
     return;
   }
   const data = midiMessage.data.slice(1);
