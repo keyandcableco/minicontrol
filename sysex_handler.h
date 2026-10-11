@@ -80,7 +80,7 @@ void apply_audio_parameter(int adress, int value) {
             pan=value/100.0;apply_harp_bus();apply_chord_bus();apply_string_spreads();
             break;
         case 30:
-            transpose_semitones=value;transpose_steps=(transpose_semitones*EDO+6)/12;midi_base_note_transposed=midi_base_note+transpose_semitones;
+            transpose_semitones=value;transpose_steps=(transpose_semitones*EDO+6)/12;midi_base_note_transposed=midi_base_note+transpose_semitones; purity_follow_chord();
             break;
         case 31:
             flat_button_modifier=value;
@@ -95,7 +95,7 @@ void apply_audio_parameter(int adress, int value) {
             chord_frame_shift=value;
             break;
         case 35:
-            key_signature_selection=constrain(value,0,20);
+            key_signature_selection=constrain(value,0,20); purity_follow_chord();
             break;
         case 36:
             scalar_harp_selection=value; for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };

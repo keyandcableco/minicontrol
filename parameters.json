@@ -141,7 +141,7 @@
       "max_value": 12,
       "tooltip": "transpose all sounds by a number of semitones",
       "iterate": 1,
-      "method": "transpose_semitones=value;transpose_steps=(transpose_semitones*EDO+6)/12;midi_base_note_transposed=midi_base_note+transpose_semitones;",
+      "method": "transpose_semitones=value;transpose_steps=(transpose_semitones*EDO+6)/12;midi_base_note_transposed=midi_base_note+transpose_semitones; purity_follow_chord();",
       "introduction_version": 0.02,
       "ui_type": "discrete_slider",
       "step": 1
@@ -286,7 +286,7 @@
       ],
       "introduction_version": 0.06,
       "tooltip": "automatically makes flat or sharp the chords for a particular key. 0=C, 1=G, 2=D, 3=A, 4=E, 5=B, 6=F, 7=Bb, 8=Eb, 9=Ab, 10=Db, 11=Gb, and the enharmonic keys 12=F#, 13=C#, 14=G#, 15=D#, 16=A#, 17=E#, 18=B#, 19=Fb, 20=Cb",
-      "method": "key_signature_selection=constrain(value,0,20);",
+      "method": "key_signature_selection=constrain(value,0,20); purity_follow_chord();",
       "iterate": 1,
       "curve": "linear"
     },
