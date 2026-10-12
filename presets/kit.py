@@ -368,4 +368,4 @@ def looper(quantize=0, count_in=0, click=0, click_level=50, length=0):
     return {283: quantize, 284: count_in, 285: click, 286: click_level, 288: length}
 
 
-LOOPER, CHORD_MEMORY, RHYTHM_FILL = 256, 287, 315
+LOOPER, CHORD_MEMORY, RHYTHM_FILL, PHONE_DECK = 256, 287, 315, 332   # the double tap takes a step of these

@@ -15,6 +15,12 @@ Sets of one kind of sound, some presets borrowed from the generations as they ar
   (firmware 73)
 - [world](world/README.md): west to east, Brazil to Japan, three ragas from dawn to midnight (firmware 73)
 - [drum-and-bass](drum-and-bass/README.md): liquid to jungle to halftime, at 168-174 bpm (firmware 73)
+- [folk](folk/README.md): the front porch, autoharp to campfire song: pluck on lift, the koto press as a
+  dulcimer's noter, a pedal steel on the ribbon, a washboard band on the harp's pads (firmware 73)
+- [synth](synth/README.md): synthwave to Berlin school: chiptune, acid, a theremin, a trance gate, an 808
+  beatbox, a radio DJ whose harp strums along with the song (firmware 73)
+- [ambient](ambient/README.md): slow instruments for a quiet room: glass, bowls, a tanpura with the jawari
+  on the mod knob, generative rain, Orwell's scale, a music box that winds down (firmware 74)
 
 ```
 python3 presets/build.py gen2      # or any set's folder name: the backup and the README

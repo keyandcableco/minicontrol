@@ -1,6 +1,88 @@
 {
  "banksets": [
   {
+   "id": "ambient",
+   "title": "Ambient",
+   "author": "Key & Cable",
+   "description": "Twelve slow instruments for a quiet room, one for each bank, each a way of letting the minichord ring: a glass harmonica, singing bowls, a night tanpura, a rain garden, Orwell's scale in 31 tones, tape loops, a breathing pad, a whale, a music box, a handpan, a starlight arpeggio and a deep field.",
+   "firmware": 74,
+   "file": "presets/ambient/ambient.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Glass Harmonica",
+     "hue": 185,
+     "blurb": "Glasses that sing. Rest fingers on the strings and lift them to set the glasses ringing; press a ringing one harder and its pitch rises, as a wet finger pressing does, and eases back as you let off. Hold a hand over the plate and each glass swells in slowly instead of sounding at once. The chord bu…"
+    },
+    {
+     "bank": 1,
+     "name": "Singing Bowls",
+     "hue": 40,
+     "blurb": "A room of singing bowls. The harp is a set of small bowls in a pentatonic, struck as your fingers lift, each ringing with a slow beat; press a ringing bowl and its note rises, up to a tone, as a rim pressed harder does. The chord buttons strike the big bowls, root and fifth, humming for seconds. Un…"
+    },
+    {
+     "bank": 2,
+     "name": "Night Tanpura",
+     "hue": 275,
+     "blurb": "A tanpura, its strings buzzing and blooming on the jawari bridge, and a bansuri flute on the harp in raga Bhoop, swelling as you press and slurring as you tap beside a held note. The mod knob is the thread under the strings: slide it in and they close to a plain pluck, out and they sing. A soft har…"
+    },
+    {
+     "bank": 3,
+     "name": "Rain Garden",
+     "hue": 205,
+     "blurb": "Tap hold and it rains: the chord's notes fall one at a time, a drop here and there across two bars, each into an echo, and the garden grows as a hand comes down over the plate. The harp is a set of rain bells answering from side to side. Double tap and the cycle shortens to twelve drops, so the rai…"
+    },
+    {
+     "bank": 4,
+     "name": "Orwell Nine",
+     "hue": 95,
+     "blurb": "A scale from another arithmetic: thirty-one notes to the octave, nine of them on the strings, stacked from a small third that twelve-tone music doesn't have. Rest fingers on the strings and lift them into a long echo. The chord buttons are a pad in the same tuning, its thirds almost pure. The mod k…"
+    },
+    {
+     "bank": 5,
+     "name": "Tape Loops",
+     "hue": 20,
+     "blurb": "A pad on worn tape, its pitch wandering and its level fluttering, with a felted electric piano in a long echo on the harp. A hand over the plate saturates the tape. Double tap to record eight bars of piano onto a loop of tape, as played, and double tap to play it round while you add another layer.…"
+    },
+    {
+     "bank": 6,
+     "name": "Breathing Pad",
+     "hue": 300,
+     "blurb": "A pad that breathes in and out every eight seconds, with a vowel in it. Lower a hand over the plate and the breathing quickens, gradually, as a body does. The harp is a soft lead that swells as you press and holds the loudest you've pressed until you let go. Tap the modifier and hold it and the pad…"
+    },
+    {
+     "bank": 7,
+     "name": "Whale Song",
+     "hue": 220,
+     "blurb": "A whale on the ribbon: slide a finger along the strip and a low voice glides slowly after it, swelling as you press, echoing away across the water. The chord buttons are the ocean, a low drone that slowly swells and settles, sliding from chord to chord. A hand over the plate sends the song further…"
+    },
+    {
+     "bank": 8,
+     "name": "Music Box",
+     "hue": 330,
+     "blurb": "A music box. The harp is its comb of tines, two octaves up, sounding as your fingers lift from the strings the way a pin lets a tine go; the chord buttons are its tiny accompaniment, and in rhythm mode it plays a waltz. Hold a hand over the plate and the box winds down, slowing toward a stop; lift…"
+    },
+    {
+     "bank": 9,
+     "name": "Handpan",
+     "hue": 120,
+     "blurb": "A handpan: the harp's strings are its tone fields in the Kurd scale, ringing long with a slow shimmer, as loud as they're struck; the chord buttons are the ding and the low note under it. Lay a hand flat to damp. A hand over the plate opens it into a long room. Tap hold for a soft 12/8 on hand drum…"
+    },
+    {
+     "bank": 10,
+     "name": "Starlight Arp",
+     "hue": 250,
+     "blurb": "Tap hold and sine bells climb and fall slowly through the held chord, each hanging in an echo. The harp is a soft pad you place rather than play: rest fingers on the strings to choose the notes and lift them to let each bloom in. A hand over the plate lets the bells hang longer. Double tap and the…"
+    },
+    {
+     "bank": 11,
+     "name": "Deep Field",
+     "hue": 265,
+     "blurb": "The deepest, slowest one. A low drone on the key hums under everything; the chord buttons are a sub pad that takes three seconds to arrive and five to leave, sliding from chord to chord, tuned pure; the harp is a bowed voice that swells as you press and echoes into the dark. A hand over the plate b…"
+    }
+   ]
+  },
+  {
    "id": "classical",
    "title": "Classical",
    "author": "Key & Cable",
@@ -247,6 +329,88 @@
    ]
   },
   {
+   "id": "folk",
+   "title": "Folk & Americana",
+   "author": "Key & Cable",
+   "description": "Twelve instruments from the front porch, one for each bank, each played the way its players play it: an autoharp (the Omnichord's own ancestor), a Travis-picked guitar, a bluegrass banjo, a mandolin, a mountain dulcimer, a pedal steel, a blues harp, a honky-tonk piano, a washboard band, a Cajun accordion, a Celtic harp and a campfire singalong.",
+   "firmware": 73,
+   "file": "presets/folk/folk.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Autoharp",
+     "hue": 35,
+     "blurb": "The autoharp, the instrument the Omnichord grew out of: every string plays the chord you hold, and they sound as your fingers leave them. Rest fingers on the strings and lift them for a roll, or sweep a finger across for a strum. A hand held over the plate is the felt damper: the strings' ring shor…"
+    },
+    {
+     "bank": 1,
+     "name": "Travis Guitar",
+     "hue": 25,
+     "blurb": "A steel-string guitar: the chord buttons strum it, with a sampled upright bass on the bass note, and the harp is the same guitar an octave down, with hammer-ons and pull-offs. In rhythm mode the thumb picks the alternating bass of Travis picking under the fingers' chords. Double tap for a capo on t…"
+    },
+    {
+     "bank": 2,
+     "name": "Bluegrass Banjo",
+     "hue": 50,
+     "blurb": "A five-string banjo on the harp, bright and popping, high up, with a flat-picked guitar and upright bass on the chord buttons. Strum fast for a roll, hold a string and tap the next for the slurs. A hand over the plate palms the head and chokes the ring. Double tap and the fiddle takes the break: th…"
+    },
+    {
+     "bank": 3,
+     "name": "Mandolin Waltz",
+     "hue": 70,
+     "blurb": "A mandolin on the harp, bright and quick, over a guitar and upright bass in three. Hold a hand over the plate and the mandolin tremolo-picks: every held note shimmers, as deep as the hand is near. Hold a string and tap the next for a slur. Double tap for the mandola, an octave down."
+    },
+    {
+     "bank": 4,
+     "name": "Mountain Dulcimer",
+     "hue": 90,
+     "blurb": "An Appalachian dulcimer: the harp is the melody string in the mixolydian mode of the DAD tuning, and the chord buttons are its drone strings, root and fifth, humming on. Pluck a string by lifting a finger from it, then press it with another finger and it slides up a fret, as the noter does; ease of…"
+    },
+    {
+     "bank": 5,
+     "name": "Pedal Steel",
+     "hue": 195,
+     "blurb": "A pedal steel guitar. The harp is the bar: slide a finger along it and the note glides between the chord's tones, louder as you press, the volume pedal under your finger. The chord buttons are the pedals: roll from one chord onto the next, still holding the first, and the chord slides there. A hand…"
+    },
+    {
+     "bank": 6,
+     "name": "Blues Harp",
+     "hue": 215,
+     "blurb": "A harmonica in the blues scale over a boogie guitar and bass with a shuffle on the drums. Press a note harder and it swells, as breath does; hold one and tap the next for the slur. Cup your hand over the plate and open it: the hovering hand opens and closes the tone, as hands do around the harp. Do…"
+    },
+    {
+     "bank": 7,
+     "name": "Honky-Tonk",
+     "hue": 10,
+     "blurb": "A tack piano that's seen some nights, a little out of tune with itself, with an upright bass walking under it, playing a boogie in rhythm mode and swinging a shuffle on the kit. The harp is the right hand, in the scale of each chord, and a hand over the plate is its sustain pedal. Press the ringing…"
+    },
+    {
+     "bank": 8,
+     "name": "Washboard Band",
+     "hue": 40,
+     "blurb": "A jug band. The harp's twelve strings are the kit's pads, played with the fingers: a suitcase kick at the bottom, the washboard's snare and knocks, the spoons, a cymbal lid. The chord buttons are a tub bass with a banjo-uke chop. Double tap to loop two bars of what you tap, counted in with a bar of…"
+    },
+    {
+     "bank": 9,
+     "name": "Cajun Accordion",
+     "hue": 330,
+     "blurb": "A Cajun button accordion on the chord buttons, its reeds beating a little against each other, with a fiddle on the harp that swells as you press and slurs from note to note. A hand over the plate works the bellows. Rhythm mode is a two-step with the ti-fer's triangle; double tap for the big box, an…"
+    },
+    {
+     "bank": 10,
+     "name": "Celtic Harp",
+     "hue": 150,
+     "blurb": "A wire-strung harp, ringing long and bright, over a quiet consort of bowed strings. Rest fingers on the strings and they sound as you lift them, as a harper's do; lay the palm across to damp. A hand over the plate opens the strings into a stone hall. In rhythm mode the consort plays a jig. Double t…"
+    },
+    {
+     "bank": 11,
+     "name": "Campfire Song",
+     "hue": 60,
+     "blurb": "A guitar strumming on the chord buttons and a few voices humming on the harp, swelling as you press. Double tap to record the song's chords into the chord memory while the guitar strums, double tap again and it plays them round on its own, so both hands are free to sing the tune on the strings. A h…"
+    }
+   ]
+  },
+  {
    "id": "gen2",
    "title": "Gen 2 presets",
    "author": "Key & Cable",
@@ -407,6 +571,88 @@
      "name": "Highland Pipes",
      "hue": 120,
      "blurb": "A pipe chanter on the harp, in the pipes' mixolydian scale, over drones that never stop, and an accordion on the chord buttons, all in just intonation. The chanter can't play louder or softer, like the real one: shape the tune with grace notes instead, holding a note and tapping the one beside it.…"
+    }
+   ]
+  },
+  {
+   "id": "synth",
+   "title": "Synth",
+   "author": "Key & Cable",
+   "description": "Twelve electronic instruments, one for each bank, each a way of playing the minichord as a synthesizer: a synthwave pad, a chiptune, an acid line, a theremin, a trance gate, an 808 beatbox, synth brass, Italo disco, a radio DJ, a Blade Runner pad, a Berlin-school sequence and a power ballad.",
+   "firmware": 73,
+   "file": "presets/synth/synth.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Neon Pad",
+     "hue": 290,
+     "blurb": "A wide, chorused synthwave pad whose filter opens under the hovering hand, with a ping-ponging pluck on the harp in an echo on the beat. Rhythm mode runs an arpeggio over a held bass on an 808. Tap the modifier and hold it down and the chords turn to suspensions for as long as it is held, resolving…"
+    },
+    {
+     "bank": 1,
+     "name": "Chip Tune",
+     "hue": 120,
+     "blurb": "An 8-bit console: pulse waves, a square-wave lead that every note plays at one loudness, as a chip does, and in rhythm mode the arpeggio that a chip plays to fake a chord, in sixteenths. A hand over the plate speeds the game up. Double tap and the strings become the drum channel, twelve noise-and-c…"
+    },
+    {
+     "bank": 2,
+     "name": "Acid Line",
+     "hue": 100,
+     "blurb": "A 303 on the chord buttons: in rhythm mode the bass note runs on every eighth, squelching; a hand over the plate opens its filter, the modifier with it screams the resonance. Roll from one chord onto the next and the line slides there. The harp is a second acid voice in the minor pentatonic that sl…"
+    },
+    {
+     "bank": 3,
+     "name": "Theremin",
+     "hue": 260,
+     "blurb": "A theremin on the harp: slide a finger along the strip and a sine glides between the notes of the chord's scale; press harder to swell, ease off to fade, the volume antenna under your finger. A hand hovering over the plate shakes vibrato in. The chord buttons are an eerie string pad that slides fro…"
+    },
+    {
+     "bank": 4,
+     "name": "Trance Gate",
+     "hue": 180,
+     "blurb": "A supersaw pad chopped into sixteenths by a gate, with a pluck on the harp echoing on the dotted eighth. Lower a hand over the plate and the filter closes down for the breakdown. Tap the modifier and hold it down and the gate doubles to thirty-seconds for as long as you hold, slewing there and back…"
+    },
+    {
+     "bank": 5,
+     "name": "Boombox 808",
+     "hue": 15,
+     "blurb": "An 808 under your fingers: the harp's twelve strings are its pads, kick at the bottom, as hard as you hit them, and the chord buttons hit an orchestra stab with a sine sub under it. Double tap to loop two bars of pads, counted in, pulled onto the sixteenths; tap hold for an electro beat on the same…"
+    },
+    {
+     "bank": 6,
+     "name": "Synth Brass",
+     "hue": 45,
+     "blurb": "Eighties synth brass: a bite on every press and a scoop up to the pitch, with a lead on the harp that swells as you press and slides as you tap beside a held note. In rhythm mode the brass stabs a funk figure over the kit; with a song playing in over USB, a held chord stabs on every one of its kick…"
+    },
+    {
+     "bank": 7,
+     "name": "Italo Disco",
+     "hue": 320,
+     "blurb": "Italo disco: a bright poly stab arpeggiating in sixteenths over a 909 four-on-the-floor, with a bell pluck on the harp echoing on the dotted eighth. A hand over the plate throws the stabs into a huge hall. Double tap and the arpeggio jumps an octave for the chorus."
+    },
+    {
+     "bank": 8,
+     "name": "Radio DJ",
+     "hue": 200,
+     "blurb": "Play DJ with whatever is on your phone, coming in over USB (USB audio 1). Hold a chord and the harp strums it along with the song, down on the beat and up between; the pad's filter opens on the song's hats. Lower a hand over the plate to sink the song into a low pass, hold the modifier too for a hi…"
+    },
+    {
+     "bank": 9,
+     "name": "Blade Runner",
+     "hue": 230,
+     "blurb": "A big brass pad that swells open, with a vowel in it the hovering hand shades from ah to oo, drifting a little, sliding from chord to chord when fingers roll from one onto the next. The harp is a lead that swells as you press, the aftertouch of the old polysynths, and slides as you tap beside a hel…"
+    },
+    {
+     "bank": 10,
+     "name": "Berlin School",
+     "hue": 140,
+     "blurb": "A Tangerine Dream sequence: tap hold and the chord buttons run a two-bar line through the chord's notes, resonant and echoing, the hovering hand sweeping its filter. Play a lead over it on the harp, with a dotted-eighth echo and slides when you tap beside a held note. Double tap to loop eight bars…"
+    },
+    {
+     "bank": 11,
+     "name": "Power Ballad",
+     "hue": 350,
+     "blurb": "An eighties power ballad: a wide pad on the chord buttons, a sampled electric piano in a big hall on the harp, and a slow beat on an 808 with a gated room on the drums. A hand over the plate sends the pad into the arena. Tap the modifier and hold it down and the chords turn to suspensions for as lo…"
     }
    ]
   },
