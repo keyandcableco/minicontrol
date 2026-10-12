@@ -1172,6 +1172,12 @@ void apply_audio_parameter(int adress, int value) {
         case 385:
             lock_action(value);
             break;
+        case 386:
+            harp_reed_bark=value/100.0f;
+            break;
+        case 387:
+            chord_reed_bark=value/100.0f;
+            break;
         default:
             break;
     }

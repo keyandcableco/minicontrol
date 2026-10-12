@@ -53,6 +53,8 @@ VOICES = ["Synth", "Piano", "Pizzicato strings", "Choir", "String quartet"]
 VOICES_AND_SONG = VOICES + ["The song: a second grabbed from the phone"]
 # firmware 73: four more after the song
 VOICES_AND_SONG += ["Vibraphone", "Fingered bass", "Sitar", "Electric piano"]
+# firmware 78: the reed piano, a model of the Wurlitzer
+VOICES_AND_SONG += ["Reed piano (Wurlitzer)"]
 GROOVES = ["rock", "pop eighths", "pop sixteenths", "ballad", "funk", "disco", "motown", "shuffle", "jazz swing", "waltz",
            "march", "second line", "country two-beat", "folk", "six eight", "habanera", "house", "trap",
            "amen-style break", "funky drummer-style", "think-style break", "boom bap", "drum and bass", "lo-fi",
