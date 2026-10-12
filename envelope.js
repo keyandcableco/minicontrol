@@ -10,6 +10,7 @@ const ENVELOPES = [
   { a: 43, h: 44, d: 45, s: 46, r: 47 },   // the harp's volume
   { a: 52, h: 53, d: 54, s: 55, r: 56 },   // its filter
   { a: 65, h: 66, d: 67, s: 68, r: 69 },   // its vibrato
+  { a: 102, h: 103, d: 104 },               // its transient, a click that dies away: no sustain or release
 ];
 
 // The drawing: 400 wide, 120 high inside its margins. Times run on a square-root scale, so a
@@ -23,17 +24,18 @@ const envY = level => ENV_PAD + (1 - level) * ENV_H;
 let envDrag = null;   // { env, handle, svg } while a handle is held
 
 function envValues(env) {
-  const sustain = findParameterBySysex(env.s);
+  const sustain = env.s && findParameterBySysex(env.s);
   return {
-    a: num(env.a), h: num(env.h), d: num(env.d), r: num(env.r),
-    s: sustain ? num(env.s) / getFloatMultiplier(sustain) : 0,
+    a: num(env.a), h: num(env.h), d: num(env.d), r: env.r ? num(env.r) : 0,
+    s: sustain ? num(env.s) / getFloatMultiplier(sustain) : 0, held: !!env.r,
   };
 }
 
-// where each corner of the shape is
+// where each corner of the shape is (one with no release ends where its decay does)
 function envPoints(v) {
   const x0 = ENV_PAD;
-  const xa = x0 + envX(v.a), xh = xa + envX(v.h), xd = xh + envX(v.d), xs = xd + ENV_SUSTAIN, xr = xs + envX(v.r);
+  const xa = x0 + envX(v.a), xh = xa + envX(v.h), xd = xh + envX(v.d);
+  const xs = v.held ? xd + ENV_SUSTAIN : xd, xr = v.held ? xs + envX(v.r) : xs;
   return { x0, xa, xh, xd, xs, xr, top: envY(1), sus: envY(v.s), bottom: envY(0) };
 }
 
@@ -49,21 +51,21 @@ function envSvg(env) {
     `<circle class="env-hit" cx="${x}" cy="${y}" r="16"/><circle class="env-dot" cx="${x}" cy="${y}" r="6"/></g>`;
   return `<svg class="env-svg${off ? ' off' : ''}" viewBox="0 0 ${ENV_W + ENV_PAD * 2} ${ENV_H + ENV_PAD * 2 + 16}" role="group" aria-label="envelope">` +
     `<line class="env-floor" x1="${ENV_PAD}" y1="${p.bottom}" x2="${ENV_W + ENV_PAD}" y2="${p.bottom}"/>` +
-    `<line class="env-key" x1="${p.xs}" y1="${ENV_PAD}" x2="${p.xs}" y2="${p.bottom}"/>` +
-    `<text class="env-tag" x="${(p.x0 + p.xs) / 2}" y="${p.bottom + 15}">held</text>` +
-    `<text class="env-tag" x="${(p.xs + Math.max(p.xr, p.xs + 40)) / 2}" y="${p.bottom + 15}">let go</text>` +
+    (v.held ? `<line class="env-key" x1="${p.xs}" y1="${ENV_PAD}" x2="${p.xs}" y2="${p.bottom}"/>` +
+      `<text class="env-tag" x="${(p.x0 + p.xs) / 2}" y="${p.bottom + 15}">held</text>` +
+      `<text class="env-tag" x="${(p.xs + Math.max(p.xr, p.xs + 40)) / 2}" y="${p.bottom + 15}">let go</text>` : '') +
     `<path class="env-fill" d="${shape} Z"/><path class="env-line" d="${shape}"/>` +
     handle('a', p.xa, p.top, 'attack', msText(v.a)) +
     handle('h', p.xh, p.top, 'hold', msText(v.h)) +
-    handle('d', p.xd, p.sus, 'decay and sustain', `${msText(v.d)}, sustain ${v.s.toFixed(2)}`) +
-    handle('r', p.xr, p.bottom, 'release', msText(v.r)) +
+    (v.held ? handle('d', p.xd, p.sus, 'decay and sustain', `${msText(v.d)}, sustain ${v.s.toFixed(2)}`) +
+      handle('r', p.xr, p.bottom, 'release', msText(v.r)) : handle('d', p.xd, p.bottom, 'decay', msText(v.d))) +
     `</svg>`;
 }
 
 function envCaption(env) {
   const v = envValues(env);
-  return `attack <b>${msText(v.a)}</b> · hold <b>${msText(v.h)}</b> · decay <b>${msText(v.d)}</b> · ` +
-    `sustain <b>${Math.round(v.s * 100)}%</b> · release <b>${msText(v.r)}</b>`;
+  return `attack <b>${msText(v.a)}</b> · hold <b>${msText(v.h)}</b> · decay <b>${msText(v.d)}</b>` +
+    (v.held ? ` · sustain <b>${Math.round(v.s * 100)}%</b> · release <b>${msText(v.r)}</b>` : '');
 }
 
 function renderEnvelope(box) {
@@ -89,9 +91,10 @@ function envMove(env, handle, x, y) {
   if (handle === 'h') setParam(env.h, envMs(x - p.xa));
   if (handle === 'd') {
     setParam(env.d, envMs(x - p.xh));
-    const sustain = findParameterBySysex(env.s);
-    const level = Math.max(0, Math.min(1, 1 - (y - ENV_PAD) / ENV_H));
-    setParam(env.s, Math.round(level * getFloatMultiplier(sustain)));
+    if (env.s) {
+      const level = Math.max(0, Math.min(1, 1 - (y - ENV_PAD) / ENV_H));
+      setParam(env.s, Math.round(level * getFloatMultiplier(findParameterBySysex(env.s))));
+    }
   }
   if (handle === 'r') setParam(env.r, envMs(x - p.xs));
 }
@@ -104,7 +107,7 @@ function envKey(env, handle, key, big) {
     setParam(time, Math.max(0, Math.min(ENV_MAX_MS, num(time) + (key === 'ArrowRight' ? step : -step))));
     return true;
   }
-  if ((key === 'ArrowUp' || key === 'ArrowDown') && handle === 'd') {
+  if ((key === 'ArrowUp' || key === 'ArrowDown') && handle === 'd' && env.s) {
     const sustain = findParameterBySysex(env.s);
     const m = getFloatMultiplier(sustain);
     setParam(env.s, Math.max(0, Math.min(m, num(env.s) + (key === 'ArrowUp' ? 1 : -1) * (big ? m / 10 : m / 100))));
@@ -124,10 +127,11 @@ function envPoint(svg, e) {
 // Put a graph over each envelope's rows, and fold the rows under it
 function setupEnvelopes() {
   ENVELOPES.forEach((env, i) => {
-    const rows = [env.a, env.h, env.d, env.s, env.r]
+    const addresses = [env.a, env.h, env.d, env.s, env.r].filter(Boolean);
+    const rows = addresses
       .map(a => document.getElementById(`param-${a}`)?.closest('div[style*="display: flex"]'))
       .filter(Boolean);
-    if (rows.length < 5) return;
+    if (rows.length < addresses.length) return;
     const box = document.createElement('div');
     box.className = 'env-box';
     box.dataset.env = i;

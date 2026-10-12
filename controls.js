@@ -378,6 +378,7 @@ function scheduleMinichordMap() {
     renderMinichordMap();
     renderQuick();
     if (typeof refreshEnvelopes === 'function') refreshEnvelopes();
+    if (typeof refreshWaves === 'function') refreshWaves();
     if (sheetControl && !document.getElementById('controls-sheet')?.contains(document.activeElement)) renderSheet();
   });
 }

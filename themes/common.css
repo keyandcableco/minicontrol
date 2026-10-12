@@ -118,6 +118,17 @@
   border-radius: 4px;
 }
 [data-themed] .map-row { border-top: 1px solid var(--track-color); border-radius: 0; }
+/* a waveform's pictures: the chosen one as a button that is on, the rest plain */
+[data-themed] .wave {
+  background: transparent !important;
+  color: inherit !important;
+  border: none;
+  border-radius: 4px;
+}
+[data-themed] .wave[aria-checked="true"] {
+  background: var(--t-button) !important;
+  color: var(--t-button-ink) !important;
+}
 
 /* dropdowns and number boxes */
 [data-themed] #parameters select,

@@ -21,6 +21,7 @@ const SHELL = [
   'tuning.js',
   'controls.js',
   'envelope.js',
+  'waveforms.js',
   'describe_data.json',
   'minichordcontroller.js',
   'parameters.json',
