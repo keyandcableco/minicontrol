@@ -73,8 +73,9 @@ def defaults(params):
     return values
 
 
-def build(preset, params):
+def build(preset, params, firmware=FIRMWARE):
     values = defaults(params)
+    values[7] = firmware
     settings = preset["settings"]
     problems = []
     # the settings naming a target first, so the values that follow them are read in its units
@@ -85,8 +86,8 @@ def build(preset, params):
             problems.append(f"address {a} isn't a setting")
             continue
         p = params[a]
-        if round(float(p.get("introduction_version") or 0) * 100) > FIRMWARE:
-            problems.append(f"{label(p)} came in firmware {p['introduction_version']}, after the stamp ({FIRMWARE}): "
+        if round(float(p.get("introduction_version") or 0) * 100) > firmware:
+            problems.append(f"{label(p)} came in firmware {p['introduction_version']}, after the stamp ({firmware}): "
                             f"a minichord loading the preset would reset it")
         if (a in KNOB_TARGETS or a in TAP_TARGETS) and v:
             t = params.get(v)
@@ -158,7 +159,8 @@ def main(name):
     folder = os.path.join(HERE, name)
     module = load_set(name)
     params = load_parameters()
-    built = [build(p, params) for p in module.PRESETS]
+    firmware = getattr(module, "FIRMWARE", FIRMWARE)
+    built = [build(p, params, firmware) for p in module.PRESETS]
     assert len(built) == 12, "a set is twelve banks"
 
     names = {}
@@ -167,7 +169,7 @@ def main(name):
     backup = {
         "minichord_backup": 1,
         "created": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "firmware_version": FIRMWARE,
+        "firmware_version": firmware,
         "parameter_size": PARAMETER_SIZE,
         "address_names": names,
         "banks": [{"bank": i, "name": p["name"],
@@ -185,7 +187,10 @@ def main(name):
         lines.append(f"| {i + 1} | {p['name']} | {f'[listen]({demo})' if demo else ''} | "
                      f"{f'[listen]({rhythm})' if rhythm else ''} | {', '.join(p['shows'])} |")
     for i, (p, values) in enumerate(zip(module.PRESETS, built)):
-        lines += ["", f"## {i + 1}. {p['name']}", "", p["blurb"], "", *control_lines(p), ""]
+        lines += ["", f"## {i + 1}. {p['name']}", ""]
+        if p.get("from"):
+            lines += [f"*From {p['from'].split(':')[0]}, as it is there" + (f" ({p['changed']})" if p.get("changed") else "") + ".*", ""]
+        lines += [p["blurb"], "", *control_lines(p), ""]
         if p.get("play"):
             lines += ["**Play it:**", "", *[f"{k + 1}. {s}" for k, s in enumerate(p["play"])], ""]
         lines += ["<details><summary>Preset code</summary>", "", "```", code(values), "```", "", "</details>"]

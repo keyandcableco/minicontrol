@@ -20,7 +20,7 @@ sel = interpret.selectors()
 for name in sys.argv[1:] or ["gen2"]:
     module = build.load_set(name)
     for i, p in enumerate(module.PRESETS):
-        values = build.build(p, params)
+        values = build.build(p, params, getattr(module, "FIRMWARE", build.FIRMWARE))
         state, start = {}, {}
         for a, v in enumerate(build.defaults(params)):
             if a in params:
@@ -36,6 +36,8 @@ for name in sys.argv[1:] or ["gen2"]:
         notes = interpret.conflict_notes(params, sel, start, state, lambda a: params[a]["name"].strip())
         # the bend at its centre (1.0) is how kit.py leaves the vibrato's bend: nothing to hear
         notes = [n for n in notes if "pitch bend envelope" not in n and "harp's pitch bend" not in n]
+        # since firmware 69 a sampled chord voice glides too: the describer's rows saying it doesn't are stale
+        notes = [n for n in notes if "glide doesn't reach a sampled chord voice" not in n]
         print(f"{name} {i + 1:2d} {p['name']}: " + ("ok" if not notes else ""))
         for n in notes:
             print("     -", n)

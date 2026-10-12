@@ -36,6 +36,16 @@ SINE, SAW, SQUARE, TRI, BL_PULSE, PULSE, RSAW, SH, VTRI, BL_SAW, BL_RSAW, BL_SQU
 MAJ, MIN, DOM7, MAJ7, MIN7, DIM, AUG, MAJ6, MIN6, DIM7, HALFDIM, SUS4, SUS2, SUS4_7, MAJ9, MIN9, ADD9, SIX9 = range(1, 19)
 HARMONIC7 = 22
 
+# sampled voices: harp voice (264) and chord voice (265); each chord note's own voice (270-273) is one more
+# (NOTE_OWN its own oscillators, note_voice(PIANO) and so on). 6-9 are firmware 73.
+PIANO, PIZZ, CHOIR, QUARTET, SONG, VIBES, BASS, SITAR, EPIANO = range(1, 10)
+NOTE_OWN = 1
+
+
+def note_voice(voice):
+    return voice + 1
+
+
 # temperaments (237)
 EQUAL, MEANTONE, JUST, PYTHAGOREAN = 0, 1, 2, 3
 EDO19, EDO24, EDO31, OWN = 10, 11, 12, 13
@@ -53,6 +63,23 @@ def merge(*ds):
     for d in ds:
         out.update(d)
     return out
+
+
+# ---- presets from another set -------------------------------------------------------------------
+def borrow(set_name, preset_name, **changes):
+    """a preset from another set (presets/<set_name>/presets.py), as it is there, with the settings in
+    changes (address=value as a dict under settings, or name/blurb/hue/... replaced) applied over it"""
+    import copy, importlib.util, os
+    here = os.path.dirname(os.path.abspath(__file__))
+    spec = importlib.util.spec_from_file_location(f"_{set_name}", os.path.join(here, set_name, "presets.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    p = copy.deepcopy(next(q for q in module.PRESETS if q["name"] == preset_name))
+    settings = changes.pop("settings", {})
+    p["settings"].update(settings)
+    p.update(changes)
+    p["from"] = f"{set_name}: {preset_name}"
+    return p
 
 
 # ---- the chords ---------------------------------------------------------------------------------

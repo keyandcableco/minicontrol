@@ -6,11 +6,19 @@ and its preset code.
 
 - [gen2](gen2/README.md): the second generation, revised for firmware 68 (Midnight Raga rebuilt around the
   tanpura and the recorded tabla)
-- [gen3](gen3/README.md): twelve instruments and ways of playing them, on firmware 46-68
+- [gen3](gen3/README.md): twelve instruments and ways of playing them, on firmware 46-69
+
+Sets of one kind of sound, some presets borrowed from the generations as they are:
+
+- [classical](classical/README.md): medieval organum to a string adagio, each in its period's tuning
+- [electric-piano](electric-piano/README.md): Rhodes, Wurlitzer, FM tine, vibes, and the music around them
+  (firmware 73)
+- [world](world/README.md): west to east, Brazil to Japan, three ragas from dawn to midnight (firmware 73)
+- [drum-and-bass](drum-and-bass/README.md): liquid to jungle to halftime, at 168-174 bpm (firmware 73)
 
 ```
-python3 presets/build.py gen2      # or gen3: the backup and the README
-python3 presets/lint.py gen2 gen3  # settings that a preset's other settings keep from being heard
+python3 presets/build.py gen2      # or any set's folder name: the backup and the README
+python3 presets/lint.py gen2 gen3 classical  # settings that a preset's other settings keep from being heard
 ```
 
 `kit.py` holds the parts the sets are written with. `lint.py` reads the describer's conflict table from the
