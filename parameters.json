@@ -1726,6 +1726,22 @@
       "curve": "linear",
       "introduction_version": 0.69,
       "step": 1
+    },
+    {
+      "sysex_adress": 381,
+      "group": "Drone",
+      "ui_type": "slider",
+      "name": "drone jawari",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 60,
+      "tooltip": "the tanpura's jawari: how closely each string lies along its curved bridge, as the cotton thread under it is slid to set, in percent. At 0 the thread is far in and the string clears the bridge: a plain plucked string, closed. Up, the string wraps a little way onto the bridge every swing, and that moving end keeps making high partials as the note rings: the note blooms after the pluck and the bright bands sweep down as it fades. At 100 the string lies right on the bridge, open, buzzing hardest. 60, the usual, is a well set tanpura. Not for the shruti box",
+      "method": "drum_machine.drone.jawari(value/100.0f);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.74,
+      "step": 1
     }
   ],
   "chord_parameter": [

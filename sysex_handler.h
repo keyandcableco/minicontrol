@@ -1163,6 +1163,9 @@ void apply_audio_parameter(int adress, int value) {
         case 380:
             speed_ramp=value;
             break;
+        case 381:
+            drum_machine.drone.jawari(value/100.0f);
+            break;
         default:
             break;
     }
