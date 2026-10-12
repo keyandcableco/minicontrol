@@ -2500,3 +2500,78 @@
       color: var(--conflict-text);
       border: 1px solid var(--conflict-border);
     }
+
+    /* the tour (tour.js): one part of the page lit, the rest dimmed, and a card saying what it is */
+    #tour {
+      position: fixed;
+      inset: 0;
+      width: auto;
+      height: auto;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      overflow: visible;
+    }
+    .tour-dim {
+      position: fixed;
+      background-color: rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+    }
+    .tour-light {
+      position: fixed;
+      border-radius: 8px;
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      pointer-events: none;
+    }
+    /* the tour dims the page itself: a sheet open under it keeps its own backdrop clear */
+    html.tour-on .settings-drawer::backdrop,
+    html.tour-on .minishop-sheet::backdrop { background-color: transparent; }
+    .tour-card {
+      position: fixed;
+      width: min(380px, calc(100vw - 32px));
+      padding: 14px 18px 16px;
+      border-radius: 8px;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      box-sizing: border-box;
+    }
+    .tour-card h2 {
+      margin: 4px 0 8px;
+      font-size: 1.15em;
+    }
+    .tour-text {
+      margin: 0 0 14px;
+      font-size: 0.95em;
+      line-height: 1.45;
+    }
+    .tour-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tour-nav .tour-end { margin-right: auto; }
+    .tour-nav button:disabled { opacity: 0.4; cursor: default; }
+    .tour-nudge {
+      margin-top: 8px;
+      font-size: 0.9em;
+    }
+    .tour-nudge button {
+      padding: 2px 4px;
+      background: transparent;
+      color: var(--text-primary);
+      text-decoration: underline;
+      font-size: inherit;
+    }
+    .tour-nudge .tour-nudge-close { text-decoration: none; opacity: 0.7; }
+    #instruction_zone .tour-link {
+      padding: 0;
+      background: transparent;
+      color: var(--primary-color);
+      text-decoration: underline;
+      font-size: inherit;
+      font-family: inherit;
+    }
