@@ -380,6 +380,7 @@ function scheduleMinichordMap() {
     if (typeof refreshEnvelopes === 'function') refreshEnvelopes();
     if (typeof refreshWaves === 'function') refreshWaves();
     if (typeof refreshFilters === 'function') refreshFilters();
+    if (typeof refreshPedals === 'function') refreshPedals();
     if (sheetControl && !document.getElementById('controls-sheet')?.contains(document.activeElement)) renderSheet();
   });
 }
@@ -554,9 +555,10 @@ function buildFinderIndex() {
     const place = sheet ? sheet.querySelector('h2')?.textContent : 'controls';
     // the heading over its row says most (Envelope, Vibrato), else the submenu it is in
     const row = label.closest('div[style*="display: flex"]');
-    let heading = (row?.closest('.picture') ?? row)?.previousElementSibling;
+    const picture = row?.closest('.picture');
+    let heading = (picture ?? row)?.previousElementSibling;
     while (heading && heading.tagName !== 'H3') heading = heading.previousElementSibling;
-    const group = heading?.textContent ?? label.closest('details.submenu')?.querySelector('summary')?.textContent;
+    const group = picture?.dataset.title ?? heading?.textContent ?? label.closest('details.submenu')?.querySelector('summary')?.textContent;
     return { sysex, name: label.textContent.trim(), where: [place, group].filter(Boolean).join(' · '), tip: (label.title || '').toLowerCase() };
   });
 }

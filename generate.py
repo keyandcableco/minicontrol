@@ -497,13 +497,13 @@ submenus = {
         ('Playing', ['General', 'Buttons']),
         ('Voicing and layout', ['Voicing', 'Slash chords and cantus', 'Alternate layout']),
         ('Sound', ['Oscillator', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants']),
-        ('Effects', ['Delay', 'Reverb', 'Crunch', 'Output filter', 'Ensemble']),
+        ('Effects', ['Delay', 'Reverb', 'Crunch', 'Ensemble', 'Output filter']),
     ],
     'harp_parameter': [
         ('Notes', ['Notes']),
         ('Playing', ['Plate', 'Pluck', 'Ribbon']),
         ('Sound', ['Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
-        ('Effects', ['Delay', 'Reverb', 'Crunch', 'Output filter', 'Spread']),
+        ('Effects', ['Delay', 'Reverb', 'Crunch', 'Spread', 'Output filter']),
     ],
     # the looper sits with rhythm mode, whose beat and bars it keeps
     'rhythm_parameter': [
@@ -937,6 +937,7 @@ html_template = '''<!DOCTYPE html>
   <script src="envelope.js"></script>
   <script src="waveforms.js"></script>
   <script src="filters.js"></script>
+  <script src="pedals.js"></script>
   <script>
     // installable, and opens offline once visited (see sw.js)
     if ('serviceWorker' in navigator) {{

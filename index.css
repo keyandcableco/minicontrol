@@ -507,6 +507,106 @@
       font-size: 0.85em;
       opacity: 0.75;
     }
+    /* the effects as pedals (pedals.js): a card each, side by side */
+    .pedal-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
+      gap: 10px;
+      margin: 8px 0 16px;
+    }
+    .pedal.picture {
+      max-width: none;
+      margin: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--track-color);
+      border-radius: 8px;
+    }
+    .pedal-off .dials,
+    .pedal-off .pedal-choice { opacity: 0.4; }
+    .pedal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .pedal-title { font-weight: bold; }
+    .pedal-switch {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85em;
+    }
+    .dials {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 8px;
+    }
+    .dial {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 56px;
+      cursor: ns-resize;
+      touch-action: none;
+      outline: none;
+      user-select: none;
+    }
+    .dial[tabindex="-1"] { cursor: default; }
+    .dial svg {
+      width: 44px;
+      height: 44px;
+      overflow: visible;
+    }
+    .dial-track,
+    .dial-value {
+      fill: none;
+      stroke-width: 5;
+      stroke-linecap: round;
+    }
+    .dial-track { stroke: var(--track-color); }
+    .dial-value { stroke: var(--primary-color); }
+    .dial-tick {
+      stroke: var(--text-primary);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+    .dial:focus-visible svg,
+    .dial.held svg {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      border-radius: 50%;
+    }
+    .dial-value-text {
+      font-size: 0.8em;
+      font-variant-numeric: tabular-nums;
+    }
+    .dial-label {
+      font-size: 0.75em;
+      opacity: 0.7;
+    }
+    .pedal-choice {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .pedal-choice button,
+    .pedal-link {
+      padding: 4px 8px;
+      font-size: 0.8em;
+      background: transparent;
+      color: var(--text-primary);
+      box-shadow: inset 0 0 0 1px var(--track-color);
+    }
+    .pedal-choice button[aria-checked="true"] {
+      background: var(--primary-color);
+      color: var(--text-color);
+      box-shadow: none;
+    }
+    .pedal-link {
+      margin-top: 8px;
+      box-shadow: none;
+      text-decoration: underline;
+    }
     /* a waveform as a row of its pictures (waveforms.js), in place of its dropdown */
     #parameters select.wave-select { display: none; }
     .wave-strip {
