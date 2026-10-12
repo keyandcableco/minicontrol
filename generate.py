@@ -2,9 +2,6 @@ import json
 import os
 
 
-# Define SVG file reference (replace with your actual SVG file path)
-svg_file = 'minichord_layout_web.svg' 
-
 # Load source JSON
 with open('parameters.json', 'r') as f:
     parameters = json.load(f)
@@ -32,18 +29,6 @@ for group_name, params in parameters.items():
     for param in params:
         name_to_sysex.setdefault(group_name, {}).setdefault(param['group'], {})[param['name']] = param['sysex_adress']
 
-# Define desired order of parameter groups
-group_order = [
-    'global_parameter',
-    'chord_parameter',
-    'harp_parameter',
-    'chord_potentiometer',
-    'harp_potentiometer',
-    'modulation_potentiometer',
-    'sharp_button_parameter',
-    'rhythm_parameter'
-]
-
 # Define subgroup order for each group
 subgroup_order = {
     'global_parameter': ['General', 'Key and tuning', 'Own temperament', 'Drone', 'Effects', 'Vocoder', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
@@ -52,9 +37,6 @@ subgroup_order = {
                         'Output filter', 'Ensemble'],
     'harp_parameter': ['Notes', 'Plate', 'Pluck', 'Ribbon', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
                        'Reverb', 'Crunch', 'Output filter', 'Spread'],
-    'chord_potentiometer': ['Potentiometer'],
-    'harp_potentiometer': ['Potentiometer'],
-    'modulation_potentiometer': ['Potentiometer'],
     'sharp_button_parameter': ['General'],
     'rhythm_parameter': ['Style', 'Sections', 'Drums', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
 }
@@ -228,6 +210,87 @@ parameter_name_order = {
         ]
     }
 }
+
+# Where each of the firmware's subgroups is shown: (section, subgroup) -> (place, subgroup there).
+# A place is a sheet the drawing opens (controls.js), or "controls", what the knobs, hover and the
+# double tap are set to, which the drawing's own sheets edit and which shows only among every
+# setting. Subgroups not named here stay in their section, which is a place of the same name.
+PLACES = {
+    ('global_parameter', 'Key and tuning'): ('tuning', 'Key and tuning'),
+    ('global_parameter', 'Own temperament'): ('tuning', 'Own temperament'),
+    ('global_parameter', 'Drone'): ('drone', 'Drone'),
+    ('global_parameter', 'Effects'): ('effects', 'Reverb and pan'),
+    ('global_parameter', 'Vocoder'): ('effects', 'Vocoder'),
+    ('global_parameter', 'Phone'): ('phone', 'Phone'),
+    ('global_parameter', 'General'): ('device', 'USB'),
+    ('global_parameter', 'MIDI'): ('device', 'MIDI'),
+    ('chord_potentiometer', 'Potentiometer'): ('controls', 'Chord knob'),
+    ('harp_potentiometer', 'Potentiometer'): ('controls', 'Harp knob'),
+    ('modulation_potentiometer', 'Potentiometer'): ('controls', 'Mod knob'),
+    ('global_parameter', 'Knobs'): ('controls', 'Knob layer'),
+    ('global_parameter', 'Hover'): ('controls', 'Hover'),
+    ('global_parameter', 'Double tap'): ('controls', 'Double tap'),
+}
+# single settings placed apart from their subgroup: the light's colour and brightness
+PLACES_BY_ADDRESS = {20: ('light', 'Light'), 32: ('light', 'Light')}
+for (section, group), (place, new) in PLACES.items():
+    parameter_name_order.setdefault(place, {})[new] = parameter_name_order.get(section, {}).get(group, [])
+    subgroup_order.setdefault(place, []).append(new)
+subgroup_order['light'] = ['Light']
+SECTION_TITLES = {'controls': 'Controls'}
+SECTION_HINTS = {
+    'controls': 'The drawing of the minichord at the top shows what each of these does; choose a control there to change it.',
+}
+
+# Each sheet: its name, where it is on the minichord (or on the page), and what it holds. Sheets sit
+# inside #parameters, so the sections' styles reach their settings; as popovers they take no place
+# in its grid until "show every setting" lays them out there.
+SHEETS = {
+    'chord_parameter': ('chord', 'the 21 square buttons',
+        'How the buttons\' chords are voiced, and the sound they make: oscillators, envelope, filter and effects.'),
+    'harp_parameter': ('harp', 'the touch plate',
+        'Which notes the plate\'s twelve strings play, how they are plucked, and the sound they make.'),
+    'rhythm_parameter': ('rhythm', 'the button at the top right',
+        'Press the rhythm button to hold chords: each keeps sounding until the next. Hold it down for '
+        'a second to start or stop rhythm mode, which plays the chords in time in the style below. '
+        'While it runs, a press taps the tempo, and with ♯ held plays a fill if fills are on.'),
+    'tuning': ('tuning', 'for the chords and the harp',
+        'The key the buttons are spelled in, how the octave is divided and tuned, and how the notes lean toward pure intervals.'),
+    'drone': ('drone', 'under everything you play',
+        'A tanpura or shruti box held on the key\'s root, under the chords and the harp.'),
+    'effects': ('effects', 'for the chords and the harp',
+        'The reverb room both sections share, where the sound sits left to right, and the vocoder.'),
+    'phone': ('phone', 'sound from a phone or computer, over USB',
+        'What plays into the minichord over USB: its filter and echo, and settings that follow its loudness and beat.'),
+    'light': ('light', 'the round light under the buttons',
+        'The light\'s colour marks this preset, so the banks can be told apart at a glance.'),
+    'device': ('device and MIDI', 'how the minichord talks to a computer',
+        'MIDI channels and ports, MPE, tuning sent out over MIDI, and the minichord as a USB sound card.'),
+}
+PLACE_ORDER = ['chord_parameter', 'harp_parameter', 'rhythm_parameter', 'tuning', 'drone', 'effects', 'phone',
+               'light', 'device', 'controls']
+
+
+def sheet_html(group_name, section):
+    title, where, intro = SHEETS[group_name]
+    key = title.split()[0]
+    section = section.replace('<details style=', '<details open class="sheet-section" style=', 1)
+    return f'''
+        <div id="{key}-sheet" class="minishop-sheet controls-sheet {key}-sheet" popover aria-labelledby="{key}-sheet-title">
+          <div class="minishop-head">
+            <div>
+              <h2 id="{key}-sheet-title">{title}</h2>
+              <p class="controls-sheet-where">{where}</p>
+            </div>
+            <button type="button" class="settings-close always-on" popovertarget="{key}-sheet" popovertargetaction="hide" aria-label="close"><span class="glyph">✕</span></button>
+          </div>
+          <div class="controls-sheet-body">
+            <p class="cs-intro">{intro}</p>
+            <div class="sheet-quick" data-quick="{key}"></div>
+            {section}
+          </div>
+        </div>'''
+
 
 DEGREES = ["1", "b2", "2", "b3", "3", "4", "b5", "5", "b6", "6", "b7", "7"]
 
@@ -437,7 +500,11 @@ submenus = {
         ('Effects', ['Effects', 'Vocoder']),
         # what plays into the minichord over USB, moving settings and keeping the rhythm on its beat
         ('The phone\'s sound', ['Phone']),
-        ('Knobs, hover and double tap', ['Knobs', 'Hover', 'Double tap']),
+    ],
+    'controls': [
+        ('Knobs', ['Chord knob', 'Harp knob', 'Mod knob', 'Knob layer']),
+        ('Hover', ['Hover']),
+        ('Double tap and ♯', ['Double tap']),
     ],
     'chord_parameter': [
         ('Playing', ['General', 'Buttons']),
@@ -506,7 +573,7 @@ def generate_details_html(group_name, params):
         subgroup_html[param_group] = ''.join(generate_param_html(param) for param in sorted_params)
         if group_name == 'rhythm_parameter' and param_group == 'Pattern':
             subgroup_html[param_group] += generate_rhythm_grid_html()
-        if group_name == 'global_parameter' and param_group == 'Key and tuning':
+        if param_group == 'Key and tuning':
             subgroup_html[param_group] += TUNING_CIRCLE_HTML
 
     def heading(g):
@@ -520,19 +587,23 @@ def generate_details_html(group_name, params):
         placed.update(members)
         if body:
             param_html.append(submenu_html(title, ''.join(body)))
-    # anything no submenu claims, so a new subgroup still shows up somewhere
-    param_html.extend(heading(g) + html for g, html in subgroup_html.items() if g not in placed)
+    # anything no submenu claims, so a new subgroup still shows up somewhere; in a sheet of one
+    # subgroup the sheet's name is its heading
+    single = len(subgroup_html) == 1 and group_name in SHEETS
+    param_html.extend(('' if single else heading(g)) + html for g, html in subgroup_html.items() if g not in placed)
 
     if not param_html:
         return ''
     
     # "Parameters" goes on a phone (index.css), where every section name would wrap with it
-    display_name = group_name.replace('_parameter', '').replace('_', ' ').title() + '<span class="section-suffix"> Parameters</span>'
+    display_name = SECTION_TITLES.get(group_name) or (
+        group_name.replace('_parameter', '').replace('_', ' ').title() + '<span class="section-suffix"> Parameters</span>')
+    hint = f'<p class="settings-hint">{SECTION_HINTS[group_name]}</p>' if group_name in SECTION_HINTS else ''
     return f'''
         <details style="width: fit-content; margin: 20px 0; padding: 8px; border: none; border-radius: 5px;">
             <summary style="width: fit-content; font-size: 1.6em; font-weight: bold; cursor: pointer;">{display_name}</summary>
             <div style="padding: 10px;">
-                {''.join(param_html)}
+                {hint}{''.join(param_html)}
             </div>
         </details>
     '''
@@ -732,10 +803,35 @@ html_template = '''<!DOCTYPE html>
           <div id="describe-preset" class="describe-box"></div>
         </div>
       </div>
-      <div class="svg-container">
-        <img src="{svg_file}" alt="Minichord Logo" class="default-only">
-        <img src="themes/arcade-minichord-wide.svg" alt="Minichord, in pixels" class="arcade-only">
+      <!-- the minichord, each control labelled with what it does in the live preset and each chord
+           button with its chord; choosing one opens the controls sheet. controls.js draws it -->
+      <div class="minichord-map" id="minichord-map">
+        <div class="map-head">
+          <div class="map-layers" id="map-layers" role="group" aria-label="what the drawing shows">
+            <button type="button" class="always-on" data-layer="0" aria-pressed="true" title="what each control does as it is">turning</button>
+            <button type="button" class="always-on" data-layer="1" aria-pressed="false" title="what each control does with ♯ held down, and the chords a semitone up">holding ♯</button>
+          </div>
+          <span id="map-layer-note" class="map-layer-note" hidden title="knob layer is on alternate functions: the knobs and hover play their ♯ settings without ♯ held">knob layer: on the ♯ settings</span>
+        </div>
+        <svg id="map-svg" viewBox="-30 -175 2390 1000" role="group" aria-label="the minichord's controls"></svg>
+        <ul id="map-list" class="map-list"></ul>
+        <p class="map-hint">Choose any part of the minichord to change what it does.</p>
+        <!-- what the instrument has no button for, as a row of pedals beside it -->
+        <div class="map-pedals" role="group" aria-label="more of the sound">
+{pedal_buttons}
+        </div>
       </div>
+    </div>
+    <!-- what a control on the drawing does, to change there and then; controls.js fills it -->
+    <div id="controls-sheet" class="minishop-sheet controls-sheet" popover aria-labelledby="controls-sheet-title">
+      <div class="minishop-head">
+        <div>
+          <h2 id="controls-sheet-title">controls</h2>
+          <p id="controls-sheet-where" class="controls-sheet-where"></p>
+        </div>
+        <button type="button" class="settings-close always-on" popovertarget="controls-sheet" popovertargetaction="hide" aria-label="close"><span class="glyph">✕</span></button>
+      </div>
+      <div id="controls-sheet-body" class="controls-sheet-body"></div>
     </div>
     <!-- the minishop's presets, to hear one on the minichord and save it to a bank (index.js fills
          the list). The idea is Sound Lab's. -->
@@ -774,6 +870,14 @@ html_template = '''<!DOCTYPE html>
               <strong id="information_text"></strong>
             </div>
           </details>
+        </section>
+        <section class="settings-section">
+          <h5 class="tool-label">the minichord</h5>
+          <div class="settings-buttons">
+            <div class="button_div">
+              <button type="button" class="always-on" popovertarget="device-sheet" title="MIDI channels and ports, MPE, tuning sent over MIDI, and USB audio">device and MIDI</button>
+            </div>
+          </div>
         </section>
         <section class="settings-section">
           <h5 class="tool-label">all banks</h5>
@@ -820,6 +924,12 @@ html_template = '''<!DOCTYPE html>
       To test and load user-submitted presets, visit the 
       <a href="https://minichord.com/minicontrol/minishop.html">minishop.</a>
     </div>
+    <!-- any setting by name, and every setting laid out at once, as the page used to be (controls.js) -->
+    <div id="settings-finder" class="settings-finder">
+      <input type="search" id="finder-input" class="always-on" placeholder="find a setting: reverb, attack, MIDI channel…" aria-label="find a setting" autocomplete="off">
+      <button type="button" id="show-every-setting" class="always-on" aria-pressed="false" title="every setting on the page at once, in its sections">show every setting</button>
+      <ul id="finder-results" class="finder-results" hidden></ul>
+    </div>
     <div id="parameters">
       {parameter_sections}
     </div>
@@ -837,6 +947,7 @@ html_template = '''<!DOCTYPE html>
   <script src="commands.js"></script>
   <script src="talk.js"></script>
   <script src="tuning.js"></script>
+  <script src="controls.js"></script>
   <script>
     // installable, and opens offline once visited (see sw.js)
     if ('serviceWorker' in navigator) {{
@@ -847,16 +958,30 @@ html_template = '''<!DOCTYPE html>
 </html>
 '''
 # Generate parameter sections in specified order
+sections = {}
+for name, params in parameters.items():
+    for p in params:
+        place, group = PLACES_BY_ADDRESS.get(p['sysex_adress']) or PLACES.get((name, p['group'])) or (name, p['group'])
+        sections.setdefault(place, []).append(dict(p, group=group))
+        name_to_sysex.setdefault(place, {}).setdefault(group, {})[p['name']] = p['sysex_adress']
 parameter_sections = []
-for group_name in group_order:
-    if group_name not in parameters or group_name == 'sysex_name_map' or group_name == 'hidden':
-        continue
-    parameter_sections.append(generate_details_html(group_name, parameters[group_name]))
+for group_name in PLACE_ORDER:
+    section = generate_details_html(group_name, sections[group_name])
+    if group_name in SHEETS:
+        section = sheet_html(group_name, section)
+    else:
+        section = section.replace('<details style=', '<details class="every-only" style=', 1)
+    parameter_sections.append(section)
 
 # Insert into HTML
+# the sheets with no part of the minichord to open them, under the drawing
+PEDALS = ['tuning', 'drone', 'effects', 'phone']
+pedal_buttons = '\n'.join(f'''          <button type="button" class="map-pedal always-on" data-sheet="{p}" aria-haspopup="dialog">
+            <span class="map-pedal-name">{p}</span><span class="map-pedal-value" data-status="{p}"></span>
+          </button>''' for p in PEDALS)
 html_content = html_template.format(
+    pedal_buttons=pedal_buttons,
     parameter_sections=''.join(parameter_sections),
-    svg_file=svg_file,
     theme_links=theme_links,
     theme_options=theme_options,
     theme_taglines=theme_taglines,

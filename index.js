@@ -554,6 +554,7 @@ function applyUIValue(param, value) {
   }
   if (sysex === 237) refreshStepRows(value);
   if (typeof refreshTuningCircle === 'function') refreshTuningCircle();
+  if (typeof scheduleMinichordMap === 'function') scheduleMinichordMap();
 }
 
 // The step scale's rows show the steps of the live division, each with its size in cents: none

@@ -29,7 +29,6 @@
   --t-ok-ink: #C23A3A;
   --t-bad: #0C0101;
   --t-bad-ink: #FF5050;
-  --t-art-filter: invert(1) sepia(1) saturate(8) hue-rotate(-45deg) brightness(.45);
   --t-focus: 2px solid #E04848;
   color-scheme: dark;
 }

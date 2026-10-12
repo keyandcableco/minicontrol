@@ -7,7 +7,6 @@
       --background-color: hsl(var(--primary-color-hue, 0), 10%, 95%);
       --header-bg: hsl(var(--primary-color-hue, 0), 10%, 95%);
       --text-primary: #333;
-      --svg-filter: none;
     }
     [data-theme="dark"] {
       --track-color: #555;
@@ -18,7 +17,6 @@
       --text-primary: #e0e0e0;
       --primary-color: hsl(var(--primary-color-hue, 0), 70%, 60%);
       --text-color: #000000;
-      --svg-filter: invert(100%) grayscale(100%);
     }
     body {
       font-family: Arial, sans-serif;
@@ -97,39 +95,427 @@
       min-width: 0;
       overflow-wrap: anywhere;   /* a bank's name with no spaces in it wraps rather than widening the page */
     }
+    /* the header: the toolbar along the top, and under it the drawing and the describe box, side by
+       side where there is room and one above the other where there isn't */
     #header {
       margin: 20px 0;
       padding: 10px;
       background-color: var(--header-bg);
       border-radius: 5px;
       color: var(--text-primary);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "toolbar" "map" "describe";
+      align-items: start;
       gap: 20px;
     }
-    .controls-container {
+    .controls-container { display: contents; }
+    .toolbar {
+      grid-area: toolbar;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--track-color);
+    }
+    .describe-group { grid-area: describe; }
+    @media screen and (min-width: 1100px) {
+      #header {
+        grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr);
+        grid-template-areas: "toolbar toolbar" "map describe";
+        column-gap: 32px;
+      }
+    }
+    /* the minichord drawing (controls.js): drawn in the text colour, each control lit in the bank
+       colour where something is set, labelled with what it does and each button with its chord */
+    .minichord-map {
+      grid-area: map;
+      width: 100%;
+      max-width: 1000px;
+      min-width: 0;
+      justify-self: center;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      flex: 1;
-      min-width: 200px;
+      gap: 8px;
     }
-    .svg-container {
-      flex: 0 0 auto;
-      height: 20vw;
-      max-width: 80vw;
+    .map-head {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 6px 12px;
     }
-    .svg-container img {
-      width: 150%;
-      height: 150%;
-      object-fit: contain;
-      filter: var(--svg-filter);
+    .map-layers {
+      display: inline-flex;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1.5px var(--primary-color);
     }
+    .map-layers button {
+      border-radius: 0;
+      padding: 6px 12px;
+      background: transparent;
+      color: var(--text-primary);
+    }
+    .map-layers button:hover,
+    .map-row:hover {
+      background: rgba(127, 127, 127, 0.15);
+    }
+    .map-layers button[aria-pressed="true"] {
+      background: var(--primary-color);
+      color: var(--text-color);
+    }
+    .map-layer-note,
+    .map-hint {
+      margin: 0;
+      font-size: 0.85em;
+      opacity: 0.75;
+    }
+    #map-svg {
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      font-family: inherit;
+    }
+    #map-svg .map-body,
+    #map-svg .map-part {
+      fill: none;
+      stroke: var(--text-primary);
+      stroke-width: 2.5;
+      opacity: 0.55;
+    }
+    #map-svg .map-shape {
+      fill: transparent;
+      stroke: var(--text-primary);
+      stroke-width: 3;
+    }
+    #map-svg .map-hit { fill: transparent; }
+    #map-svg .map-tick {
+      stroke: var(--text-primary);
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+    #map-svg .map-led { fill: var(--primary-color); }
+    #map-svg .map-ctl,
+    #map-svg .map-label {
+      cursor: pointer;
+      outline: none;
+    }
+    #map-svg .map-ctl.assigned .map-shape {
+      stroke: var(--primary-color);
+      stroke-width: 6;
+      fill: var(--primary-color);
+      fill-opacity: 0.18;
+    }
+    #map-svg .map-ctl:hover .map-shape,
+    #map-svg .map-ctl:focus-visible .map-shape {
+      fill: var(--primary-color);
+      fill-opacity: 0.35;
+    }
+    #map-svg .map-ctl:focus-visible .map-shape { stroke-width: 9; }
+    #map-svg .map-shape.pressed {
+      fill: var(--primary-color);
+      fill-opacity: 1;
+    }
+    #map-svg .map-chord,
+    #map-svg .map-glyph {
+      fill: var(--text-primary);
+      font-weight: bold;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+    #map-svg .map-glyph { font-size: 30px; }
+    #map-svg .map-lead {
+      fill: none;
+      stroke: var(--text-primary);
+      stroke-width: 2;
+      opacity: 0.35;
+    }
+    #map-svg .map-name {
+      fill: var(--text-primary);
+      font-size: 34px;
+      opacity: 0.7;
+    }
+    #map-svg .map-value {
+      fill: var(--text-primary);
+      font-size: 44px;
+      font-weight: bold;
+    }
+    #map-svg .map-label.unset .map-value {
+      font-weight: normal;
+      opacity: 0.5;
+    }
+    #map-svg .map-label:hover .map-value { text-decoration: underline; }
+    /* on a phone the labels are this list, under the drawing */
+    .map-list {
+      display: none;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .map-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 2px;
+      border-top: 1px solid var(--track-color);
+      border-radius: 0;
+      background: transparent;
+      color: var(--text-primary);
+      text-align: left;
+    }
+    .map-row-name {
+      flex-shrink: 0;
+      font-weight: bold;
+    }
+    .map-row-value {
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+    .map-row.unset .map-row-value { opacity: 0.55; }
+    /* the controls sheet: what one control does, on each layer, to change */
+    .controls-sheet { width: min(640px, calc(100vw - 32px)); }
+    .controls-sheet-where {
+      margin: 2px 0 0;
+      font-size: 0.85em;
+      opacity: 0.7;
+    }
+    .controls-sheet-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-bottom: 18px;
+    }
+    .cs-intro {
+      margin: 6px 0 12px;
+      line-height: 1.45;
+    }
+    .cs-offline {
+      margin: 6px 0;
+      padding: 6px 10px;
+      border-radius: 5px;
+      background: rgba(127, 127, 127, 0.15);
+      font-size: 0.9em;
+    }
+    .cs-layers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      column-gap: 18px;
+    }
+    .cs-layer,
+    .cs-extra {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px 0;
+      border-top: 1px solid var(--track-color);
+    }
+    .cs-layer h3,
+    .cs-extra h3 {
+      margin: 0;
+      font-size: 0.85em;
+      opacity: 0.75;
+    }
+    .cs-layer.live h3 { opacity: 1; }
+    .cs-target {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      text-align: left;
+    }
+    .cs-picker {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 6px;
+      border: 1px solid var(--track-color);
+      border-radius: 6px;
+    }
+    .cs-search {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+    }
+    .cs-options {
+      display: flex;
+      flex-direction: column;
+      max-height: 40dvh;
+      overflow-y: auto;
+    }
+    .cs-group {
+      margin: 8px 4px 2px;
+      font-size: 0.75em;
+      opacity: 0.65;
+    }
+    .cs-option {
+      padding: 6px 8px;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-primary);
+      text-align: left;
+    }
+    .cs-option:hover,
+    .cs-option:focus-visible {
+      background: rgba(127, 127, 127, 0.15);
+    }
+    .cs-option.current {
+      font-weight: bold;
+      box-shadow: inset 3px 0 0 var(--primary-color);
+    }
+    .cs-empty { margin: 6px 4px; opacity: 0.7; }
+    .cs-label {
+      font-size: 0.85em;
+      opacity: 0.8;
+    }
+    .cs-slider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cs-slider input {
+      flex: 1;
+      min-width: 0;
+    }
+    .cs-slider output {
+      min-width: 3.5em;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .cs-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .controls-sheet select { padding: 6px; max-width: 100%; }
+    .controls-sheet :disabled { opacity: 0.5; cursor: not-allowed; }
+    .cs-note {
+      margin: 0;
+      font-size: 0.85em;
+      line-height: 1.4;
+      opacity: 0.75;
+    }
+    .cs-fixed { margin: 0; font-weight: bold; }
+    /* the page's sheets (chord, harp, rhythm, tuning and the rest): each a section of settings, open
+       and without its own title or panel */
+    @media screen and (min-width: 601px) {
+      #parameters > [popover] { width: min(720px, calc(100vw - 32px)); }
+    }
+    #parameters [popover] details.sheet-section {
+      width: auto !important;
+      max-width: none;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible;
+      background: none;
+      border: none;
+      box-shadow: none;
+    }
+    #parameters [popover] details.sheet-section > summary { display: none; }
+    #parameters [popover] details.sheet-section > div { padding: 0 !important; }
+    .sheet-quick:empty { display: none; }
+    /* the page's rule for a dropdown in a row of settings stretches it down a column here */
+    #parameters .sheet-quick select {
+      flex: none;
+      max-width: 100%;
+    }
+    /* every setting at once: the sheets laid out in the page's grid, as its sections used to be,
+       and the controls' own section with them */
+    #parameters:not(.show-all) .every-only { display: none; }
+    #parameters.show-all > [popover]:not(:popover-open) {
+      position: static;
+      inset: auto;
+      display: flex;
+      flex-direction: column;
+      width: auto;
+      height: auto;
+      max-height: none;
+      margin: 0;
+      padding: 8px;
+      overflow: visible;
+      box-shadow: none;
+    }
+    #parameters.show-all > [popover]:not(:popover-open) .settings-close { display: none; }
+    #parameters.show-all > [popover]:not(:popover-open) .controls-sheet-body { overflow: visible; }
+    /* a setting the search found, pointed at for a moment */
+    #parameters .found {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 4px;
+      border-radius: 3px;
+    }
+    /* the pedals: what the instrument has no button for, under the drawing */
+    .map-pedals {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .map-pedal {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      min-width: 7em;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .map-pedal-name { font-weight: bold; }
+    .map-pedal-value {
+      font-size: 0.8em;
+      opacity: 0.85;
+    }
+    .map-pedal-value:empty { display: none; }
+    /* finding a setting by name, and showing every setting */
+    .settings-finder {
+      display: grid;
+      grid-template-columns: minmax(0, 520px) auto;
+      justify-content: start;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0 20px;
+    }
+    #finder-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border: 1px solid var(--track-color);
+      border-radius: 5px;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      font: inherit;
+    }
+    #show-every-setting[aria-pressed="false"] {
+      background: transparent;
+      color: var(--text-primary);
+      box-shadow: inset 0 0 0 1.5px var(--primary-color);
+    }
+    .finder-results {
+      grid-column: 1 / -1;
+      max-width: 620px;
+      margin: 0;
+      padding: 4px;
+      list-style: none;
+      border: 1px solid var(--track-color);
+      border-radius: 6px;
+    }
+    .finder-result {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 7px 8px;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-primary);
+      text-align: left;
+    }
+    .finder-result:hover,
+    .finder-result:focus-visible {
+      background: rgba(127, 127, 127, 0.15);
+    }
+    .finder-where {
+      font-size: 0.85em;
+      opacity: 0.65;
+      text-align: right;
+    }
+    .cs-dim { font-weight: normal; opacity: 0.6; }
     /* the toolbar: a few small labelled groups, wrapping as the window narrows */
     .toolbar {
       display: flex;
@@ -189,11 +575,7 @@
       font-size: max(1.15em, 13px);
       line-height: 1;
     }
-    .describe-group {
-      margin-top: 22px;
-      padding-top: 16px;
-      border-top: 1px solid var(--track-color);
-    }
+    .describe-group { min-width: 0; }
 
     /* the settings button, at the right of the title */
     .status-header .settings-toggle {
@@ -650,12 +1032,6 @@
           max-width: 400px;
           box-sizing: border-box;
         }
-      }
-    }
-    @media screen and (max-width: 767px) {
-      .svg-container {
-        max-width: 100%;
-        height: 100%;
       }
     }
     /* custom scale: one checkbox per chromatic degree, in two rows of six */
@@ -1473,21 +1849,12 @@
       #bank_number_selection {
         max-width: 12em;
       }
-      .describe-group {
-        margin-top: 8px;
+      /* the drawing fits the width, its labels a list under it */
+      #map-svg .map-labels,
+      .map-hint {
+        display: none;
       }
-      /* the drawing fits the width, rather than spilling off the left */
-      .svg-container {
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        justify-content: center;
-      }
-      .svg-container img {
-        width: 100% !important;
-        height: auto !important;
-        max-height: 160px;
-      }
+      .map-list { display: block; }
       #instruction_zone {
         font-size: 0.9em;
         line-height: 1.4;

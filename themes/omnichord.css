@@ -33,7 +33,6 @@
   --t-ok-ink: #4E6B1E;
   --t-bad: #F6D9C4;
   --t-bad-ink: #A33A12;
-  --t-art-filter: sepia(1) saturate(3) hue-rotate(-12deg) brightness(.45) contrast(1.6);
   --t-page-ink: #E9D9B4;
   --t-page-link: #F2A33A;
 }

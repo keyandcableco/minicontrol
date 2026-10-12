@@ -31,7 +31,6 @@
   --t-ok-ink: #7CFF7C;
   --t-bad: #000;
   --t-bad-ink: #FF8C8C;
-  --t-art-filter: invert(1);
   --t-focus: 4px solid #FFE600;
   color-scheme: dark;
 }

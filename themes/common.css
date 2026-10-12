@@ -12,7 +12,6 @@
  *   --t-control, --t-control-ink, --t-control-border       dropdowns and number boxes
  *   --t-thumb, --t-thumb-radius, --track-color             sliders
  *   --t-ok, --t-ok-ink, --t-bad, --t-bad-ink               the connection bubble
- *   --t-art-filter                                         how the minichord drawing is tinted
  *   --t-focus                                              the keyboard focus ring
  */
 [data-themed] {
@@ -22,7 +21,6 @@
   --t-radius: 6px;
   --t-shadow: none;
   --t-thumb-radius: 50%;
-  --t-art-filter: none;
   --t-focus: 3px solid var(--primary-color);
   background: var(--t-page);
   --background-color: var(--t-page);
@@ -104,6 +102,22 @@
   background: var(--t-button-off) !important;
   color: var(--t-button-off-ink) !important;
 }
+/* the drawing's layer not shown, as a button that is off; its list and the sheet's choices as
+   plain rows, not buttons */
+[data-themed] .map-layers button[aria-pressed="false"],
+[data-themed] #show-every-setting[aria-pressed="false"] {
+  background: var(--t-button-off) !important;
+  color: var(--t-button-off-ink) !important;
+}
+[data-themed] .map-row,
+[data-themed] .cs-option,
+[data-themed] .finder-result {
+  background: transparent !important;
+  color: inherit !important;
+  border: none;
+  border-radius: 4px;
+}
+[data-themed] .map-row { border-top: 1px solid var(--track-color); border-radius: 0; }
 
 /* dropdowns and number boxes */
 [data-themed] #parameters select,
@@ -141,22 +155,6 @@
 [data-themed] #notification-bubble.connected { background: var(--t-ok); color: var(--t-ok-ink); border-color: var(--t-ok-ink); }
 [data-themed] #notification-bubble.disconnected { background: var(--t-bad); color: var(--t-bad-ink); border-color: var(--t-bad-ink); }
 [data-themed] #notification-bubble #dot { color: inherit !important; }
-
-/* the minichord drawing, tinted to suit */
-[data-themed] .svg-container img.default-only { filter: var(--t-art-filter); }
-/* the drawing sized to sit inside the control panel, centred against it (index.css's own sizing
-   is larger than the panel, which a plain page hides but a framed panel shows) */
-[data-themed] .svg-container {
-  height: auto;
-  align-self: center;
-  justify-content: center;
-  margin: 0 auto;
-}
-[data-themed] .svg-container img.default-only {
-  width: clamp(260px, 40vw, 600px);
-  height: auto;
-  max-width: 100%;
-}
 
 /* text sitting straight on the page, outside the panels, which on some themes is dark */
 [data-themed] #instruction_zone { color: var(--t-page-ink, var(--t-dim)); }

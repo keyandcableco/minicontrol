@@ -33,7 +33,6 @@
   --t-ok-ink: #4A5A1E;
   --t-bad: #F0D5C0;
   --t-bad-ink: #8E1B10;
-  --t-art-filter: sepia(1) brightness(.6);
   --t-page-ink: #E2CFA3;
   --t-page-link: #F3D98A;
 }

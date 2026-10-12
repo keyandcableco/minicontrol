@@ -31,7 +31,6 @@
   --t-ok-ink: #2E6B34;
   --t-bad: transparent;
   --t-bad-ink: #B3261E;
-  --t-art-filter: grayscale(1) contrast(1.4);
 }
 /* ruled paper, with the margin line */
 [data-theme="notebook"] body {
@@ -71,10 +70,8 @@
 }
 [data-theme="notebook"] #notification-bubble { border-style: dashed; font-style: italic; }
 /* the figure caption */
-[data-theme="notebook"] .svg-container { flex-direction: column; }
-[data-theme="notebook"] .svg-container::after {
+[data-theme="notebook"] .minichord-map::after {
   content: "fig. 1 — the minichord";
   font-style: italic;
   color: #5E6170;
-  margin-top: 4px;
 }
