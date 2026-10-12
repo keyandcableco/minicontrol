@@ -265,6 +265,100 @@ function rowKinds() {
   return labels.map(l => ({ suffix: CHORD_SUFFIX[l] ?? l, words: l.toLowerCase() }));
 }
 
+// ---- the harp's strings ----
+
+// What each of the plate's twelve strings plays, as the firmware's calculate_note_harp has it, for
+// one chord: the key's own until a chord button is pointed at. Named in twelve only; the custom,
+// generator, maqam and per-chord scales give their mode's name instead.
+const HARP_PATTERNS = [
+  [0, 1, 2, 10, 11, 12, 20, 21, 22, 30, 31, 32],
+  [4, 1, 0, 2, 14, 11, 10, 12, 24, 21, 20, 22],
+  [5, 2, 0, 1, 15, 12, 10, 11, 25, 22, 20, 21],
+  [6, 2, 0, 1, 16, 12, 10, 11, 26, 22, 20, 21],
+  [0, 1, 2, 3, 10, 11, 12, 13, 20, 21, 22, 23],
+  [0, 4, 1, 5, 2, 6, 10, 14, 11, 15, 12, 16],
+  [0, 10, 20, 1, 11, 21, 2, 12, 22, 3, 13, 23],
+];
+// each chord's seven tones in semitones, the firmware's chord_catalogue in order
+const CHORD_TONES = [
+  [0, 4, 7, 12, 2, 5, 9], [0, 3, 7, 12, 1, 5, 8], [0, 4, 10, 7, 2, 5, 9], [0, 4, 11, 7, 2, 5, 9],
+  [0, 3, 10, 7, 1, 5, 8], [0, 3, 6, 12, 2, 5, 9], [0, 4, 8, 12, 2, 5, 9], [0, 4, 7, 9, 2, 5, 12],
+  [0, 3, 7, 9, 1, 5, 12], [0, 3, 6, 9, 2, 5, 12], [0, 3, 6, 10, 2, 5, 8], [0, 5, 7, 12, 2, 9, 10],
+  [0, 2, 7, 12, 5, 9, 4], [0, 5, 10, 7, 2, 9, 4], [0, 4, 11, 2, 7, 5, 9], [0, 3, 10, 2, 7, 5, 8],
+  [0, 4, 7, 2, 5, 9, 11], [0, 4, 9, 2, 7, 5, 11], [0, 4, 7, 12, 2, 5, 9], [0, 3, 7, 12, 2, 5, 9],
+  [0, 3, 7, 12, 2, 5, 9], [0, 4, 10, 7, 2, 5, 9], [0, 3, 7, 10, 2, 6, 9], [0, 3, 7, 10, 2, 5, 9],
+  [0, 3, 6, 10, 2, 5, 8], [0, 2, 4, 10, 7, 6, 8], [0, 4, 7, 10, 2, 6, 12], [0, 4, 8, 12, 2, 6, 12],
+  [0, 4, 7, 11, 2, 5, 9],
+];
+// harp modes 1-7: a scale from the key (5-7 from its relative minor)
+const HARP_SCALES = [[0, 2, 4, 5, 7, 9, 11], [0, 2, 4, 7, 9], [0, 2, 3, 7, 10], [0, 2, 4, 5, 7, 8, 9, 11],
+  [0, 2, 3, 5, 7, 8, 10], [0, 2, 3, 5, 7, 8, 11], [0, 2, 3, 7, 10]];
+const KEY_ROOTS = [0, 7, 2, 9, 4, 11, 5, 10, 3, 8, 1, 6, 6, 1, 8, 3, 10, 5, 0, 4, 11];
+// the plate, lowest string at the bottom
+const PLATE_TOP = 150, PLATE_BOTTOM = 648, PLATE_X = 1124;
+
+let previewChord = null;   // { col, row } a chord button pointed at, whose strings the plate shows
+
+// the chord the strings are shown for: the one pointed at, or the key's own
+function stringsChord() {
+  if (previewChord) return previewChord;
+  const letter = (KEY_NAMES[num(35)] ?? 'C')[0];
+  return { col: Math.max(0, MAP_LETTERS.indexOf(letter)), row: 0 };
+}
+
+function chordTones(row) {
+  if (num(39) === 1) return CHORD_TONES[(num(202 + row) || [12, 13, 14][row]) - 1] ?? CHORD_TONES[0];
+  if (num(33) === 1) return CHORD_TONES[[7, 8, 2][row]];
+  return CHORD_TONES[row];   // major, minor, dominant seventh
+}
+
+// the twelve strings' names, lowest first, or null where they can't be named here
+function harpNotes(sharp) {
+  const twelve = !TEMPERAMENT_DIVISIONS[num(237)];
+  const names = num(35) in KEY_FLATS ? FLAT_NAMES : SHARP_NAMES;
+  const transpose = twelve ? num(30) % 12 : 0;
+  const name = pc => names[(((pc + transpose) % 12) + 12) % 12];
+  if (num(98)) return twelve ? Array.from({ length: 12 }, (_, i) => name(i)) : null;   // chromatic, from C
+  if (!twelve) return null;
+  const mode = num(36);
+  if (mode >= 1 && mode <= 7) {
+    const scale = HARP_SCALES[mode - 1];
+    const root = KEY_ROOTS[num(35)] - (mode >= 5 ? 3 : 0);
+    return Array.from({ length: 12 }, (_, i) => name(root + scale[i % scale.length]));
+  }
+  if (mode !== 0) return null;
+  const { col, row } = stringsChord();
+  const acc = keyAccidentals(num(35));
+  const root = NATURAL[MAP_LETTERS[col]] + acc[MAP_LETTERS[col]] + (sharp && sharpensChords() ? 1 : 0);
+  const tones = chordTones(row);
+  const pattern = HARP_PATTERNS[num(40)] ?? HARP_PATTERNS[0];
+  return pattern.map(level => name(root + tones[level % 10]));
+}
+
+function stringsSvg() {
+  const notes = harpNotes(mapLayer === 1);
+  const step = (PLATE_BOTTOM - PLATE_TOP) / 12;
+  if (!notes) {
+    const mode = choicesOf(findParameterBySysex(36))?.find(c => c.value === num(36))?.label ?? '';
+    return `<text class="map-string-mode" x="${PLATE_X}" y="${(PLATE_TOP + PLATE_BOTTOM) / 2}" ` +
+      `transform="rotate(-90 ${PLATE_X} ${(PLATE_TOP + PLATE_BOTTOM) / 2})">${esc(mode.toLowerCase())}</text>`;
+  }
+  const strings = notes.map((n, i) =>
+    `<text class="map-string" x="${PLATE_X}" y="${(PLATE_BOTTOM - step * (i + 0.5)).toFixed(1)}">${esc(n)}</text>`).join('');
+  const mode = num(98) ? 'chromatic' : num(36) ? null : (() => {
+    const { col, row } = stringsChord();
+    return `for ${columnRoots(mapLayer === 1 && sharpensChords())[col]}${rowKinds()[row].suffix}`;
+  })();
+  return strings + (mode ? `<text class="map-string-for" x="${PLATE_X + 10}" y="${PLATE_BOTTOM + 44}">${esc(mode)}</text>` : '');
+}
+
+function renderStrings() {
+  const g = document.getElementById('map-strings');
+  if (g) g.innerHTML = stringsSvg();
+  document.querySelectorAll('#map-svg [data-col]').forEach(r =>
+    r.classList.toggle('previewed', !!previewChord && parseInt(r.dataset.col) === previewChord.col && parseInt(r.dataset.row) === previewChord.row));
+}
+
 // ---- the drawing ----
 
 function knobShape(key) {
@@ -307,7 +401,8 @@ function renderMinichordMap() {
       ? `<text class="map-chord" x="${x + 40}" y="${row.y + 40}" style="font-size:${(root + suffix).length <= 2 ? 34 : 28}px">${esc(root + suffix)}</text>`
       : `<text class="map-chord" x="${x + 40}" y="${row.y + 25}" style="font-size:30px">${esc(root)}</text>` +
         `<text class="map-chord" x="${x + 40}" y="${row.y + 56}" style="font-size:${suffix.length <= 4 ? 24 : 20}px">${esc(suffix)}</text>`;
-    buttons += `<rect class="map-shape" x="${x}" y="${row.y}" width="80" height="78" rx="4"><title>${esc(root)} ${esc(kinds[r].words)}</title></rect>` + text;
+    const shown = previewChord && previewChord.col === col && previewChord.row === r ? ' previewed' : '';
+    buttons += `<rect class="map-shape${shown}" data-col="${col}" data-row="${r}" x="${x}" y="${row.y}" width="80" height="78" rx="4"><title>${esc(root)} ${esc(kinds[r].words)}</title></rect>` + text;
   }));
   const s = MAP_SHAPES;
   svg.setAttribute('viewBox', narrowMap.matches ? MAP_VIEW_NARROW : MAP_VIEW_WIDE);
@@ -321,7 +416,8 @@ function renderMinichordMap() {
     controlGroup('tap', `<rect class="map-hit" x="100" y="110" width="90" height="95"/>` +
       `<rect class="map-shape${sharp ? ' pressed' : ''}" x="${MAP_SHARP.x}" y="${MAP_SHARP.y}" width="${MAP_SHARP.w}" height="${MAP_SHARP.h}" rx="4"/>` +
       `<text class="map-glyph" x="${MAP_SHARP.x + 20}" y="${MAP_SHARP.y + 21}">♯</text>`) +
-    controlGroup('strings', `<path class="map-shape" d="${s.plate}"/>` + s.plateDots.map(d => `<path class="map-part" d="${d}"/>`).join('')) +
+    controlGroup('strings', `<path class="map-shape" d="${s.plate}"/>` + s.plateDots.map(d => `<path class="map-part" d="${d}"/>`).join('') +
+      `<g id="map-strings">${stringsSvg()}</g>`) +
     ['chord', 'harp', 'mod'].map(k => controlGroup(k, knobShape(k))).join('') +
     controlGroup('updown', `<rect class="map-hit" x="1320" y="500" width="100" height="150"/>` +
       `<path class="map-shape" d="${s.up}"/><path class="map-shape" d="${s.down}"/>`) +
@@ -696,6 +792,16 @@ function setupMinichordMap() {
     if (pedal) { openSheet(pedal.dataset.sheet); return; }
     open(e);
   });
+  map.addEventListener('pointerover', e => {
+    const button = e.target.closest('#map-svg [data-col]');
+    const next = button ? { col: parseInt(button.dataset.col), row: parseInt(button.dataset.row) } : null;
+    if (!button && !e.target.closest('#map-svg .map-ctl[data-control="chords"]')) {
+      if (previewChord) { previewChord = null; renderStrings(); }
+      return;
+    }
+    if (next && (next.col !== previewChord?.col || next.row !== previewChord?.row)) { previewChord = next; renderStrings(); }
+  });
+  map.addEventListener('pointerleave', () => { if (previewChord) { previewChord = null; renderStrings(); } });
   map.addEventListener('keydown', e => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.map-ctl')) { e.preventDefault(); open(e); }
   });

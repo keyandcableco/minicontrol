@@ -222,6 +222,32 @@
       pointer-events: none;
     }
     #map-svg .map-glyph { font-size: 30px; }
+    /* the harp's strings, each named on the plate, and the chord they are shown for */
+    #map-svg .map-string,
+    #map-svg .map-string-mode {
+      fill: var(--text-primary);
+      font-size: 31px;
+      font-weight: bold;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+    #map-svg .map-string-mode {
+      font-size: 24px;
+      font-weight: normal;
+      opacity: 0.7;
+    }
+    #map-svg .map-string-for {
+      fill: var(--text-primary);
+      font-size: 26px;
+      text-anchor: middle;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    #map-svg .map-shape.previewed {
+      fill: var(--primary-color);
+      fill-opacity: 0.3;
+    }
     #map-svg .map-lead {
       fill: none;
       stroke: var(--text-primary);
@@ -2065,6 +2091,7 @@
       }
       /* the drawing fits the width, its labels a list under it */
       #map-svg .map-labels,
+      #map-svg #map-strings,
       .map-hint {
         display: none;
       }
