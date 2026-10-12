@@ -47,14 +47,14 @@ function envSvg(env) {
   const off = locked(env.a);
   const shape = `M${p.x0},${p.bottom} L${p.xa},${p.top} L${p.xh},${p.top} L${p.xd},${p.sus} L${p.xs},${p.sus} L${p.xr},${p.bottom}`;
   const handle = (key, x, y, label, value) =>
-    `<g class="env-handle" data-handle="${key}" tabindex="${off ? -1 : 0}" role="slider" aria-label="${label}" aria-valuetext="${value}">` +
-    `<circle class="env-hit" cx="${x}" cy="${y}" r="16"/><circle class="env-dot" cx="${x}" cy="${y}" r="6"/></g>`;
-  return `<svg class="env-svg${off ? ' off' : ''}" viewBox="0 0 ${ENV_W + ENV_PAD * 2} ${ENV_H + ENV_PAD * 2 + 16}" role="group" aria-label="envelope">` +
-    `<line class="env-floor" x1="${ENV_PAD}" y1="${p.bottom}" x2="${ENV_W + ENV_PAD}" y2="${p.bottom}"/>` +
-    (v.held ? `<line class="env-key" x1="${p.xs}" y1="${ENV_PAD}" x2="${p.xs}" y2="${p.bottom}"/>` +
-      `<text class="env-tag" x="${(p.x0 + p.xs) / 2}" y="${p.bottom + 15}">held</text>` +
-      `<text class="env-tag" x="${(p.xs + Math.max(p.xr, p.xs + 40)) / 2}" y="${p.bottom + 15}">let go</text>` : '') +
-    `<path class="env-fill" d="${shape} Z"/><path class="env-line" d="${shape}"/>` +
+    `<g class="pic-handle" data-handle="${key}" tabindex="${off ? -1 : 0}" role="slider" aria-label="${label}" aria-valuetext="${value}">` +
+    `<circle class="pic-hit" cx="${x}" cy="${y}" r="16"/><circle class="pic-dot" cx="${x}" cy="${y}" r="6"/></g>`;
+  return `<svg class="pic-svg${off ? ' off' : ''}" viewBox="0 0 ${ENV_W + ENV_PAD * 2} ${ENV_H + ENV_PAD * 2 + 16}" role="group" aria-label="envelope">` +
+    `<line class="pic-floor" x1="${ENV_PAD}" y1="${p.bottom}" x2="${ENV_W + ENV_PAD}" y2="${p.bottom}"/>` +
+    (v.held ? `<line class="pic-key" x1="${p.xs}" y1="${ENV_PAD}" x2="${p.xs}" y2="${p.bottom}"/>` +
+      `<text class="pic-tag" x="${(p.x0 + p.xs) / 2}" y="${p.bottom + 15}">held</text>` +
+      `<text class="pic-tag" x="${(p.xs + Math.max(p.xr, p.xs + 40)) / 2}" y="${p.bottom + 15}">let go</text>` : '') +
+    `<path class="pic-fill" d="${shape} Z"/><path class="pic-line" d="${shape}"/>` +
     handle('a', p.xa, p.top, 'attack', msText(v.a)) +
     handle('h', p.xh, p.top, 'hold', msText(v.h)) +
     (v.held ? handle('d', p.xd, p.sus, 'decay and sustain', `${msText(v.d)}, sustain ${v.s.toFixed(2)}`) +
@@ -71,13 +71,13 @@ function envCaption(env) {
 function renderEnvelope(box) {
   const env = ENVELOPES[parseInt(box.dataset.env)];
   box.querySelector('.env-draw').innerHTML = envSvg(env);
-  box.querySelector('.env-values').innerHTML = envCaption(env);
+  box.querySelector('.pic-values').innerHTML = envCaption(env);
 }
 
 function refreshEnvelopes() {
   document.querySelectorAll('.env-box').forEach(box => {
     if (envDrag?.box === box || box.contains(document.activeElement)) {
-      box.querySelector('.env-values').innerHTML = envCaption(ENVELOPES[parseInt(box.dataset.env)]);
+      box.querySelector('.pic-values').innerHTML = envCaption(ENVELOPES[parseInt(box.dataset.env)]);
       return;
     }
     renderEnvelope(box);
@@ -133,22 +133,22 @@ function setupEnvelopes() {
       .filter(Boolean);
     if (rows.length < addresses.length) return;
     const box = document.createElement('div');
-    box.className = 'env-box';
+    box.className = 'env-box picture';
     box.dataset.env = i;
-    box.innerHTML = `<div class="env-draw"></div><p class="env-values"></p>` +
-      `<details class="env-exact"><summary>exact values</summary></details>`;
+    box.innerHTML = `<div class="env-draw"></div><p class="pic-values"></p>` +
+      `<details class="exact-values"><summary>exact values</summary></details>`;
     rows[0].before(box);
-    const exact = box.querySelector('.env-exact');
+    const exact = box.querySelector('.exact-values');
     rows.forEach(row => exact.append(row));
     renderEnvelope(box);
   });
 
   document.addEventListener('pointerdown', e => {
-    const handle = e.target.closest('.env-handle');
+    const handle = e.target.closest('.pic-handle');
     const box = handle?.closest('.env-box');
-    if (!box || box.querySelector('.env-svg.off')) return;
+    if (!box || box.querySelector('.pic-svg.off')) return;
     e.preventDefault();
-    const svg = box.querySelector('.env-svg');
+    const svg = box.querySelector('.pic-svg');
     envDrag = { box, svg, env: ENVELOPES[parseInt(box.dataset.env)], handle: handle.dataset.handle };
     svg.setPointerCapture(e.pointerId);
     handle.classList.add('held');
@@ -160,7 +160,7 @@ function setupEnvelopes() {
     // redraw the shape around the handle without losing hold of it
     const held = envDrag.handle;
     renderEnvelope(envDrag.box);
-    envDrag.svg = envDrag.box.querySelector('.env-svg');
+    envDrag.svg = envDrag.box.querySelector('.pic-svg');
     envDrag.svg.setPointerCapture(e.pointerId);
     envDrag.svg.querySelector(`[data-handle="${held}"]`)?.classList.add('held');
   });
@@ -172,7 +172,7 @@ function setupEnvelopes() {
   document.addEventListener('pointerup', release);
   document.addEventListener('pointercancel', release);
   document.addEventListener('keydown', e => {
-    const handle = e.target.closest?.('.env-handle');
+    const handle = e.target.closest?.('.pic-handle');
     const box = handle?.closest('.env-box');
     if (!box) return;
     const env = ENVELOPES[parseInt(box.dataset.env)];

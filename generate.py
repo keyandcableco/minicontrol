@@ -936,6 +936,7 @@ html_template = '''<!DOCTYPE html>
   <script src="controls.js"></script>
   <script src="envelope.js"></script>
   <script src="waveforms.js"></script>
+  <script src="filters.js"></script>
   <script>
     // installable, and opens offline once visited (see sw.js)
     if ('serviceWorker' in navigator) {{

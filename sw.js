@@ -22,6 +22,7 @@ const SHELL = [
   'controls.js',
   'envelope.js',
   'waveforms.js',
+  'filters.js',
   'describe_data.json',
   'minichordcontroller.js',
   'parameters.json',
