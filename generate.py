@@ -238,34 +238,21 @@ for (section, group), (place, new) in PLACES.items():
     subgroup_order.setdefault(place, []).append(new)
 subgroup_order['light'] = ['Light']
 SECTION_TITLES = {'controls': 'Controls'}
-SECTION_HINTS = {
-    'controls': 'The drawing of the minichord at the top shows what each of these does; choose a control there to change it.',
-}
 
-# Each sheet: its name, where it is on the minichord (or on the page), and what it holds. Sheets sit
-# inside #parameters, so the sections' styles reach their settings; as popovers they take no place
-# in its grid until "show every setting" lays them out there.
+# Each sheet: its name, where it is on the minichord, and a line on what the control does where it
+# needs one. Sheets sit inside #parameters, so the sections' styles reach their settings; as
+# popovers they take no place in its grid until "show every setting" lays them out there.
 SHEETS = {
-    'chord_parameter': ('chord', 'the 21 square buttons',
-        'How the buttons\' chords are voiced, and the sound they make: oscillators, envelope, filter and effects.'),
-    'harp_parameter': ('harp', 'the touch plate',
-        'Which notes the plate\'s twelve strings play, how they are plucked, and the sound they make.'),
+    'chord_parameter': ('chord', 'the 21 square buttons', ''),
+    'harp_parameter': ('harp', 'the touch plate', ''),
     'rhythm_parameter': ('rhythm', 'the button at the top right',
-        'Press the rhythm button to hold chords: each keeps sounding until the next. Hold it down for '
-        'a second to start or stop rhythm mode, which plays the chords in time in the style below. '
-        'While it runs, a press taps the tempo, and with ♯ held plays a fill if fills are on.'),
-    'tuning': ('tuning', 'for the chords and the harp',
-        'The key the buttons are spelled in, how the octave is divided and tuned, and how the notes lean toward pure intervals.'),
-    'drone': ('drone', 'under everything you play',
-        'A tanpura or shruti box held on the key\'s root, under the chords and the harp.'),
-    'effects': ('effects', 'for the chords and the harp',
-        'The reverb room both sections share, where the sound sits left to right, and the vocoder.'),
-    'phone': ('phone', 'sound from a phone or computer, over USB',
-        'What plays into the minichord over USB: its filter and echo, and settings that follow its loudness and beat.'),
-    'light': ('light', 'the round light under the buttons',
-        'The light\'s colour marks this preset, so the banks can be told apart at a glance.'),
-    'device': ('device and MIDI', 'how the minichord talks to a computer',
-        'MIDI channels and ports, MPE, tuning sent out over MIDI, and the minichord as a USB sound card.'),
+        'Press: chords hold until the next. Hold down: rhythm mode on or off. In rhythm mode a press taps the tempo.'),
+    'tuning': ('tuning', 'for the chords and the harp', ''),
+    'drone': ('drone', 'a tanpura on the key\'s root', ''),
+    'effects': ('effects', 'reverb, pan and the vocoder', ''),
+    'phone': ('phone', 'sound from a phone or computer, over USB', ''),
+    'light': ('light', 'the round light under the buttons', ''),
+    'device': ('device and MIDI', 'how the minichord talks to a computer', ''),
 }
 PLACE_ORDER = ['chord_parameter', 'harp_parameter', 'rhythm_parameter', 'tuning', 'drone', 'effects', 'phone',
                'light', 'device', 'controls']
@@ -285,7 +272,7 @@ def sheet_html(group_name, section):
             <button type="button" class="settings-close always-on" popovertarget="{key}-sheet" popovertargetaction="hide" aria-label="close"><span class="glyph">✕</span></button>
           </div>
           <div class="controls-sheet-body">
-            <p class="cs-intro">{intro}</p>
+            {f'<p class="cs-intro">{intro}</p>' if intro else ''}
             <div class="sheet-quick" data-quick="{key}"></div>
             {section}
           </div>
@@ -598,12 +585,11 @@ def generate_details_html(group_name, params):
     # "Parameters" goes on a phone (index.css), where every section name would wrap with it
     display_name = SECTION_TITLES.get(group_name) or (
         group_name.replace('_parameter', '').replace('_', ' ').title() + '<span class="section-suffix"> Parameters</span>')
-    hint = f'<p class="settings-hint">{SECTION_HINTS[group_name]}</p>' if group_name in SECTION_HINTS else ''
     return f'''
         <details style="width: fit-content; margin: 20px 0; padding: 8px; border: none; border-radius: 5px;">
             <summary style="width: fit-content; font-size: 1.6em; font-weight: bold; cursor: pointer;">{display_name}</summary>
             <div style="padding: 10px;">
-                {hint}{''.join(param_html)}
+                {''.join(param_html)}
             </div>
         </details>
     '''
@@ -948,6 +934,7 @@ html_template = '''<!DOCTYPE html>
   <script src="talk.js"></script>
   <script src="tuning.js"></script>
   <script src="controls.js"></script>
+  <script src="envelope.js"></script>
   <script>
     // installable, and opens offline once visited (see sw.js)
     if ('serviceWorker' in navigator) {{

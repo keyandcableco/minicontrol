@@ -43,10 +43,10 @@ const narrowMap = window.matchMedia('(max-width: 600px)');
 // volume on every preset, which can't be moved.
 const CONTROLS = {
   chord: { name: 'chord knob', where: 'the top knob', kind: 'knob',
-           main: { fixed: 'chord volume', why: 'The chords\' loudness. The top knob always does this.' },
+           main: { fixed: 'chord volume' },
            alt: { control: 10, range: 11 } },
   harp: { name: 'harp knob', where: 'the middle knob', kind: 'knob',
-          main: { fixed: 'harp volume', why: 'The harp\'s loudness. The middle knob always does this.' },
+          main: { fixed: 'harp volume' },
           alt: { control: 12, range: 13 } },
   mod: { name: 'mod knob', where: 'the bottom knob', kind: 'knob',
          main: { control: 14, range: 15 }, alt: { control: 16, range: 17 } },
@@ -377,6 +377,7 @@ function scheduleMinichordMap() {
     mapPending = false;
     renderMinichordMap();
     renderQuick();
+    if (typeof refreshEnvelopes === 'function') refreshEnvelopes();
     if (sheetControl && !document.getElementById('controls-sheet')?.contains(document.activeElement)) renderSheet();
   });
 }
@@ -455,11 +456,8 @@ function pickerOptions(controlSysex, kind) {
 
 // what the range comes to, in the setting's own units
 function spanSentence(rangeSysex) {
-  const { title } = knobSpanText(rangeSysex);
-  if (!title) return '';
-  const control = KNOB_RANGES[rangeSysex];
-  const target = findParameterBySysex(num(control));
-  return capital(target ? title.replace(target.name, targetName(control, target.sysex_adress)) : title) + '.';
+  const { text } = knobSpanText(rangeSysex);
+  return text ? text.replace('→', 'sweeps') : '';
 }
 
 function rangeBlock(rangeSysex) {
@@ -472,14 +470,13 @@ function layerBlock(key, layer) {
   const title = layer === 'main' ? 'turning' : 'holding ♯ and turning';
   const live = shownLayer() === layer;
   let html = `<section class="cs-layer${live ? ' live' : ''}"><h3>${key === 'hover' ? (layer === 'main' ? 'a hand over the harp' : 'holding ♯, a hand over the harp') : title}</h3>`;
-  if (slot.fixed) return html + `<p class="cs-fixed">${esc(slot.fixed)} <span class="cs-dim">· built in</span></p><p class="cs-note">${esc(slot.why)}</p></section>`;
+  if (slot.fixed) return html + `<p class="cs-fixed">${esc(slot.fixed)} <span class="cs-dim">· built in</span></p></section>`;
   html += targetPicker(slot.control, 'sweep');
   if (num(slot.control)) {
     if (slot.range) html += rangeBlock(slot.range);
-    if (slot.value) html += paramControl(slot.value, 'with the hand close') +
-      `<p class="cs-note">With no hand near, the setting is where the preset has it; 2 cm over the plate, it reaches this.</p>`;
+    if (slot.value) html += paramControl(slot.value, 'hand close');
   } else if (key === 'hover' && layer === 'alt') {
-    html += `<p class="cs-note">Nothing of its own, so hover moves the same setting with ♯ held.</p>`;
+    html += `<p class="cs-note">same as without ♯</p>`;
   }
   return html + '</section>';
 }
@@ -487,27 +484,26 @@ function layerBlock(key, layer) {
 function sheetBody(key) {
   const c = CONTROLS[key];
   if (c.kind === 'knob' || c.kind === 'hover') {
-    let html = `<p class="cs-intro">${c.kind === 'knob' ? `Turn ${c.where} for one setting, or hold ♯ while turning it for another.` :
-      'Hold a hand over the harp plate, like a fourth knob: the closer the hand, the further the setting moves. Hold ♯ for a second setting.'}</p>`;
+    let html = c.kind === 'hover' ? `<p class="cs-intro">A hand over the plate, like a fourth knob.</p>` : '';
     html += `<div class="cs-layers">${layerBlock(key, 'main')}${layerBlock(key, 'alt')}</div>`;
     if (c.kind === 'hover') html += `<section class="cs-extra">${paramControl(251, 'how high it starts')}</section>`;
     html += `<section class="cs-extra">${paramControl(KNOB_LAYER, 'knob layer')}` +
-      `<p class="cs-note">On "alternate functions", the knobs and hover stay on their ♯ settings without ♯ held, and ♯ only sharpens chords. A double tap can switch this while you play.</p></section>`;
+      `<p class="cs-note">alternate: the ♯ settings, without holding ♯</p></section>`;
     return html;
   }
   if (c.kind === 'tap') {
-    let html = `<p class="cs-intro">Tap ♯ twice quickly to switch up to three settings to the values below. Two more taps put them back.</p>`;
+    let html = `<p class="cs-intro">Two quick taps switch these; two more switch them back.</p>`;
     c.slots.forEach(([control, value], i) => {
       html += `<section class="cs-layer"><h3>switch ${i + 1}</h3>${targetPicker(control, 'tap')}`;
-      if (num(control)) html += paramControl(value, num(control) === 256 ? 'which looper' : 'switches it to');
+      if (num(control)) html += paramControl(value, num(control) === 256 ? 'which looper' : 'to');
       html += `</section>`;
     });
-    html += `<section class="cs-extra">${paramControl(321, 'tap, then hold: switch only while held')}</section>`;
+    html += `<section class="cs-extra">${paramControl(321, 'tap, then hold: only while held')}</section>`;
     return html;
   }
   if (c.kind === 'updown') {
-    return `<p class="cs-intro">Two rescues for a performance going wrong, with ♯ held: ▼ puts the preset back as it was saved, and ▲ stops every sound at once.</p>` +
-      `<section class="cs-extra">${paramControl(322, 'revert and panic on ♯ with ▲ ▼')}</section>`;
+    return `<p class="cs-intro">With ♯ held: ▼ reverts the preset, ▲ stops every sound.</p>` +
+      `<section class="cs-extra">${paramControl(322, 'on')}</section>`;
   }
   return '';
 }
@@ -518,13 +514,11 @@ function sheetBody(key) {
 // sheet, and hover on the harp's
 function quickBody(name) {
   if (name === 'chord') {
-    return `<p class="cs-note">Each column is a root and each row a kind of chord; press two or three in a column for more. ` +
-      (sharpensChords() ? `Holding ♯ raises every chord a semitone.` : `In the alternate layout ♯ leaves the chords as they are.`) + `</p>` +
-      `<section class="cs-extra">${paramControl(35, 'key')}${paramControl(30, 'transpose')}</section>`;
+    return `<section class="cs-extra">${paramControl(35, 'key')}${paramControl(30, 'transpose')}</section>`;
   }
   if (name === 'harp') {
     const s = slotSummary('hover', 'main');
-    return `<section class="cs-extra"><h3>a hand over the plate</h3><button type="button" class="cs-target always-on" data-open-control="hover">` +
+    return `<section class="cs-extra"><button type="button" class="cs-target always-on" data-open-control="hover">` +
       `<span>hover · ${esc(s.text)}</span><span class="glyph" aria-hidden="true">›</span></button></section>`;
   }
   return '';
@@ -557,7 +551,8 @@ function buildFinderIndex() {
     const sheet = label.closest('[popover]');
     const place = sheet ? sheet.querySelector('h2')?.textContent : 'controls';
     // the heading over its row says most (Envelope, Vibrato), else the submenu it is in
-    let heading = label.closest('div[style*="display: flex"]')?.previousElementSibling;
+    const row = label.closest('div[style*="display: flex"]');
+    let heading = (row?.closest('.env-box') ?? row)?.previousElementSibling;
     while (heading && heading.tagName !== 'H3') heading = heading.previousElementSibling;
     const group = heading?.textContent ?? label.closest('details.submenu')?.querySelector('summary')?.textContent;
     return { sysex, name: label.textContent.trim(), where: [place, group].filter(Boolean).join(' · '), tip: (label.title || '').toLowerCase() };

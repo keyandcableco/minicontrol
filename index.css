@@ -435,6 +435,78 @@
     }
     #parameters.show-all > [popover]:not(:popover-open) .settings-close { display: none; }
     #parameters.show-all > [popover]:not(:popover-open) .controls-sheet-body { overflow: visible; }
+    /* an envelope as a shape to drag (envelope.js), its rows folded under it */
+    .env-box {
+      margin: 6px 0 14px;
+      max-width: 460px;
+    }
+    .env-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      touch-action: none;
+      overflow: visible;
+    }
+    .env-floor,
+    .env-key {
+      stroke: var(--text-primary);
+      stroke-width: 1;
+      opacity: 0.3;
+    }
+    .env-key { stroke-dasharray: 3 4; }
+    .env-tag {
+      fill: var(--text-primary);
+      font-size: 11px;
+      text-anchor: middle;
+      opacity: 0.6;
+    }
+    .env-fill {
+      fill: var(--primary-color);
+      fill-opacity: 0.18;
+    }
+    .env-line {
+      fill: none;
+      stroke: var(--primary-color);
+      stroke-width: 2.5;
+      stroke-linejoin: round;
+    }
+    .env-hit { fill: transparent; }
+    .env-dot {
+      fill: var(--background-color);
+      stroke: var(--primary-color);
+      stroke-width: 2.5;
+    }
+    .env-handle {
+      cursor: grab;
+      outline: none;
+    }
+    .env-handle:hover .env-dot,
+    .env-handle:focus-visible .env-dot,
+    .env-handle.held .env-dot {
+      fill: var(--primary-color);
+    }
+    .env-handle:focus-visible .env-dot { stroke-width: 5; }
+    .env-svg.off .env-handle { cursor: default; }
+    .env-svg.off .env-line { stroke: var(--text-primary); opacity: 0.5; }
+    .env-svg.off .env-fill { fill: var(--text-primary); fill-opacity: 0.08; }
+    .env-values {
+      margin: 4px 0 6px;
+      font-size: 0.85em;
+    }
+    /* a plain fold, not one of the themes' framed panels */
+    #parameters details.env-exact {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    #parameters details.env-exact::before { content: none !important; }
+    .env-exact > summary {
+      cursor: pointer;
+      font-size: 0.85em;
+      opacity: 0.75;
+    }
     /* a setting the search found, pointed at for a moment */
     #parameters .found {
       outline: 2px solid var(--primary-color);
