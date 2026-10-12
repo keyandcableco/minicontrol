@@ -205,19 +205,25 @@ function loadSetFile() {
     try { data = JSON.parse(await f.text()); } catch (e) { showNotification("That file isn't valid JSON", "error"); return; }
     const problem = backupProblem(data);
     if (problem) { showNotification(problem, "error"); return; }
-    await loadBanksets();
-    const id = "file-" + Date.now();
-    const set = { id, ...describeSetFile(data, f.name.replace(/\.json$/i, "")), local: true };
-    setFiles[id] = data;
-    banksets.push(set);
-    setsOpen.add(id);
-    // kept in this browser, the newest few
-    const imported = storeGet(IMPORTED_KEY, []).concat([{ ...set, data }]).slice(-IMPORTED_MAX);
-    storeSet(IMPORTED_KEY, imported);
+    const set = await addLocalSet(data, f.name.replace(/\.json$/i, ""));
     renderBanksets();
     showNotification(`Added ${set.title}`, "success");
   });
   inp.click();
+}
+
+// A set file joins the list, kept in this browser with the newest few (the instruction box's
+// "save these banks as a set" adds one too)
+async function addLocalSet(data, fallbackTitle) {
+  await loadBanksets();
+  const id = "file-" + Date.now();
+  const set = { id, ...describeSetFile(data, fallbackTitle), local: true };
+  setFiles[id] = data;
+  banksets.push(set);
+  setsOpen.add(id);
+  const imported = storeGet(IMPORTED_KEY, []).concat([{ ...set, data }]).slice(-IMPORTED_MAX);
+  storeSet(IMPORTED_KEY, imported);
+  return set;
 }
 
 function forgetSetFile(id) {

@@ -1582,6 +1582,8 @@ const SUGGESTIONS = {
   minishop: ["load Twin Green", "Lonely Nights on bank 5", "make it like Moonlight but darker",
              "Jazzy Rhodes with the mod knob on the filter", "copy Neon Sunset to bank 8"],
   banks: ["make bank 5 like bank 2", "darker on all banks", "reset the reverb on every bank", "swap banks 2 and 3",
+          "load gen3 into every bank", "bank 1 of gen2, banks 2 to 12 of world", "Midnight Raga on bank 11",
+          "save these banks as a set called My Gig",
           "copy the envelope from bank 3 to bank 4", "turn off hover on every bank except 1", "make bank 12 red"],
 };
 let suggestionPicks = null;
@@ -1662,6 +1664,54 @@ function readyCommands() {
   return commandsReady;
 }
 
+// The bank sets (banksets.js's list and their files), for the words: "load gen3 into every bank",
+// "bank 1 of gen2, banks 2 to 5 of electric piano", "Midnight Raga from World on bank 11". Each
+// bank as a restore writes it (restoreValues): null where the minichord keeps its own.
+let setsFor = null, setsCount = -1;
+async function readySets() {
+  if (typeof loadBanksets !== "function" || typeof setFile !== "function") return;
+  await loadBanksets();
+  if (setsFor && setsCount === banksets.length) return setsFor;
+  setsCount = banksets.length;
+  setsFor = Promise.all(banksets.map(async set => {
+    try {
+      const data = await setFile(set);
+      return { id: set.id, title: set.title, firmware: data.firmware_version,
+               banks: data.banks.map(e => ({ bank: e.bank, name: e.name || "", values: restoreValues(e) })) };
+    } catch (e) {
+      console.warn("[describe] set", set.id, e);
+      return null;
+    }
+  })).then(list => root.commands.setSets(list.filter(Boolean)));
+  return setsFor;
+}
+
+// "save these banks as a set called Gig Night": the twelve banks, with anything staged for them,
+// as a set file to download, and in the bank sets list (and so the words) from then on
+const SAVE_SET = /^\s*(?:please\s+)?(?:save|store|keep|export)\s+(?:(?:all\s+)?(?:these|the|my|all|current|the\s+current)\s+)?(?:(?:12|twelve)\s+)?(?:banks?|presets?)?\s*(?:as|into|to)\s+(?:a\s+|my\s+)?(?:new\s+)?(?:bank\s*set|set)(?:\s+file)?(?:\s+(?:called|named|titled))?\s*[:"“']?\s*(.*?)["”']?\s*$/i;
+async function saveBanksAsSet(title) {
+  title = (title || "").trim().slice(0, 60) || "My banks";
+  const read = await readBanks([...Array(BANK_COUNT).keys()]);
+  if (!read) return null;
+  const names = typeof bankNamesGet === "function" ? bankNamesGet() : [];
+  let staged = false;
+  const banks = [];
+  for (let b = 0; b < BANK_COUNT; b++) {
+    const place = stagePlaces["b" + b];
+    if (place && stagedRows("b" + b).length) staged = true;
+    const values = (place ? place.work : read[b]).slice();
+    banks.push({ bank: b, name: (namesOnDevice() && presetName(values)) || names[b] || "", values });
+  }
+  const firmware = banks.map(b => b.values[VERSION_ADDRESS]).filter(Number.isInteger);
+  const data = { minichord_backup: BACKUP_FORMAT, title, author: "you", description: "",
+                 created: new Date().toISOString().replace(/\.\d+Z$/, "+00:00"),
+                 firmware_version: firmware.length ? Math.max(...firmware) : null, parameter_size: PARAMETER_SIZE, banks };
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "my-banks";
+  downloadJson(data, slug + ".json");
+  if (typeof addLocalSet === "function") { await addLocalSet(data, title); setsFor = null; }
+  return { title, file: slug + ".json", staged };
+}
+
 const pause = ms => new Promise(r => setTimeout(r, ms));
 const bankOf = key => +key.slice(1);
 
@@ -1732,6 +1782,18 @@ async function stageWords(text, box) {
   renderPresetDescribe(box);
   try {
     await readyCommands();
+    const save = text.match(SAVE_SET);
+    if (save) {
+      const saved = await saveBanksAsSet(save[1]);
+      if (saved) {
+        presetText = "";
+        presetResult = { understood: [`saved the twelve banks as ${saved.title} (${saved.file}), now in bank sets`],
+                         notes: saved.staged ? ["with what is staged for them, which isn't written to the minichord until you apply it"] : [],
+                         unknown: [], questions: [], heardAs: [] };
+      }
+      return;
+    }
+    try { await readySets(); } catch (e) { console.warn("[describe] sets", e); }
     presetText = text;
     rebaseLive();
     const bankNames = typeof bankNamesGet === "function" ? bankNamesGet() : [];
@@ -1745,7 +1807,8 @@ async function stageWords(text, box) {
     const ctx = {
       currentBank: currentBankNumber,
       presetNames: SHARED.map(p => p.name),
-      presets: SHARED,          // the minishop's presets, by name
+      presets: SHARED,          // the minishop's presets, by name (commands.js adds the sets')
+      firmware: typeof firmwareNow === "function" ? firmwareNow() : null,
       bankNames,                // the names typed for the banks, so "my Drone bank" is one
       values: key => {
         if (!stagePlaces[key]) {

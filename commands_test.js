@@ -12,6 +12,12 @@ const commands = require(here("commands.js"));
 const presets = JSON.parse(fs.readFileSync(here("shared_presets.json"))).shared_presets;
 const bankNames = ["", "Drone", "", "", "", "", "", "", "", "", "", "Warm"];
 commands.setup(data, JSON.parse(fs.readFileSync(here("parameters.json"))));
+// the bank sets, as the page hands them over: every instruction is read with them known
+const SETS = JSON.parse(fs.readFileSync(here("banksets.json"))).banksets.map(s => {
+  const d = JSON.parse(fs.readFileSync(here(s.file)));
+  return { id: s.id, title: s.title, firmware: d.firmware_version, banks: d.banks };
+});
+commands.setSets(SETS);
 
 const CASES = [
   ["turn off hover", { live: { 249: 0 } }, { before: { live: { 249: 143 } } }],
@@ -133,6 +139,52 @@ for (const [text, want, before] of NOTE_CASES) {
     console.log(`FAIL "${text}" ${JSON.stringify(before || {})}\n  want ${want ? "a note with: " + want : "no conflict note"}\n  notes: ${notes}`);
   }
 }
-const total = CASES.length + PRESET_CASES.length + NOTE_CASES.length;
+// Bank sets by name (the sets banksets.json lists, as the page hands them over): each row, the banks
+// the words should fill and the preset each gets, and that nothing else changes
+const setName = (id, bank) => SETS.find(s => s.id === id).banks.find(e => e.bank === bank).name;
+const SET_CASES = [
+  ["load gen3 presets into all 12 banks", [...Array(12).keys()].map(b => [b, "gen3", b])],
+  ["load classical", [...Array(12).keys()].map(b => [b, "classical", b])],
+  ["swap in the third generation", [...Array(12).keys()].map(b => [b, "gen3", b])],
+  ["make a new bankset from bank 1 of Gen2, bank2-5 of Electric piano, banks 6 to 12 of drum and bass",
+   [[0, "gen2", 0], ...[1, 2, 3, 4].map(b => [b, "electric-piano", b]), ...[5, 6, 7, 8, 9, 10, 11].map(b => [b, "drum-and-bass", b])]],
+  ["load world into banks 7 to 12", [6, 7, 8, 9, 10, 11].map((b, k) => [b, "world", k])],
+  ["put bank 4 of classical on bank 2", [[1, "classical", 3]]],
+  ["load gen 3 into banks 1 to 6 and bank 7 of world into bank 12", [...[0, 1, 2, 3, 4, 5].map(b => [b, "gen3", b]), [11, "world", 6]]],
+  ["Rast on Oud on bank 8", [[7, "gen3", 7]]],
+  ["Midnight Raga from World on bank 11", [[10, "world", 9]]],
+  ["put Wurli on bank 3", [[2, "electric-piano", 2]]],
+  ["turn off hover on bank 2 and load gen2 into bank 5", [[4, "gen2", 0]], ["b1"]],
+];
+for (const [text, want, alsoChanged] of SET_CASES) {
+  const work = {};
+  const ctx = { currentBank: 2, presetNames: [], presets, bankNames: [], why: () => {},
+                values(k) { if (!work[k]) work[k] = describe.defaultValues(); return work[k]; } };
+  const read = new Set(commands.placesNamed(text, 2, []));
+  const r = commands.plan(text, ctx);
+  const problems = [];
+  for (const [b, id, src] of want) {
+    const name = setName(id, src);
+    if (!read.has("b" + b)) problems.push(`bank ${b + 1} isn't read first`);
+    if (!r.understood.some(u => u.startsWith(`bank ${b + 1}:`) && u.includes(name))) problems.push(`bank ${b + 1} should be ${name}`);
+  }
+  const defaults = describe.defaultValues();
+  const changed = Object.keys(work).filter(k => work[k].some((v, a) => v !== defaults[a]));
+  const expected = new Set([...want.map(([b]) => "b" + b), ...(alsoChanged || [])]);
+  for (const k of changed) if (!expected.has(k)) problems.push(`${k} changed`);
+  if (problems.length) {
+    failed++;
+    console.log(`FAIL "${text}"\n  ${problems.join("\n  ")}\n  understood: ${r.understood.join(" | ")}`);
+  }
+}
+// words that name a set but aren't one: a description still
+for (const text of ["use the world percussion kit", "make it atmospheric", "electric piano chords"]) {
+  const work = {};
+  const ctx = { currentBank: 2, presetNames: [], presets, bankNames: [], why: () => {},
+                values(k) { if (!work[k]) work[k] = describe.defaultValues(); return work[k]; } };
+  commands.plan(text, ctx);
+  if (Object.keys(work).some(k => k !== "live")) { failed++; console.log(`FAIL "${text}" filled a bank`); }
+}
+const total = CASES.length + PRESET_CASES.length + NOTE_CASES.length + SET_CASES.length + 3;
 console.log(`${total - failed} of ${total} instructions as expected`);
 process.exit(failed ? 1 : 0);

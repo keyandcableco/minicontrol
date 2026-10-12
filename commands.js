@@ -269,6 +269,150 @@ function bankNumbers(list) {
 // "2, 4 and 6" isn't split into clauses. A place is {keys: ["live"] or ["b1", "b3"], from, text}.
 function escapeRe(t) { return t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
+// ---- bank sets: "load gen3 into every bank", "bank 1 of gen2, banks 2 to 5 of electric piano",
+// "world into banks 7 to 12", "Midnight Raga from World on bank 11". A set is twelve presets
+// (banksets.js's list: presets/<set>/ and the shared ones, and any loaded from a file), each bank
+// {bank, name, values} with values as a restore writes them (null: the minichord's own, kept).
+
+let SETS = [];   // [{id, title, firmware, banks: [{bank, name, values}], names: [alias, ...]}]
+const ORDINALS = ["", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth"];
+const DIGIT_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+
+// What a set may be called: its id and title as they are, without "presets" or "set", and for
+// the generations "gen 3", "gen3", "gen three", "generation 3", "the third generation"
+function setNames(set) {
+  const out = new Set();
+  const add = t => { const w = words(normalise(t)).join(" "); if (w) out.add(w); };
+  for (const t of [set.id.replace(/^shared-|^file-\d+$/g, "").replace(/[-_]+/g, " "), set.title || ""]) {
+    add(t);
+    add(t.replace(/\b(?:presets?|bank ?sets?|sets?)\b/gi, " "));
+  }
+  for (const w of [...out]) {
+    const g = w.match(/^gen(?:eration)? ?(\d)$/);
+    if (g) {
+      const d = +g[1];
+      for (const v of [`gen ${d}`, `gen${d}`, `gen ${DIGIT_WORDS[d]}`, `generation ${d}`, `generation ${DIGIT_WORDS[d]}`,
+                       `${ORDINALS[d]} generation`]) out.add(v);
+    }
+    if (w === "drum and bass") for (const v of ["dnb", "d and b", "drum n bass", "drum and base", "drum n base"]) out.add(v);
+    if (w === "electric piano") for (const v of ["electric pianos", "epiano", "e piano", "epianos"]) out.add(v);
+  }
+  return [...out].filter(w => w.length > 2);
+}
+
+function setSets(list) {
+  SETS = (list || []).filter(s => s && Array.isArray(s.banks) && s.banks.length)
+    .map(s => ({ ...s, names: setNames(s) }));
+}
+
+// The set names in a normalised text, each as a marker ⟦n⟧, the longest first. A name only counts
+// where it can't be a word of a description: followed by the end, a comma, a set word, a place or
+// a joining word, so "the world percussion kit" and "electric piano chords" stay descriptions.
+const SET_AFTER = "(?=\\s*$|\\s*[,;.]|\\s+(?:set|sets|presets?|bank\\s*sets?|banks?|into|onto|on|in|to|for|over|across|" +
+                  "from|and|instead|again|please|too|as\\s+well|s\\b)\\b)";
+function markSets(text) {
+  const all = [];
+  SETS.forEach((set, i) => set.names.forEach(n => all.push([n, i])));
+  all.sort((x, y) => y[0].length - x[0].length);
+  for (const [n, i] of all) {
+    text = text.replace(new RegExp(`\\b${escapeRe(n).replace(/ /g, "\\s+")}${SET_AFTER}`, "g"), ` ⟦${i}⟧ `);
+  }
+  return text.replace(/\s+/g, " ").trim();
+}
+const unmarkSets = text => text.replace(/⟦(\d+)⟧/g, (_, i) => SETS[+i].names[0]).replace(/\s+/g, " ").trim();
+
+const SET_VERB = /^(?:(?:please|now|then|and|also|just|ok|okay|can you|could you|would you|i want(?: to)?|i d like(?: to)?|lets?)\s+)*(?:load|loads|use|put|apply|restore|install|copy|bring(?:\s+in)?|give\s+me|take|fill|switch(?:\s+\w+)?\s+to|go(?:\s+back)?\s+to|change\s+(?:\w+\s+)?to|swap\s+in|replace\s+(?:\w+\s+)?with|(?:make|create|build|set\s+up)\s+(?:me\s+)?(?:a\s+)?(?:new\s+)?(?:bank\s*set|set(?:\s+of\s+banks)?|banks?)\s+(?:from|out\s+of|with|of|using))\b/;
+
+// One clause of a set instruction: which set, which of its banks, into which banks. Null when
+// the clause isn't one.
+function setClause(c, currentBank, bankNames) {
+  const m = [...c.matchAll(/⟦(\d+)⟧/g)];
+  if (m.length !== 1) return null;
+  const set = SETS[+m[0][1]];
+  let rest = c, src = null, preset = null;
+  // its banks: "banks 2 to 5 of ⟦n⟧", "⟦n⟧ banks 2 to 5", "⟦n⟧ s bank 3"
+  const ofSet = new RegExp(`\\b(?:banks?|presets?|slots?|numbers?|#)\\s*(${BANKLIST})\\s+(?:of|from|in)\\s+(?:the\\s+)?⟦\\d+⟧`);
+  const setOf = new RegExp(`⟦\\d+⟧\\s+(?:s\\s+)?(?:set\\s+)?(?:banks?|presets?|slots?)\\s+(${BANKLIST})\\b`);
+  let x = rest.match(ofSet) || rest.match(setOf);
+  if (x) { src = bankNumbers(x[1]); rest = rest.replace(x[0], " ⟦⟧ "); }
+  // one of its presets by name: "Midnight Raga from ⟦n⟧", "⟦n⟧ s Midnight Raga"
+  if (!src) {
+    for (const e of set.banks) {
+      const n = words(normalise(e.name || "")).join(" ");
+      if (!n) continue;
+      const re = new RegExp(`\\b(?:the\\s+)?${escapeRe(n).replace(/ /g, "\\s+")}(?:\\s+preset)?\\s+(?:from|of|in)\\s+(?:the\\s+)?⟦\\d+⟧(?:\\s+set)?|⟦\\d+⟧\\s+(?:s\\s+)?${escapeRe(n).replace(/ /g, "\\s+")}\\b`);
+      if ((x = rest.match(re))) { src = [e.bank]; preset = e; rest = rest.replace(x[0], " ⟦⟧ "); break; }
+    }
+  }
+  // where to: the places named in what is left
+  const { scopes } = markScopes(rest, currentBank, bankNames);
+  let dest = scopes.filter(sc => !sc.keys.includes("live")).flatMap(sc => sc.keys).map(k => +k.slice(1));
+  dest = [...new Set(dest)];
+  const cue = SET_VERB.test(rest) || /⟦\d*⟧\s+(?:set|presets|bank\s*sets?)\b/.test(rest) || /^(?:the\s+)?⟦\d*⟧\s*$/.test(rest.replace(/«\d+»/g, ""));
+  if (!src && !dest.length && !cue) return null;
+  if (!src && !dest.length) { src = set.banks.map(e => e.bank); dest = src.slice(); }
+  else if (src && !dest.length) dest = src.slice();
+  let fromStart = false;
+  if (!src) {
+    fromStart = dest.length !== BANKS;
+    src = fromStart ? set.banks.map(e => e.bank).sort((p, q) => p - q).slice(0, dest.length) : dest.slice();
+  }
+  const pairs = [];
+  if (src.length === 1) for (const d of dest) pairs.push([src[0], d]);
+  else for (let k = 0; k < Math.min(src.length, dest.length); k++) pairs.push([src[k], dest[k]]);
+  const left = src.length > 1 && src.length !== dest.length;
+  return { set, pairs, preset, left, fromStart };
+}
+
+// The set clauses in a normalised text, and what is left for the other instructions
+function setClauses(text, currentBank, bankNames) {
+  if (!SETS.length) return { found: [], rest: text };
+  text = text.replace(/\b(banks?)(\d)/g, "$1 $2");   // "bank2 to 5"
+  const marked = markSets(text);
+  if (!/⟦\d+⟧/.test(marked)) return { found: [], rest: text };
+  const found = [], rest = [];
+  for (const sentence of marked.split(/(?<!\d)\.(?!\d)|[;!?\n]+/)) {
+    // a list of sets' banks is one clause each: "bank 1 of ⟦0⟧, banks 2 to 5 of ⟦1⟧ and banks 6 to 12 of ⟦2⟧"
+    const parts = sentence.split(new RegExp(`,|\\bthen\\b|\\band\\s+(?=(?:also\\s+|then\\s+|please\\s+)?(?:${VERB}|load|restore|install|fill|apply)\\b)|` +
+                                            `\\band\\s+(?=(?:the\\s+)?(?:banks?\\s|⟦|\\w+(?:\\s+\\w+){0,3}\\s+(?:from|of)\\s+(?:the\\s+)?⟦))`));
+    let lead = "";
+    for (let part of parts) {
+      part = part.trim();
+      if (!part) continue;
+      const lv = part.match(SET_VERB);
+      if (lv) lead = lv[0];
+      const c = setClause(lv || !lead ? part : `${lead} ${part}`, currentBank, bankNames);
+      if (c) found.push(c);
+      else rest.push(unmarkSets(part));
+    }
+  }
+  return { found, rest: rest.join(", ") };
+}
+
+// The sets' presets by name, for "Rast on Oud on bank 8": each name once, from the first set that
+// has it (the generations first, where the others borrow from)
+function setPresets() {
+  const seen = new Set(), out = [];
+  const order = SETS.slice().sort((x, y) => (/^gen/.test(y.id) ? 1 : 0) - (/^gen/.test(x.id) ? 1 : 0));
+  const byKey = new Map();
+  for (const set of order) for (const e of set.banks) {
+    const key = words(normalise(e.name || "")).join(" ");
+    if (!key) continue;
+    if (seen.has(key)) {
+      // the same name in another set: the same preset borrowed, or its own version of it
+      const first = byKey.get(key);
+      const same = first.values.length === e.values.length && first.values.every((v, a) => a === 7 || v === e.values[a]);   // 7: the firmware stamped
+      if (!same && !first.others.includes(set.title)) first.others.push(set.title);
+      continue;
+    }
+    seen.add(key);
+    const p = { name: e.name, values: e.values, author: set.title, set: set.title, strict: key.split(" ").length < 2, others: [] };
+    byKey.set(key, p);
+    out.push(p);
+  }
+  return out;
+}
+
 function markScopes(text, currentBank, bankNames) {
   const scopes = [];
   // a bank by the name typed for it: "my Drone bank", "the bank called Drone", "bank Drone"
@@ -472,6 +616,9 @@ const MUCH_RE = "(a little bit|a little|a bit|a touch|a tad|slightly|a lot|much|
 
 class Planner {
   constructor(ctx) {
+    // the sets' presets by name beside the minishop's, which come first
+    const names = new Set((ctx.presets || []).map(p => words(normalise(p.name)).join(" ")));
+    ctx = { ...ctx, presets: [...(ctx.presets || []), ...setPresets().filter(p => !names.has(words(normalise(p.name)).join(" ")))] };
     this.ctx = ctx;            // {values(key) -> stored array, why(key, addr, reason), currentBank, presetNames}
     this.out = { understood: [], notes: [], unknown: [], questions: [], heardAs: [] };
   }
@@ -501,6 +648,12 @@ class Planner {
   }
 
   run(text) {
+    const sets = setClauses(normalise(text), this.ctx.currentBank, this.ctx.bankNames);
+    for (const c of sets.found) this.loadSet(c);
+    if (sets.found.length) {
+      if (!sets.rest.trim()) return this.out;
+      text = sets.rest;
+    }
     const { text: marked, scopes } = markScopes(this.markPresets(normalise(text)), this.ctx.currentBank, this.ctx.bankNames);
     this.scopes = scopes;
     for (const sentence of clauses(marked)) {
@@ -974,6 +1127,27 @@ class Planner {
     return text.replace(/‹(\d+)›/g, (_, i) => words(normalise(this.ctx.presets[+i].name)).join(" ")).replace(/\s+/g, " ").trim();
   }
 
+  // A set's banks into banks: each one's values, as a restore writes them, over the bank's
+  loadSet({ set, pairs, preset, left, fromStart }) {
+    if (!pairs.length) return;
+    for (const [src, dst] of pairs) {
+      const e = set.banks.find(b => b.bank === src);
+      const key = "b" + dst;
+      if (!e) { this.note(`${set.title} has no bank ${src + 1}`); continue; }
+      const v = this.ctx.values(key);
+      for (let a = 2; a < e.values.length && a < v.length; a++) {
+        if (a === 7 || LOCKED.has(a) || e.values[a] == null || e.values[a] === v[a]) continue;
+        v[a] = e.values[a];
+        this.ctx.why(key, a, `from ${set.title}: ${e.name || "bank " + (src + 1)}`);
+      }
+      this.say([key], `${e.name || "bank " + (src + 1)}${preset ? "" : ` (${set.title}, bank ${src + 1})`}${preset ? " from " + set.title : ""}`);
+    }
+    if (fromStart) this.note(`${set.title} went in from its first bank; to take its bank 5 into bank 5, say "bank 5 of ${set.names[0]}"`);
+    if (left) this.note(`${set.title}: the banks named and the banks to fill don't number the same, so only the first ${pairs.length} went in`);
+    if (this.ctx.firmware && set.firmware && set.firmware > this.ctx.firmware)
+      this.note(`${set.title} was made on firmware ${set.firmware} and this minichord has ${this.ctx.firmware}: the settings it doesn't have yet are left out`);
+  }
+
   preset(s, keys) {
     const m = s.match(/(^|\s)(?:the\s+)?‹(\d+)›(?:\s+preset)?(?=\s|$)/);
     if (!m) return false;
@@ -996,20 +1170,24 @@ class Planner {
         return true;
       }
     }
+    // a set's one-word name ("Wurli", "Atmospheric") is a preset only when the words say so
+    if (hit.p.strict && !alone && !/\b(?:load|use|put|preset|switch\s+to|go\s+to|change\s+to|give\s+me|like|copy)\b/.test(s)) return false;
     let values;
-    try { values = presetValues(hit.p.value); } catch (e) {
+    try { values = hit.p.values || presetValues(hit.p.value); } catch (e) {
       this.note(`couldn't read the ${hit.p.name} preset's code`);
       return true;
     }
     for (const key of keys) {
       const v = this.ctx.values(key);
       for (let a = 2; a < v.length; a++) {
-        if (a === 7 || LOCKED.has(a) || values[a] === v[a]) continue;
+        if (a === 7 || LOCKED.has(a) || values[a] == null || values[a] === v[a]) continue;
         v[a] = values[a];
         this.ctx.why(key, a, `from ${hit.p.name}`);
       }
     }
-    this.say(keys, `the ${hit.p.name}${/preset/i.test(hit.p.name) ? "" : " preset"}${hit.p.author ? " by " + hit.p.author : ""}`);
+    this.say(keys, `the ${hit.p.name}${/preset/i.test(hit.p.name) ? "" : " preset"}${hit.p.set ? " from " + hit.p.set : hit.p.author ? " by " + hit.p.author : ""}`);
+    for (const other of hit.p.others || [])
+      this.note(`${other} has its own ${hit.p.name}: say "${hit.key} from ${other.toLowerCase().replace(/\s+presets?$/, "")}" for that one`);
     // what follows the name, on top of it: "… but darker", "… with the mod knob on the filter"
     const after = s.slice(hit.index + hit.text.length).trim().replace(/^(?:but|with|and|then|plus|only)\s+/, "");
     if (after && !/^(?:preset|from the minishop|on|to|in|instead)$/.test(after)) this.describeText(after, keys);
@@ -1093,6 +1271,7 @@ function placesNamed(text, currentBank, bankNames) {
   const { scopes } = markScopes(normalise(text), currentBank, bankNames);
   const keys = new Set(["live"]);
   for (const s of scopes) for (const k of s.keys) keys.add(k);
+  for (const c of setClauses(normalise(text), currentBank, bankNames).found) for (const [, d] of c.pairs) keys.add("b" + d);
   return [...keys];
 }
 
@@ -1103,7 +1282,7 @@ function plan(text, ctx) {
   return new Planner(ctx).run(text);
 }
 
-const api = { setup, plan, placesNamed, scopeName, nameOf, resolve: (p, s) => resolve(normalise(p), s),
+const api = { setup, setSets, plan, placesNamed, scopeName, nameOf, resolve: (p, s) => resolve(normalise(p), s),
               parseValue: (t, a, v) => parseValue(normalise(t), a, v) };
 if (typeof module !== "undefined" && module.exports) module.exports = api;
 root.commands = api;
