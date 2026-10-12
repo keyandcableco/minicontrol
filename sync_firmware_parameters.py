@@ -51,6 +51,8 @@ ALT_LAYOUT = lambda: select('chord_parameter', 'Alternate layout', CHORD_TYPES)
 VOICES = ["Synth", "Piano", "Pizzicato strings", "Choir", "String quartet"]
 # a harp or chord voice can also play the song, a second grabbed from the phone (firmware 59)
 VOICES_AND_SONG = VOICES + ["The song: a second grabbed from the phone"]
+# firmware 73: four more after the song
+VOICES_AND_SONG += ["Vibraphone", "Fingered bass", "Sitar", "Electric piano"]
 GROOVES = ["rock", "pop eighths", "pop sixteenths", "ballad", "funk", "disco", "motown", "shuffle", "jazz swing", "waltz",
            "march", "second line", "country two-beat", "folk", "six eight", "habanera", "house", "trap",
            "amen-style break", "funky drummer-style", "think-style break", "boom bap", "drum and bass", "lo-fi",
@@ -162,7 +164,7 @@ UI_OVERRIDES = {
     # chord: oscillators or a sampled instrument
     265: select('chord_parameter', 'Oscillator', VOICES_AND_SONG),
     # each chord note's own voice (firmware 41): 0 follows chord voice, then the voices one up
-    **{a: select('chord_parameter', 'Oscillator', ["As the chord voice"] + VOICES) for a in (270, 271, 272, 273)},
+    **{a: select('chord_parameter', 'Oscillator', ["As the chord voice"] + VOICES_AND_SONG) for a in (270, 271, 272, 273)},
     # chord: the ensemble, a slow stereo chorus after the chord chain
     259: control('chord_parameter', 'Ensemble', 'slider'),
     # global: the vocoder, shaped by the sound coming in over USB

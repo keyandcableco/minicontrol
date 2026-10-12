@@ -4683,9 +4683,9 @@
       "name": "chord voice",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 5,
+      "max_value": 9,
       "default_value": 0,
-      "tooltip": "(5: the song, a second of what plays into the minichord over USB, grabbed with phone deck) what each chord voice sounds: 0 its own oscillators, as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet. A sample runs through the voice's envelope and filter, so the preset still shapes it. Samples rendered by the midi-js-soundfonts project: the piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
+      "tooltip": "(5: the song, a second of what plays into the minichord over USB, grabbed with phone deck) what each chord voice sounds: 0 its own oscillators, as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet; 6 vibraphone (its motor on); 7 a fingered bass (best as first note voice, under the others); 8 sitar; 9 electric piano. A sample runs through the voice's envelope and filter, so the preset still shapes it. Samples rendered by the midi-js-soundfonts project: the piano, vibraphone, bass and electric piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
       "method": "set_chord_source(value);",
       "iterate": 1,
       "curve": "linear",
@@ -4714,6 +4714,22 @@
         {
           "value": 5,
           "label": "The song: a second grabbed from the phone"
+        },
+        {
+          "value": 6,
+          "label": "Vibraphone"
+        },
+        {
+          "value": 7,
+          "label": "Fingered bass"
+        },
+        {
+          "value": 8,
+          "label": "Sitar"
+        },
+        {
+          "value": 9,
+          "label": "Electric piano"
         }
       ],
       "step": 1
@@ -4725,9 +4741,9 @@
       "name": "first note voice",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 5,
+      "max_value": 10,
       "default_value": 0,
-      "tooltip": "what the first chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet. So the notes can be different instruments, say pizzicato in the bass under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
+      "tooltip": "what the first chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet, 6 the song, 7 vibraphone, 8 a fingered bass, 9 sitar, 10 electric piano. So the notes can be different instruments, say the bass under an electric piano, or pizzicato under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
       "method": "set_chord_note_source(0,value);",
       "iterate": 1,
       "curve": "linear",
@@ -4756,6 +4772,26 @@
         {
           "value": 5,
           "label": "String quartet"
+        },
+        {
+          "value": 6,
+          "label": "The song: a second grabbed from the phone"
+        },
+        {
+          "value": 7,
+          "label": "Vibraphone"
+        },
+        {
+          "value": 8,
+          "label": "Fingered bass"
+        },
+        {
+          "value": 9,
+          "label": "Sitar"
+        },
+        {
+          "value": 10,
+          "label": "Electric piano"
         }
       ],
       "step": 1
@@ -4767,9 +4803,9 @@
       "name": "second note voice",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 5,
+      "max_value": 10,
       "default_value": 0,
-      "tooltip": "what the second chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet. So the notes can be different instruments, say pizzicato in the bass under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
+      "tooltip": "what the second chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet, 6 the song, 7 vibraphone, 8 a fingered bass, 9 sitar, 10 electric piano. So the notes can be different instruments, say the bass under an electric piano, or pizzicato under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
       "method": "set_chord_note_source(1,value);",
       "iterate": 1,
       "curve": "linear",
@@ -4798,6 +4834,26 @@
         {
           "value": 5,
           "label": "String quartet"
+        },
+        {
+          "value": 6,
+          "label": "The song: a second grabbed from the phone"
+        },
+        {
+          "value": 7,
+          "label": "Vibraphone"
+        },
+        {
+          "value": 8,
+          "label": "Fingered bass"
+        },
+        {
+          "value": 9,
+          "label": "Sitar"
+        },
+        {
+          "value": 10,
+          "label": "Electric piano"
         }
       ],
       "step": 1
@@ -4809,9 +4865,9 @@
       "name": "third note voice",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 5,
+      "max_value": 10,
       "default_value": 0,
-      "tooltip": "what the third chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet. So the notes can be different instruments, say pizzicato in the bass under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
+      "tooltip": "what the third chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet, 6 the song, 7 vibraphone, 8 a fingered bass, 9 sitar, 10 electric piano. So the notes can be different instruments, say the bass under an electric piano, or pizzicato under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
       "method": "set_chord_note_source(2,value);",
       "iterate": 1,
       "curve": "linear",
@@ -4840,6 +4896,26 @@
         {
           "value": 5,
           "label": "String quartet"
+        },
+        {
+          "value": 6,
+          "label": "The song: a second grabbed from the phone"
+        },
+        {
+          "value": 7,
+          "label": "Vibraphone"
+        },
+        {
+          "value": 8,
+          "label": "Fingered bass"
+        },
+        {
+          "value": 9,
+          "label": "Sitar"
+        },
+        {
+          "value": 10,
+          "label": "Electric piano"
         }
       ],
       "step": 1
@@ -4851,9 +4927,9 @@
       "name": "fourth note voice",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 5,
+      "max_value": 10,
       "default_value": 0,
-      "tooltip": "what the fourth chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet. So the notes can be different instruments, say pizzicato in the bass under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
+      "tooltip": "what the fourth chord note sounds, in place of chord voice: 0 as the chord voice, 1 its own oscillators, 2 piano, 3 pizzicato strings, 4 choir, 5 a string quartet, 6 the song, 7 vibraphone, 8 a fingered bass, 9 sitar, 10 electric piano. So the notes can be different instruments, say the bass under an electric piano, or pizzicato under a choir. Counted as the note levels (first note to fourth note) are: the first is the bass and the fourth the top with the chords voiced as they come, with inversions and with voice leading; chord spacing without voice leading can reorder them. Each note has its own sample player, so this costs nothing more",
       "method": "set_chord_note_source(3,value);",
       "iterate": 1,
       "curve": "linear",
@@ -4882,6 +4958,26 @@
         {
           "value": 5,
           "label": "String quartet"
+        },
+        {
+          "value": 6,
+          "label": "The song: a second grabbed from the phone"
+        },
+        {
+          "value": 7,
+          "label": "Vibraphone"
+        },
+        {
+          "value": 8,
+          "label": "Fingered bass"
+        },
+        {
+          "value": 9,
+          "label": "Sitar"
+        },
+        {
+          "value": 10,
+          "label": "Electric piano"
         }
       ],
       "step": 1
@@ -6484,7 +6580,7 @@
       "min_value": 0,
       "max_value": 100,
       "default_value": 0,
-      "tooltip": "crossfades each harp string from its oscillator to a plucked string model, in percent. 0 is the oscillator alone, as before; 100 is the model alone: a burst of noise ringing round a loop the length of the string's period, which mellows as it dies away the way a real string does. Its pluck is brighter the harder the string is plucked (with touch velocity on), and it follows the ribbon's glide, the vibrato and the tuning. The envelope, filter and transient still shape it; an envelope with a quick attack and long decay lets the string ring as it would. A sampled harp voice (harp voice 1-5) plays instead of both, the model resting",
+      "tooltip": "crossfades each harp string from its oscillator to a plucked string model, in percent. 0 is the oscillator alone, as before; 100 is the model alone: a burst of noise ringing round a loop the length of the string's period, which mellows as it dies away the way a real string does. Its pluck is brighter the harder the string is plucked (with touch velocity on), and it follows the ribbon's glide, the vibrato and the tuning. The envelope, filter and transient still shape it; an envelope with a quick attack and long decay lets the string ring as it would. A sampled harp voice (harp voice 1-9) plays instead of both, the model resting",
       "method": "string_blend=value/100.0;apply_string_blend();",
       "iterate": 1,
       "curve": "linear",
@@ -6782,9 +6878,9 @@
       "name": "harp voice",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 5,
+      "max_value": 9,
       "default_value": 0,
-      "tooltip": "(5: the song, a second of what plays into the minichord over USB, grabbed with phone deck) what each harp string sounds: 0 its own synth (the oscillator and string model), as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet (cello low, viola in the middle, violin high). A sample runs through the string's envelope, filter and level, so the preset still shapes it, and follows the ribbon and the tuning. Samples rendered by the midi-js-soundfonts project: the piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
+      "tooltip": "(5: the song, a second of what plays into the minichord over USB, grabbed with phone deck) what each harp string sounds: 0 its own synth (the oscillator and string model), as before; 1 piano; 2 pizzicato strings; 3 choir; 4 a string quartet (cello low, viola in the middle, violin high); 6 vibraphone (its motor on); 7 a fingered bass; 8 sitar; 9 electric piano. A sample runs through the string's envelope, filter and level, so the preset still shapes it, and follows the ribbon and the tuning; the vibraphone, bass, sitar and electric piano hold on while the envelope does, so a long decay lets them ring. Samples rendered by the midi-js-soundfonts project: the piano, vibraphone, bass and electric piano from FluidR3 (CC BY 3.0), the others from Musyng Kite (CC BY-SA 3.0); see lib/minichord_samples",
       "method": "set_harp_source(value);",
       "iterate": 1,
       "curve": "linear",
@@ -6813,6 +6909,22 @@
         {
           "value": 5,
           "label": "The song: a second grabbed from the phone"
+        },
+        {
+          "value": 6,
+          "label": "Vibraphone"
+        },
+        {
+          "value": 7,
+          "label": "Fingered bass"
+        },
+        {
+          "value": 8,
+          "label": "Sitar"
+        },
+        {
+          "value": 9,
+          "label": "Electric piano"
         }
       ],
       "step": 1
