@@ -198,8 +198,11 @@ function slotSummary(key, layer) {
     parts.push(`${valueText(187, num(187))} bpm`);
     return { text: parts.join(' · '), assigned: true };
   }
-  const slot = c[layer];
-  if (slot.fixed) return { text: slot.fixed, assigned: true, fixed: true };
+  // the chord and harp knobs' turn is their volume, which goes without saying: the drawing gives
+  // what they do with ♯ instead, on either view
+  const slot = c[layer].fixed ? c.alt : c[layer];
+  if (slot !== c[layer] && !num(slot.control)) return { text: 'nothing', assigned: false, withSharp: true };
+  if (slot !== c[layer]) return { text: targetName(slot.control, num(slot.control)), assigned: true, withSharp: true };
   let control = num(slot.control);
   // hover with no ♯ setting of its own moves its own on both layers
   if (!control && key === 'hover' && layer === 'alt') {
@@ -379,7 +382,7 @@ function mapLabel(key, x, y, anchor, lead) {
   const s = slotSummary(key, shownLayer());
   const text = s.first ?? s.text;
   const shown = text.length > 30 ? text.slice(0, 29) + '…' : text;
-  const extra = s.fixed ? ' · built in' : s.same ? ' · as turning' : '';
+  const extra = s.withSharp && shownLayer() === 'main' ? ' · with ♯' : s.same ? ' · as turning' : '';
   return `<g class="map-label${s.assigned ? '' : ' unset'}" data-control="${key}">` +
     (lead ? `<polyline class="map-lead" points="${lead}"/>` : '') +
     `<text class="map-name" x="${x}" y="${y}" text-anchor="${anchor}">${esc(controlName(key))}${esc(extra)}</text>` +
@@ -467,7 +470,7 @@ function renderMapList() {
   const keys = ['chord', 'harp', 'mod', 'hover', 'tap', 'updown', 'rhythm', 'chords', 'strings', 'light'];
   list.innerHTML = keys.map(key => {
     const s = slotSummary(key, shownLayer());
-    const extra = s.fixed ? ' · built in' : s.same ? ' · as turning' : '';
+    const extra = s.withSharp && shownLayer() === 'main' ? ' · with ♯' : s.same ? ' · as turning' : '';
     return `<li><button type="button" class="map-row always-on${s.assigned ? '' : ' unset'}" data-control="${key}">` +
       `<span class="map-row-name">${esc(controlName(key))}</span><span class="map-row-value">${esc(s.text)}${esc(extra)}</span></button></li>`;
   }).join('');
@@ -615,8 +618,8 @@ function sheetBody(key) {
     let html = c.kind === 'hover' ? `<p class="cs-intro">A hand over the plate, like a fourth knob.</p>` : '';
     html += `<div class="cs-layers">${layerBlock(key, 'main')}${layerBlock(key, 'alt')}</div>`;
     if (c.kind === 'hover') html += `<section class="cs-extra">${paramControl(251, 'how high it starts')}</section>`;
-    html += `<section class="cs-extra">${paramControl(KNOB_LAYER, 'knob layer')}` +
-      `<p class="cs-note">alternate: the ♯ settings, without holding ♯</p></section>`;
+    html += `<section class="cs-extra">${paramControl(KNOB_LAYER, 'alternate layer')}` +
+      `<p class="cs-note">alternate: the knobs and hover play their ♯ settings without holding ♯</p></section>`;
     return html;
   }
   if (c.kind === 'tap') {
