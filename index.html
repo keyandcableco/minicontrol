@@ -5449,6 +5449,14 @@
                     <option value="0">Stock: offered as a speaker, not played</option><option value="1">Play along: through the minichord</option><option value="2">No speaker: the host keeps its sound</option>
                 </select>
             </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-384" title="for a left-handed player: hold the minichord turned round, the harp under the left hand and the chord buttons under the right, and every control plays as it does the right way up. 0: the right way up. 1: upside down. The chord buttons are read turned round, so the button at the top left as you hold it is F major and the rows run major, minor, seventh downwards as always (the lettered keycaps can be moved to the new top row); the harp's zones are read from the other end, so the zone at the top plays what the top zone always has; the top knob is the chord knob and the bottom one the mod knob, the harp knob between; the upper preset button goes up. The rhythm and sharp buttons stay what they are. A setting of the instrument, not of a preset: it stays as chosen whichever preset is loaded" style="width: 150px; font-weight: bold;">upside down</label>
+                <select id="param-384" name="upside down" class="inactive" data-sysex-address="384" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="for a left-handed player: hold the minichord turned round, the harp under the left hand and the chord buttons under the right, and every control plays as it does the right way up. 0: the right way up. 1: upside down. The chord buttons are read turned round, so the button at the top left as you hold it is F major and the rows run major, minor, seventh downwards as always (the lettered keycaps can be moved to the new top row); the harp's zones are read from the other end, so the zone at the top plays what the top zone always has; the top knob is the chord knob and the bottom one the mod knob, the harp knob between; the upper preset button goes up. The rhythm and sharp buttons stay what they are. A setting of the instrument, not of a preset: it stays as chosen whichever preset is loaded" version="0.75"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="0">The right way up</option><option value="1">Upside down, for the left hand</option>
+                </select>
+            </div>
         <h3 style="margin: 30px 0 10px; font-size: 1.5em;">MIDI</h3>
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label for="param-106" title="set the midi channel for the chord section" style="width: 150px; font-weight: bold;">chord channel</label>

@@ -1166,6 +1166,9 @@ void apply_audio_parameter(int adress, int value) {
         case 381:
             drum_machine.drone.jawari(value/100.0f);
             break;
+        case 384:
+            upside_down_request(value);
+            break;
         default:
             break;
     }

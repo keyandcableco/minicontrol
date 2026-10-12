@@ -9,6 +9,9 @@ class MiniChordController {
     this.page_size = 256;
     this.page1_version = 31;
     this.reserved_adresses = [382, 383, 510, 511];
+    // Settings of the instrument, not of a preset (USB audio, upside down): a preset or bank sent
+    // whole leaves them as they are, or loading one would turn a left-handed player's minichord back over
+    this.instrument_adresses = [244, 384];
     this.has_page1 = false;     // whether the minichord answered for page 1
     this.page1_defaults = {};   // address -> stored default, from parameters.json (index.js)
     this.pendingDump = null;    // page 0, held while page 1 is asked for
@@ -357,10 +360,12 @@ deliverDump(processedData) {
     send = send || ((address, value) => this.sendParameter(address, value));
     const count = Math.min(values.length, this.parameter_size);
     for (let i = 2; i < count; i++) {
-      if (i !== this.firmware_adress && this.canWrite(i)) send(i, values[i]);
+      if (i !== this.firmware_adress && this.canWrite(i) && !this.instrument_adresses.includes(i)) send(i, values[i]);
     }
     if (count <= this.page_size && this.has_page1) {
-      for (const [address, value] of Object.entries(this.page1_defaults)) send(parseInt(address), value);
+      for (const [address, value] of Object.entries(this.page1_defaults)) {
+        if (!this.instrument_adresses.includes(parseInt(address))) send(parseInt(address), value);
+      }
     }
     this.sendParameter(0, 0);   // the minichord reports back, and the page follows
   }

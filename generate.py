@@ -698,6 +698,7 @@ html_template = '''<!DOCTYPE html>
           <span id="dot">●</span>
           <span id="connection-text"></span>
         </span>
+        <span id="tour-nudge" class="tour-nudge" hidden>New here? <button type="button" class="always-on" data-tour-start>take the tour</button> <button type="button" class="always-on tour-nudge-close" id="tour-nudge-close" aria-label="not now">✕</button></span>
       </div>
       <button type="button" class="settings-toggle always-on" popovertarget="settings-drawer" title="how to connect, manage all banks, back up and restore, the vocoder voice, the theme, and reset"><span class="glyph">⚙</span> settings</button>
     </div>
@@ -881,7 +882,7 @@ html_template = '''<!DOCTYPE html>
             </div>
           </details>
         </section>
-        <section class="settings-section">
+        <section class="settings-section" id="settings-device">
           <h5 class="tool-label">the minichord</h5>
           <div class="settings-buttons">
             <div class="button_div">
@@ -889,7 +890,7 @@ html_template = '''<!DOCTYPE html>
             </div>
           </div>
         </section>
-        <section class="settings-section">
+        <section class="settings-section" id="settings-all-banks">
           <h5 class="tool-label">all banks</h5>
           <div class="settings-buttons">
             <div class="button_div">
@@ -911,11 +912,19 @@ html_template = '''<!DOCTYPE html>
           <!-- a voice looped into the minichord's USB speaker for the vocoder to shape; filled by talk.js -->
           <div id="talk-main" class="talk-slot"></div>
         </section>
-        <section class="settings-section">
+        <section class="settings-section" id="settings-theme">
           <h5 class="tool-label"><label for="theme-select">theme</label></h5>
           <select id="theme-select" class="always-on" data-token-themes='{token_themes}'>
 {theme_options}
           </select>
+        </section>
+        <section class="settings-section">
+          <h5 class="tool-label">this page</h5>
+          <div class="settings-buttons">
+            <div class="button_div">
+              <button type="button" class="always-on" data-tour-start data-close-settings title="a walk round the page: the banks, the drawing, the sheets, the drawer and the bank sets">take the tour</button>
+            </div>
+          </div>
         </section>
         <section class="settings-section settings-danger">
           <h5 class="tool-label">reset</h5>
@@ -935,7 +944,8 @@ html_template = '''<!DOCTYPE html>
       For instruction on how to use this tool, please refer to the 
       <a href="https://minichord.com/user_manual/#custom-presets">minichord documentation.</a><br>
       To test and load user-submitted presets, visit the 
-      <a href="https://minichord.com/minicontrol/minishop.html">minishop.</a>
+      <a href="https://minichord.com/minicontrol/minishop.html">minishop.</a><br>
+      New to this page? <button type="button" id="tour-btn" class="always-on tour-link" data-tour-start>Take the tour.</button>
     </div>
     <!-- any setting by name, and every setting laid out at once, as the page used to be (controls.js) -->
     <div id="settings-finder" class="settings-finder">
@@ -966,6 +976,7 @@ html_template = '''<!DOCTYPE html>
   <script src="waveforms.js"></script>
   <script src="filters.js"></script>
   <script src="pedals.js"></script>
+  <script src="tour.js"></script>
   <script>
     // installable, and opens offline once visited (see sw.js)
     if ('serviceWorker' in navigator) {{

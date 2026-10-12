@@ -23,7 +23,7 @@ let progressText = null;       // a long job's progress, held in the bubble till
 // RANDOMISE leaves these alone: device, MIDI, tuning, double tap and hover settings, the looper
 // (an action, not a setting) and the vocoder, which silences what it carries with nothing coming in
 const RANDOMISE_FIXED = [32, 33, 34, 35, 41, 97, 106, 107, 108, 109, 110, 117, 197, 200, 201, 209, 210, 211, 212, 237, 238,
-  241, 242, 243, 244, 249, 250, 251, 256, 260, 261, 262];
+  241, 242, 243, 244, 249, 250, 251, 256, 260, 261, 262, 384];
 
 function getFloatMultiplier(param) {
   return parseFloat(param.float_multiplier) || (param.data_type === 'float' ? (controller.float_multiplier || 100.0) : 1);

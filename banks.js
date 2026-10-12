@@ -233,7 +233,7 @@ async function writeBank(bank, values) {
   await new Promise(r => setTimeout(r, 150));
   // 0 is the command address, 1 the bank number, 7 the firmware's own version
   for (let a = 2; a < values.length; a++) {
-    if (a === controller.firmware_adress || values[a] == null) continue;
+    if (a === controller.firmware_adress || values[a] == null || controller.instrument_adresses.includes(a)) continue;
     controller.sendParameter(a, values[a]);
     if ((a & 31) === 0) await new Promise(r => setTimeout(r, 1));
   }

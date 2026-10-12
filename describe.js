@@ -52,7 +52,7 @@ function storedDefault(p) { return toStored(p, p.default_value); }
 
 const KNOB_TARGETS = new Set([10, 12, 14, 16, 249, 303, 307, 325]);   // what sweeps: knobs, hover, the phone, alternate hover
 const TAP_TARGETS = new Set([200, 209, 211]);
-const LOCKED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 241, 242, 243, 244, 256]);
+const LOCKED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 241, 242, 243, 244, 256, 384]);
 const RESERVED = new Set([382, 383, 510, 511]);
 const PARAMETER_SIZE = 512, PAGE_SIZE = 256, VERSION_ADDRESS = 7;
 

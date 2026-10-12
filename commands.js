@@ -26,7 +26,7 @@ let SECTION = null;    // a section word -> "chord" or "harp"
 const BANKS = 12;
 // 256 (the looper) and 287 (chord memory) are actions: writing one records, plays or stops, so
 // nothing here may write them, in a place or in every bank
-const LOCKED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 241, 242, 243, 244, 256, 287, 382, 383, 510, 511]);
+const LOCKED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 241, 242, 243, 244, 256, 287, 382, 383, 384, 510, 511]);
 const ACTIONS = new Set([256, 287]);
 const RHYTHM_STEPS = [220, 235];
 const KNOBS = { mod: [14, 15], mod_alt: [16, 17], chord_knob: [10, 11], harp_knob: [12, 13] };

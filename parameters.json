@@ -1742,6 +1742,33 @@
       "curve": "linear",
       "introduction_version": 0.74,
       "step": 1
+    },
+    {
+      "sysex_adress": 384,
+      "group": "General",
+      "ui_type": "select",
+      "name": "upside down",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "for a left-handed player: hold the minichord turned round, the harp under the left hand and the chord buttons under the right, and every control plays as it does the right way up. 0: the right way up. 1: upside down. The chord buttons are read turned round, so the button at the top left as you hold it is F major and the rows run major, minor, seventh downwards as always (the lettered keycaps can be moved to the new top row); the harp's zones are read from the other end, so the zone at the top plays what the top zone always has; the top knob is the chord knob and the bottom one the mod knob, the harp knob between; the upper preset button goes up. The rhythm and sharp buttons stay what they are. A setting of the instrument, not of a preset: it stays as chosen whichever preset is loaded",
+      "method": "upside_down_request(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 0.75,
+      "options": [
+        {
+          "value": 0,
+          "label": "The right way up"
+        },
+        {
+          "value": 1,
+          "label": "Upside down, for the left hand"
+        }
+      ],
+      "step": 1
     }
   ],
   "chord_parameter": [
