@@ -111,7 +111,10 @@
 }
 [data-themed] .map-row,
 [data-themed] .cs-option,
-[data-themed] .finder-result {
+[data-themed] .finder-result,
+[data-themed] .bs-slot-pick,
+[data-themed] .bs-x,
+[data-themed] .bs-quiet {
   background: transparent !important;
   color: inherit !important;
   border: none;

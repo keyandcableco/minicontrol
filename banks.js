@@ -327,6 +327,26 @@ function backupProblem(data) {
   return null;
 }
 
+// What a backup's bank writes to the minichord (bank sets write theirs the same way)
+function restoreValues(entry) {
+  const values = entry.values.slice();
+  // Backups from Sound Lab test firmware that kept master tuning as device
+  // state, at address 255, carry the tuning in every bank and nothing at 109.
+  // Give each such bank that tuning, so a tuned device stays tuned.
+  const legacyTuning = values[255];
+  if (!values[109] && legacyTuning >= 4320 && legacyTuning <= 4460) values[109] = legacyTuning;
+  // A backup from before page 1 restores with page 1 at its defaults, as the minichord loads a
+  // preset file of page 0 alone, rather than keeping what the bank had there.
+  if (values.length <= controller.page_size && controller.has_page1) {
+    Object.entries(controller.page1_defaults).forEach(([a, v]) => { values[a] = v; });
+  }
+  // a backup from before names were kept in the bank brings its name along into it
+  if (namesOnDevice() && typeof entry.name === "string" && entry.name && !presetName(values)) {
+    setPresetName(values, entry.name);
+  }
+  return values;
+}
+
 async function restoreAllBanks(data, onProgress) {
   if (!controller.isConnected()) throw new Error("no minichord connected");
   const startingBank = controller.active_bank_number;
@@ -335,21 +355,7 @@ async function restoreAllBanks(data, onProgress) {
     for (let i = 0; i < data.banks.length; i++) {
       const entry = data.banks[i];
       if (onProgress) onProgress(i, data.banks.length);
-      const values = entry.values.slice();
-      // Backups from Sound Lab test firmware that kept master tuning as device
-      // state, at address 255, carry the tuning in every bank and nothing at 109.
-      // Give each such bank that tuning, so a tuned device stays tuned.
-      const legacyTuning = values[255];
-      if (!values[109] && legacyTuning >= 4320 && legacyTuning <= 4460) values[109] = legacyTuning;
-      // A backup from before page 1 restores with page 1 at its defaults, as the minichord loads a
-      // preset file of page 0 alone, rather than keeping what the bank had there.
-      if (values.length <= controller.page_size && controller.has_page1) {
-        Object.entries(controller.page1_defaults).forEach(([a, v]) => { values[a] = v; });
-      }
-      // a backup from before names were kept in the bank brings its name along into it
-      if (namesOnDevice() && typeof entry.name === "string" && entry.name && !presetName(values)) {
-        setPresetName(values, entry.name);
-      }
+      const values = restoreValues(entry);
       await writeBank(entry.bank, values);
       noteBankName(entry.bank, presetName(values));
       if (typeof entry.name === "string") names[entry.bank] = entry.name.slice(0, 24);

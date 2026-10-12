@@ -181,7 +181,10 @@
 }
 [data-theme="arcade"] .map-row,
 [data-theme="arcade"] .cs-option,
-[data-theme="arcade"] .finder-result {
+[data-theme="arcade"] .finder-result,
+[data-theme="arcade"] .bs-slot-pick,
+[data-theme="arcade"] .bs-x,
+[data-theme="arcade"] .bs-quiet {
   background: transparent !important;
   color: inherit !important;
   border: none;

@@ -924,6 +924,220 @@
     .minishop-sheet::backdrop {
       background-color: rgba(0, 0, 0, 0.45);
     }
+    /* bank sets (banksets.js): your twelve beside the sets to take them from */
+    .banksets-sheet { width: min(980px, calc(100vw - 32px)); }
+    .banksets-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .bs-layout {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) minmax(0, 1.6fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .bs-mine-panel {
+      position: sticky;
+      top: 0;
+    }
+    .bs-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .banksets-sheet h3 {
+      margin: 10px 0 6px;
+      font-size: 1em;
+    }
+    .bs-note {
+      margin: 0 0 8px;
+      font-size: 0.85em;
+      line-height: 1.4;
+      opacity: 0.75;
+    }
+    .bs-quiet,
+    .banksets-sheet .bs-quiet {
+      padding: 2px 4px;
+      background: transparent;
+      color: var(--text-primary);
+      text-decoration: underline;
+      font-size: 0.85em;
+    }
+    .bs-mine {
+      list-style: none;
+      margin: 0 0 8px;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .bs-slot {
+      position: relative;
+      border: 1px solid var(--track-color);
+      border-radius: 6px;
+    }
+    .bs-slot.kept { border-style: dashed; }
+    .bs-slot.picked { outline: 2px solid var(--primary-color); outline-offset: 1px; }
+    .bs-slot.over { background: rgba(127, 127, 127, 0.18); }
+    .bs-slot-pick {
+      display: grid;
+      grid-template-columns: auto auto minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      align-items: center;
+      column-gap: 6px;
+      width: 100%;
+      padding: 6px 22px 6px 6px;
+      background: transparent;
+      color: var(--text-primary);
+      text-align: left;
+    }
+    .bs-num {
+      grid-row: span 2;
+      font-weight: bold;
+      min-width: 1.4em;
+      text-align: right;
+    }
+    .bs-slot-pick .bank-swatch { grid-row: span 2; }
+    .bs-slot-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .bs-slot.kept .bs-slot-name { opacity: 0.6; }
+    .bs-slot-pick .bs-empty { visibility: hidden; }
+    .bs-slot-from {
+      grid-column: 3;
+      font-size: 0.75em;
+      opacity: 0.65;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .bs-x {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      padding: 0 5px;
+      background: transparent;
+      color: var(--text-primary);
+      opacity: 0.6;
+    }
+    .bs-set {
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--track-color);
+      border-radius: 8px;
+    }
+    .bs-set-head h4 {
+      margin: 6px 0 0;
+      font-size: 1em;
+    }
+    .bs-swatches {
+      display: flex;
+      gap: 3px;
+    }
+    .bs-swatches .bank-swatch {
+      width: 14px;
+      height: 6px;
+      border-radius: 2px;
+    }
+    .bs-by {
+      font-size: 0.8em;
+      opacity: 0.7;
+    }
+    .bs-about {
+      margin: 6px 0;
+      font-size: 0.85em;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .bs-set.open .bs-about { -webkit-line-clamp: unset; }
+    .bs-warn {
+      margin: 6px 0;
+      font-size: 0.8em;
+      color: var(--primary-color);
+    }
+    .bs-set-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .bs-presets {
+      list-style: none;
+      margin: 10px 0 0;
+      padding: 0;
+    }
+    .bs-preset {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-top: 1px solid var(--track-color);
+      cursor: grab;
+    }
+    .bs-preset-text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .bs-preset-name { font-weight: bold; }
+    .bs-preset-blurb {
+      font-size: 0.8em;
+      opacity: 0.7;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .bs-preset button { padding: 4px 8px; }
+    .banksets-foot {
+      padding: 10px 0 14px;
+      border-top: 1px solid var(--track-color);
+    }
+    .banksets-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .banksets-summary {
+      flex: 1 1 200px;
+      font-size: 0.9em;
+    }
+    .bs-save {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 10px;
+      max-width: 520px;
+    }
+    .bs-save label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.85em;
+    }
+    .bs-save input,
+    .bs-save textarea {
+      padding: 6px 8px;
+      border: 1px solid var(--track-color);
+      border-radius: 5px;
+      background: var(--background-color);
+      color: var(--text-primary);
+      font: inherit;
+    }
+    .bs-save-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    @media screen and (max-width: 700px) {
+      .bs-layout { grid-template-columns: minmax(0, 1fr); }
+      .bs-mine-panel { position: static; }
+    }
     .minishop-head {
       display: flex;
       align-items: center;

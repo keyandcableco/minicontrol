@@ -1,0 +1,168 @@
+{
+ "banksets": [
+  {
+   "id": "gen2",
+   "title": "Gen 2 presets",
+   "author": "Key & Cable",
+   "description": "Twelve presets, one for each bank, each built around something the minichord learnt after its first twelve presets were made.",
+   "firmware": 69,
+   "file": "presets/gen2/gen2.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Open Hand Pad",
+     "hue": 210,
+     "blurb": "A warm, chorused analog pad that blooms open, and a glassy harp that ping-pongs across the stereo field. Hold a hand over the harp plate and the pad's filter opens; hold the modifier as well and the pad's chords settle into just intonation, the beating between their notes slowing to stillness. Tap…"
+    },
+    {
+     "bank": 1,
+     "name": "Concert Harp",
+     "hue": 55,
+     "blurb": "A plucked string model harp, strings fanned out low left to high right as if sitting at it, over a soft string section. The strings are tuned to the scale of each chord, so a sweep is a harpist's glissando, and both tune a little toward just intonation, as an ensemble does by ear. Pluck harder or s…"
+    },
+    {
+     "bank": 2,
+     "name": "Jazz Piano",
+     "hue": 0,
+     "blurb": "Sampled piano on both sides. The chords voice-lead like a comping pianist, the harp plays the scale that fits each chord, with dynamics, and the double tap turns the buttons into ninths and 6/9s. A hand held over the plate is the sustain pedal. In rhythm mode the trio swings, and a fill takes it in…"
+    },
+    {
+     "bank": 3,
+     "name": "Cantus Choir",
+     "hue": 275,
+     "blurb": "A sampled choir on the chord buttons, in 31-tone equal temperament with purity on, so every chord is sung in just intonation, its fifths pure as well as its thirds, the way a choir tunes by ear, and the root never drifts. The voices move like a choir's, and the first note of each harp gesture becom…"
+    },
+    {
+     "bank": 4,
+     "name": "Chamber Strings",
+     "hue": 340,
+     "blurb": "A string quartet that keeps strict four-part voice leading, with no parallel fifths or octaves, in 31-tone equal temperament with purity on, so its chords ring pure, fifths and thirds both, as a quartet tunes them. The bass line is plucked under the bowed upper three, and the harp is pizzicato too,…"
+    },
+    {
+     "bank": 5,
+     "name": "Folk Guitar & Bass",
+     "hue": 25,
+     "blurb": "The chord buttons play a plucked double bass (the pizzicato sample on the bass note alone), the chord's root; the harp is a nylon-string guitar an octave lower than usual. Strum fast for a loud strum, lay the palm across the plate to mute. Hold a string and tap the one beside it for a hammer-on, li…"
+    },
+    {
+     "bank": 6,
+     "name": "Wah Clav & Bass",
+     "hue": 300,
+     "blurb": "Funky clavinet chords with a hand-played wah: hold a hand over the plate and move it up and down to sweep the filter. The harp is a plucked synth bass on the minor pentatonic of each chord, the funk bass's scale, with hammer-ons and slides: hold a note and tap the next. The double tap works the loo…"
+    },
+    {
+     "bank": 7,
+     "name": "Dub Melodica",
+     "hue": 120,
+     "blurb": "Reggae: offbeat skank chords (in rhythm mode) and a melodica on the harp that swells as it is pressed harder, and runs legato from note to note as fingers land beside a held one. Hold a hand over the plate to throw the chords into the echo; hold the modifier as well and the echo runs away with itse…"
+    },
+    {
+     "bank": 8,
+     "name": "Ribbon Lead",
+     "hue": 180,
+     "blurb": "The harp is a ribbon over two octaves: slide a finger along it and a singing lead glides between the notes of the scale that fits each chord, so it stays in key, tuned a little toward the chord's just intervals. Press harder to swell. A soft pad underneath glides from chord to chord, but only when…"
+    },
+    {
+     "bank": 9,
+     "name": "Pocket Orchestra",
+     "hue": 90,
+     "blurb": "A small orchestra on the chord buttons: plucked basses, a string quartet in the middle and a choir on the top line, voiced like an arrangement and tuned pure, chord by chord, as an orchestra listens to itself. The mod knob hands the top line to another section: flute, piano, pizzicato, choir or str…"
+    },
+    {
+     "bank": 10,
+     "name": "Midnight Raga",
+     "hue": 240,
+     "blurb": "A tanpura plucking its four strings over the droned chords, the recorded tabla playing teental on top in rhythm mode, and a ribbon sitar for meend through raga Darbari Kanada, the midnight raga, in a tuning of pure fifths. Every chord button whose root is in the raga makes a drone under it: Sa, Ma,…"
+    },
+    {
+     "bank": 11,
+     "name": "Talking Strings",
+     "hue": 150,
+     "blurb": "A string machine that talks. With a hand over the plate the strings form vowels, opening from ah to oo as the hand comes down. Double tap for the vocoder: play speech or singing into the minichord over USB (minicontrol's \"talk\" loop works) and the chords say it. In rhythm mode the arpeggio finds th…"
+    }
+   ]
+  },
+  {
+   "id": "gen3",
+   "title": "Gen 3 presets",
+   "author": "Key & Cable",
+   "description": "Twelve more presets, one for each bank, each an instrument and a way of playing it, built on what the minichord learnt in firmware 46-69.",
+   "firmware": 69,
+   "file": "presets/gen3/gen3.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Barbershop Ring",
+     "hue": 30,
+     "blurb": "A barbershop quartet on the chord buttons, its lead singing the melody you pick out on the harp while the bass, baritone and tenor harmonize around it. Lower a hand over the plate and the quartet locks its tuning: the chord stops beating and rings, and a seventh chord's seventh drops into the barbe…"
+    },
+    {
+     "bank": 1,
+     "name": "Sunday Organ",
+     "hue": 320,
+     "blurb": "A tonewheel organ through a rotating speaker, with a gospel piano on the harp. Hold a hand over the plate as the swell pedal. Tap the modifier and hold it down and the speaker spins up to full tremolo for as long as you hold it, spinning back down as you let go. In hold mode, press the ringing chor…"
+    },
+    {
+     "bank": 2,
+     "name": "Lo-fi Study",
+     "hue": 265,
+     "blurb": "A worn electric piano with ninth chords on the buttons, a soft felt pluck on the harp and a dusty, loose beat. Double tap to record a progression into the chord memory, double tap again and it plays itself, so both hands can noodle on the harp. A hand over the plate muffles everything, as if throug…"
+    },
+    {
+     "bank": 3,
+     "name": "Play Along",
+     "hue": 190,
+     "blurb": "Play with whatever is on your phone or computer, coming in over USB (USB audio 1). Hold a chord and it stabs along on every kick drum of the song; start rhythm mode and the arpeggio finds the song's beat and locks to it. The pad's filter opens on the song's hi-hats. Lower a hand over the plate to s…"
+    },
+    {
+     "bank": 4,
+     "name": "Beat Lab",
+     "hue": 0,
+     "blurb": "Finger drums. The harp's twelve strings are the boom bap kit's pads, kick at the bottom, as loud as you hit them, and the chord buttons are a sub bass that slides when you roll from one to the next. Double tap to loop what you play: a bar of clicks, two bars recorded and pulled onto the sixteenths,…"
+    },
+    {
+     "bank": 5,
+     "name": "Island Steel",
+     "hue": 165,
+     "blurb": "A steel pan on the harp, bright and bell-like, ping-ponging between two pans across the stereo field, over a strummed cuatro and a soca band. Strum fast for a roll. A fill in rhythm mode drops the band into a reggae one drop for a verse, and the next fill brings the soca back."
+    },
+    {
+     "bank": 6,
+     "name": "Desert Blues",
+     "hue": 40,
+     "blurb": "A driven electric guitar in the minor pentatonic, played the Saharan way: hold a note and tap the next string for hammer-ons, lift for pull-offs, and lay the palm across to mute. The chord buttons are a droning bass and rhythm guitar on root and fifth. Double tap to loop a riff (a bar counted in),…"
+    },
+    {
+     "bank": 7,
+     "name": "Rast on Oud",
+     "hue": 10,
+     "blurb": "An oud in maqam Rast, in quarter tones: strum upward and the strings play Rast's way up, with its half-flat E and B; play a falling line and they take the B flat of its way down. Hammer on from a held note for an oud player's ornaments. Double tap to move into Suznak. The chord buttons hold a strin…"
+    },
+    {
+     "bank": 8,
+     "name": "Yaman at Dusk",
+     "hue": 55,
+     "blurb": "A santoor in raga Yaman, the evening raga, over a tanpura, a soft harmonium on the chord buttons, and the recorded tabla playing kehrwa. Sweep up the strings and they climb Yaman's way up, skipping Pa; sweep down and they fall its way down, through Pa. Everything is tuned in just intonation from Sa…"
+    },
+    {
+     "bank": 9,
+     "name": "Koto & Sho",
+     "hue": 340,
+     "blurb": "A koto in hirajoshi: rest fingers on the strings and they sound as you lift them; press a ringing string with another finger and it bends up, settling on the semitone and the whole tone, as a koto player presses beside the bridge. Under it a sho, the mouth organ of gagaku, plays shimmering clusters…"
+    },
+    {
+     "bank": 10,
+     "name": "Bronze Garden",
+     "hue": 75,
+     "blurb": "A gamelan: the harp is a bronze metallophone in slendro, its five notes nearly equal steps apart, ringing long with a slow shimmer, neighbouring strings answering from opposite sides. Lay a hand flat to damp it. The chord buttons strike gongs that hum and beat as they fade (C, D, F, G and A are sle…"
+    },
+    {
+     "bank": 11,
+     "name": "Highland Pipes",
+     "hue": 120,
+     "blurb": "A pipe chanter on the harp, in the pipes' mixolydian scale, over drones that never stop, and an accordion on the chord buttons, all in just intonation. The chanter can't play louder or softer, like the real one: shape the tune with grace notes instead, holding a note and tapping the one beside it.…"
+    }
+   ]
+  }
+ ]
+}

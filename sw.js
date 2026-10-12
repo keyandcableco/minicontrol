@@ -15,6 +15,8 @@ const SHELL = [
   'index.css',
   'index.js',
   'banks.js',
+  'banksets.js',
+  'banksets.json',
   'describe.js',
   'commands.js',
   'talk.js',

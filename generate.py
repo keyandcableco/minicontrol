@@ -768,6 +768,9 @@ html_template = '''<!DOCTYPE html>
               <div class="button_div">
                 <button id="minishop-btn" class="inactive" version="0.01" title="pick a preset from the minishop to hear on the minichord; save to a bank to keep it">minishop</button>
               </div>
+              <div class="button_div">
+                <button type="button" id="banksets-btn" class="always-on" title="sets of twelve presets: take a whole set, or mix your own twelve from them">bank sets</button>
+              </div>
             </div>
           </div>
           <div class="tool-group" role="group" aria-labelledby="tool-looper">
@@ -837,6 +840,25 @@ html_template = '''<!DOCTYPE html>
         </span>
       </div>
     </div>
+    <!-- sets of twelve presets, and your own twelve mixed from them (banksets.js fills it) -->
+    <div id="banksets-sheet" class="minishop-sheet banksets-sheet" popover aria-labelledby="banksets-title">
+      <div class="minishop-head">
+        <div>
+          <h2 id="banksets-title">bank sets</h2>
+          <p class="controls-sheet-where">take a whole set, or mix your own twelve</p>
+        </div>
+        <button type="button" class="settings-close always-on" popovertarget="banksets-sheet" popovertargetaction="hide" aria-label="close bank sets"><span class="glyph">✕</span></button>
+      </div>
+      <div id="banksets-body" class="banksets-body"></div>
+      <div class="banksets-foot">
+        <div id="banksets-save"></div>
+        <div class="banksets-bar">
+          <span id="banksets-summary" class="banksets-summary" aria-live="polite"></span>
+          <button type="button" id="banksets-save-btn" class="always-on bs-quiet">save as a set file</button>
+          <button type="button" id="banksets-write" class="always-on">write to the minichord</button>
+        </div>
+      </div>
+    </div>
     <!-- what is reached for now and then, out of the way until the settings button opens it -->
     <div id="settings-drawer" class="settings-drawer" popover aria-labelledby="settings-title">
       <div class="settings-panel">
@@ -868,6 +890,9 @@ html_template = '''<!DOCTYPE html>
         <section class="settings-section">
           <h5 class="tool-label">all banks</h5>
           <div class="settings-buttons">
+            <div class="button_div">
+              <button type="button" id="banksets-drawer-btn" class="always-on" data-close-settings title="sets of twelve presets: take a whole set, or mix your own twelve from them">bank sets</button>
+            </div>
             <div class="button_div">
               <button id="bulk-edit-btn" class="inactive" version="0.21" onclick="open_bank_sheet()" data-close-settings title="read all twelve banks, then move them, set a setting in every one, or apply a profile">reorder and bulk edit</button>
             </div>
@@ -929,6 +954,7 @@ html_template = '''<!DOCTYPE html>
   <script src="minichordcontroller.js"></script>
   <script src="index.js"></script>
   <script src="banks.js"></script>
+  <script src="banksets.js"></script>
   <script src="describe.js"></script>
   <script src="commands.js"></script>
   <script src="talk.js"></script>
