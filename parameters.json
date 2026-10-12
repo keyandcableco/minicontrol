@@ -1694,6 +1694,38 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 379,
+      "group": "Drone",
+      "ui_type": "slider",
+      "name": "drone reverb",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "how much of the drone goes into the reverb, in percent, so a tanpura sits in the same room as a reverberant santoor or harp; it stays as loud dry. 0 dry, as before",
+      "method": "drum_machine.droneReverb(value/100.0f);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.69,
+      "step": 1
+    },
+    {
+      "sysex_adress": 380,
+      "group": "Effects",
+      "ui_type": "slider",
+      "name": "speed ramp",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 50,
+      "default_value": 0,
+      "tooltip": "how long the tremolo and the vibrato, harp and chords, take to reach a new rate, in tenths of a second, instead of jumping to it: as a rotating speaker's rotors spin up when switched to fast and coast down when switched to slow, taking half again as long to slow. Put the chords' tremolo or vibrato frequency under the double tap or a knob and the organ's speaker winds up and down: about 10 for its horn, 40 for its drum. Loading a preset sets the rates at once. 0 jumps, as before",
+      "method": "speed_ramp=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.69,
+      "step": 1
     }
   ],
   "chord_parameter": [
@@ -2969,7 +3001,7 @@
       "max_value": 20,
       "tooltip": "frequency of the tremolo",
       "iterate": 1,
-      "method": "chord_tremolo_base_freq=value;",
+      "method": "chord_tremolo_base_freq=value; chord_lfo_rates();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -2985,7 +3017,7 @@
       "max_value": 5,
       "tooltip": "value that is multiplied by the note frequency and added to the base frequency of the tremolo to allow for keytracking",
       "iterate": 1,
-      "method": "chord_tremolo_keytrack=value;",
+      "method": "chord_tremolo_keytrack=value; chord_lfo_rates();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -3083,7 +3115,7 @@
       "max_value": 20,
       "tooltip": "frequency of the vibrato oscillation",
       "iterate": 1,
-      "method": "chord_vibrato_base_freq=value;",
+      "method": "chord_vibrato_base_freq=value; chord_lfo_rates();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -3099,7 +3131,7 @@
       "max_value": 1,
       "tooltip": "value that is multiplied by the note frequency and added to the base frequency to allow for keytracking",
       "iterate": 1,
-      "method": "chord_vibrato_keytrack=value;",
+      "method": "chord_vibrato_keytrack=value; chord_lfo_rates();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -5476,7 +5508,7 @@
       "max_value": 20,
       "tooltip": "frequency of the tremolo",
       "iterate": 1,
-      "method": "string_tremolo_lfo.frequency(value);",
+      "method": "lfo_rate(RAMP_HARP_TREMOLO,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -5574,7 +5606,7 @@
       "max_value": 20,
       "tooltip": "frequency of the vibrato oscillation",
       "iterate": 1,
-      "method": "string_vibrato_lfo.frequency(value);",
+      "method": "lfo_rate(RAMP_HARP_VIBRATO,value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -6912,7 +6944,7 @@
       "min_value": 0,
       "max_value": 1,
       "default_value": 0,
-      "tooltip": "plucking on touch, a finger landing on the pad beside a string still held down takes that string over: it moves to the new note without being plucked again, the way a guitarist hammers onto the next fret, and slides on from pad to pad as the finger moves along the strip. Hold a string and tap the next one for a hammer-on or a trill: lifting the tapping finger pulls off back to the held note, and lifting the last finger lets the string ring out. Only a string that has rung for a moment (180 ms) is taken over, so a strum still plucks every string, but a string held beside where you start a strum is moved rather than another plucked. Over midi the new note starts just before the old one ends, so a synth set to legato slides or hammers too. On the stock strip and plates of twelve zones, not with pluck on lift, the ribbon or zipper 24. 0 is off: every pad plucks its own string, as before",
+      "tooltip": "plucking on touch, a finger landing on the pad beside a string still held down takes that string over: it moves to the new note without being plucked again, the way a guitarist hammers onto the next fret, and slides on from pad to pad as the finger moves along the strip. Hold a string and tap the next one for a hammer-on or a trill: lifting the tapping finger pulls off back to the held note, and lifting the last finger lets the string ring out. Only a string that has rung for a moment (hammer-on time, 180 ms unless set) is taken over, so a strum still plucks every string, but a string held beside where you start a strum is moved rather than another plucked. Over midi the new note starts just before the old one ends, so a synth set to legato slides or hammers too. On the stock strip and plates of twelve zones, not with pluck on lift, the ribbon or zipper 24. 0 is off: every pad plucks its own string, as before",
       "method": "hammer_on=value;",
       "iterate": 1,
       "curve": "linear",
@@ -7169,6 +7201,22 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.65,
+      "step": 1
+    },
+    {
+      "sysex_adress": 376,
+      "group": "Pluck",
+      "ui_type": "slider",
+      "name": "hammer-on time",
+      "data_type": "int",
+      "min_value": 20,
+      "max_value": 400,
+      "default_value": 180,
+      "tooltip": "how long a string has to ring, in ms, before a finger landing beside it takes it over with hammer-on. 180, the usual, is longer than a slow strum's 150 ms from string to string, so a strum still plucks every string. Shorter, a grace note or a trill can follow its string at once: a piper's cuts and an oud's trills want 40 to 60 ms. Then a slow strum across a string still held moves that string instead of plucking the next, so strum quickly or lift first",
+      "method": "hammer_after_ms=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.69,
       "step": 1
     }
   ],
@@ -8963,6 +9011,57 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.6,
+      "step": 1
+    },
+    {
+      "sysex_adress": 377,
+      "group": "Drums",
+      "ui_type": "select",
+      "name": "tabla laya",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 3,
+      "default_value": 0,
+      "tooltip": "how fast the tabla's thekas (kehrwa, dadra, teental) go against the tempo. As written, 0, each bol is a step: teental's sixteen to a beat's four steps, so a medium teental needs the tempo near 30 and a slow (vilambit) one is slower than it goes. 1 a bol a beat: the tempo counts matras, as a tabla player counts them, and teental's cycle is sixteen beats, four bars, kehrwa's eight, dadra's six (two bars of three); 2 two bols a beat (dugun); 3 four (chaugun). Stretched, a fill plays the theka on to its half and then the tihai as written, and the theka starts again on sam where the tihai lands. The other grooves keep their time",
+      "method": "tabla_laya=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.69,
+      "options": [
+        {
+          "value": 0,
+          "label": "As written: a bol a step"
+        },
+        {
+          "value": 1,
+          "label": "A bol a beat (the tempo counts matras)"
+        },
+        {
+          "value": 2,
+          "label": "Two bols a beat (dugun)"
+        },
+        {
+          "value": 3,
+          "label": "Four bols a beat (chaugun)"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 378,
+      "group": "Drums",
+      "ui_type": "slider",
+      "name": "drum reverb",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "how much of the drums goes into the reverb, in percent, harp drums too; the drums stay as loud dry. The reverb is the one the harp and the chords share, its room set by reverb size and the rest. 0 dry, as before",
+      "method": "drum_machine.drumReverb(value/100.0f);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.69,
       "step": 1
     }
   ],

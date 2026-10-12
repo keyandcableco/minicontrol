@@ -315,6 +315,13 @@ UI_OVERRIDES = {
     341: control('rhythm_parameter', 'Drums', 'switch'),
     342: control('rhythm_parameter', 'Drums', 'switch'),
     343: control('rhythm_parameter', 'Drums', 'switch'),
+    # firmware 69: hammer-on time, tabla laya, the drums' and the drone's reverb, speed ramp
+    376: control('harp_parameter', 'Pluck', 'slider'),
+    377: select('rhythm_parameter', 'Drums', ["As written: a bol a step", "A bol a beat (the tempo counts matras)",
+                                              "Two bols a beat (dugun)", "Four bols a beat (chaugun)"]),
+    378: control('rhythm_parameter', 'Drums', 'slider'),
+    379: control('global_parameter', 'Drone', 'slider'),
+    380: control('global_parameter', 'Effects', 'slider'),
 }
 # every waveform dropdown gets the same labels
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]

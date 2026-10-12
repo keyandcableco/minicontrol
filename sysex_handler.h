@@ -202,7 +202,7 @@ void apply_audio_parameter(int adress, int value) {
             string_tremolo_lfo.begin(waveform_array[constrain(value,0,11)]);
             break;
         case 60:
-            string_tremolo_lfo.frequency(value/100.0);
+            lfo_rate(RAMP_HARP_TREMOLO,value/100.0);
             break;
         case 61:
             string_tremolo_lfo.amplitude(0.01+value/100.0);string_tremolo_lfo.offset(1-value/100.0);
@@ -211,7 +211,7 @@ void apply_audio_parameter(int adress, int value) {
             string_vibrato_lfo.begin(waveform_array[constrain(value,0,11)]);
             break;
         case 63:
-            string_vibrato_lfo.frequency(value/100.0);
+            lfo_rate(RAMP_HARP_VIBRATO,value/100.0);
             break;
         case 64:
             string_vibrato_lfo.amplitude(0.01+value/100.0);
@@ -547,10 +547,10 @@ void apply_audio_parameter(int adress, int value) {
             }
             break;
         case 157:
-            chord_tremolo_base_freq=value/100.0;
+            chord_tremolo_base_freq=value/100.0; chord_lfo_rates();
             break;
         case 158:
-            chord_tremolo_keytrack=value/100.0;
+            chord_tremolo_keytrack=value/100.0; chord_lfo_rates();
             break;
         case 159:
             for (int i=0;i<4;i++){
@@ -563,10 +563,10 @@ void apply_audio_parameter(int adress, int value) {
             }
             break;
         case 161:
-            chord_vibrato_base_freq=value/100.0;
+            chord_vibrato_base_freq=value/100.0; chord_lfo_rates();
             break;
         case 162:
-            chord_vibrato_keytrack=value/100.0;
+            chord_vibrato_keytrack=value/100.0; chord_lfo_rates();
             break;
         case 163:
             chords_vibrato_lfo.amplitude(0.01+value/100.0);
@@ -1147,6 +1147,21 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 375:
             drone_register=value; drone_set_mode(drone_mode);
+            break;
+        case 376:
+            hammer_after_ms=value;
+            break;
+        case 377:
+            tabla_laya=value;
+            break;
+        case 378:
+            drum_machine.drumReverb(value/100.0f);
+            break;
+        case 379:
+            drum_machine.droneReverb(value/100.0f);
+            break;
+        case 380:
+            speed_ramp=value;
             break;
         default:
             break;
