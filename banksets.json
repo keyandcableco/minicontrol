@@ -1,6 +1,252 @@
 {
  "banksets": [
   {
+   "id": "classical",
+   "title": "Classical",
+   "author": "Key & Cable",
+   "description": "Twelve presets through the history of written music, one for each bank, stepping forward in time as the up button steps through the banks: medieval organum, a Renaissance consort, a choir in 31-tone temperament, a harpsichord and a cathedral organ in Werckmeister's tuning, a fortepiano in Vallotti's, a string quartet, a celesta waltz, a small orchestra, a concert harp, a Spanish guitar and a string orchestra's adagio.",
+   "firmware": 69,
+   "file": "presets/classical/classical.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Organum",
+     "hue": 30,
+     "blurb": "Medieval chant in parallel fifths and octaves: each chord button sets a choir singing the root, the fifth and the octave together, moving as one, in the pure fifths of Pythagorean tuning, over a low drone on the final. The harp is a cantor in the Dorian mode, singing the line the choir follows. A h…"
+    },
+    {
+     "bank": 1,
+     "name": "Renaissance Consort",
+     "hue": 60,
+     "blurb": "A lute over a consort of viols, in quarter-comma meantone, the tuning of the sixteenth century, whose major thirds ring pure (the keys around C are sweetest, the far ones sour, as they were). The viols move in strict four-part counterpoint. Double tap for the suspensions every cadence of the time l…"
+    },
+    {
+     "bank": 2,
+     "name": "Cantus Choir",
+     "hue": 275,
+     "blurb": "From gen2, as it is there."
+    },
+    {
+     "bank": 3,
+     "name": "Harpsichord",
+     "hue": 90,
+     "blurb": "A harpsichord with a cello on the bass line, the basso continuo of a Baroque ensemble, in Werckmeister III, the well-tempered tuning of Bach's time. Like the real one it plays every note at one loudness. Rhythm mode runs a prelude's broken chords, the cello holding underneath. A hand over the plate…"
+    },
+    {
+     "bank": 4,
+     "name": "Cathedral Organ",
+     "hue": 120,
+     "blurb": "A pipe organ in a stone church: flue pipes speaking at eight, four and sixteen feet with a breath of wind, in Werckmeister III, under a long reverb. The harp plays a solo flute stop on a second manual, sounding as long as it is held. A hand over the plate opens the swell box; double tap for the ple…"
+    },
+    {
+     "bank": 5,
+     "name": "Fortepiano Sonata",
+     "hue": 150,
+     "blurb": "A fortepiano of Mozart's time, in Vallotti's temperament: in rhythm mode the chord buttons play an Alberti bass, the left hand of a classical sonata, while the harp plays the melody with dynamics. A hand over the plate lifts the dampers; double tap for the moderator, a felt between hammers and stri…"
+    },
+    {
+     "bank": 6,
+     "name": "Chamber Strings",
+     "hue": 340,
+     "blurb": "From gen2, as it is there."
+    },
+    {
+     "bank": 7,
+     "name": "Celesta Waltz",
+     "hue": 300,
+     "blurb": "A celesta over a pizzicato string orchestra in three: the sugar-plum bell tone on the harp, high and glassy, ringing over a waltz in rhythm mode. A hand over the plate brightens the strings; double tap for a glockenspiel, an octave higher."
+    },
+    {
+     "bank": 8,
+     "name": "Pocket Orchestra",
+     "hue": 90,
+     "blurb": "From gen2, as it is there."
+    },
+    {
+     "bank": 9,
+     "name": "Concert Harp",
+     "hue": 55,
+     "blurb": "From gen2, as it is there."
+    },
+    {
+     "bank": 10,
+     "name": "Spanish Guitar",
+     "hue": 20,
+     "blurb": "A concert guitar in nylon strings: pluck harder or strum faster to play louder, hold a string and tap the next for the left hand's slurs, lay the palm across to damp. The chord buttons are a second guitar, strummed, over a rumba on hand percussion in rhythm mode."
+    },
+    {
+     "bank": 11,
+     "name": "Adagio for Strings",
+     "hue": 260,
+     "blurb": "A string orchestra, slow and wide: chords swell in, tuned pure as the players tune by ear, and slide into the next when you roll your fingers from one chord to the next, a section's portamento. The harp is a solo violin over it, swelling as you press. A hand over the plate is the crescendo."
+    }
+   ]
+  },
+  {
+   "id": "drum-and-bass",
+   "title": "Drum and Bass",
+   "author": "Key & Cable",
+   "description": "Twelve presets through drum and bass, one for each bank, all at 168-174 bpm: liquid, amen jungle, Reese neuro, atmospheric, jump-up, halftime, vocal chops, a minimal roller, jazzstep, rave stabs, ragga jungle and a finger-drum jungle lab.",
+   "firmware": 73,
+   "file": "presets/drum-and-bass/drum-and-bass.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Liquid Roller",
+     "hue": 200,
+     "blurb": "Liquid drum and bass: a chorused Rhodes in ninth chords over a deep sine sub, a vibraphone on the harp echoing across the stereo field, and a rolling two-step underneath. A hand over the plate deepens the chorus; double tap for the plain chords."
+    },
+    {
+     "bank": 1,
+     "name": "Amen Jungle",
+     "hue": 0,
+     "blurb": "Jungle: the amen-style break at 170 on a dusty kit, a sine sub that slides when you roll from one button to the next, and an orchestra stab on the harp. Double tap and the harp becomes the kit, so you can chop the break yourself over the groove."
+    },
+    {
+     "bank": 2,
+     "name": "Reese Neuro",
+     "hue": 280,
+     "blurb": "Neurofunk: a Reese bass, two sawtooths a hair apart beating against each other with a third an octave below, driven hard through a resonant filter that a slow LFO keeps moving. Your hand over the plate opens it. A sharp, metallic stab on the harp, a two-step on a glitchy kit."
+    },
+    {
+     "bank": 3,
+     "name": "Atmospheric",
+     "hue": 230,
+     "blurb": "Atmospheric drum and bass: a choir pad breathing in slowly over a deep sub, a soft flute-like lead on the harp ribbon gliding through the chord's scale, echoes and a big reverb, over a think-style break. A hand over the plate swells the choir."
+    },
+    {
+     "bank": 4,
+     "name": "Jump Up",
+     "hue": 20,
+     "blurb": "Jump-up: a wobble bass, its filter swung by the LFO, with the mod knob taking it from a lurch to eighth notes at 174, over a two-step on a 909. The harp is a short, bright stab. A hand over the plate opens the wobble up."
+    },
+    {
+     "bank": 5,
+     "name": "Halftime",
+     "hue": 260,
+     "blurb": "Halftime: the drums at half the tempo's feel, a trap kit whose kick is an 808 on the root of the chord you hold, a dark pad sliding between chords as you roll them, and a bell lead on the harp echoing in triplets. A hand over the plate opens the pad."
+    },
+    {
+     "bank": 6,
+     "name": "Vocal Chops",
+     "hue": 300,
+     "blurb": "Chopped vocals: the harp is a choir cut short, each touch a syllable bouncing across the stereo field in the echo, louder as you hit harder, over strings and a sub on the chord buttons and a two-step. Hold the modifier and lower a hand to stretch the chops out."
+    },
+    {
+     "bank": 7,
+     "name": "Minimal Roller",
+     "hue": 160,
+     "blurb": "A minimal roller: a sub that holds on the root, a quiet Reese whisper above it, a two-step on the dusty kit with its rimshots, and a short pluck on the harp feeding a long, dark echo. The mod knob takes the echo from a single repeat to a dub trail; a hand over the plate throws the pluck into it."
+    },
+    {
+     "bank": 8,
+     "name": "Jazzstep",
+     "hue": 50,
+     "blurb": "Jazzstep: an upright bass walking fast on the chords' bass note, a Rhodes comping above, a vibraphone on the harp, over a think-style break at 172. Double tap for ninths; a hand over the plate holds the Rhodes' sustain."
+    },
+    {
+     "bank": 9,
+     "name": "Rave Stabs",
+     "hue": 110,
+     "blurb": "Early-nineties rave into jungle: piano stabs on the chord buttons, short and punchy, a hoover-ish detuned lead on the harp ribbon swooping between notes, over the amen at 168. A hand over the plate opens the piano up."
+    },
+    {
+     "bank": 10,
+     "name": "Ragga Jungle",
+     "hue": 90,
+     "blurb": "Ragga jungle: the amen at 168 with a dub sub underneath, a melodica on the harp that swells as you press, and dub throws: lower a hand to send the melodica into the echo, tap the modifier and hold it for the wash. A soundsystem in a box."
+    },
+    {
+     "bank": 11,
+     "name": "Finger Jungle",
+     "hue": 340,
+     "blurb": "Finger-drummed jungle: the harp's strings are the dusty kit's pads, kick lowest, as hard as you hit them, and the looper keeps what you play: double tap, wait through a bar of clicks, play two bars, and it loops, pulled onto the sixteenths at 172. The chord buttons are a sliding sub. Start rhythm m…"
+    }
+   ]
+  },
+  {
+   "id": "electric-piano",
+   "title": "Electric Piano",
+   "author": "Key & Cable",
+   "description": "Twelve electric pianos and their cousins, one for each bank, each set in the music it belongs to: a stage Rhodes, a suitcase with its tremolo, a Wurlitzer, an eighties FM tine, neo-soul keys with a bass, a jazz trio, a vibraphone quartet, a Rhodes through a wah, a Rhodes in the rain, fusion with a synth lead, Lo-fi Study from Gen 3, and a late-night duo of Rhodes and vibes.",
+   "firmware": 73,
+   "file": "presets/electric-piano/electric-piano.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Stage Rhodes",
+     "hue": 0,
+     "blurb": "A stage Rhodes on both sides, voice-led like a pianist's left hand, its tines barking when played hard. A hand over the plate holds the sustain pedal down; double tap for ninths and 6/9s. Rhythm mode is a soul ballad with a pickup and an ending."
+    },
+    {
+     "bank": 1,
+     "name": "Suitcase Tremolo",
+     "hue": 30,
+     "blurb": "A suitcase Rhodes with its tremolo running, the sound of seventies soft rock: chords pulsing in the stereo field, the harp pulsing with them. The mod knob is the tremolo's depth. Tap the modifier and hold it and the tremolo speeds up, gliding to its new rate and back as you let go."
+    },
+    {
+     "bank": 2,
+     "name": "Wurli",
+     "hue": 60,
+     "blurb": "A Wurlitzer electric piano: reedy, with a bark on every strike that growls when you hit it hard, its built-in tremolo shimmering. The harp is the same instrument. Rhythm mode rolls a boogie over a shuffle."
+    },
+    {
+     "bank": 3,
+     "name": "Tine '84",
+     "hue": 90,
+     "blurb": "The eighties' FM electric piano: a glassy sine with a bright metallic tine on every strike, chorused wide, the harp chiming two octaves of bell above each note. Rhythm mode is a power ballad on an 808, with a pickup and an ending."
+    },
+    {
+     "bank": 4,
+     "name": "Neo-Soul Keys",
+     "hue": 120,
+     "blurb": "Neo-soul: a chorused Rhodes in ninth and eleventh-flavoured chords on every button, a fingered bass under it playing the line in rhythm mode, and a loose, laid-back beat behind. A hand over the plate deepens the chorus; double tap for the plain chords."
+    },
+    {
+     "bank": 5,
+     "name": "Rhodes Trio",
+     "hue": 150,
+     "blurb": "A jazz trio with a Rhodes in the piano chair: an upright bass walking on the chords' bass note (the pizzicato sample), the Rhodes comping above it, brushes on a swing ride, and the harp a Rhodes for the right hand's lines. A fill takes the trio into a bossa nova and back."
+    },
+    {
+     "bank": 6,
+     "name": "Vibes Quartet",
+     "hue": 180,
+     "blurb": "A vibraphone over piano, upright bass and brushes: the vibes ring and shimmer with their motor on until you damp them, flat-handed or by lifting the hand that holds the pedal down. Rhythm mode is a bossa nova; a fill swings it."
+    },
+    {
+     "bank": 7,
+     "name": "Wah Rhodes",
+     "hue": 210,
+     "blurb": "A Rhodes through a wah pedal over a funk groove: the chord buttons stab in sixteenths in rhythm mode, your hand over the plate works the wah, and the harp is a synth bass that hammers on and slides. Double tap to loop two bars, counted in and pulled onto the sixteenths."
+    },
+    {
+     "bank": 8,
+     "name": "Rain Rhodes",
+     "hue": 240,
+     "blurb": "A Rhodes in a big, wet space, for slow, open chords: every note echoes across the stereo field and fades into a long reverb, the chords tuned a little toward just intonation so they sit still. Hold a hand over the plate to throw the chords into the echo; double tap to loop four bars and play over y…"
+    },
+    {
+     "bank": 9,
+     "name": "Fusion Lead",
+     "hue": 270,
+     "blurb": "Jazz-rock fusion: a chorused Rhodes comping on the chord buttons, and on the harp a monosynth lead on the ribbon over two octaves, sawtooth through a resonant filter, gliding between the notes of the scale that fits each chord. Press harder to open it up. Rhythm mode is a funk beat with the bass un…"
+    },
+    {
+     "bank": 10,
+     "name": "Lo-fi Study",
+     "hue": 265,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 11,
+     "name": "Late Night Duo",
+     "hue": 330,
+     "blurb": "A duo for the last set of the night: a soft, dark Rhodes on the chord buttons and a vibraphone on the harp, brushes barely there in rhythm mode. A hand over the plate holds the Rhodes' sustain pedal; double tap and the harp turns to Rhodes too."
+    }
+   ]
+  },
+  {
    "id": "gen2",
    "title": "Gen 2 presets",
    "author": "Key & Cable",
@@ -161,6 +407,88 @@
      "name": "Highland Pipes",
      "hue": 120,
      "blurb": "A pipe chanter on the harp, in the pipes' mixolydian scale, over drones that never stop, and an accordion on the chord buttons, all in just intonation. The chanter can't play louder or softer, like the real one: shape the tune with grace notes instead, holding a note and tapping the one beside it.…"
+    }
+   ]
+  },
+  {
+   "id": "world",
+   "title": "World",
+   "author": "Key & Cable",
+   "description": "Twelve instruments from around the world, one for each bank, each in the tuning and the groove it is played in, travelling west to east as the banks go up: a forró accordion, a steel pan, Highland pipes, a klezmer clarinet, a kora, desert blues, an oud in maqam Rast, then three ragas through the day (Bhairav at dawn, Yaman at dusk, Darbari at midnight), a gamelan and a koto.",
+   "firmware": 73,
+   "file": "presets/world/world.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Forro Accordion",
+     "hue": 45,
+     "blurb": "Forró from the northeast of Brazil: an accordion on the harp, its reeds beating as a musette does, playing the mixolydian of each chord; the chord buttons are the accordion's bass side, oom-pah in rhythm mode over a baião on hand percussion. Hold a note and tap the next for the ornaments. Double ta…"
+    },
+    {
+     "bank": 1,
+     "name": "Island Steel",
+     "hue": 165,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 2,
+     "name": "Highland Pipes",
+     "hue": 120,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 3,
+     "name": "Klezmer Clarinet",
+     "hue": 345,
+     "blurb": "A klezmer clarinet in freygish, the mode with the flat second and the major third, crying and trilling on hammer-ons and swelling as you press, over a tsimbl strumming the chords and a freylekhs dance in rhythm mode. Double tap for Mi Sheberakh, the other klezmer mode, its fourth raised."
+    },
+    {
+     "bank": 4,
+     "name": "Kora",
+     "hue": 75,
+     "blurb": "A kora from Mali: bright, long-ringing strings that alternate from side to side as the kora's two rows of strings alternate between the hands, in Sauta, the tuning with the raised fourth. In rhythm mode the chord buttons pick the kumbengo, the bass ostinato a kora player keeps going under the runs,…"
+    },
+    {
+     "bank": 5,
+     "name": "Desert Blues",
+     "hue": 40,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 6,
+     "name": "Rast on Oud",
+     "hue": 10,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 7,
+     "name": "Morning Bhairav",
+     "hue": 25,
+     "blurb": "Raga Bhairav, the raga of dawn, on a sitar: S r G m P d N, its flat second and sixth sung low as the raga has them, everything in just intonation from Sa, a tanpura underneath. Hold a note and tap beside it for the krintan, the sitar's hammer-ons and pull-offs. The chord buttons swell the sitar's s…"
+    },
+    {
+     "bank": 8,
+     "name": "Yaman at Dusk",
+     "hue": 55,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 9,
+     "name": "Midnight Raga",
+     "hue": 240,
+     "blurb": "From gen2, as it is there (its ribbon now the sampled sitar)."
+    },
+    {
+     "bank": 10,
+     "name": "Bronze Garden",
+     "hue": 75,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 11,
+     "name": "Koto & Sho",
+     "hue": 340,
+     "blurb": "From gen3, as it is there."
     }
    ]
   }

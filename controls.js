@@ -79,7 +79,7 @@ const GROUP_SILENT = new Set(['general', 'oscillator', 'notes', 'effects', 'key 
   'knobs', 'midi', 'style', 'tempo', 'sections', 'pattern', 'chord changes', 'slash chords and cantus',
   'alternate layout', 'string model', 'transient', 'plate', 'pluck', 'ribbon', 'drone', 'phone', 'vocoder', 'drums', 'looper']);
 
-let mapLayer = 0;          // which layer the drawing shows: 0 turning, 1 holding ♯
+let mapLayer = 0;          // what the drawing shows: 0 turning, 1 holding ♯, 2 ▲ ▼ held, the key each button picks
 let sheetControl = null;   // the control the sheet is open on
 let pickingFor = null;     // the target list open in the sheet, by the setting it sets
 let pickQuery = '';
@@ -186,6 +186,7 @@ function slotSummary(key, layer) {
       num(control) === 256 ? 'the looper' : `${targetName(control, num(control))} → ${valueText(num(control), num(value))}`);
     return { text: parts.join(' · '), first: parts[0] + (parts.length > 1 ? ` +${parts.length - 1}` : ''), assigned: true };
   }
+  if (c.kind === 'updown' && mapLayer === 2) return { text: `change key · now ${KEY_NAMES[num(35)] ?? 'C'}`, assigned: true };
   if (c.kind === 'updown') return num(322) ? { text: '▼ revert · ▲ panic', assigned: true } : { text: 'nothing', assigned: false };
   if (key === 'chords') return { text: `key of ${KEY_NAMES[num(35)] ?? 'C'}${num(39) === 1 ? ', alternate layout' : ''}` };
   if (key === 'strings') return { text: `${valueText(264, num(264)).toLowerCase()}${num(98) ? ', chromatic' : ''}` };
@@ -238,6 +239,12 @@ function keyAccidentals(key) {
   }
   return acc;
 }
+
+// With ▲ and ▼ held together the chord buttons pick a key (the firmware's handle_key_change_mode):
+// each column its letter, the top row sharp, the middle natural, the bottom flat. The key moves the
+// chords, the harp and the drone's root alike. By chord key signature (setting 35).
+const KEY_GRID = [[12, 13, 14, 15, 16, 17, 18], [6, 0, 1, 2, 3, 4, 5], [19, 20, 11, 10, 9, 8, 7]];
+const KEY_NOTE = 'Hold ▲ and ▼ together and press a chord button: its key. The drone follows.';
 
 // each column's root, as the key signature spells it, transposed, and a semitone up with ♯ held
 // (named by its pitch then, F♯ going to G rather than F double sharp, as a player would call it)
@@ -375,7 +382,7 @@ function mapLabel(key, x, y, anchor, lead) {
   const extra = s.fixed ? ' · built in' : s.same ? ' · as turning' : '';
   return `<g class="map-label${s.assigned ? '' : ' unset'}" data-control="${key}">` +
     (lead ? `<polyline class="map-lead" points="${lead}"/>` : '') +
-    `<text class="map-name" x="${x}" y="${y}" text-anchor="${anchor}">${esc(c.name)}${esc(extra)}</text>` +
+    `<text class="map-name" x="${x}" y="${y}" text-anchor="${anchor}">${esc(controlName(key))}${esc(extra)}</text>` +
     `<text class="map-value" x="${x}" y="${y + 50}" text-anchor="${anchor}"><title>${esc(s.text)}</title>${esc(shown)}</text></g>`;
 }
 
@@ -384,7 +391,7 @@ function controlGroup(key, inner) {
   const s = slotSummary(key, shownLayer());
   const lit = s.assigned && !s.fixed && c.kind !== 'sheet';
   return `<g class="map-ctl${lit ? ' assigned' : ''}" data-control="${key}" tabindex="0" role="button" ` +
-    `aria-label="${esc(c.name)}: ${esc(s.text)}. Change it">${inner}</g>`;
+    `aria-label="${esc(controlName(key))}: ${esc(s.text)}. Change it">${inner}</g>`;
 }
 
 function renderMinichordMap() {
@@ -395,6 +402,13 @@ function renderMinichordMap() {
   const kinds = rowKinds();
   let buttons = '';
   MAP_ROWS.forEach((row, r) => row.xs.forEach((x, col) => {
+    if (mapLayer === 2) {
+      const key = KEY_GRID[r][col];
+      buttons += `<rect class="map-shape${key === num(35) ? ' previewed' : ''}" x="${x}" y="${row.y}" width="80" height="78" rx="4">` +
+        `<title>key of ${KEY_NAMES[key]}</title></rect>` +
+        `<text class="map-chord" x="${x + 40}" y="${row.y + 40}" style="font-size:34px">${esc(KEY_NAMES[key])}</text>`;
+      return;
+    }
     const root = roots[col], suffix = kinds[r].suffix;
     // a short name on one line; a long one with its kind under the root
     const text = (root + suffix).length <= 4
@@ -420,7 +434,7 @@ function renderMinichordMap() {
       `<g id="map-strings">${stringsSvg()}</g>`) +
     ['chord', 'harp', 'mod'].map(k => controlGroup(k, knobShape(k))).join('') +
     controlGroup('updown', `<rect class="map-hit" x="1320" y="500" width="100" height="150"/>` +
-      `<path class="map-shape" d="${s.up}"/><path class="map-shape" d="${s.down}"/>`) +
+      `<path class="map-shape${mapLayer === 2 ? ' pressed' : ''}" d="${s.up}"/><path class="map-shape${mapLayer === 2 ? ' pressed' : ''}" d="${s.down}"/>`) +
     `<g class="map-labels">` +
       mapLabel('chord', 1585, 180, 'start', `1410,191 1570,191`) +
       mapLabel('harp', 1585, 311, 'start', `1405,322 1570,322`) +
@@ -455,14 +469,29 @@ function renderMapList() {
     const s = slotSummary(key, shownLayer());
     const extra = s.fixed ? ' · built in' : s.same ? ' · as turning' : '';
     return `<li><button type="button" class="map-row always-on${s.assigned ? '' : ' unset'}" data-control="${key}">` +
-      `<span class="map-row-name">${esc(CONTROLS[key].name)}</span><span class="map-row-value">${esc(s.text)}${esc(extra)}</span></button></li>`;
+      `<span class="map-row-name">${esc(controlName(key))}</span><span class="map-row-value">${esc(s.text)}${esc(extra)}</span></button></li>`;
   }).join('');
 }
 
 function renderLayerToggle() {
   document.querySelectorAll('#map-layers button').forEach(b => b.setAttribute('aria-pressed', String(parseInt(b.dataset.layer) === mapLayer)));
   const note = document.getElementById('map-layer-note');
-  if (note) note.hidden = !knobLayerOn();
+  if (note) note.hidden = !knobLayerOn() || mapLayer === 2;
+  const keyNote = document.getElementById('map-key-note');
+  if (keyNote) { keyNote.hidden = mapLayer !== 2; keyNote.textContent = KEY_NOTE; }
+}
+
+// a control's name on the drawing: ▲ ▼ by what they do held together, on that view
+function controlName(key) {
+  return key === 'updown' && mapLayer === 2 ? '▲ and ▼ together' : CONTROLS[key].name;
+}
+
+// the drawing on its ▲ ▼ view, from a sheet that mentions the gesture
+function showKeyView() {
+  mapLayer = 2;
+  document.querySelectorAll('[popover]').forEach(p => { if (p.matches(':popover-open')) p.hidePopover(); });
+  renderMinichordMap();
+  document.getElementById('minichord-map')?.scrollIntoView({ block: 'center' });
 }
 
 let mapPending = false;
@@ -602,7 +631,8 @@ function sheetBody(key) {
   }
   if (c.kind === 'updown') {
     return `<p class="cs-intro">With ♯ held: ▼ reverts the preset, ▲ stops every sound.</p>` +
-      `<section class="cs-extra">${paramControl(322, 'on')}</section>`;
+      `<section class="cs-extra">${paramControl(322, 'on')}</section>` +
+      `<section class="cs-extra"><h3>▲ and ▼ together</h3>${keyGestureNote()}</section>`;
   }
   return '';
 }
@@ -611,7 +641,14 @@ function sheetBody(key) {
 
 // a few things on top of a sheet's own settings: the key the buttons are spelled in on the chord
 // sheet, and hover on the harp's
+// the key change gesture, said once, with the way to the drawing's view of it
+function keyGestureNote() {
+  return `<p class="cs-note">${KEY_NOTE}</p>` +
+    `<button type="button" class="cs-target always-on" data-key-view><span>which button is which key</span><span class="glyph" aria-hidden="true">›</span></button>`;
+}
+
 function quickBody(name) {
+  if (name === 'tuning' || name === 'drone') return `<section class="cs-extra">${keyGestureNote()}</section>`;
   if (name === 'chord') {
     return `<section class="cs-extra">${paramControl(35, 'key')}${paramControl(30, 'transpose')}</section>`;
   }
@@ -793,6 +830,7 @@ function setupMinichordMap() {
     open(e);
   });
   map.addEventListener('pointerover', e => {
+    if (mapLayer === 2) return;
     const button = e.target.closest('#map-svg [data-col]');
     const next = button ? { col: parseInt(button.dataset.col), row: parseInt(button.dataset.row) } : null;
     if (!button && !e.target.closest('#map-svg .map-ctl[data-control="chords"]')) {
@@ -853,6 +891,7 @@ function setupMinichordMap() {
     renderSheet();
   });
 
+  document.addEventListener('click', e => { if (e.target.closest('[data-key-view]')) showKeyView(); });
   // the controls on top of the chord and harp sheets
   document.addEventListener('click', e => {
     const link = e.target.closest('.sheet-quick [data-open-control]');

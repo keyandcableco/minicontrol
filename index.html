@@ -188,8 +188,10 @@
           <div class="map-layers" id="map-layers" role="group" aria-label="what the drawing shows">
             <button type="button" class="always-on" data-layer="0" aria-pressed="true" title="what each control does as it is">turning</button>
             <button type="button" class="always-on" data-layer="1" aria-pressed="false" title="what each control does with ♯ held down, and the chords a semitone up">holding ♯</button>
+            <button type="button" class="always-on" data-layer="2" aria-pressed="false" title="hold ▲ and ▼ together, then press a chord button to change key: the drone follows">▲▼ key</button>
           </div>
           <span id="map-layer-note" class="map-layer-note" hidden title="knob layer is on alternate functions: the knobs and hover play their ♯ settings without ♯ held">knob layer: on the ♯ settings</span>
+          <span id="map-key-note" class="map-layer-note" hidden></span>
         </div>
         <svg id="map-svg" viewBox="-30 -175 2390 1000" role="group" aria-label="the minichord's controls"></svg>
         <ul id="map-list" class="map-list"></ul>
