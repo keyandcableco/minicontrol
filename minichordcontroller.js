@@ -12,6 +12,13 @@ class MiniChordController {
     // Settings of the instrument, not of a preset (USB audio, upside down): a preset or bank sent
     // whole leaves them as they are, or loading one would turn a left-handed player's minichord back over
     this.instrument_adresses = [244, 384];
+    // The locks (firmware 76): settings the minichord keeps as its own, whatever preset is loaded,
+    // reported on control command 9 (7D 6C, a count, then two bytes an address). A whole preset or
+    // bank sent from here leaves them alone, as it leaves 244 and 384
+    this.locks = new Set();
+    this.has_locks = false;     // whether the minichord answered for its locks
+    this.locks_version = 76;
+    this.onLocks = null;
     this.has_page1 = false;     // whether the minichord answered for page 1
     this.page1_defaults = {};   // address -> stored default, from parameters.json (index.js)
     this.pendingDump = null;    // page 0, held while page 1 is asked for
@@ -98,6 +105,9 @@ class MiniChordController {
       this.device = false;
       this.pendingSave = false; // Reset pendingSave
       this.has_page1 = false;
+      this.has_locks = false;
+      this.locks = new Set();
+      if (this.onLocks) this.onLocks(this.locks);
       this.dropPendingDump();
       // Clean up input handlers
       for (const input of event.target.inputs.values()) {
@@ -129,6 +139,10 @@ class MiniChordController {
     return;
   }
   const data = midiMessage.data.slice(1);
+  if (data.length >= 3 && data[0] === 0x7D && data[1] === 0x6C) {
+    this.processLocks(data);
+    return;
+  }
   if (data.length === 3 + this.page_size * 2 + 1 && data[0] === 0x7D && data[1] === 0x6D) {
     this.processPage(data);
     return;
@@ -212,6 +226,43 @@ processPage(data) {
   this.deliverDump(held);
 }
 
+// The locked addresses: 7D 6C <count>, then two bytes an address, the instrument's fixed two first.
+processLocks(data) {
+  const n = data[2];
+  const locks = new Set();
+  for (let i = 0; i < n && 4 + 2 * i < data.length; i++) locks.add(data[3 + 2 * i] + 128 * data[4 + 2 * i]);
+  this.locks = locks;
+  this.has_locks = true;
+  if (this.onLocks) this.onLocks(locks);
+}
+
+requestLocks() {
+  if (!this.device) return false;
+  this.sendSysEx([0, 0, 9, 0]);
+  return true;
+}
+
+// lock (385): an address locks it at its present value, 1024 + the address unlocks it. A setting
+// written doesn't report back, so the report is asked for after
+setLock(address, on) {
+  if (!this.device || !this.has_locks) return false;
+  this.sendParameter(385, on ? address : 1024 + address);
+  setTimeout(() => this.requestLocks(), 100);
+  return true;
+}
+
+// control command 10: 0 unlocks everything, 1 locks the default settings again; it reports back
+resetLocks(defaults) {
+  if (!this.device) return false;
+  this.sendSysEx([0, 0, 10, defaults ? 1 : 0]);
+  return true;
+}
+
+// what a whole preset or bank sent from here leaves alone: the instrument's two, and its locks
+leavesAlone(address) {
+  return this.instrument_adresses.includes(address) || this.locks.has(address);
+}
+
 dropPendingDump() {
   clearTimeout(this.pendingTimer);
   this.pendingTimer = null;
@@ -227,6 +278,7 @@ requestPage(page) {
 deliverDump(processedData) {
   this.active_bank_number = processedData.bankNumber;
   this.firmware_version = processedData.firmwareVersion;
+  if (Math.round(this.firmware_version * 100) >= this.locks_version && !this.has_locks) this.requestLocks();
   if (this.pendingSave && typeof currentValues !== 'undefined') {
     for (let i = 2; i < processedData.parameters.length; i++) {
       if (processedData.parameters[i] !== undefined && currentValues[i] !== undefined) {
@@ -360,11 +412,11 @@ deliverDump(processedData) {
     send = send || ((address, value) => this.sendParameter(address, value));
     const count = Math.min(values.length, this.parameter_size);
     for (let i = 2; i < count; i++) {
-      if (i !== this.firmware_adress && this.canWrite(i) && !this.instrument_adresses.includes(i)) send(i, values[i]);
+      if (i !== this.firmware_adress && this.canWrite(i) && !this.leavesAlone(i)) send(i, values[i]);
     }
     if (count <= this.page_size && this.has_page1) {
       for (const [address, value] of Object.entries(this.page1_defaults)) {
-        if (!this.instrument_adresses.includes(parseInt(address))) send(parseInt(address), value);
+        if (!this.leavesAlone(parseInt(address))) send(parseInt(address), value);
       }
     }
     this.sendParameter(0, 0);   // the minichord reports back, and the page follows

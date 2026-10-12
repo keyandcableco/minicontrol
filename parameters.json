@@ -32,7 +32,8 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1,
-      "controls": "none"
+      "controls": "none",
+      "lock": "never"
     },
     {
       "name": "reverb size",
@@ -488,7 +489,8 @@
       "curve": "linear",
       "introduction_version": 0.1,
       "float_multiplier": 10,
-      "step": 0.1
+      "step": 0.1,
+      "lock": "default"
     },
     {
       "sysex_adress": 110,
@@ -778,7 +780,8 @@
         }
       ],
       "step": 1,
-      "controls": "none"
+      "controls": "none",
+      "lock": "fixed"
     },
     {
       "sysex_adress": 249,
@@ -1768,7 +1771,8 @@
           "label": "Upside down, for the left hand"
         }
       ],
-      "step": 1
+      "step": 1,
+      "lock": "fixed"
     }
   ],
   "chord_parameter": [
@@ -1787,7 +1791,8 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01,
-      "controls": "none"
+      "controls": "none",
+      "lock": "never"
     },
     {
       "name": "retrigger chords",
@@ -5094,7 +5099,8 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01,
-      "controls": "none"
+      "controls": "none",
+      "lock": "never"
     },
     {
       "name": "change held strings",
@@ -6692,7 +6698,8 @@
       "curve": "linear",
       "introduction_version": 0.25,
       "step": 1,
-      "controls": "none"
+      "controls": "none",
+      "lock": "default"
     },
     {
       "sysex_adress": 242,
@@ -6709,7 +6716,8 @@
       "curve": "linear",
       "introduction_version": 0.25,
       "step": 1,
-      "controls": "none"
+      "controls": "none",
+      "lock": "default"
     },
     {
       "sysex_adress": 243,
@@ -6744,7 +6752,8 @@
         }
       ],
       "step": 1,
-      "controls": "none"
+      "controls": "none",
+      "lock": "default"
     },
     {
       "sysex_adress": 245,
@@ -9236,7 +9245,8 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1,
-      "controls": "none"
+      "controls": "none",
+      "lock": "never"
     },
     {
       "name": "harp alternate value",
@@ -9253,7 +9263,8 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1,
-      "controls": "none"
+      "controls": "none",
+      "lock": "never"
     },
     {
       "name": "mod alternate value",
@@ -9270,7 +9281,8 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1,
-      "controls": "none"
+      "controls": "none",
+      "lock": "never"
     },
     {
       "name": "firmware revision",
@@ -9287,7 +9299,8 @@
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01,
-      "controls": "none"
+      "controls": "none",
+      "lock": "never"
     },
     {
       "sysex_adress": 256,
@@ -9304,7 +9317,8 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.32,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 287,
@@ -9321,7 +9335,8 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.47,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 290,
@@ -9338,7 +9353,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 291,
@@ -9355,7 +9371,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 292,
@@ -9372,7 +9389,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 293,
@@ -9389,7 +9407,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 294,
@@ -9406,7 +9425,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 295,
@@ -9423,7 +9443,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 296,
@@ -9440,7 +9461,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 297,
@@ -9457,7 +9479,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 298,
@@ -9474,7 +9497,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 299,
@@ -9491,7 +9515,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 300,
@@ -9508,7 +9533,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 301,
@@ -9525,7 +9551,8 @@
       "curve": "linear",
       "controls": "none",
       "introduction_version": 0.5,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 315,
@@ -9542,7 +9569,8 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.53,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 323,
@@ -9559,7 +9587,8 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.56,
-      "step": 1
+      "step": 1,
+      "lock": "never"
     },
     {
       "sysex_adress": 332,
@@ -9576,6 +9605,25 @@
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 0.59,
+      "step": 1,
+      "lock": "never"
+    },
+    {
+      "sysex_adress": 385,
+      "group": "hidden",
+      "ui_type": "slider",
+      "name": "lock",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1535,
+      "default_value": 0,
+      "tooltip": "a lock keeps the instrument's own value for a setting, whatever preset is loaded: a preset load skips a locked setting, as it skips USB audio and upside down, and a change made to it is kept in the minichord itself rather than in the preset. Writing it does one thing and it goes back to 0, never kept in a preset: an address from 1 to 511 locks that setting, 1024 plus the address unlocks it. Control command 9 reports the locked settings, command 10 unlocks them all (0) or locks the default ones again (1): the harp plate, the touch and release thresholds and the master tuning. Actions, the preset's name and the controls' own storage can't be locked",
+      "method": "lock_action(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "lock": "never",
+      "introduction_version": 0.76,
       "step": 1
     }
   ]

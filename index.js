@@ -863,6 +863,41 @@ function handleDataReceived(data) {
   showFirmwareNote(firmware, newest);
 }
 
+// The locks (firmware 76): the padlock beside a setting shows whether the minichord keeps it as its
+// own, whatever preset is loaded, and a click locks or unlocks it. The padlocks stay hidden until a
+// minichord answers for its locks (command 9), so older firmware shows the page as it was.
+function paintLocks(locks) {
+  const known = controller.has_locks;
+  document.querySelectorAll(".lock-btn").forEach(button => {
+    const a = parseInt(button.dataset.lock);
+    button.hidden = !known;
+    if (button.classList.contains("fixed")) return;
+    const locked = locks.has(a);
+    button.classList.toggle("locked", locked);
+    button.textContent = locked ? "locked" : "lock";
+  });
+}
+document.addEventListener("click", e => {
+  const button = e.target.closest?.(".lock-btn:not(.fixed)");
+  if (!button || !controller.has_locks) return;
+  const a = parseInt(button.dataset.lock);
+  const name = findParameterBySysex(a)?.name ?? `setting ${a}`;
+  const locking = !controller.locks.has(a);
+  controller.setLock(a, locking);
+  showNotification(locking ? `${name} locked: the minichord keeps it, whatever preset is loaded` : `${name} unlocked: presets set it again`, "success");
+});
+document.getElementById("lock-defaults-btn")?.addEventListener("click", () => {
+  if (!deviceReady()) return;
+  controller.resetLocks(true);
+  showNotification("The default settings locked: the harp plate, the touch thresholds and the master tuning", "success");
+});
+document.getElementById("unlock-all-btn")?.addEventListener("click", () => {
+  if (!deviceReady()) return;
+  if (!confirm("Unlock every setting? Presets will set the harp plate, the touch thresholds and the master tuning again.")) return;
+  controller.resetLocks(false);
+  showNotification("Every setting unlocked", "success");
+});
+
 // Ben Poilve's newest firmware. Past it is the test-allFeatures fork, which this page's newer
 // controls are for.
 const OFFICIAL_FIRMWARE = 9;
@@ -1058,7 +1093,7 @@ async function generateRandomPreset() {
   });
   
   for (let i = 2; i < controller.parameter_size; i++) {
-    if (preset[i] !== undefined && parameterRanges[i] && controller.canWrite(i)) {
+    if (preset[i] !== undefined && parameterRanges[i] && controller.canWrite(i) && !controller.leavesAlone(i)) {
       const param = findParameterBySysex(i);
       if (!param) continue;
       const floatMultiplier = getFloatMultiplier(param);
@@ -1105,6 +1140,7 @@ async function initialize() {
   setupRhythmGridControls();
   controller.onConnectionChange = updateConnectionStatus;
   controller.onDataReceived = handleDataReceived;
+  controller.onLocks = paintLocks;
   const connected = await controller.initialize();
   if (connected) loadBankSettings(0);
   document.getElementById("theme-select")?.addEventListener("change", e => setTheme(e.target.value));

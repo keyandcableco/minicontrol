@@ -286,6 +286,26 @@ def html_escape(text):
     return str(text).replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
 
 
+# The padlock beside a setting the minichord may keep as its own, whatever preset is loaded (the
+# locks, firmware 76): a setting whose "lock" in parameters.json isn't "never" gets one, hidden
+# until a minichord that answers for its locks is connected (index.js paints them). USB audio and
+# upside down are "fixed": the instrument's by their own code, shown locked and not to be clicked.
+LOCK_TITLE = ("lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset "
+              "leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. "
+              "Click to lock or unlock. Firmware 76 or later")
+
+
+def lock_html(param):
+    policy = param.get('lock', 'allowed')
+    if policy == 'never' or param.get('group') == 'hidden':
+        return ''
+    address = param['sysex_adress']
+    if policy == 'fixed':
+        return (f'<button type="button" class="lock-btn locked fixed always-on" data-lock="{address}" hidden disabled '
+                f'title="the minichord\'s own setting, always: a preset never changes it">locked</button>')
+    return f'<button type="button" class="lock-btn always-on" data-lock="{address}" hidden title="{html_escape(LOCK_TITLE)}">lock</button>'
+
+
 # Generate HTML for parameter controls
 def generate_param_html(param):
     html = []
@@ -341,6 +361,7 @@ def generate_param_html(param):
                        value="{display_value_str}"
                        min="{min_value}" max="{max_value}" step="{step if data_type == 'float' else 1}"
                        style="width: 50px; text-align: right; border: none; padding: 2px;">
+                {lock_html(param)}
             </div>
         ''')
         if sysex_address == 260:
@@ -370,6 +391,7 @@ def generate_param_html(param):
                         style="width: 150px; padding: 5px; margin: 0 8px;">
                     {options_html}
                 </select>
+                {lock_html(param)}
             </div>
         ''')
     elif ui_type == 'switch':
@@ -379,6 +401,7 @@ def generate_param_html(param):
                 <input type="checkbox" id="param-{sysex_address}" name="{name}" class="inactive"
                        {'checked' if default_value else ''} {' '.join(attrs)}
                        style="margin: 0 8px;">
+                {lock_html(param)}
             </div>
         ''')
     elif ui_type == 'degrees':
@@ -923,6 +946,18 @@ html_template = '''<!DOCTYPE html>
           <div class="settings-buttons">
             <div class="button_div">
               <button type="button" class="always-on" data-tour-start data-close-settings title="a walk round the page: the banks, the drawing, the sheets, the drawer and the bank sets">take the tour</button>
+            </div>
+          </div>
+        </section>
+        <section class="settings-section">
+          <h5 class="tool-label">locks</h5>
+          <p class="settings-hint">A locked setting is the minichord's own, whatever preset is loaded: the harp plate, the touch thresholds and the master tuning to begin with. The padlock beside a setting locks or unlocks it. Firmware 76 or later.</p>
+          <div class="settings-buttons">
+            <div class="button_div">
+              <button id="lock-defaults-btn" class="inactive" version="0.76" title="lock the harp plate, the touch and release thresholds and the master tuning again, at their present values, and nothing else">lock the defaults</button>
+            </div>
+            <div class="button_div">
+              <button id="unlock-all-btn" class="inactive" version="0.76" title="unlock every setting, so presets set them all again">unlock everything</button>
             </div>
           </div>
         </section>

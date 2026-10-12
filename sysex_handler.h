@@ -1169,6 +1169,9 @@ void apply_audio_parameter(int adress, int value) {
         case 384:
             upside_down_request(value);
             break;
+        case 385:
+            lock_action(value);
+            break;
         default:
             break;
     }

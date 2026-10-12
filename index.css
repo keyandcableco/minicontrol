@@ -2575,3 +2575,20 @@
       font-size: inherit;
       font-family: inherit;
     }
+
+/* the padlock beside a setting (the locks, firmware 76): faint until it holds */
+.lock-btn {
+  font-size: 0.7em;
+  line-height: 1.4;
+  padding: 1px 7px;
+  margin-left: 6px;
+  border: 1px solid var(--primary-color);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-primary);
+  opacity: 0.55;
+  cursor: pointer;
+}
+.lock-btn:hover { opacity: 1; }
+.lock-btn.locked { background: var(--primary-color); color: var(--text-color); opacity: 1; }
+.lock-btn.fixed { cursor: default; }

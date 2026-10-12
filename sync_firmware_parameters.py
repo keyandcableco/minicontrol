@@ -23,7 +23,7 @@ PAGE_FILE = 'parameters.json'
 
 # taken from the firmware for every parameter
 FIRMWARE_FIELDS = ['name', 'data_type', 'min_value', 'max_value', 'default_value', 'tooltip',
-                   'method', 'iterate', 'curve', 'follows_target', 'controls', 'first_step']
+                   'method', 'iterate', 'curve', 'follows_target', 'controls', 'first_step', 'lock']
 
 WAVEFORMS = ["Sine", "Sawtooth", "Square", "Triangle", "Bandlimited Pulse", "Pulse", "Reverse Sawtooth",
              "Sample and Hold", "Variable Triangle", "Bandlimited Sawtooth", "Reverse Bandlimited Sawtooth",
