@@ -313,10 +313,36 @@ function stringsChord() {
   return { col: Math.max(0, MAP_LETTERS.indexOf(letter)), row: 0 };
 }
 
-function chordTones(row) {
-  if (num(39) === 1) return CHORD_TONES[(num(202 + row) || [12, 13, 14][row]) - 1] ?? CHORD_TONES[0];
-  if (num(33) === 1) return CHORD_TONES[[7, 8, 2][row]];
-  return CHORD_TONES[row];   // major, minor, dominant seventh
+// which of the catalogue's chords a row plays
+function chordIndex(row) {
+  if (num(39) === 1) {
+    const v = num(202 + row);
+    return v > 0 && v <= CHORD_TONES.length ? v - 1 : [11, 12, 13][row];
+  }
+  if (num(33) === 1) return [7, 8, 2][row];
+  return row;   // major, minor, dominant seventh
+}
+
+// Notes spelled by degree, as a scale or a chord is written: each degree its own letter counted
+// from the root, its sharp or flat whatever makes the interval (a minor third above C is E♭, not
+// D♯). Semitones above the root give the degree; an augmented chord's fifth and a diminished
+// seventh's seventh are the two the plain count gets wrong.
+const LETTER_ORDER = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const DEGREE_OF = [0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6];
+const DEGREE_EXCEPT = { 6: { 8: 4 }, 27: { 8: 4 }, 9: { 9: 6 } };   // augmented, just augmented, full diminished
+const ACCIDENTALS = { '-2': '♭♭', '-1': '♭', 0: '', 1: '♯', 2: '♯♯' };
+
+// a note's name as letter and alteration
+function spelled(name) {
+  return { letter: name[0], acc: (name.match(/♯/g) || []).length - (name.match(/♭/g) || []).length };
+}
+
+// the note interval semitones above root, on the letter degree steps above its letter
+function spellAbove(root, interval, degree) {
+  const letter = LETTER_ORDER[(LETTER_ORDER.indexOf(root.letter) + degree) % 7];
+  let acc = ((NATURAL[root.letter] + root.acc + interval - NATURAL[letter]) % 12 + 12) % 12;
+  if (acc > 6) acc -= 12;
+  return letter + (ACCIDENTALS[acc] ?? '');
 }
 
 // the twelve strings' names, lowest first, or null where they can't be named here
@@ -324,22 +350,29 @@ function harpNotes(sharp) {
   const twelve = !TEMPERAMENT_DIVISIONS[num(237)];
   const names = num(35) in KEY_FLATS ? FLAT_NAMES : SHARP_NAMES;
   const transpose = twelve ? num(30) % 12 : 0;
-  const name = pc => names[(((pc + transpose) % 12) + 12) % 12];
-  if (num(98)) return twelve ? Array.from({ length: 12 }, (_, i) => name(i)) : null;   // chromatic, from C
+  // chromatic, from C: no scale to spell it by, so the key's sharps or flats
+  if (num(98)) return twelve ? Array.from({ length: 12 }, (_, i) => names[(i + transpose) % 12]) : null;
   if (!twelve) return null;
   const mode = num(36);
   if (mode >= 1 && mode <= 7) {
+    // the key's tonic, transposed; modes 5-7 from its relative minor, the major scale's sixth
+    let tonic = spelled(KEY_NAMES[num(35)] ?? 'C');
+    if (transpose) tonic = spelled(names[(NATURAL[tonic.letter] + tonic.acc + transpose + 12) % 12]);
+    const root = mode >= 5 ? spelled(spellAbove(tonic, 9, 5)) : tonic;
     const scale = HARP_SCALES[mode - 1];
-    const root = KEY_ROOTS[num(35)] - (mode >= 5 ? 3 : 0);
-    return Array.from({ length: 12 }, (_, i) => name(root + scale[i % scale.length]));
+    return Array.from({ length: 12 }, (_, i) => spellAbove(root, scale[i % scale.length], DEGREE_OF[scale[i % scale.length]]));
   }
   if (mode !== 0) return null;
   const { col, row } = stringsChord();
-  const acc = keyAccidentals(num(35));
-  const root = NATURAL[MAP_LETTERS[col]] + acc[MAP_LETTERS[col]] + (sharp && sharpensChords() ? 1 : 0);
-  const tones = chordTones(row);
+  const root = spelled(columnRoots(sharp && sharpensChords())[col]);
+  const index = chordIndex(row);
+  const tones = CHORD_TONES[index] ?? CHORD_TONES[0];
+  const except = DEGREE_EXCEPT[index] ?? {};
   const pattern = HARP_PATTERNS[num(40)] ?? HARP_PATTERNS[0];
-  return pattern.map(level => name(root + tones[level % 10]));
+  return pattern.map(level => {
+    const interval = tones[level % 10] % 12;
+    return spellAbove(root, tones[level % 10], except[interval] ?? DEGREE_OF[interval]);
+  });
 }
 
 function stringsSvg() {
