@@ -296,6 +296,9 @@ function setNames(set) {
     }
     if (w === "drum and bass") for (const v of ["dnb", "d and b", "drum n bass", "drum and base", "drum n base"]) out.add(v);
     if (w === "electric piano") for (const v of ["electric pianos", "epiano", "e piano", "epianos"]) out.add(v);
+    if (w === "folk and americana") for (const v of ["americana", "folk americana", "folk and american", "folk set"]) out.add(v);
+    if (w === "synth") for (const v of ["synths", "synthesizer", "synthesizers", "synthesiser", "synthesisers", "synth set"]) out.add(v);
+    if (w === "ambient") for (const v of ["ambience", "ambient set", "ambient sounds"]) out.add(v);
   }
   return [...out].filter(w => w.length > 2);
 }

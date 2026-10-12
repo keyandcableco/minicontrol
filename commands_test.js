@@ -155,6 +155,13 @@ const SET_CASES = [
   ["Midnight Raga from World on bank 11", [[10, "world", 9]]],
   ["put Wurli on bank 3", [[2, "electric-piano", 2]]],
   ["turn off hover on bank 2 and load gen2 into bank 5", [[4, "gen2", 0]], ["b1"]],
+  // the folk, synth and ambient sets (2026-10-12) and the aliases a player might use for them
+  ["load americana into all 12 banks", [...Array(12).keys()].map(b => [b, "folk", b])],
+  ["synthesizers into banks 1 to 3", [0, 1, 2].map(b => [b, "synth", b])],
+  ["load the ambient set", [...Array(12).keys()].map(b => [b, "ambient", b])],
+  ["put Theremin on bank 4", [[3, "synth", 3]]],
+  ["put Music Box on bank 9", [[8, "ambient", 8]]],
+  ["Blues Harp from folk on bank 7", [[6, "folk", 6]]],
 ];
 for (const [text, want, alsoChanged] of SET_CASES) {
   const work = {};
