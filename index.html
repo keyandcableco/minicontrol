@@ -190,7 +190,7 @@
             <button type="button" class="always-on" data-layer="1" aria-pressed="false" title="what each control does with ♯ held down, and the chords a semitone up">holding ♯</button>
             <button type="button" class="always-on" data-layer="2" aria-pressed="false" title="hold ▲ and ▼ together, then press a chord button to change key: the drone follows">▲▼ key</button>
           </div>
-          <span id="map-layer-note" class="map-layer-note" hidden title="knob layer is on alternate functions: the knobs and hover play their ♯ settings without ♯ held">alternate layer on: the knobs and hover play their ♯ settings</span>
+          <span id="map-layer-note" class="map-layer-note" hidden title="knob layer is on alternate functions: the knobs and hover play their ♯ settings without ♯ held">knob layer: on the ♯ settings</span>
           <span id="map-key-note" class="map-layer-note" hidden></span>
         </div>
         <svg id="map-svg" viewBox="-30 -175 2390 1000" role="group" aria-label="the minichord's controls"></svg>
@@ -5587,6 +5587,14 @@
                        min="0" max="100" step="1"
                        style="width: 50px; text-align: right; border: none; padding: 2px;">
             </div>
+        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Knob layer</h3>
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-117" title="which functions the potentiometers play. 0: their main functions, and holding the modifier selects their alternates, as always. 1: their alternate functions, and the modifier only sharpens, so an alternate can be turned while chords sound. Assign the double tap to it (control 117, value 1) to switch layers while playing. After switching layers a knob waits until it reaches where its new function was left, so nothing jumps. While it is 1 the LED shows the preset colour pale" style="width: 150px; font-weight: bold;">knob layer</label>
+                <select id="param-117" name="knob layer" class="inactive" data-sysex-address="117" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="which functions the potentiometers play. 0: their main functions, and holding the modifier selects their alternates, as always. 1: their alternate functions, and the modifier only sharpens, so an alternate can be turned while chords sound. Assign the double tap to it (control 117, value 1) to switch layers while playing. After switching layers a knob waits until it reaches where its new function was left, so nothing jumps. While it is 1 the LED shows the preset colour pale" version="0.19"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="0">Main functions</option><option value="1">Alternate functions</option>
+                </select>
+            </div>
         
                     </div>
                 </details>
@@ -5654,21 +5662,6 @@
                        value="0"
                        min="0" max="4095" step="1"
                        style="width: 50px; text-align: right; border: none; padding: 2px;">
-            </div>
-        
-                    </div>
-                </details>
-    
-                <details class="submenu">
-                    <summary>Alternate layer</summary>
-                    <div class="submenu-body">
-                        
-            <div style="display: flex; align-items: center; margin: 8px 0;">
-                <label for="param-117" title="which functions the potentiometers play. 0: their main functions, and holding the modifier selects their alternates, as always. 1: their alternate functions, and the modifier only sharpens, so an alternate can be turned while chords sound. Assign the double tap to it (control 117, value 1) to switch layers while playing. After switching layers a knob waits until it reaches where its new function was left, so nothing jumps. While it is 1 the LED shows the preset colour pale" style="width: 150px; font-weight: bold;">knob layer</label>
-                <select id="param-117" name="knob layer" class="inactive" data-sysex-address="117" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="which functions the potentiometers play. 0: their main functions, and holding the modifier selects their alternates, as always. 1: their alternate functions, and the modifier only sharpens, so an alternate can be turned while chords sound. Assign the double tap to it (control 117, value 1) to switch layers while playing. After switching layers a knob waits until it reaches where its new function was left, so nothing jumps. While it is 1 the LED shows the preset colour pale" version="0.19"
-                        style="width: 150px; padding: 5px; margin: 0 8px;">
-                    <option value="0">Main functions</option><option value="1">Alternate functions</option>
-                </select>
             </div>
         
                     </div>

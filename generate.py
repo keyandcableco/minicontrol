@@ -227,7 +227,7 @@ PLACES = {
     ('chord_potentiometer', 'Potentiometer'): ('controls', 'Chord knob'),
     ('harp_potentiometer', 'Potentiometer'): ('controls', 'Harp knob'),
     ('modulation_potentiometer', 'Potentiometer'): ('controls', 'Mod knob'),
-    ('global_parameter', 'Knobs'): ('controls', 'Alternate layer'),
+    ('global_parameter', 'Knobs'): ('controls', 'Knob layer'),
     ('global_parameter', 'Hover'): ('controls', 'Hover'),
     ('global_parameter', 'Double tap'): ('controls', 'Double tap'),
 }
@@ -489,10 +489,8 @@ submenus = {
         ('The phone\'s sound', ['Phone']),
     ],
     'controls': [
-        ('Knobs', ['Chord knob', 'Harp knob', 'Mod knob']),
+        ('Knobs', ['Chord knob', 'Harp knob', 'Mod knob', 'Knob layer']),
         ('Hover', ['Hover']),
-        # what knob layer switches is both, the knobs' alternates and hover's
-        ('Alternate layer', ['Alternate layer']),
         ('Double tap and ♯', ['Double tap']),
     ],
     'chord_parameter': [
@@ -803,7 +801,7 @@ html_template = '''<!DOCTYPE html>
             <button type="button" class="always-on" data-layer="1" aria-pressed="false" title="what each control does with ♯ held down, and the chords a semitone up">holding ♯</button>
             <button type="button" class="always-on" data-layer="2" aria-pressed="false" title="hold ▲ and ▼ together, then press a chord button to change key: the drone follows">▲▼ key</button>
           </div>
-          <span id="map-layer-note" class="map-layer-note" hidden title="knob layer is on alternate functions: the knobs and hover play their ♯ settings without ♯ held">alternate layer on: the knobs and hover play their ♯ settings</span>
+          <span id="map-layer-note" class="map-layer-note" hidden title="knob layer is on alternate functions: the knobs and hover play their ♯ settings without ♯ held">knob layer: on the ♯ settings</span>
           <span id="map-key-note" class="map-layer-note" hidden></span>
         </div>
         <svg id="map-svg" viewBox="-30 -175 2390 1000" role="group" aria-label="the minichord's controls"></svg>
