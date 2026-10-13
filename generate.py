@@ -984,6 +984,7 @@ html_template = '''<!DOCTYPE html>
       To test and load user-submitted presets, visit the 
       <a href="https://minichord.com/minicontrol/minishop.html">minishop.</a><br>
       New to this page? <button type="button" id="tour-btn" class="always-on tour-link" data-tour-start>Take the tour.</button>
+      <span class="manual-link" hidden><br>The newer settings and gestures, drawn with the hands that play them, are in the <a href="manual/">advanced manual</a>.</span>
     </div>
     <!-- any setting by name, and every setting laid out at once, as the page used to be (controls.js) -->
     <div id="settings-finder" class="settings-finder">
@@ -996,7 +997,7 @@ html_template = '''<!DOCTYPE html>
     </div>
     <footer id="page-footer">
       <p>A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>. The bank tools, knob layer, double tap pairs and the other newer settings need the unofficial <a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a> for the minichord. It is experimental and may have bugs, and it isn't made or endorsed by Ben Poilve: back up your banks before installing it.</p>
-      <p>Made by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>. Source on <a href="https://github.com/keyandcableco/minicontrol">GitHub</a>.</p>
+      <p>Made by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>. Source on <a href="https://github.com/keyandcableco/minicontrol">GitHub</a>.<span class="manual-link" hidden> The <a href="manual/">advanced manual</a> explains the newer settings.</span></p>
     </footer>
   </div>
   <!-- say-thanks -->

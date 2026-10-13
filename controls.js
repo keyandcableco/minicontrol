@@ -960,3 +960,9 @@ function setupMinichordMap() {
   if (parameters && document.getElementById('param-14')?.options.length) setupMinichordMap();
   else setTimeout(waitForParameters, 100);
 })();
+
+// the advanced manual's links, shown once the manual is there (minicontrol.keyandcable.com/manual/);
+// until it is published, or offline, they stay hidden
+fetch('manual/index.html', { method: 'HEAD', cache: 'no-store' })
+  .then(r => { if (r.ok) document.querySelectorAll('.manual-link').forEach(e => { e.hidden = false; }); })
+  .catch(() => {});
