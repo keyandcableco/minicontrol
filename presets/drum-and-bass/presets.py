@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from kit import *  # noqa: E402,F401,F403
 
 TITLE = "Drum and Bass"
-FIRMWARE = 73
+FIRMWARE = 80           # the sampled upright bass (80) under Jazzstep
 
 
 def INTRO(backup):
@@ -23,8 +23,8 @@ def INTRO(backup):
         "held as long as you hold them, so the bassline is yours. Roll from one button onto the next for a "
         "sliding bass. Modifier + hold plays a fill.",
         "",
-        "They need firmware 73 (the sampled electric piano, vibraphone and bass) from the test-allFeatures "
-        "branch.",
+        "They need firmware 80 (the sampled electric piano, vibraphone and basses) from the "
+        "experimental-locks branch.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "
@@ -366,7 +366,7 @@ preset("Jazzstep", 50,
        "Jazzstep: an upright bass walking fast on the chords' bass note, a Rhodes comping above, a "
        "vibraphone on the harp, over a think-style break at 172. Double tap for ninths; a hand over the "
        "plate holds the Rhodes' sustain.",
-       ["electric piano samples", "a chord note's own instrument (pizzicato as an upright bass)",
+       ["electric piano samples", "a chord note's own instrument (the upright bass)",
         "rhythm style (walking bass) at drum and bass tempo", "vibraphone samples",
         "drums: think-style break", "alternate chord layout", "rhythm sections"],
        {"hover": "the sustain pedal: the Rhodes rings on with a hand over the plate",
@@ -378,8 +378,8 @@ preset("Jazzstep", 50,
         "rhythm mode": "the upright walking under the held Rhodes over a think-style break; modifier + hold "
                        "for a fill"},
        chord_sample(EPIANO), chord_env(1, 0, 3500, 0.4, 450),
-       {270: note_voice(PIZZ)},
-       chord_notes(0.85, 0.4, 0.4, 0.4),
+       {270: note_voice(UPRIGHT)},
+       chord_notes(0.81, 0.4, 0.4, 0.4),
        chord_filter(2600, 0.3, 0.7), chord_trem(), chord_vib(), chord_delay(),
        chord_out(250, 0.85, 1.0, 1.0, 0.33),
        chord_fx(0.3, ensemble=25),

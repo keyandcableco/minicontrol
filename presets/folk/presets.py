@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from kit import *  # noqa: E402,F401,F403
 
 TITLE = "Folk & Americana"
-FIRMWARE = 73           # the sampled upright bass (voice 7) on the bass notes
+FIRMWARE = 80           # the sampled upright bass (voice 14) on the bass notes, the sampled accordion
 
 
 def INTRO(backup):
@@ -28,7 +28,7 @@ def INTRO(backup):
         "the mandolin's tremolo picking is a hand held over the plate, and the washboard band is the harp's "
         "twelve strings as drum pads, with the looper to build a rhythm in layers.",
         "",
-        "They need firmware 73 (the sampled upright bass) from the test-allFeatures branch.",
+        "They need firmware 80 (the sampled upright bass and accordion) from the experimental-locks branch.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "
@@ -65,8 +65,8 @@ def steel_guitar_chords(amp=1.0):
 
 
 def upright_bass(level=0.7):
-    """the chord's bass note on the sampled upright bass (firmware 73)"""
-    return {270: note_voice(BASS), 131: level}
+    """the chord's bass note on the sampled upright bass (VSCO 2's double bass, plucked: firmware 80)"""
+    return {270: note_voice(UPRIGHT), 131: level}
 
 
 # 1 ------------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ preset("Travis Guitar", 25,
                 "to the bar line",
         "rhythm mode": "Travis picking, the thumb alternating bass and fifth under the chord; a fill moves "
                        "into a boom-chick strum and back; a pickup to start, an ending on the long press"},
-       steel_guitar_chords(0.33), {198: 1}, upright_bass(0.7),
+       steel_guitar_chords(0.41), {198: 1}, upright_bass(1.0), chord_notes(1.0, 0.4, 0.4, 0.4),
        harp_synth(SINE, 0.15, model=100), harp_string(2.8, 45),
        harp_env(1, 0, 3200, 0.6, 600),
        harp_filter(1100, 0.9, 0.8),
@@ -185,7 +185,7 @@ preset("Bluegrass Banjo", 50,
        chord_trem(), chord_vib(), chord_delay(),
        chord_out(300, 0.8, 1.0, 1.0, 0.45),
        chord_fx(0.2),
-       {120: 2, 198: 2, 111: 1, 112: 7}, upright_bass(0.7),
+       {120: 2, 198: 2, 111: 1, 112: 7}, upright_bass(0.89),
        harp_synth(SINE, 0.15, model=100), harp_string(1.1, 60),
        harp_env(1, 0, 1500, 0.3, 250),
        harp_filter(1800, 1.0, 1.0),
@@ -372,7 +372,7 @@ preset("Blues Harp", 215,
         "harp": "press harder to swell a note; hold it and tap the next for a slur",
         "rhythm mode": "a boogie on the guitar, the upright bass walking its figure, a shuffle on the kit; a "
                        "pickup to start, modifier + hold for a fill, an ending on the long press"},
-       steel_guitar_chords(0.35), {198: 1}, upright_bass(0.7),
+       steel_guitar_chords(0.39), {198: 1}, upright_bass(1.0), chord_notes(1.0, 0.45, 0.45, 0.45),
        chord_env(1, 0, 1200, 0.35, 250),
        harp_synth(BL_PULSE, 0.15),
        harp_env(18, 0, 600, 0.9, 120),
@@ -417,9 +417,9 @@ preset("Honky-Tonk", 10,
                        "bass into a walk and back; a pickup to start, an ending on the long press"},
        chord_sample(PIANO), chord_env(1, 0, 3500, 0.9, 300),
        chord_filter(3000, 0.3, 0.7), chord_trem(), chord_vib(), chord_delay(),
-       chord_out(300, 0.85, 1.0, 1.0, 0.3),
+       chord_out(300, 0.85, 1.0, 1.0, 0.49),
        chord_fx(0.2, ensemble=45),
-       {120: 2, 198: 2, 111: 1, 112: 7, 324: 1}, upright_bass(0.7),
+       {120: 2, 198: 2, 111: 1, 112: 7, 324: 1}, upright_bass(1.0), chord_notes(1.0, 0.3, 0.3, 0.3),
        alt_layout(maj=DOM7, mn=MIN7, seventh=MAJ6, maj7=MAJ7, min7=MIN6, majmin=SIX9, all3=HALFDIM),
        harp_sample(PIANO), harp_env(1, 0, 3500, 0.9, 500),
        harp_filter(2000, 1.5, 0.7), harp_trem(), harp_vib(), harp_delay(),
@@ -495,12 +495,12 @@ preset("Cajun Accordion", 330,
        "with a fiddle on the harp that swells as you press and slurs from note to note. A hand over the "
        "plate works the bellows. Rhythm mode is a two-step with the ti-fer's triangle; double tap for the "
        "big box, an octave down.",
-       ["accordion from the oscillators, beating reeds (the ensemble)", "string quartet samples as a fiddle",
+       ["accordion samples, beating reeds (the musette)", "string quartet samples as a fiddle",
         "touch pressure (the bow's weight)", "hammer-on (the fiddle's slurs)", "hover as the bellows",
         "rhythm style: two-step (boom-chick), strum after a fill", "drums: two-beat on world percussion",
         "rhythm sections"],
        {"hover": "the bellows: the accordion swells with a hand close over the plate",
-        "mod knob": "the musette: how much the reeds beat against each other",
+        "mod knob": "the musette: the reeds beating harder against each other",
         "modifier + mod knob": "the accordion's brightness",
         "modifier + chord knob": "the accordion's release",
         "modifier + harp knob": "fiddle reverb",
@@ -509,11 +509,11 @@ preset("Cajun Accordion", 330,
         "rhythm mode": "a two-step: the bass on one and three, the chord on two and four, a triangle and "
                        "hand drums keeping time; a fill moves into a strummed rhythm and back; a pickup to "
                        "start, an ending on the long press"},
-       chord_osc(0.10, BL_SAW, 1.0, 0.08, BL_SQUARE, 1.0, 0.05, BL_SAW, 2.0),
+       chord_sample(ACCORDION),                          # the accordion sampled, its musette reeds beating
        chord_env(12, 0, 300, 0.95, 120), {21: 1},
        chord_filter(2000, 0.3, 0.8), chord_trem(), chord_vib(), chord_delay(),
-       chord_out(350, 0.8, 1.0, 1.0, 1.19),
-       chord_fx(0.25, ensemble=50),
+       chord_out(350, 0.8, 1.0, 1.0, 0.31),
+       chord_fx(0.25, ensemble=20),
        {120: 2, 198: 2, 111: 1, 112: 7},
        harp_sample(QUARTET), harp_env(50, 0, 1500, 0.9, 350),
        harp_filter(1800, 1.0, 0.8), harp_trem(), harp_vib(), harp_delay(),

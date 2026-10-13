@@ -37,8 +37,10 @@ MAJ, MIN, DOM7, MAJ7, MIN7, DIM, AUG, MAJ6, MIN6, DIM7, HALFDIM, SUS4, SUS2, SUS
 HARMONIC7 = 22
 
 # sampled voices: harp voice (264) and chord voice (265); each chord note's own voice (270-273) is one more
-# (NOTE_OWN its own oscillators, note_voice(PIANO) and so on). 6-9 are firmware 73.
+# (NOTE_OWN its own oscillators, note_voice(PIANO) and so on). 6-9 are firmware 73; REED (a Wurlitzer
+# model) firmware 78; KALIMBA, MARIMBA and ORGAN (a tonewheel model) 79; UPRIGHT and ACCORDION 80.
 PIANO, PIZZ, CHOIR, QUARTET, SONG, VIBES, BASS, SITAR, EPIANO = range(1, 10)
+REED, KALIMBA, MARIMBA, ORGAN, UPRIGHT, ACCORDION = range(10, 16)
 NOTE_OWN = 1
 
 
@@ -88,9 +90,21 @@ def chord_osc(a1, w1, m1, a2=0.0, w2=SINE, m2=2.0, a3=0.0, w3=SINE, m3=0.5, nois
 
 
 def chord_sample(voice):
-    """a sampled chord voice (265: 1 piano, 2 pizzicato, 3 choir, 4 string quartet): the oscillators are
+    """a sampled chord voice (265: PIANO, PIZZ, CHOIR, QUARTET ... ACCORDION above): the oscillators are
     silenced by the firmware, levels left at defaults"""
     return {265: voice}
+
+
+def organ(drawbars, percussion=0):
+    """the tonewheel organ's registration (388: 0 888000000 jazz, 1 rock, 2 ballad, 3 flute, 4 688600000
+    gospel, 5 hollow, 6 reedy, 7 full) and percussion (389: 0 none, 1 4' fast, 2 2 2/3' fast, 3 slow),
+    shared by the harp and the chords when either plays ORGAN (firmware 79)"""
+    return {388: drawbars, 389: percussion}
+
+
+def reed_bark(chord=60, harp=60):
+    """how hard the reed piano is struck (387 the chords, 386 the harp at full touch), 60 the usual bark"""
+    return {387: chord, 386: harp}
 
 
 def chord_notes(first, second, third, fourth):

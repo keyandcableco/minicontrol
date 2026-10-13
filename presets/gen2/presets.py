@@ -4,13 +4,16 @@ minichord learnt after the first twelve were made, revised for firmware 68 and 6
 The sounds are the ones tuned by ear on the device in October 2026. The revision for firmware 68
 gives each the gestures it was missing (sections and fills in rhythm mode, hammer-ons, the tap and
 hold, fingered glide, purity), and Midnight Raga becomes what it was reaching for: a real tanpura
-and a real tabla under its droned chords. The parts are in ../kit.py.
+and a real tabla under its droned chords. For firmware 80 each takes the recorded instrument it
+was imitating, where there now is one: Midnight Raga's ribbon the sampled sitar, the upright bass under
+Jazz Piano and Folk Guitar & Bass. The parts are in ../kit.py.
 """
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from kit import *  # noqa: E402,F401,F403
 
 TITLE = "Gen 2 presets"
+FIRMWARE = 80           # the sampled sitar (73) and upright bass (80)
 
 
 def INTRO(backup):
@@ -25,11 +28,14 @@ def INTRO(backup):
         "moment's change, fingered glide (on the sampled choir and strings too), the drums and the drone in "
         "the reverb, and purity (just "
         "intonation that follows the chord) where an ensemble would tune by ear. Midnight Raga is rebuilt "
-        "around the new tanpura and the recorded tabla. In every preset, modifier + down puts the preset "
+        "around the new tanpura and the recorded tabla. For firmware 80, each preset takes the recorded "
+        "instrument it was imitating, where the minichord now has one: Midnight Raga's ribbon is the "
+        "sampled sitar, and Jazz Piano and Folk Guitar & Bass have the sampled upright bass on the bass "
+        "note. In every preset, modifier + down puts the preset "
         "back as it was saved, and modifier + up is the panic.",
         "",
-        "They need firmware 69 from the test-allFeatures branch; on older firmware the settings that came "
-        "after it reset to off.",
+        "They need firmware 80 (the sampled sitar and upright bass) from the experimental-locks branch; on "
+        "older firmware the settings that came after it reset to off.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, "
@@ -164,9 +170,10 @@ preset("Concert Harp", 55,
 preset("Jazz Piano", 0,
        "Sampled piano on both sides. The chords voice-lead like a comping pianist, the harp plays the "
        "scale that fits each chord, with dynamics, and the double tap turns the buttons into ninths and "
-       "6/9s. A hand held over the plate is the sustain pedal. In rhythm mode the trio swings, and a fill "
-       "takes it into a bossa nova for the bridge and back.",
-       ["piano samples", "voice leading", "scale chosen per chord", "touch velocity",
+       "6/9s. A hand held over the plate is the sustain pedal. An upright bass plays each chord's bass "
+       "note; in rhythm mode it walks, the trio swings, and a fill takes it into a bossa nova for the "
+       "bridge and back.",
+       ["piano samples", "the upright bass on the bass note (walking in rhythm mode)", "voice leading", "scale chosen per chord", "touch velocity",
         "alternate chord layout", "hover as a sustain pedal", "rhythm style B (swing to bossa)",
         "press again in hold (inversions)", "rhythm sections"],
        {"hover": "the sustain pedal: the chords ring on with a hand held over the plate",
@@ -180,8 +187,10 @@ preset("Jazz Piano", 0,
                        "fill into a bossa nova, and the next fill back to swing; a pickup bar to start, an "
                        "ending on the long press"},
        chord_sample(1), chord_env(1, 0, 4000, 1.0, 450),
+       {270: note_voice(UPRIGHT)},                          # the bass note: the upright, walking in rhythm mode
+       chord_notes(1.0, 0.45, 0.45, 0.45),
        chord_filter(2600, 0.3, 0.7), chord_trem(), chord_vib(), chord_delay(),
-       chord_out(300, 0.8, 1.0, 1.0, 0.28),
+       chord_out(300, 0.8, 1.0, 1.0, 0.31),
        chord_fx(0.3),
        {120: 2, 198: 2, 111: 1, 112: 7, 324: 1},
        harp_sample(1), harp_env(1, 0, 4000, 1.0, 650),
@@ -297,13 +306,13 @@ preset("Chamber Strings", 340,
 
 # 6 ------------------------------------------------------------------------------------------------
 preset("Folk Guitar & Bass", 25,
-       "The chord buttons play a plucked double bass (the pizzicato sample on the bass note alone), "
+       "The chord buttons play a plucked double bass (the sampled upright bass on the bass note alone), "
        "the chord's root; the harp is a nylon-string guitar an octave lower than usual. Strum fast for a "
        "loud strum, lay the palm across the plate to mute. Hold a string and tap the one beside it for a "
        "hammer-on, lift the tapping finger for a pull-off. The double tap works the looper, which counts "
        "you in with a bar of clicks.",
        ["plucked string model as a guitar", "hammer-on and pull-off", "strum velocity", "palm mute",
-        "touch velocity", "a chord note's own instrument (pizzicato bass)",
+        "touch velocity", "a chord note's own instrument (the upright bass)",
         "the looper on the double tap, with a count-in", "rhythm sections (the palm stops the band)"],
        {"hover": "unassigned",
         "mod knob": "the guitar strings: steel and bright to nylon and warm",
@@ -317,8 +326,8 @@ preset("Folk Guitar & Bass", 25,
         "palm": "lay four or more fingers across the plate to mute, like a guitarist's palm",
         "hammer-on": "hold a string, tap the next: it moves to that note without a new pluck; lift to pull off"},
        chord_osc(0.22, TRI, 1.0, 0.13, SINE, 1.0, 0.0, SINE, 0.5),
-       {270: 3},                                            # the bass note: pizzicato
-       {131: 0.75, 132: 0.0, 133: 0.0, 134: 0.0, 120: 0, 198: 1, 111: 0},
+       {270: note_voice(UPRIGHT)},                          # the bass note: the upright bass
+       {131: 0.69, 132: 0.0, 133: 0.0, 134: 0.0, 120: 0, 198: 1, 111: 0},
        chord_env(1, 0, 1500, 1.0, 220),                     # the sample rings as it was plucked
        chord_filter(1200, 0.5, 0.8),
        chord_trem(), chord_vib(), chord_delay(),
@@ -555,7 +564,7 @@ preset("Midnight Raga", 240,
        "under it: Sa, Ma, komal ga, dha and ni. Double tap for Malkauns.",
        ["the drone (a tanpura on Sa and Pa)", "recorded tabla (teental), tuned to Sa",
         "Pythagorean tuning (your own temperament, pure fifths Db to F#)", "custom scale (raga Darbari Kanada) on the key", "harp ribbon",
-        "plucked string model", "a drone from chord voices", "a tihai on modifier + hold",
+        "sitar samples", "a drone from chord voices", "a tihai on modifier + hold",
         "the double tap changes raga (Malkauns, the tanpura to Ma)"],
        {"hover": "the droned chords brighten with a hand close over the plate",
         "mod knob": "the jawari: the droned chords from smooth to a bright, buzzing shimmer",
@@ -578,16 +587,16 @@ preset("Midnight Raga", 240,
        chord_fx(0.5, ensemble=45),
        {118: 40, 119: 30, 239: 55, 240: 70},
        tuning(OWN), pythagorean("C#"),        # pure fifths from Db to F#: see kit.pythagorean
-       drone(1, level=53, pace=12, register=1, reverb=35),
+       drone(1, level=41, pace=12, register=1, reverb=35),
        style(11, 84, bass=HOLD, chords=HOLD),       # the chords keep their drone; the tabla plays
        sections(ending=1, fill=1),
        drums(43, kit=8, level=42, humanize=20, reverb=25, laya=1),   # teental on the recorded tabla, a matra a beat
-       harp_synth(SINE, 0.15, model=100), harp_string(3.2, 15),
+       harp_sample(SITAR),                           # the sampled sitar, its strings and jawari recorded
        harp_env(1, 0, 3000, 0.6, 600),
        harp_filter(1200, 1.2, 0.9),
        harp_trem(), harp_vib(), harp_delay(),
-       harp_transient(0.12, SINE, 1, 2, 10, 0),
-       harp_out(500, 0.7, 1.0, 1.0, 1.7),
+       harp_transient(0.0),
+       harp_out(500, 0.7, 1.0, 1.0, 0.85),
        harp_fx(0.3),                                 # one sitar, in the middle: a spread drifts on the ribbon
        custom_scale(DARBARI),
        ribbon(35, 70, span=17),

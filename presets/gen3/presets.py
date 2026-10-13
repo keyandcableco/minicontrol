@@ -4,11 +4,16 @@ the phone follower, sections and fills, the drums and the recorded tabla, maqams
 purity, your own temperament and the drone).
 
 Each preset is an instrument first: one sound worth playing on its own, the gestures that sound
-calls for, and a rhythm mode that a player of that music would recognise. The parts are in ../kit.py.
+calls for, and a rhythm mode that a player of that music would recognise. For firmware 80 each takes
+the recorded or modelled instrument it was imitating, where there now is one: Sunday Organ the tonewheel
+organ, Lo-fi Study the sampled electric piano, Highland Pipes' accordion the sampled accordion. The parts
+are in ../kit.py.
 """
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from kit import *  # noqa: E402,F401,F403
+
+FIRMWARE = 80           # the sampled electric piano (73), the tonewheel organ (79), the accordion (80)
 
 TITLE = "Gen 3 presets"
 
@@ -24,8 +29,12 @@ def INTRO(backup):
         "whatever plays on your phone, a finger-drum lab, a steel pan, desert blues, an oud in maqam Rast, "
         "a santoor in raga Yaman, a koto with a sho, a gamelan, and Highland pipes.",
         "",
-        "They need firmware 69 from the test-allFeatures branch; on older firmware the settings that came "
-        "after it reset to off.",
+        "For firmware 80, each takes the instrument it was imitating where the minichord now has it: Sunday "
+        "Organ plays the tonewheel organ, Lo-fi Study the sampled electric piano, and Highland Pipes' "
+        "accordion is the sampled accordion.",
+        "",
+        "They need firmware 80 (the sampled electric piano and accordion, the tonewheel organ) from the "
+        "experimental-locks branch; on older firmware the settings that came after it reset to off.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "
@@ -112,7 +121,7 @@ preset("Sunday Organ", 320,
        "the plate as the swell pedal. Tap the modifier and hold it down and the speaker spins up to "
        "full tremolo for as long as you hold it, spinning back down as you let go. In hold mode, press "
        "the ringing chord again and the voicing climbs, a gospel organist's build.",
-       ["organ drawbars from the three oscillators", "rotating speaker on the double tap held (spinning up and down)",
+       ["the tonewheel organ (gospel drawbars, 688600000)", "rotating speaker on the double tap held (spinning up and down)",
         "hover as the swell pedal", "press again in hold (the climb)", "piano samples", "touch velocity",
         "pentatonic chosen per chord", "rhythm sections (12/8 gospel)"],
        {"hover": "the swell pedal: soft with no hand, full with a hand close over the plate",
@@ -126,12 +135,12 @@ preset("Sunday Organ", 320,
                 "the octave, then starts again",
         "rhythm mode": "a slow 12/8 gospel feel: the bass rocking in triplets under the held organ; a pickup "
                        "bar to start, modifier + hold for a fill, and an ending on the long press"},
-       chord_osc(0.09, SINE, 1.0, 0.06, SINE, 2.0, 0.07, SINE, 0.5, noise=0.003),   # 8', 4' and 16'
+       chord_sample(ORGAN), organ(4),                    # the tonewheel organ, drawbars 688600000
        chord_env(3, 0, 50, 1.0, 70, retrig=1),
        chord_filter(4500, 0.0, 0.7),
-       chord_trem(0.8, 0.12), chord_vib(0.8, 0.02, 0.3), speed_ramp(20),
+       chord_trem(0.8, 0.12), chord_vib(), speed_ramp(20),   # the Leslie is the tremolo: vibrato doesn't reach the organ
        chord_delay(),
-       chord_out(300, 0.9, 1.0, 1.0, 0.8),
+       chord_out(300, 0.9, 1.0, 1.0, 0.27),
        chord_fx(0.3, crunch=0.15, crunch_type=0, ensemble=30),
        {120: 2, 198: 2, 111: 1, 112: 7, 21: 0, 324: 1},
        harp_sample(1), harp_env(1, 0, 4000, 1.0, 600),
@@ -146,7 +155,7 @@ preset("Sunday Organ", 320,
        sections(intro=1, ending=1, fill=1),
        drums(15, kit=4, level=55, humanize=25, reverb=25),     # six eight on a live kit: the 12/8 of a slow gospel song
        knobs(chord_alt=(184, 100), harp_alt=(85, 100), mod=(185, 100), mod_alt=(259, 100)),
-       double_tap((157, 6.8), (161, 6.8), (159, 0.22), hold=1),
+       double_tap((157, 6.8), (159, 0.22), hold=1),
        play=["Hold a chord, then tap the modifier and hold it down: the speaker spins up. Let go and it "
              "slows.",
              "Turn hold on, press a chord, then press it again three times: the voicing climbs.",
@@ -159,13 +168,13 @@ preset("Lo-fi Study", 265,
        "plays itself, so both hands can noodle on the harp. A hand over the plate muffles everything, as "
        "if through an old radio.",
        ["chord memory on the double tap", "alternate chord layout (ninths) as the main one",
-        "electric piano from the oscillators (tremolo, tape wow)", "hover as a muffle",
+        "electric piano samples (tremolo, the ensemble as tape wow)", "hover as a muffle",
         "tape saturation on the alternate hover", "press again in hold (inversions)",
         "drums: lo-fi on the boom bap kit, loose", "rhythm sections"],
        {"hover": "the radio: the piano muffles with a hand close over the plate",
         "modifier + hover": "tape saturation",
         "mod knob": "the piano's tremolo, from still to a suitcase wobble",
-        "modifier + mod knob": "tape wow: how much the pitch wanders",
+        "modifier + mod knob": "tape wow: the ensemble's slow, wandering chorus",
         "modifier + chord knob": "reverb",
         "modifier + harp knob": "the pluck's echo",
         "double tap": "the chord memory: record a progression in time (rhythm mode starts), double tap to play "
@@ -173,13 +182,13 @@ preset("Lo-fi Study", 265,
         "buttons": "major 9, minor 9, dominant 7, major 7 (major + 7th), minor 7 (minor + 7th), 6/9 "
                    "(major + minor), half-diminished (all three); the sharp button rests in this layout",
         "rhythm mode": "a lazy bass under the held piano on a loose lo-fi beat; modifier + hold for a fill"},
-       chord_osc(0.13, SINE, 1.0, 0.035, SINE, 2.0, 0.02, TRI, 1.0),
+       chord_sample(EPIANO),
        chord_env(2, 0, 2600, 0.35, 450),
        chord_filter(1800, 0.3, 0.8, fa=1, fd=400, fs=0.4, fr=300, sens=1.0),
-       chord_trem(4.2, 0.2), chord_vib(0.55, 0.01, 0.4),
+       chord_trem(4.2, 0.2), chord_vib(),           # a sampled voice takes no vibrato: the wow is the ensemble
        chord_delay(),
-       chord_out(250, 0.9, 1.0, 0.85, 0.68),
-       chord_fx(0.35, crunch=0.08, crunch_type=1),
+       chord_out(250, 0.9, 1.0, 0.85, 0.47),
+       chord_fx(0.35, crunch=0.08, crunch_type=1, ensemble=30),
        {39: 1, 120: 2, 198: 2, 111: 1, 112: 7, 21: 0, 324: 1},
        alt_layout(maj=MAJ9, mn=MIN9, seventh=DOM7, maj7=MAJ7, min7=MIN7, majmin=SIX9, all3=HALFDIM),
        harp_synth(TRI, 0.15, model=60), harp_string(1.6, 70),
@@ -196,7 +205,7 @@ preset("Lo-fi Study", 265,
        style(11, 80, chords=HOLD, articulation=80, accents=60, swing=1.12),
        sections(intro=1, ending=1, fill=1),
        drums(24, kit=6, level=55, humanize=45, reverb=10),
-       knobs(chord_alt=(184, 100), harp_alt=(84, 100), mod=(159, 100), mod_alt=(163, 60)),
+       knobs(chord_alt=(184, 100), harp_alt=(84, 100), mod=(159, 100), mod_alt=(259, 80)),
        double_tap((CHORD_MEMORY, 5)),
        play=["Double tap: rhythm mode starts and the memory records from the next bar. Play four chords, a "
              "bar each, then double tap: it plays them back.",
@@ -633,11 +642,11 @@ preset("Highland Pipes", 120,
        "like the real one: shape the tune with grace notes instead, holding a note and tapping the one "
        "beside it. Double tap to stop the drones and strike them in again. Rhythm mode is a pipe band's "
        "march, counted in by the drummer.",
-       ["the drone (a shruti box as pipe drones)", "hammer-on grace notes", "purity",
+       ["the drone (a shruti box as pipe drones)", "accordion samples", "hammer-on grace notes", "purity",
         "custom scale (mixolydian) on the key", "drums: march", "count-in", "rhythm sections"],
        {"hover": "the drones swell with a hand close over the plate",
         "mod knob": "the chanter, from a soft practice chanter to a bright, piercing one",
-        "modifier + mod knob": "the accordion's musette",
+        "modifier + mod knob": "the accordion's musette: its reeds beating wider",
         "modifier + chord knob": "the accordion's release",
         "modifier + harp knob": "chanter reverb",
         "double tap": "the drones stop; double tap again to strike them in",
@@ -646,12 +655,12 @@ preset("Highland Pipes", 120,
                 "strum across a held string moves it rather than plucking the next: strum quickly",
         "rhythm mode": "a bar of sticks, then a march on snare and bass drum, the accordion's oom-pah under "
                        "it; modifier + hold for a roll; an ending on the long press"},
-       chord_osc(0.09, BL_SAW, 1.0, 0.07, BL_PULSE, 1.0, 0.05, BL_SAW, 2.0),
+       chord_sample(ACCORDION),                          # the accordion sampled, its musette reeds beating
        chord_env(30, 0, 300, 0.95, 150),
        chord_filter(2200, 0.3, 0.9),
        chord_trem(), chord_vib(), chord_delay(),
-       chord_out(300, 0.8, 1.0, 1.0, 0.9),
-       chord_fx(0.25, ensemble=55),
+       chord_out(300, 0.8, 1.0, 1.0, 0.23),
+       chord_fx(0.25, ensemble=20),
        {120: 2, 198: 2, 111: 1, 112: 7},
        tuning(EQUAL, purity=100),
        drone(5, level=50, register=0, reverb=30),

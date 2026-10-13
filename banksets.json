@@ -169,7 +169,7 @@
    "title": "Drum and Bass",
    "author": "Key & Cable",
    "description": "Twelve presets through drum and bass, one for each bank, all at 168-174 bpm: liquid, amen jungle, Reese neuro, atmospheric, jump-up, halftime, vocal chops, a minimal roller, jazzstep, rave stabs, ragga jungle and a finger-drum jungle lab.",
-   "firmware": 73,
+   "firmware": 80,
    "file": "presets/drum-and-bass/drum-and-bass.backup.json",
    "presets": [
     {
@@ -251,7 +251,7 @@
    "title": "Electric Piano",
    "author": "Key & Cable",
    "description": "Twelve electric pianos and their cousins, one for each bank, each set in the music it belongs to: a stage Rhodes, a suitcase with its tremolo, a Wurlitzer, an eighties FM tine, neo-soul keys with a bass, a jazz trio, a vibraphone quartet, a Rhodes through a wah, a Rhodes in the rain, fusion with a synth lead, Lo-fi Study from Gen 3, and a late-night duo of Rhodes and vibes.",
-   "firmware": 73,
+   "firmware": 80,
    "file": "presets/electric-piano/electric-piano.backup.json",
    "presets": [
     {
@@ -270,7 +270,7 @@
      "bank": 2,
      "name": "Wurli",
      "hue": 60,
-     "blurb": "A Wurlitzer electric piano: reedy, with a bark on every strike that growls when you hit it hard, its built-in tremolo shimmering. The harp is the same instrument. Rhythm mode rolls a boogie over a shuffle."
+     "blurb": "A Wurlitzer electric piano: reedy, with a bark on every strike that growls when you hit it hard, its built-in tremolo shimmering. The harp is the same instrument, round when plucked softly and barking when plucked hard. Rhythm mode rolls a boogie over a shuffle."
     },
     {
      "bank": 3,
@@ -288,7 +288,7 @@
      "bank": 5,
      "name": "Rhodes Trio",
      "hue": 150,
-     "blurb": "A jazz trio with a Rhodes in the piano chair: an upright bass walking on the chords' bass note (the pizzicato sample), the Rhodes comping above it, brushes on a swing ride, and the harp a Rhodes for the right hand's lines. A fill takes the trio into a bossa nova and back."
+     "blurb": "A jazz trio with a Rhodes in the piano chair: an upright bass walking on the chords' bass note (the sampled upright), the Rhodes comping above it, brushes on a swing ride, and the harp a Rhodes for the right hand's lines. A fill takes the trio into a bossa nova and back."
     },
     {
      "bank": 6,
@@ -333,7 +333,7 @@
    "title": "Folk & Americana",
    "author": "Key & Cable",
    "description": "Twelve instruments from the front porch, one for each bank, each played the way its players play it: an autoharp (the Omnichord's own ancestor), a Travis-picked guitar, a bluegrass banjo, a mandolin, a mountain dulcimer, a pedal steel, a blues harp, a honky-tonk piano, a washboard band, a Cajun accordion, a Celtic harp and a campfire singalong.",
-   "firmware": 73,
+   "firmware": 80,
    "file": "presets/folk/folk.backup.json",
    "presets": [
     {
@@ -415,7 +415,7 @@
    "title": "Gen 2 presets",
    "author": "Key & Cable",
    "description": "Twelve presets, one for each bank, each built around something the minichord learnt after its first twelve presets were made.",
-   "firmware": 69,
+   "firmware": 80,
    "file": "presets/gen2/gen2.backup.json",
    "presets": [
     {
@@ -434,7 +434,7 @@
      "bank": 2,
      "name": "Jazz Piano",
      "hue": 0,
-     "blurb": "Sampled piano on both sides. The chords voice-lead like a comping pianist, the harp plays the scale that fits each chord, with dynamics, and the double tap turns the buttons into ninths and 6/9s. A hand held over the plate is the sustain pedal. In rhythm mode the trio swings, and a fill takes it in…"
+     "blurb": "Sampled piano on both sides. The chords voice-lead like a comping pianist, the harp plays the scale that fits each chord, with dynamics, and the double tap turns the buttons into ninths and 6/9s. A hand held over the plate is the sustain pedal. An upright bass plays each chord's bass note; in rhyth…"
     },
     {
      "bank": 3,
@@ -452,7 +452,7 @@
      "bank": 5,
      "name": "Folk Guitar & Bass",
      "hue": 25,
-     "blurb": "The chord buttons play a plucked double bass (the pizzicato sample on the bass note alone), the chord's root; the harp is a nylon-string guitar an octave lower than usual. Strum fast for a loud strum, lay the palm across the plate to mute. Hold a string and tap the one beside it for a hammer-on, li…"
+     "blurb": "The chord buttons play a plucked double bass (the sampled upright bass on the bass note alone), the chord's root; the harp is a nylon-string guitar an octave lower than usual. Strum fast for a loud strum, lay the palm across the plate to mute. Hold a string and tap the one beside it for a hammer-on…"
     },
     {
      "bank": 6,
@@ -497,7 +497,7 @@
    "title": "Gen 3 presets",
    "author": "Key & Cable",
    "description": "Twelve more presets, one for each bank, each an instrument and a way of playing it, built on what the minichord learnt in firmware 46-69.",
-   "firmware": 69,
+   "firmware": 80,
    "file": "presets/gen3/gen3.backup.json",
    "presets": [
     {
@@ -661,7 +661,7 @@
    "title": "World",
    "author": "Key & Cable",
    "description": "Twelve instruments from around the world, one for each bank, each in the tuning and the groove it is played in, travelling west to east as the banks go up: a forró accordion, a steel pan, Highland pipes, a klezmer clarinet, a kora, desert blues, an oud in maqam Rast, then three ragas through the day (Bhairav at dawn, Yaman at dusk, Darbari at midnight), a gamelan and a koto.",
-   "firmware": 73,
+   "firmware": 80,
    "file": "presets/world/world.backup.json",
    "presets": [
     {
@@ -722,7 +722,7 @@
      "bank": 9,
      "name": "Midnight Raga",
      "hue": 240,
-     "blurb": "From gen2, as it is there (its ribbon now the sampled sitar)."
+     "blurb": "From gen2, as it is there."
     },
     {
      "bank": 10,
