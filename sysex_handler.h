@@ -1184,6 +1184,9 @@ void apply_audio_parameter(int adress, int value) {
         case 389:
             ToneOrgan::percussion(value);
             break;
+        case 390:
+            brothers_mode=value; if (!brothers_mode) brothers_note=-1; refresh_chord_voicing();
+            break;
         default:
             break;
     }
