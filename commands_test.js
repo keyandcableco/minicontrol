@@ -162,6 +162,11 @@ const SET_CASES = [
   ["put Theremin on bank 4", [[3, "synth", 3]]],
   ["put Music Box on bank 9", [[8, "ambient", 8]]],
   ["Blues Harp from folk on bank 7", [[6, "folk", 6]]],
+  // the acoustic piano set (2026-10-13)
+  ["load the piano set into all 12 banks", [...Array(12).keys()].map(b => [b, "piano", b])],
+  ["acoustic piano into banks 1 to 4", [0, 1, 2, 3].map(b => [b, "piano", b])],
+  ["put Barry Harris on bank 3", [[2, "piano", 6]]],
+  ["Boogie Woogie from acoustic piano on bank 12", [[11, "piano", 5]]],
 ];
 for (const [text, want, alsoChanged] of SET_CASES) {
   const work = {};
@@ -185,13 +190,14 @@ for (const [text, want, alsoChanged] of SET_CASES) {
   }
 }
 // words that name a set but aren't one: a description still
-for (const text of ["use the world percussion kit", "make it atmospheric", "electric piano chords"]) {
+for (const text of ["use the world percussion kit", "make it atmospheric", "electric piano chords",
+                    "make the harp a piano", "piano chords with a long release"]) {
   const work = {};
   const ctx = { currentBank: 2, presetNames: [], presets, bankNames: [], why: () => {},
                 values(k) { if (!work[k]) work[k] = describe.defaultValues(); return work[k]; } };
   commands.plan(text, ctx);
   if (Object.keys(work).some(k => k !== "live")) { failed++; console.log(`FAIL "${text}" filled a bank`); }
 }
-const total = CASES.length + PRESET_CASES.length + NOTE_CASES.length + SET_CASES.length + 3;
+const total = CASES.length + PRESET_CASES.length + NOTE_CASES.length + SET_CASES.length + 5;
 console.log(`${total - failed} of ${total} instructions as expected`);
 process.exit(failed ? 1 : 0);

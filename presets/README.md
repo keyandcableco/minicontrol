@@ -23,6 +23,10 @@ Sets of one kind of sound, some presets borrowed from the generations as they ar
 - [mallets](mallets/README.md): Mallets & Tines, thumb to mallet: a Shona mbira's interlocking parts, Konono's
   likembes, the marimbula, Earth, Wind & Fire's kalimba, a balafon in seven equal steps, a Zimbabwean marimba
   band, the marimba doble of Guatemala, Reich's pulse, exotica, tropical house (firmware 80)
+- [piano](piano/README.md): Acoustic Piano, a concert grand to a piano on tape: a sonata, a nocturne,
+  Satie, ragtime turning into stride, boogie-woogie, Barry Harris's sixth-diminished blocks (brothers and
+  brothers again), a jazz waltz, gospel, Glass's arpeggios, a felt piano; each bank's hover a different
+  third hand (firmware 88)
 - [ambient](ambient/README.md): slow instruments for a quiet room: glass, bowls, a tanpura with the jawari
   on the mod knob, generative rain, Orwell's scale, a music box that winds down (firmware 74)
 

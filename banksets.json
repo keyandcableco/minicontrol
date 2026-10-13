@@ -657,6 +657,88 @@
    ]
   },
   {
+   "id": "piano",
+   "title": "Acoustic Piano",
+   "author": "Key & Cable",
+   "description": "Twelve pianos, one for each bank, each the piano in a music it belongs to, roughly in the order the music came: a concert grand, a classical sonata, a nocturne, Satie's slow waltz, ragtime turning into stride, boogie-woogie, Barry Harris's sixth-diminished blocks, a jazz waltz, a gospel ballad, Glass's arpeggios, a felt piano and a piano on tape.",
+   "firmware": 88,
+   "file": "presets/piano/piano.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Concert Grand",
+     "hue": 0,
+     "blurb": "A concert grand, both hands: the chord buttons the left, voice-led, the harp the right, louder as you strike harder. A hand over the plate is the sustain pedal; with the modifier held it is the soft pedal, the right hand going hushed. The mod knob opens the lid. Rhythm mode is a ballad's left hand."
+    },
+    {
+     "bank": 1,
+     "name": "Sonata Facile",
+     "hue": 30,
+     "blurb": "A classical sonata: rhythm mode plays an Alberti bass, low, high, middle, high, while the harp sings the melody. A hand over the plate takes the left hand from crisp and detached to smooth legato; the mod knob runs the tempo from andante to allegro. Double tap and the sonata becomes a minuet in thr…"
+    },
+    {
+     "bank": 2,
+     "name": "Nocturne",
+     "hue": 60,
+     "blurb": "A nocturne: the left hand rolls a wide arpeggio in six while the harp sings above it. Lean a hand in over the plate and the music holds back, rubato, and lets go again as you lift away. Double tap for ornaments: a finger landing beside a ringing note takes it over at once, for turns and trills."
+    },
+    {
+     "bank": 3,
+     "name": "Gymnopedie",
+     "hue": 90,
+     "blurb": "Satie's slow waltz: the bass on one, the chord on two and three, every major chord a major seventh. Rock between G and D and it is already the first Gymnopedie. A hand over the plate grows the room around the piano, from a parlour to a stone church. Double tap for plain triads."
+    },
+    {
+     "bank": 4,
+     "name": "Maple Leaf",
+     "hue": 120,
+     "blurb": "Ragtime to stride: the left hand's boom-chick, bass and chord, straight as Joplin wrote it. Bring a hand over the plate and it swings, a Harlem stride. The harp crushes grace notes into the melody, a finger beside a ringing note taking it over at once. Double tap for stride's sixths and diminished…"
+    },
+    {
+     "bank": 5,
+     "name": "Boogie Woogie",
+     "hue": 150,
+     "blurb": "A rent party's boogie-woogie, the piano alone: the left hand rolls the eight-to-the-bar bass, the harp rides on top with crushed grace notes. Hold a hand over the plate and the left hand drops an octave into the rumble. Double tap and the bass walks instead."
+    },
+    {
+     "bank": 6,
+     "name": "Barry Harris",
+     "hue": 270,
+     "blurb": "Barry Harris's sixth-diminished blocks. Hold a chord and walk the harp: every chord tone gives the sixth chord with that note on top, every note between gives its diminished brother, so a scale is a line of moving blocks. Strike the same string again and the block opens: drop 2, drop 3, drop 2 and…"
+    },
+    {
+     "bank": 7,
+     "name": "Jazz Waltz",
+     "hue": 240,
+     "blurb": "A piano trio in three: an upright bass under the chords, maj7, m7 and 7 on the button pairs, brushes in a jazz waltz. Raise a hand over the plate and the voicing opens, close to drop 2 to drop 3 to drop 2 and 4, the chords spreading as the solo builds. Double tap and the trio goes into four."
+    },
+    {
+     "bank": 8,
+     "name": "Sunday Gospel",
+     "hue": 300,
+     "blurb": "A gospel ballad in a slow twelve-eight. Start alone and bring a hand over the plate: the band comes in behind you, the closer the louder. With hold on, press the ringing chord again and it climbs an inversion, the church pianist's walk up. Double tap for the gospel colours: add9, sus, 6/9."
+    },
+    {
+     "bank": 9,
+     "name": "Glass Arpeggios",
+     "hue": 180,
+     "blurb": "Arpeggios turning over and over, as in Philip Glass: the chord climbs and falls in eighths. A hand over the plate takes beats away from the bar, four to three to two, and with the modifier held adds them, five, six, seven, the pattern wrapping to each new length. Move the hand and the music breathe…"
+    },
+    {
+     "bank": 10,
+     "name": "Felt Piano",
+     "hue": 210,
+     "blurb": "A felt piano, close-miked in a small room: a strip of felt between the hammers and the strings makes it soft and woody. A hand over the plate lifts the felt off the chords, with the modifier off the melody. Double tap to loop what you play and play over it; the mod knob is a quiet echo."
+    },
+    {
+     "bank": 11,
+     "name": "Tape Piano",
+     "hue": 330,
+     "blurb": "A piano recorded on a worn cassette, over a lazy beat: soft, a little saturated, wobbling. Bring a hand over the plate and the tape warbles; with the modifier held the piano goes muffled, as if from the next room. The mod knob ages the tape. Double tap for a harder boom bap."
+    }
+   ]
+  },
+  {
    "id": "synth",
    "title": "Synth",
    "author": "Key & Cable",

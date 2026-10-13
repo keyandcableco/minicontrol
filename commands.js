@@ -299,6 +299,7 @@ function setNames(set) {
     if (w === "folk and americana") for (const v of ["americana", "folk americana", "folk and american", "folk set"]) out.add(v);
     if (w === "synth") for (const v of ["synths", "synthesizer", "synthesizers", "synthesiser", "synthesisers", "synth set"]) out.add(v);
     if (w === "ambient") for (const v of ["ambience", "ambient set", "ambient sounds"]) out.add(v);
+    if (w === "acoustic piano") for (const v of ["acoustic pianos", "pianos", "piano set", "grand piano"]) out.add(v);
   }
   return [...out].filter(w => w.length > 2);
 }
