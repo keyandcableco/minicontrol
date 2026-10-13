@@ -77,7 +77,7 @@ const SUGGESTED = {
 const GROUP_SHORT = { 'low pass filter': 'filter' };
 const GROUP_SILENT = new Set(['general', 'oscillator', 'notes', 'effects', 'key and tuning', 'buttons', 'voicing',
   'knobs', 'midi', 'style', 'tempo', 'sections', 'pattern', 'chord changes', 'slash chords and cantus',
-  'alternate layout', 'string model', 'transient', 'plate', 'pluck', 'ribbon', 'drone', 'phone', 'vocoder', 'drums', 'looper']);
+  'alternate layout', 'string model', 'transient', 'plate', 'pluck', 'ribbon', 'drone', 'phone', 'vocoder', 'organ', 'drums', 'looper']);
 
 let mapLayer = 0;          // what the drawing shows: 0 turning, 1 holding ♯, 2 ▲ ▼ held, the key each button picks
 let sheetControl = null;   // the control the sheet is open on
