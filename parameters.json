@@ -8726,7 +8726,7 @@
       "min_value": 0,
       "max_value": 14,
       "default_value": 0,
-      "tooltip": "a second style for the same song, the way an arranger keyboard has a main A and B: each fill plays into the next bar line and then switches from rhythm style to this one, or back. A verse in Travis picking and a chorus strummed, a walking bass and then a boogie. It starts from its own first bar where it comes in. It must count the bar the way rhythm style does (four with four, three with three); one in another metre is never switched to, and the fills only fill. 0: no B, fills only fill",
+      "tooltip": "a second style for the same song, the way an arranger keyboard has a main A and B: each fill plays into the next bar line and then switches from rhythm style to this one, or back. A verse in Travis picking and a chorus strummed, a walking bass and then a boogie. It starts from its own first bar where it comes in. It must count the bar the way rhythm style does (four with four, three with three); one in another metre is never switched to, and the fills only fill, unless time signature (393) sets the bar for both. 0: no B, fills only fill",
       "method": "acc_style_b=value; acc_settings_changed();",
       "iterate": 1,
       "curve": "linear",
@@ -8889,7 +8889,7 @@
       "min_value": 0,
       "max_value": 47,
       "default_value": 0,
-      "tooltip": "the drums' groove instead of the rhythm style's own part: 1 rock, 2 pop eighths, 3 pop sixteenths, 4 ballad, 5 funk, 6 disco, 7 motown, 8 shuffle, 9 jazz swing, 10 waltz, 11 march, 12 second line, 13 country two-beat, 14 folk, 15 six eight, 16 habanera, 17 house, 18 trap, 19 amen-style break, 20 funky drummer-style, 21 think-style break, 22 boom bap, 23 drum and bass, 24 lo-fi, 25 son clave, 26 rumba clave, 27 bossa nova, 28 samba, 29 cumbia, 30 baiao, 31 salsa, 32 one drop, 33 dembow, 34 soca, 35 afrobeat, 36 12/8 bell, 37 highlife, 38 maqsum, 39 baladi, 40 saidi, 41 kehrwa, 42 dadra, 43 teental, 44 cliqhop, 45 clicks and cuts, 46 idm, 47 microsound. Played in our own synthesized sounds; the famous breaks re-played, not sampled. One in another metre than the style keeps its own length. 0 the rhythm style's own drum part",
+      "tooltip": "the drums' groove instead of the rhythm style's own part: 1 rock, 2 pop eighths, 3 pop sixteenths, 4 ballad, 5 funk, 6 disco, 7 motown, 8 shuffle, 9 jazz swing, 10 waltz, 11 march, 12 second line, 13 country two-beat, 14 folk, 15 six eight, 16 habanera, 17 house, 18 trap, 19 amen-style break, 20 funky drummer-style, 21 think-style break, 22 boom bap, 23 drum and bass, 24 lo-fi, 25 son clave, 26 rumba clave, 27 bossa nova, 28 samba, 29 cumbia, 30 baiao, 31 salsa, 32 one drop, 33 dembow, 34 soca, 35 afrobeat, 36 12/8 bell, 37 highlife, 38 maqsum, 39 baladi, 40 saidi, 41 kehrwa, 42 dadra, 43 teental, 44 cliqhop, 45 clicks and cuts, 46 idm, 47 microsound. Played in our own synthesized sounds; the famous breaks re-played, not sampled. One in another metre than the style wraps to the style's bar (or time signature's, 393): each bar starts the groove again, cut off where the bar is shorter. 0 the rhythm style's own drum part",
       "method": "drum_groove=value;",
       "iterate": 1,
       "curve": "linear",
@@ -9538,6 +9538,104 @@
       "iterate": 1,
       "curve": "linear",
       "introduction_version": 0.69,
+      "step": 1
+    },
+    {
+      "sysex_adress": 393,
+      "group": "Style",
+      "ui_type": "select",
+      "name": "time signature",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 19,
+      "default_value": 0,
+      "tooltip": "the bar rhythm mode counts, for everything that counts one: the style, the drums, fills, breaks, the intro and ending, the count-in, the clock out's Start, chord memory, the looper's bars and its click. 0: the style's own, as always (most are 4/4; waltz and 6/8 arpeggio 3, habanera 2). 1 to 12: that many beats a bar, 2 2/4, 3 3/4, 4 4/4, 5 5/4, 7 7/4; a compound metre is its beats with a triplet groove: 6/8 is 2 (try the six eight or 12/8 bell groove), 9/8 3, 12/8 4. Counted in eighths, half a beat each, a beat on each group: 13 5/8 as 2+3, 14 5/8 as 3+2, 15 7/8 as 2+2+3, 16 7/8 as 3+2+2, 17 9/8 as 2+2+2+3, 18 11/8 as 2+2+3+2+2, 19 8/8 as 3+3+2. A style or groove written in another metre wraps to the bar: each bar starts its pattern again, cut off where the bar is shorter and from the top again where it is longer, and a fill is lined up to end on the bar line. Styles A and B may then be in different metres. A tabla theka stretched by tabla laya keeps its own cycle. The tempo still counts quarter notes",
+      "method": "acc_meter=value; acc_meter_changed();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.86,
+      "options": [
+        {
+          "value": 0,
+          "label": "The style's own"
+        },
+        {
+          "value": 1,
+          "label": "1 beat a bar"
+        },
+        {
+          "value": 2,
+          "label": "2/4 (or 6/8, with a triplet groove)"
+        },
+        {
+          "value": 3,
+          "label": "3/4 (or 9/8)"
+        },
+        {
+          "value": 4,
+          "label": "4/4 (or 12/8)"
+        },
+        {
+          "value": 5,
+          "label": "5/4"
+        },
+        {
+          "value": 6,
+          "label": "6/4"
+        },
+        {
+          "value": 7,
+          "label": "7/4"
+        },
+        {
+          "value": 8,
+          "label": "8/4"
+        },
+        {
+          "value": 9,
+          "label": "9/4"
+        },
+        {
+          "value": 10,
+          "label": "10/4"
+        },
+        {
+          "value": 11,
+          "label": "11/4"
+        },
+        {
+          "value": 12,
+          "label": "12/4"
+        },
+        {
+          "value": 13,
+          "label": "5/8 as 2+3"
+        },
+        {
+          "value": 14,
+          "label": "5/8 as 3+2"
+        },
+        {
+          "value": 15,
+          "label": "7/8 as 2+2+3"
+        },
+        {
+          "value": 16,
+          "label": "7/8 as 3+2+2"
+        },
+        {
+          "value": 17,
+          "label": "9/8 as 2+2+2+3"
+        },
+        {
+          "value": 18,
+          "label": "11/8 as 2+2+3+2+2"
+        },
+        {
+          "value": 19,
+          "label": "8/8 as 3+3+2"
+        }
+      ],
       "step": 1
     }
   ],

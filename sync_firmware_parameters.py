@@ -257,6 +257,12 @@ UI_OVERRIDES = {
     276: select('rhythm_parameter', 'Style', ["Play the style's chords", "Hold the chord", "Rest"]),
     279: control('rhythm_parameter', 'Style', 'slider'),
     280: control('rhythm_parameter', 'Style', 'slider'),
+    # the bar it counts, set by hand: every style and groove wraps to it (firmware 86)
+    393: select('rhythm_parameter', 'Style',
+                ["The style's own", "1 beat a bar", "2/4 (or 6/8, with a triplet groove)", "3/4 (or 9/8)",
+                 "4/4 (or 12/8)", "5/4", "6/4", "7/4", "8/4", "9/4", "10/4", "11/4", "12/4",
+                 "5/8 as 2+3", "5/8 as 3+2", "7/8 as 2+2+3", "7/8 as 3+2+2", "9/8 as 2+2+2+3",
+                 "11/8 as 2+2+3+2+2", "8/8 as 3+3+2"]),
     # its tempo: tap tempo on the hold button (firmware 44), and the clock it sends other gear (firmware 43)
     187: {"section": "rhythm_parameter", "group": "Tempo", "name": "default bpm"},  # the firmware has default_bpm
     190: {"section": "rhythm_parameter", "group": "Tempo"},

@@ -1187,6 +1187,9 @@ void apply_audio_parameter(int adress, int value) {
         case 390:
             brothers_mode=value; if (!brothers_mode) brothers_note=-1; refresh_chord_voicing(); for (int i=0;i<12;i++){ current_harp_notes[i]=harp_string_note(i,chord_context_slashed,chord_context_sharp); };
             break;
+        case 393:
+            acc_meter=value; acc_meter_changed();
+            break;
         default:
             break;
     }
