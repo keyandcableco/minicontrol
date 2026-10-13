@@ -63,9 +63,10 @@ GROOVES = ["rock", "pop eighths", "pop sixteenths", "ballad", "funk", "disco", "
            "march", "second line", "country two-beat", "folk", "six eight", "habanera", "house", "trap",
            "amen-style break", "funky drummer-style", "think-style break", "boom bap", "drum and bass", "lo-fi",
            "son clave", "rumba clave", "bossa nova", "samba", "cumbia", "baiao", "salsa", "one drop", "dembow", "soca",
-           "afrobeat", "12/8 bell", "highlife", "maqsum", "baladi", "saidi", "kehrwa", "dadra", "teental"]
+           "afrobeat", "12/8 bell", "highlife", "maqsum", "baladi", "saidi", "kehrwa", "dadra", "teental",
+           "cliqhop", "clicks and cuts", "idm", "microsound"]
 KITS = ["808", "909", "CR-78", "studio", "brushes", "boom bap", "world percussion", "tabla and doumbek", "trap", "house",
-        "glitch"]
+        "glitch", "cliqhop"]
 
 UI_OVERRIDES = {
     # the firmware's name has an underscore
