@@ -940,6 +940,15 @@ function setupMinichordMap() {
   });
   setupFinder();
 
+  // a link to one setting (minicontrol.keyandcable.com/#setting-302, as the manual's links are)
+  // opens what holds it and points at it, as the finder does
+  const revealFromLink = () => {
+    const m = location.hash.match(/^#setting-(\d+)$/);
+    if (m) revealSetting(parseInt(m[1]));
+  };
+  revealFromLink();
+  window.addEventListener('hashchange', revealFromLink);
+
   // a setting changed anywhere on the page (by hand, by the describer or a bank coming in)
   document.addEventListener('input', e => { if (e.target.id?.startsWith('param-')) scheduleMinichordMap(); });
   document.addEventListener('change', e => { if (e.target.id?.startsWith('param-')) scheduleMinichordMap(); });
