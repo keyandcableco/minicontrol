@@ -316,6 +316,9 @@ UI_OVERRIDES = {
     322: control('global_parameter', 'Double tap', 'switch'),
     324: select('chord_parameter', 'Voicing', ["Strikes it again, as always", "Climbs the inversions, then starts over",
                                                "Climbs the inversions and comes back down", "An octave up, and back"]),
+    # firmware 87: brothers again, the same harp note re-voicing the block
+    394: select('chord_parameter', 'Slash chords and cantus', ["Leaves the block as it is", "Climbs the drops, then starts over",
+                                                               "Climbs the drops and comes back down", "Close and drop 2 in turn"]),
     325: {"section": "global_parameter", "group": "Hover", "ui_type": "select", "none_option": "none", "targets": "sweep"},
     326: control('global_parameter', 'Hover', 'slider'),
     # firmware 59: the DJ box on the song, and the harp that plays it

@@ -1185,10 +1185,13 @@ void apply_audio_parameter(int adress, int value) {
             ToneOrgan::percussion(value);
             break;
         case 390:
-            brothers_mode=value; if (!brothers_mode) brothers_note=-1; refresh_chord_voicing(); for (int i=0;i<12;i++){ current_harp_notes[i]=harp_string_note(i,chord_context_slashed,chord_context_sharp); };
+            brothers_mode=value; if (!brothers_mode) { brothers_note=-1; brothers_drop=0; brothers_drop_dir=1; } refresh_chord_voicing(); for (int i=0;i<12;i++){ current_harp_notes[i]=harp_string_note(i,chord_context_slashed,chord_context_sharp); };
             break;
         case 393:
             acc_meter=value; acc_meter_changed();
+            break;
+        case 394:
+            brothers_again=value; if (!brothers_again) { brothers_drop=0; brothers_drop_dir=1; } refresh_chord_voicing();
             break;
         default:
             break;
