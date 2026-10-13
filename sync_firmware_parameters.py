@@ -55,6 +55,10 @@ VOICES_AND_SONG = VOICES + ["The song: a second grabbed from the phone"]
 VOICES_AND_SONG += ["Vibraphone", "Fingered bass", "Sitar", "Electric piano"]
 # firmware 78: the reed piano, a model of the Wurlitzer
 VOICES_AND_SONG += ["Reed piano (Wurlitzer)"]
+# firmware 79: a kalimba and a marimba (VCSL), and the tonewheel organ, a model
+VOICES_AND_SONG += ["Kalimba", "Marimba", "Organ (tonewheel)"]
+# firmware 80: an upright bass (VSCO 2) and an accordion (FluidR3)
+VOICES_AND_SONG += ["Upright bass", "Accordion"]
 GROOVES = ["rock", "pop eighths", "pop sixteenths", "ballad", "funk", "disco", "motown", "shuffle", "jazz swing", "waltz",
            "march", "second line", "country two-beat", "folk", "six eight", "habanera", "house", "trap",
            "amen-style break", "funky drummer-style", "think-style break", "boom bap", "drum and bass", "lo-fi",
@@ -73,6 +77,11 @@ UI_OVERRIDES = {
                                                 "Play along: through the minichord",
                                                 "No speaker: the host keeps its sound"]),
     384: select('global_parameter', 'General', ["The right way up", "Upside down, for the left hand"]),
+    # the tonewheel organ (firmware 79)
+    388: select('global_parameter', 'Organ', ["888000000 jazz and blues", "888800000 rock", "838000000 jazz ballad",
+                                              "008000000 flute", "688600000 gospel and soul", "800000888 hollow, shrill",
+                                              "008080800 reedy", "888888888 full organ"]),
+    389: select('global_parameter', 'Organ', ["None", "Second harmonic, fast", "Third harmonic, fast", "Third harmonic, slow"]),
     # global: key and tuning
     30: control('global_parameter', 'Key and tuning', 'discrete_slider'),
     31: select('global_parameter', 'Key and tuning', ["sharp", "flat"]),

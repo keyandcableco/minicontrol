@@ -1178,6 +1178,12 @@ void apply_audio_parameter(int adress, int value) {
         case 387:
             chord_reed_bark=value/100.0f;
             break;
+        case 388:
+            ToneOrgan::registration(value);
+            break;
+        case 389:
+            ToneOrgan::percussion(value);
+            break;
         default:
             break;
     }

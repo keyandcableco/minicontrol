@@ -134,6 +134,8 @@
   "8": "global: midi: MIDI in plays",
   "110": "global: midi: MPE output",
   "371": "global: midi: MTS output",
+  "388": "global: organ: organ drawbars",
+  "389": "global: organ: organ percussion",
   "311": "global: phone: phone beat",
   "329": "global: phone: phone echo",
   "331": "global: phone: phone echo feedback",
