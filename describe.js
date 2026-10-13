@@ -699,7 +699,7 @@ class Interpreter {
     const cur = this.state[a];
     const down = intersects(new Set(["dark", "darker", "close", "closes", "muffle", "muffles", "muffled", "down",
       "lower", "less", "off", "mute", "mutes", "silence", "silences", "kill", "kills", "cut", "cuts", "duck", "ducks",
-      "ducking", "pump", "pumps", "pumping"]), words);
+      "ducking", "pump", "pumps", "pumping", "drop", "drops", "lowers"]), words);
     if (role === "cutoff") {
       const [lo, hi] = D.sweep.cutoff[a === 49 ? "harp" : "chord"];
       if (down) return lo * 2;

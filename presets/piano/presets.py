@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from kit import *  # noqa: E402,F401,F403
 
 TITLE = "Acoustic Piano"
-FIRMWARE = 88           # brothers striking its blocks (88), brothers again (394, 87), the time signature
-                        # (393, 86), the upright (80)
+FIRMWARE = 89           # chords following the harp's touch (395, 89), brothers striking its blocks (88),
+                        # brothers again (394, 87), the time signature (393, 86), the upright (80)
 
 
 def INTRO(backup):
@@ -32,9 +32,9 @@ def INTRO(backup):
         "left hand's legato, rubato, swing, the bass an octave down, the voicing opening, the band coming in, "
         "beats taken from the bar, the felt lifting, the tape's wow.",
         "",
-        "They need firmware 88 from the test-allFeatures branch: brothers striking each block afresh is 88, "
-        "brothers again 87, the time signature 86, the upright bass 80. On firmware 87 the Barry Harris blocks "
-        "slide from one to the next instead of being struck.",
+        "They need firmware 89 from the test-allFeatures branch: the chords following the harp's touch is 89, "
+        "brothers striking each block afresh 88, brothers again 87, the time signature 86, the upright bass 80. "
+        "On firmware 87 the Barry Harris blocks slide from one to the next instead of being struck.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "
@@ -276,20 +276,23 @@ preset("Boogie Woogie", 150,
 # sixth, major + minor the diminished seventh; harp mode 8 plays each chord's eight-note scale, and
 # brothers (390) lets each harp note choose the block under it, the sixth on its tones, the diminished
 # brother between them, the note on top. Brothers again (394) opens the block when the same string is
-# struck again: close, drop 2, drop 3, drop 2 and 4. The mod knob sweeps its four patterns; the chord
+# struck again: close, drop 2, drop 3, drop 2 and 4. The block sounds as hard as the harp note that picked it
+# (chords follow the harp's touch, 395, firmware 89), and sits an octave up (198 = 3), where block chords ring. The mod knob sweeps its four patterns; the chord
 # knob's alternate the buttons' own voicing (38) for the plain chord. The hand is the pedal; with the
 # modifier it lifts the melody an octave over the block, Shearing's locked hands.
 preset("Barry Harris", 270,
        "Barry Harris's sixth-diminished blocks. Hold a chord and walk the harp: every chord tone gives the "
        "sixth chord with that note on top, every note between gives its diminished brother, so a scale is a "
        "line of moving blocks. Strike the same string again and the block opens: drop 2, drop 3, drop 2 and "
-       "4. The mod knob chooses how it opens; double tap to hear the plain chord without the brothers.",
-       ["brothers (390): the harp picks the block, struck afresh (firmware 88)", "brothers again (394) on the mod knob",
+       "4, each as loud as the harp note that picked it. The mod knob chooses how it opens; double tap to hear the "
+       "plain chord without the brothers.",
+       ["brothers (390): the harp picks the block, struck afresh (firmware 88)",
+        "chords follow the harp's touch (395, firmware 89): a soft note, a soft block", "brothers again (394) on the mod knob",
         "Barry Harris mode (sixths and the diminished)", "harp mode 8 (the sixth-diminished scale)",
         "chord spacing on the alternate chord knob", "hover as the sustain pedal",
         "modifier + hover as locked hands", "rhythm style (walking bass) with brushes"],
        {"hover": "the sustain pedal: the blocks ring into each other with a hand over the plate",
-        "modifier + hover": "locked hands: the melody doubled an octave up over the block",
+        "modifier + hover": "the melody an octave higher, toward locked hands",
         "mod knob": "brothers again: the same string struck again leaves the block (left), climbs close, "
                     "drop 2, drop 3, drop 2 and 4 and round, climbs and comes back down, or (right) turns "
                     "between close and drop 2",
@@ -299,11 +302,13 @@ preset("Barry Harris", 270,
         "modifier + harp knob": "how much the melody follows touch",
         "double tap": "brothers off: the harp plays over the plain chord; again to give the harp the blocks "
                       "back",
-        "major, minor, major + minor": "C6, Cm6 and C diminished seventh; 7th and the sevenths walk too",
+        "major, minor, major + minor": "C6, Cm6 and C diminished seventh, an octave up from the buttons' usual "
+                                       "register; 7th and the sevenths walk too",
+        "touch": "the blocks follow the harp: strike softly and the block comes softly, firmly and it rings out",
         "rhythm mode": "a walking bass on brushes, the block held over it for the harp to move (in rhythm "
                        "mode the blocks slide rather than strike, so the band keeps time)"},
-       piano_chords(decay=5000, sustain=0.7, release=400, filt=2600, amp=0.24, reverb=0.3),
-       {33: 1, 390: 1, 394: 1, 38: 0},
+       piano_chords(decay=5000, sustain=0.7, release=400, filt=2600, amp=0.24, reverb=0.3, octave=3),
+       {33: 1, 390: 1, 394: 1, 38: 0, 395: 1},
        piano_harp(decay=4000, reverb=0.3, touch=70),
        reverb_room(0.55, 0.35, 0.5, 0.4, 0.65), {29: 0.8},
        hover(141, 3000, 7), hover_alt(99, 3),
