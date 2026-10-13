@@ -190,8 +190,10 @@ async function initializeDefaultValues() {
   // console.log('[DEBUG] Default values:', defaultValues);
 }
 
+// null until parameters.json has loaded: the tuning circle draws once before then, on defaults
 function findParameterBySysex(sysex) {
   const params = parameters;
+  if (!params) return null;
   for (const group of Object.keys(params)) {
     if (group === 'sysex_name_map') continue;
     const param = params[group].find(p => p.sysex_adress === sysex);
