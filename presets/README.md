@@ -20,6 +20,9 @@ Sets of one kind of sound, some presets borrowed from the generations as they ar
   dulcimer's noter, a pedal steel on the ribbon, a washboard band on the harp's pads (firmware 80)
 - [synth](synth/README.md): synthwave to Berlin school: chiptune, acid, a theremin, a trance gate, an 808
   beatbox, a radio DJ whose harp strums along with the song (firmware 73)
+- [mallets](mallets/README.md): Mallets & Tines, thumb to mallet: a Shona mbira's interlocking parts, Konono's
+  likembes, the marimbula, Earth, Wind & Fire's kalimba, a balafon in seven equal steps, a Zimbabwean marimba
+  band, the marimba doble of Guatemala, Reich's pulse, exotica, tropical house (firmware 80)
 - [ambient](ambient/README.md): slow instruments for a quiet room: glass, bowls, a tanpura with the jawari
   on the mod knob, generative rain, Orwell's scale, a music box that winds down (firmware 74)
 

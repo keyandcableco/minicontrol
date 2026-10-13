@@ -575,6 +575,88 @@
    ]
   },
   {
+   "id": "mallets",
+   "title": "Mallets & Tines",
+   "author": "Key & Cable",
+   "description": "Twelve presets for the kalimba and the marimba, one for each bank, each the instrument in a music it belongs to, from thumb to mallet as the banks go up: a Shona mbira's two interlocking parts, Konono's distorted likembes, the marimbula under a Cuban tres, Earth, Wind & Fire's kalimba, a looped lo-fi riff and a lullaby; then a griot's balafon in seven equal steps, a Zimbabwean marimba band, the marimba doble of Guatemala, Reich's pulsing mallets, exotica's vibes and marimba, and tropical house.",
+   "firmware": 80,
+   "file": "presets/mallets/mallets.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Mbira Bira",
+     "hue": 30,
+     "blurb": "The Shona mbira, as it is played through the night at a bira: two parts that interlock. The chord buttons play the answering part, a kalimba on the offbeats of a 12/8 bell, and the harp is yours to lead on the beats, in the key's scale. Record the cycle of chords into the chord memory with the doub…"
+    },
+    {
+     "bank": 1,
+     "name": "Electric Likembe",
+     "hue": 0,
+     "blurb": "Konono Nº1 from Kinshasa: thumb pianos through homemade pickups and loudspeakers, distorted, over a relentless dance beat. The harp is the lead likembe, the chord buttons a bass likembe an octave down, arpeggiating in rhythm mode. A hand over the plate pushes the speaker open. Double tap to loop a…"
+    },
+    {
+     "bank": 2,
+     "name": "Marimbula Son",
+     "hue": 50,
+     "blurb": "Changüí from eastern Cuba, the root of son. The chord buttons are the marimbula, a thumb piano the size of a box that the player sits on: the kalimba an octave down, plucking the bass ahead of the beat as son's bass does. The harp is the tres guitar, bright and metallic; hold a note and tap the nex…"
+    },
+    {
+     "bank": 3,
+     "name": "Kalimba Soul",
+     "hue": 280,
+     "blurb": "The kalimba Maurice White brought into Earth, Wind & Fire: on the harp, through a dotted echo, over an electric piano comping on the chord buttons with a fingered bass under it, in a funk groove. A hand over the plate is the hand on the kalimba's sound hole, its own wah. Double tap for ninths."
+    },
+    {
+     "bank": 4,
+     "name": "Lo-fi Kalimba",
+     "hue": 210,
+     "blurb": "A lo-fi beat: a kalimba riff on the harp, a Wurlitzer struck softly on the chord buttons, round and warm, a dusty, swung beat under them. Double tap to loop two bars of the kalimba, counted in, and play over your own riff. A hand over the plate muffles the chords; with the modifier held, it saturat…"
+    },
+    {
+     "bank": 5,
+     "name": "Thumb Piano Lullaby",
+     "hue": 250,
+     "blurb": "A kalimba at bedtime. Rest fingers on the strings and lift them to pluck, the way a thumb leaves a tine; a softer kalimba rocks a slow 6/8 under them in rhythm mode. Lower a hand over the plate and the sound hole closes: the tines go dim and round. Double tap for a smaller kalimba, an octave up."
+    },
+    {
+     "bank": 6,
+     "name": "Balafon",
+     "hue": 40,
+     "blurb": "The balafon of the Mande griots: wooden keys over gourds whose holes are covered with spider-egg membranes, buzzing on every stroke. The octave is divided into seven nearly equal steps, as on many balafons: the harp plays them, starting on C, and a low balafon answers on the chord buttons. Double t…"
+    },
+    {
+     "bank": 7,
+     "name": "Marimba Band",
+     "hue": 90,
+     "blurb": "A Zimbabwean marimba band: the chord buttons are the bass marimba, thumping an ostinato that follows each chord, and the harp the soprano marimba's melody over it, with hand drums in a dance beat. The songs cycle through their chords as mbira pieces do: double tap to record the cycle into the chord…"
+    },
+    {
+     "bank": 8,
+     "name": "Marimba de Guatemala",
+     "hue": 160,
+     "blurb": "The marimba doble of Guatemala, several players at one long keyboard. Its long notes are rolled, the mallets alternating fast on one key: hold a hand over the plate and the harp rolls the notes you hold, lift it for single strokes. The chord buttons are the bass player's end, rocking in 6/8 in rhyt…"
+    },
+    {
+     "bank": 9,
+     "name": "Reich Pulse",
+     "hue": 190,
+     "blurb": "Steve Reich's mallets: the chord buttons pulse a twelve-note figure on the marimba in steady eighths, and the harp is a vibraphone. Double tap to loop a bar of your own: the loop is eight eighths and the figure twelve, so they slide against each other and line up again every three bars, a phasing b…"
+    },
+    {
+     "bank": 10,
+     "name": "Exotica",
+     "hue": 130,
+     "blurb": "Martin Denny and Arthur Lyman's Hawaiian lounge: a vibraphone on the harp, ringing with its motor, a marimba comping on the chord buttons, an upright bass on the bass note and a rumba clave on hand drums. A hand over the plate is the lagoon: the vibes sink into the reverb. A fill moves the band int…"
+    },
+    {
+     "bank": 11,
+     "name": "Tropical Marimba",
+     "hue": 320,
+     "blurb": "Tropical house: short marimba plucks on the offbeats over a four-on-the-floor beat and a sub, and a marimba lead on the harp with a dotted echo. A hand over the plate is a DJ's filter sweep, opening the plucks; with the modifier held it feeds the echo back. Double tap to drop everything but the dru…"
+    }
+   ]
+  },
+  {
    "id": "synth",
    "title": "Synth",
    "author": "Key & Cable",
