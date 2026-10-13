@@ -5351,6 +5351,22 @@
           "label": "Close and drop 2 in turn"
         }
       ]
+    },
+    {
+      "sysex_adress": 395,
+      "group": "Buttons",
+      "ui_type": "switch",
+      "name": "chords follow the harp's touch",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "the chords take their dynamic from the harp hand. The chord buttons are switches, with no touch of their own; with this on, every new harp gesture sets the instrument's dynamic from its first string, by the harp's own laws (touch velocity, 252, and strum velocity, 263: down to 24 dB and a tenth of the MIDI velocity for the lightest touch), and the chords play at it. A chord the harp strikes (brothers, 390, with retrigger chords on) plays at the touch that struck it; a chord already sounding glides to each new gesture's dynamic in about 30 ms, so a held chord swells and fades under the harp as the hand digs in or lightens; and a chord struck from the buttons starts at the harp's last dynamic rather than at full, with its MIDI velocity to match. With touch velocity and strum velocity both off every gesture is full, as before. Not in rhythm mode, whose notes carry their own accents. 0 off, 1 on",
+      "method": "chord_touch=value; if (!chord_touch) { chord_touch_gain=1; chord_touch_vscale=1; chord_touch_firmness=1; chord_touch_unwind=true; }",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 0.89,
+      "step": 1
     }
   ],
   "harp_parameter": [

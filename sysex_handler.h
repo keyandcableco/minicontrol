@@ -1193,6 +1193,9 @@ void apply_audio_parameter(int adress, int value) {
         case 394:
             brothers_again=value; if (!brothers_again) { brothers_drop=0; brothers_drop_dir=1; } refresh_chord_voicing();
             break;
+        case 395:
+            chord_touch=value; if (!chord_touch) { chord_touch_gain=1; chord_touch_vscale=1; chord_touch_firmness=1; chord_touch_unwind=true; };
+            break;
         default:
             break;
     }
