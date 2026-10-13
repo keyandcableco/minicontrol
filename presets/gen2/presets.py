@@ -34,7 +34,7 @@ def INTRO(backup):
         "note. In every preset, modifier + down puts the preset "
         "back as it was saved, and modifier + up is the panic.",
         "",
-        "They need firmware 80 (the sampled sitar and upright bass) from the experimental-locks branch; on "
+        "They need firmware 80 (the sampled sitar and upright bass) from the test-allFeatures branch; on "
         "older firmware the settings that came after it reset to off.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "

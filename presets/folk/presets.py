@@ -28,7 +28,7 @@ def INTRO(backup):
         "the mandolin's tremolo picking is a hand held over the plate, and the washboard band is the harp's "
         "twelve strings as drum pads, with the looper to build a rhythm in layers.",
         "",
-        "They need firmware 80 (the sampled upright bass and accordion) from the experimental-locks branch.",
+        "They need firmware 80 (the sampled upright bass and accordion) from the test-allFeatures branch.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "

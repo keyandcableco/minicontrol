@@ -21,7 +21,7 @@ def INTRO(backup):
         "`build.py electric-piano` from `presets.py`; edit those, not this.",
         "",
         "They need firmware 80 (the sampled electric piano, vibraphone, basses, and the reed piano model) "
-        "from the experimental-locks branch; on older firmware those voices aren't there.",
+        "from the test-allFeatures branch; on older firmware those voices aren't there.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "

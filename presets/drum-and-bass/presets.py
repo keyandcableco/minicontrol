@@ -24,7 +24,7 @@ def INTRO(backup):
         "sliding bass. Modifier + hold plays a fill.",
         "",
         "They need firmware 80 (the sampled electric piano, vibraphone and basses) from the "
-        "experimental-locks branch.",
+        "test-allFeatures branch.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "

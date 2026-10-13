@@ -20,7 +20,7 @@ def INTRO(backup):
         "`build.py world` from `presets.py`; edit those, not this.",
         "",
         "Seven come from Gen 3 and Midnight Raga from Gen 2, as they are there. They need firmware 80 (the "
-        "sampled sitar and accordion) from the experimental-locks branch.",
+        "sampled sitar and accordion) from the test-allFeatures branch.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "
