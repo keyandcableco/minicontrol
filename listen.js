@@ -13,6 +13,19 @@
 // minichord restarting (244 to or from 2) or unplugged ends the sound; left on, it comes back by
 // itself when the minichord's input does. The lab's arcade does the same (minichord-lab
 // practice/touch.js, tdMonitor).
+//
+// An Android phone's Chrome doesn't name the minichord's input. It names only what it can switch a
+// call to, each with a speaker: "USB audio" is the minichord at 0 or 1, as a speaker, and at 2 the
+// minichord isn't there at all. So on Android the page opens the default input, which Android takes
+// from a USB input before the phone's own microphone when nothing is cancelled (Chrome's AAudio
+// input, its generic preset; an older Chrome took the camcorder's, the phone's own microphone).
+// The phone's own microphone through its own speaker howls, so two things keep it from playing:
+//   - before anything plays, a short quiet beep through the speaker, which the phone's own
+//     microphone hears and the minichord's USB sound doesn't (hearsSpeaker);
+//   - the sound plays only while the page is connected to the minichord over MIDI, and is dropped
+//     the moment it goes (lost, from index.js): when an input goes, Chrome opens the default again,
+//     which is then the phone's own microphone, and the track never ends. It starts again when the
+//     minichord's settings arrive (found).
 
 (function (root) {
 "use strict";
@@ -33,6 +46,8 @@ const phone = /Android|iPhone|iPad/i.test(navigator.userAgent || "");
 const android = /Android/i.test(navigator.userAgent || "");
 const here = phone ? "this phone" : "this computer";
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 function el(tag, cls, text) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
@@ -46,12 +61,10 @@ function usbAudio() {
   return currentValues[USB_AUDIO];
 }
 
-// The minichord's input, by name. Android's Chrome may only call it a USB one, so there a USB
-// input will do; elsewhere a USB microphone or headset would be played instead, so not.
+// The minichord's input, by name (not on Android: see above)
 async function minichordInput() {
   const ins = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "audioinput");
-  const dev = ins.find(d => /minichord/i.test(d.label)) || (android && ins.find(d => /usb/i.test(d.label))) || null;
-  return { dev, named: ins.some(d => d.label) };
+  return { dev: ins.find(d => /minichord/i.test(d.label)) || null, named: ins.some(d => d.label) };
 }
 
 function drop() {
@@ -59,46 +72,128 @@ function drop() {
   if (listen.stream) { listen.stream.getTracks().forEach(t => t.stop()); listen.stream = null; }
 }
 
-function stop() {
+function stop(status = "") {
   listen.wanted = false;
   drop();
   if (listen.ctx) { listen.ctx.close().catch(() => {}); listen.ctx = null; }
-  listen.status = "";
+  listen.status = status;
   render();
 }
 
 const WAITING = "Waiting for the minichord's sound: is it plugged in, and on? It runs only with something in its " +
                 "headphone jack (USB alone charges it). It starts by itself when the minichord is there.";
+const SET_TWO = "On a phone this needs usb audio at 2, just above: at 0 or 1 the minichord is offered as a speaker, and " +
+                "the phone sends all its sound there, this too. At 2 the minichord restarts, and this starts by itself.";
+const GONE = "The minichord's sound stopped: unplugged, or restarting. It comes back by itself when the minichord does.";
+const OWN_MIC = "Nothing played: this phone gave the page its own microphone, not the minichord's sound (it heard the " +
+                "check's beep), and that through its speaker would howl. A newer Chrome takes a USB input first: is Chrome up to date?";
+
+// On Android, whether the default input may be taken for the minichord's: connected over MIDI, at
+// usb audio 2. Says why not
+function androidReady() {
+  const mode = usbAudio();
+  if (mode === undefined) listen.status = WAITING;
+  else if (mode !== 2) listen.status = SET_TWO;
+  return mode === 2;
+}
+
+// Whether the input opened hears this phone's own speaker: a short quiet beep (2.9 kHz, between the
+// notes) goes out, and the input's band there is watched before, during and after it. The phone's
+// own microphone hears it come and go, standing clear of what's around it; the minichord's USB sound
+// doesn't, and a note of its own there that starts with the beep doesn't stop with it.
+async function hearsSpeaker(ctx, stream) {
+  const TONE = 2900, LEVEL = 0.05;
+  const src = ctx.createMediaStreamSource(stream);
+  const an = ctx.createAnalyser();
+  an.fftSize = 4096;
+  an.smoothingTimeConstant = 0;
+  src.connect(an);
+  const db = new Float32Array(an.frequencyBinCount);
+  const k = Math.round(TONE * an.fftSize / ctx.sampleRate);
+  const at = i => Math.max(db[i], -160);     // digital silence is -Infinity
+  // how far the beep's band stands above its neighbours, on average over ms
+  async function standing(ms) {
+    let sum = 0, n = 0;
+    for (const end = performance.now() + ms; performance.now() < end; await sleep(20)) {
+      an.getFloatFrequencyData(db);
+      let around = 0;
+      for (let d = 8; d <= 16; d++) around += at(k - d) + at(k + d);
+      sum += Math.max(at(k - 1), at(k), at(k + 1)) - around / 18;
+      n++;
+    }
+    return n ? sum / n : 0;
+  }
+  try {
+    const before = await standing(250);
+    const osc = ctx.createOscillator(), gain = ctx.createGain(), t = ctx.currentTime + 0.02;
+    osc.frequency.value = TONE;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(LEVEL, t + 0.02);
+    gain.gain.setValueAtTime(LEVEL, t + 0.48);
+    gain.gain.linearRampToValueAtTime(0, t + 0.5);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.52);
+    await sleep(200);                        // out through the speaker and back
+    const during = await standing(260);
+    await sleep(250);                        // gone, and its echo
+    const after = await standing(250);
+    return during - Math.max(before, after) >= 6;
+  } finally {
+    try { src.disconnect(); } catch (e) { }
+  }
+}
 
 // quiet: tried by itself (a device came or went), not pressed for
 async function start(quiet) {
   if (listen.stream || listen.starting || !listen.wanted) return;
+  if (android && !androidReady()) { render(); return; }
   listen.starting = true;
+  listen.status = android ? "A short beep: checking that it's the minichord's sound, not this phone's own microphone…" : "";
   render();
   let stream = null;
   try {
-    let { dev, named } = await minichordInput();
-    if (!dev && !named && !quiet) {
-      // a browser names its inputs only once a microphone has been allowed
-      const asked = await navigator.mediaDevices.getUserMedia({ audio: RAW });
-      asked.getTracks().forEach(t => t.stop());
-      ({ dev } = await minichordInput());
+    let dev = null;
+    if (!android) {
+      let named;
+      ({ dev, named } = await minichordInput());
+      if (!dev && !named && !quiet) {
+        // a browser names its inputs only once a microphone has been allowed
+        const asked = await navigator.mediaDevices.getUserMedia({ audio: RAW });
+        asked.getTracks().forEach(t => t.stop());
+        ({ dev } = await minichordInput());
+      }
+      if (!dev) { if (listen.wanted) listen.status = WAITING; return; }
     }
-    if (!dev) { if (listen.wanted) listen.status = WAITING; return; }
-    stream = await navigator.mediaDevices.getUserMedia({ audio: { ...RAW, deviceId: { exact: dev.deviceId } } });
+    stream = await navigator.mediaDevices.getUserMedia({ audio: dev ? { ...RAW, deviceId: { exact: dev.deviceId } } : RAW });
+    if (listen.ctx) await Promise.race([listen.ctx.resume(), sleep(1000)]).catch(() => {});
     if (!listen.wanted || !listen.ctx) { stream.getTracks().forEach(t => t.stop()); return; }   // stopped meanwhile
-    listen.ctx.resume().catch(() => {});
+    if (android) {
+      // the check needs the sound running; without it, nothing plays
+      if (listen.ctx.state !== "running") {
+        stream.getTracks().forEach(t => t.stop());
+        stop("Couldn't start the sound here: press again.");
+        return;
+      }
+      if (await hearsSpeaker(listen.ctx, stream)) {
+        stream.getTracks().forEach(t => t.stop());
+        stop(OWN_MIC);
+        return;
+      }
+      // stopped, or the minichord gone, while it checked
+      if (!listen.wanted || !listen.ctx || !androidReady()) { stream.getTracks().forEach(t => t.stop()); return; }
+    }
     const source = listen.ctx.createMediaStreamSource(stream);
     source.connect(listen.ctx.destination);
     stream.getAudioTracks()[0]?.addEventListener("ended", () => {
       if (listen.stream !== stream) return;
       drop();
-      listen.status = "The minichord's sound stopped: unplugged, or restarting. It comes back by itself when the minichord does.";
+      listen.status = GONE;
       render();
     });
     listen.stream = stream;
     listen.source = source;
-    listen.label = dev.label;
+    listen.label = dev ? dev.label : "";
     listen.status = "";
   } catch (e) {
     if (stream) stream.getTracks().forEach(t => t.stop());
@@ -107,8 +202,8 @@ async function start(quiet) {
       listen.wanted = false;
       if (listen.ctx) { listen.ctx.close().catch(() => {}); listen.ctx = null; }
       listen.status = "The microphone wasn't allowed: it's how a page hears the minichord over USB.";
-    } else if (!quiet) {
-      listen.status = "Couldn't play it: " + (e && e.message || e);
+    } else {
+      listen.status = quiet ? WAITING : "Couldn't play it: " + (e && e.message || e);
     }
   } finally {
     listen.starting = false;
@@ -128,6 +223,21 @@ function press() {
   listen.ctx = new AudioContext({ latencyHint: "interactive" });
   listen.ctx.resume().catch(() => {});
   start(false);
+}
+
+// The page lost the minichord over MIDI (index.js, updateConnectionStatus). On Android that's how
+// the page knows its sound has gone, before the phone's own microphone takes its place
+function lost() {
+  if (!android || !listen.stream) return;
+  drop();
+  listen.status = GONE;
+  render();
+}
+
+// The minichord's settings arrived (index.js, handleDataReceived): connected, or back after a restart
+function found() {
+  if (listen.wanted && !listen.stream && !listen.starting) start(true);
+  else render();
 }
 
 // what's happening, playing: and what usb audio does to it
@@ -150,7 +260,8 @@ function render() {
     listen.starting ? "starting…" : listen.wanted ? `stop playing it on ${here}` : `play it through ${here}`);
   b.type = "button";
   b.title = `the minichord's own sound, as it sends it over USB, through ${here}'s speaker. The browser asks for the ` +
-            "microphone: it's how a page hears the minichord. For a phone, set usb audio to 2, so the phone keeps its own speaker";
+            "microphone: it's how a page hears the minichord. For a phone, set usb audio to 2, so the phone keeps its own speaker" +
+            (android ? ". A short beep first checks that it's the minichord's sound and not the phone's own microphone" : "");
   b.addEventListener("click", press);
   line.appendChild(b);
   wrap.appendChild(line);
@@ -162,12 +273,16 @@ function render() {
 if (typeof document !== "undefined") {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", render);
   else render();
-  // usb audio changed here: what's said about it
-  document.addEventListener("change", e => { if (e.target.id === `param-${USB_AUDIO}`) render(); });
+  document.addEventListener("change", e => {
+    if (e.target.id !== `param-${USB_AUDIO}`) return;
+    // on Android, away from 2 the minichord restarts as a speaker: dropped now, ahead of it
+    if (android && listen.wanted && Number(e.target.value) !== 2) { drop(); listen.status = SET_TWO; }
+    render();
+  });
   // the minichord back after a restart, or plugged in while waiting
   navigator.mediaDevices?.addEventListener?.("devicechange", () => { if (listen.wanted && !listen.stream) start(true); });
 }
 
-root.listen = { stop };
+root.listen = { stop, lost, found };
 
 })(typeof window !== "undefined" ? window : globalThis);

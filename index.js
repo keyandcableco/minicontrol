@@ -253,6 +253,8 @@ function updateConnectionStatus(connected, message) {
     return;
   }
   minichord_device = connected;
+  // on Android the minichord's sound through the phone stops the moment the minichord goes (listen.js)
+  if (!connected && typeof listen !== "undefined") listen.lost();
   if (!isShowingNotification) {
     bubbleElement.className = connected ? 'connected' : 'disconnected';
     const bankText = currentBankNumber >= 0 ? ` | Bank ${currentBankNumber + 1}${liveName()}${unsavedEdits ? ' (unsaved changes)' : ''}` : '';
@@ -837,6 +839,8 @@ function handleDataReceived(data) {
   rhythmPattern = data.rhythmData.map(bits => bits.reduce((acc, bit, i) => acc | (bit ? (1 << i) : 0), 0));
   targetBank = data.bankNumber;
   updateUI(data.bankNumber);
+  // the minichord's sound through the phone or computer, back after a restart (listen.js)
+  if (typeof listen !== "undefined") listen.found();
   // Toggle active/inactive based on firmware version. A control too new for this firmware
   // takes no pointer, so what holds it says why, on hover and on a click.
   const firmware = Math.round(data.firmwareVersion * 100);
