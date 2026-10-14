@@ -26,6 +26,14 @@
 //     the moment it goes (lost, from index.js): when an input goes, Chrome opens the default again,
 //     which is then the phone's own microphone, and the track never ends. It starts again when the
 //     minichord's settings arrive (found).
+// And a Pixel 8a (likely any Pixel with its audio processor, the AoC) plays the minichord's sound
+// cleanly only at 48 kHz: it refuses 44.1 from a high-speed USB device, and at full speed plays 44.1
+// choppy. Firmware 92 offers 48 at usb audio 2, at full speed; with older firmware the page says so on
+// Android while it plays, and again if the minichord's notes arrive with no sound.
+//
+// On a phone the sound is shaped for the phone's own speaker unless the player unticks it (for
+// headphones or a Bluetooth speaker, which want all of it): the low end the speaker can't play is cut,
+// as a piano's bass only makes it strain and buzz, and a compressor holds loud chords in (speakerChain).
 
 (function (root) {
 "use strict";
@@ -44,6 +52,7 @@ const listen = {
   peaks: [], since: 0, soundAt: 0, noteAt: 0,
   check: null,                 // the beep check's measures, on Android
   details: [], detailsOpen: false,
+  out: [],                     // the speaker's shaping, between the input and the speaker, when on
 };
 
 const phone = /Android|iPhone|iPad/i.test(navigator.userAgent || "");
@@ -51,6 +60,14 @@ const android = /Android/i.test(navigator.userAgent || "");
 const here = phone ? "this phone" : "this computer";
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// The firmware that offers the 48 kHz a Pixel needs
+const FIRMWARE_48K = 92;
+
+// shaped for the phone's own speaker: on a phone unless the player unticked it, remembered here
+const SPEAKER_KEY = "minicontrol-listen-speaker";
+let speakerShaped = phone;
+try { const v = localStorage.getItem(SPEAKER_KEY); if (v != null) speakerShaped = phone && v === "1"; } catch (e) { }
 
 function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -71,9 +88,53 @@ async function minichordInput() {
   return { dev: ins.find(d => /minichord/i.test(d.label)) || null, named: ins.some(d => d.label) };
 }
 
+// The firmware's version, as a number (92); 0 before any minichord has connected (the last one's after)
+function firmware() {
+  return typeof controller !== "undefined" ? Math.round((controller.firmware_version || 0) * 100) : 0;
+}
+
+// A phone's speaker can't play much below 200 Hz: two high-passes at 150 Hz (24 dB an octave, -6 dB at
+// 150, -16 at 100, flat from 300) keep the bass it can't play from making it strain, and a compressor
+// holds loud chords in, its own make-up gain bringing quiet playing up about 5 dB while a full-scale
+// chord comes out about 3 dB under full scale (Chrome's compressor adds 6 ms of delay)
+function speakerChain(ctx) {
+  const lows = [0, 1].map(() => {
+    const f = ctx.createBiquadFilter();
+    f.type = "highpass";
+    f.frequency.value = 150;
+    f.Q.value = -3.01;   // a high-pass's Q is in dB in Web Audio: -3.01 is Butterworth's 0.707, no bump
+    return f;
+  });
+  const hold = ctx.createDynamicsCompressor();
+  hold.threshold.value = -12;
+  hold.knee.value = 6;
+  hold.ratio.value = 8;
+  hold.attack.value = 0.003;
+  hold.release.value = 0.12;
+  lows[0].connect(lows[1]).connect(hold).connect(ctx.destination);
+  return [lows[0], lows[1], hold];
+}
+
+// The input to the speaker, shaped or as it comes; the meter always hears it as it comes
+function route() {
+  if (!listen.source || !listen.ctx) return;
+  try { listen.source.disconnect(); } catch (e) { }
+  listen.out.forEach(n => { try { n.disconnect(); } catch (e) { } });
+  listen.out = [];
+  if (listen.meter) listen.source.connect(listen.meter);
+  if (phone && speakerShaped) {
+    listen.out = speakerChain(listen.ctx);
+    listen.source.connect(listen.out[0]);
+  } else {
+    listen.source.connect(listen.ctx.destination);
+  }
+}
+
 function drop() {
   if (listen.timer) { clearInterval(listen.timer); listen.timer = 0; }
   listen.meter = null;
+  listen.out.forEach(n => { try { n.disconnect(); } catch (e) { } });
+  listen.out = [];
   if (listen.source) { try { listen.source.disconnect(); } catch (e) { } listen.source = null; }
   if (listen.stream) { listen.stream.getTracks().forEach(t => t.stop()); listen.stream = null; }
 }
@@ -193,10 +254,8 @@ async function start(quiet) {
       if (!listen.wanted || !listen.ctx || !androidReady()) { stream.getTracks().forEach(t => t.stop()); return; }
     }
     const source = listen.ctx.createMediaStreamSource(stream);
-    source.connect(listen.ctx.destination);
     const meter = listen.ctx.createAnalyser();
     meter.fftSize = 2048;
-    source.connect(meter);
     stream.getAudioTracks()[0]?.addEventListener("ended", () => {
       if (listen.stream !== stream) return;
       drop();
@@ -208,6 +267,7 @@ async function start(quiet) {
     listen.label = dev ? dev.label : "";
     listen.status = "";
     listen.meter = meter;
+    route();
     listen.peaks = [];
     listen.since = performance.now();
     listen.soundAt = 0;
@@ -277,7 +337,8 @@ function measure() {
 function levelText() {
   const now = performance.now(), most = Math.max(0, ...listen.peaks);
   if (listen.noteAt > now - 2500 && listen.soundAt < now - 2000 && listen.since < now - 2000)
-    return `The minichord is playing (its notes arrive over MIDI), but no sound comes in: ${here} isn't handing the page its sound.`;
+    return `The minichord is playing (its notes arrive over MIDI), but no sound comes in: ${here} isn't handing the page its sound.` +
+           (android && firmware() && firmware() < FIRMWARE_48K ? ` Firmware ${FIRMWARE_48K} adds the 48 kHz a phone such as a Pixel needs: this minichord has ${firmware()}.` : "");
   if (!most) return "Arriving from it: silence. Play the minichord.";
   return `Arriving from it: ${Math.round(20 * Math.log10(most))} dB at its loudest.`;
 }
@@ -307,7 +368,8 @@ async function describeInput(stream) {
 // what's happening, playing: and what usb audio does to it
 function playingText() {
   const mode = usbAudio();
-  const said = `The minichord's sound is playing through ${here}${listen.label ? ` (${listen.label})` : ""}. Keep this page open.`;
+  const said = `The minichord's sound is playing through ${here}${listen.label ? ` (${listen.label})` : ""}. Keep this page open.` +
+               (android && firmware() && firmware() < FIRMWARE_48K ? ` If it's silent or crackles: firmware ${FIRMWARE_48K} adds the 48 kHz a phone such as a Pixel needs (this minichord has ${firmware()}).` : "");
   if (mode === 0) return said + " usb audio is at 0, so a phone sends all its sound, this too, to the minichord, which " +
                          "doesn't play it: for a phone's own speaker set usb audio to 2, just above. The minichord restarts, and this comes back by itself.";
   if (mode === 1) return said + " usb audio is at 1, so a phone sends all its sound, this too, to the minichord, which " +
@@ -329,6 +391,21 @@ function render() {
   b.addEventListener("click", press);
   line.appendChild(b);
   wrap.appendChild(line);
+  if (phone) {
+    // the speaker's shaping, which headphones or a Bluetooth speaker don't want
+    const label = el("label", "describe-line listen-speaker");
+    const box = el("input", "always-on active");
+    box.type = "checkbox";
+    box.checked = speakerShaped;
+    box.addEventListener("change", () => {
+      speakerShaped = box.checked;
+      try { localStorage.setItem(SPEAKER_KEY, speakerShaped ? "1" : "0"); } catch (e) { }
+      route();
+    });
+    label.appendChild(box);
+    label.appendChild(document.createTextNode(` shaped for ${here}'s own speaker: the bass it can't play cut, loud chords held in (untick for headphones or a Bluetooth speaker)`));
+    wrap.appendChild(label);
+  }
   wrap.appendChild(el("p", "describe-line talk-status", listen.stream ? playingText() : listen.status));
   if (listen.stream) {
     wrap.appendChild(el("p", "describe-line talk-status listen-level", levelText()));
