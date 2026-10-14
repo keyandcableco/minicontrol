@@ -397,6 +397,9 @@ def generate_param_html(param):
                 {lock_html(param)}
             </div>
         ''')
+        if sysex_address == 244:
+            # the minichord's own sound, from its USB recording, through this phone or computer: listen.js
+            html.append('<div id="listen-usb" class="talk-slot talk-beside"></div>')
     elif ui_type == 'switch':
         html.append(f'''
             <div style="display: flex; align-items: center; margin: 8px 0;">
@@ -1009,6 +1012,7 @@ html_template = '''<!DOCTYPE html>
   <script src="describe.js"></script>
   <script src="commands.js"></script>
   <script src="talk.js"></script>
+  <script src="listen.js"></script>
   <script src="tuning.js"></script>
   <script src="controls.js"></script>
   <script src="envelope.js"></script>

@@ -20,6 +20,7 @@ const SHELL = [
   'describe.js',
   'commands.js',
   'talk.js',
+  'listen.js',
   'tuning.js',
   'controls.js',
   'envelope.js',
