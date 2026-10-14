@@ -40,6 +40,10 @@ const listen = {
   ctx: null,                   // made on the press and kept, so a restart's comeback may play
   label: "",                   // the input playing, as the browser names it
   status: "",                  // what happened, when nothing is playing
+  meter: null, timer: 0,       // the sound as it arrives, measured four times a second
+  peaks: [], since: 0, soundAt: 0, noteAt: 0,
+  check: null,                 // the beep check's measures, on Android
+  details: [], detailsOpen: false,
 };
 
 const phone = /Android|iPhone|iPad/i.test(navigator.userAgent || "");
@@ -68,6 +72,8 @@ async function minichordInput() {
 }
 
 function drop() {
+  if (listen.timer) { clearInterval(listen.timer); listen.timer = 0; }
+  listen.meter = null;
   if (listen.source) { try { listen.source.disconnect(); } catch (e) { } listen.source = null; }
   if (listen.stream) { listen.stream.getTracks().forEach(t => t.stop()); listen.stream = null; }
 }
@@ -138,6 +144,7 @@ async function hearsSpeaker(ctx, stream) {
     const during = await standing(260);
     await sleep(250);                        // gone, and its echo
     const after = await standing(250);
+    listen.check = { before, during, after };
     return during - Math.max(before, after) >= 6;
   } finally {
     try { src.disconnect(); } catch (e) { }
@@ -149,6 +156,8 @@ async function start(quiet) {
   if (listen.stream || listen.starting || !listen.wanted) return;
   if (android && !androidReady()) { render(); return; }
   listen.starting = true;
+  listen.details = [];
+  listen.check = null;
   listen.status = android ? "A short beep: checking that it's the minichord's sound, not this phone's own microphone…" : "";
   render();
   let stream = null;
@@ -185,6 +194,9 @@ async function start(quiet) {
     }
     const source = listen.ctx.createMediaStreamSource(stream);
     source.connect(listen.ctx.destination);
+    const meter = listen.ctx.createAnalyser();
+    meter.fftSize = 2048;
+    source.connect(meter);
     stream.getAudioTracks()[0]?.addEventListener("ended", () => {
       if (listen.stream !== stream) return;
       drop();
@@ -195,6 +207,12 @@ async function start(quiet) {
     listen.source = source;
     listen.label = dev ? dev.label : "";
     listen.status = "";
+    listen.meter = meter;
+    listen.peaks = [];
+    listen.since = performance.now();
+    listen.soundAt = 0;
+    listen.timer = setInterval(measure, 250);
+    describeInput(stream);
   } catch (e) {
     if (stream) stream.getTracks().forEach(t => t.stop());
     console.warn("[listen]", e);
@@ -240,6 +258,52 @@ function found() {
   else render();
 }
 
+// The sound as it arrives, its loudest over the last second: a minichord sends exact silence while
+// it's quiet, so anything at all is something. If its notes come over MIDI and nothing comes in over
+// USB, this browser isn't handing the page the minichord's sound
+function measure() {
+  if (!listen.meter) return;
+  const buf = new Float32Array(listen.meter.fftSize);
+  listen.meter.getFloatTimeDomainData(buf);
+  let peak = 0;
+  for (let i = 0; i < buf.length; i++) peak = Math.max(peak, Math.abs(buf[i]));
+  if (peak > 0) listen.soundAt = performance.now();
+  listen.peaks.push(peak);
+  if (listen.peaks.length > 4) listen.peaks.shift();
+  const shown = document.querySelector("#listen-usb .listen-level");
+  if (shown) shown.textContent = levelText();
+}
+
+function levelText() {
+  const now = performance.now(), most = Math.max(0, ...listen.peaks);
+  if (listen.noteAt > now - 2500 && listen.soundAt < now - 2000 && listen.since < now - 2000)
+    return `The minichord is playing (its notes arrive over MIDI), but no sound comes in: ${here} isn't handing the page its sound.`;
+  if (!most) return "Arriving from it: silence. Play the minichord.";
+  return `Arriving from it: ${Math.round(20 * Math.log10(most))} dB at its loudest.`;
+}
+
+// What the page has opened, for when nothing's heard: the input as the browser names it and has it
+// set up, the inputs it lists, the sound's own rate and delay, and the beep check's measures
+async function describeInput(stream) {
+  const track = stream.getAudioTracks()[0], s = track?.getSettings?.() || {}, ctx = listen.ctx;
+  const processing = ["echoCancellation", "noiseSuppression", "autoGainControl"].filter(k => s[k]);
+  const lines = [
+    `input: ${track?.label || "unnamed"}${s.deviceId ? ` (${s.deviceId.slice(0, 12)})` : ""}`,
+    `as opened: ${[s.sampleRate && s.sampleRate + " Hz", s.channelCount && s.channelCount + " ch", s.latency != null && Math.round(s.latency * 1000) + " ms"].filter(Boolean).join(", ") || "not said"}; ` +
+      `processing: ${processing.length ? processing.join(", ") : "none"}`,
+  ];
+  if (ctx) lines.push(`played at ${ctx.sampleRate} Hz, ${Math.round((ctx.baseLatency || 0) * 1000)} + ${Math.round((ctx.outputLatency || 0) * 1000)} ms out`);
+  if (listen.check) lines.push(`the beep check: ${["before", "during", "after"].map(k => listen.check[k].toFixed(1)).join(" / ")} dB above its surroundings (heard from 6 over)`);
+  try {
+    const ins = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "audioinput");
+    lines.push(`inputs listed: ${ins.map(d => d.label || "unnamed").join(", ") || "none"}`);
+  } catch (e) { }
+  lines.push(`browser: ${(navigator.userAgent.match(/(Chrome|Firefox)\/[\d.]+|Version\/[\d.]+ (Mobile\/\w+ )?Safari/) || [""])[0]}`);
+  if (listen.stream !== stream) return;
+  listen.details = lines;
+  render();
+}
+
 // what's happening, playing: and what usb audio does to it
 function playingText() {
   const mode = usbAudio();
@@ -266,6 +330,17 @@ function render() {
   line.appendChild(b);
   wrap.appendChild(line);
   wrap.appendChild(el("p", "describe-line talk-status", listen.stream ? playingText() : listen.status));
+  if (listen.stream) {
+    wrap.appendChild(el("p", "describe-line talk-status listen-level", levelText()));
+    if (listen.details.length) {
+      const more = el("details", "listen-details");
+      more.open = listen.detailsOpen;
+      more.addEventListener("toggle", () => { listen.detailsOpen = more.open; });
+      more.appendChild(el("summary", "describe-line", "what the page hears"));
+      listen.details.forEach(x => more.appendChild(el("div", "describe-line", x)));
+      wrap.appendChild(more);
+    }
+  }
   slot.textContent = "";
   slot.appendChild(wrap);
 }
@@ -281,6 +356,15 @@ if (typeof document !== "undefined") {
   });
   // the minichord back after a restart, or plugged in while waiting
   navigator.mediaDevices?.addEventListener?.("devicechange", () => { if (listen.wanted && !listen.stream) start(true); });
+}
+
+// the minichord's notes over MIDI: whether it's playing, for when nothing comes in over USB
+if (typeof controller !== "undefined") {
+  const previous = controller.onMidi;
+  controller.onMidi = d => {
+    if ((d[0] & 0xF0) === 0x90 && d[2] > 0) listen.noteAt = performance.now();
+    if (previous) previous(d);
+  };
 }
 
 root.listen = { stop, lost, found };
