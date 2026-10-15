@@ -220,6 +220,8 @@ UI_OVERRIDES = {
     # the piano plate's neighbour guard, and how firmly the plate reads a touch (firmware 93)
     416: control('harp_parameter', 'Plate', 'slider'),
     418: control('harp_parameter', 'Plate', 'slider'),
+    # the strip guard, for the stock strip and framed strings (firmware 95)
+    417: control('harp_parameter', 'Plate', 'slider'),
     # when a string sounds and how firmly it's touched, and how it stops
     216: control('harp_parameter', 'Pluck', 'switch'),
     # a finger on a ringing string bends it as far as it is pressed (firmware 49)

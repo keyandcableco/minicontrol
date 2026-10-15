@@ -786,10 +786,10 @@ void apply_audio_parameter(int adress, int value) {
             formant_resonance=value; update_formants();
             break;
         case 241:
-            harp_touch_threshold=value; harp_sensor.set_thresholds(harp_touch_threshold, harp_release_threshold);
+            harp_touch_threshold=value; apply_harp_thresholds();
             break;
         case 242:
-            harp_release_threshold=value; harp_sensor.set_thresholds(harp_touch_threshold, harp_release_threshold);
+            harp_release_threshold=value; apply_harp_thresholds();
             break;
         case 243:
             choose_harp_plate(value);
@@ -798,7 +798,7 @@ void apply_audio_parameter(int adress, int value) {
             usb_audio_request(value);
             break;
         case 245:
-            harp_ribbon=value;
+            harp_ribbon=value; apply_harp_thresholds();
             break;
         case 246:
             ribbon_span=value;
@@ -1050,7 +1050,7 @@ void apply_audio_parameter(int adress, int value) {
             drums_only=value;
             break;
         case 343:
-            harp_drums=value;
+            harp_drums=value; apply_harp_thresholds();
             break;
         case 344:
             step_scale_mask[0]=value; rebuild_custom_scale(); for (int i=0;i<12;i++){ current_harp_notes[i]=calculate_note_harp(i,slash_chord,sharp_active); };
@@ -1198,6 +1198,9 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 416:
             neighbour_guard=value;
+            break;
+        case 417:
+            strip_guard=value; apply_harp_thresholds();
             break;
         case 418:
             harp_touch_scale=value; apply_harp_touch_scale();
