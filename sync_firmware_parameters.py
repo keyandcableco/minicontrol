@@ -212,10 +212,15 @@ UI_OVERRIDES = {
     # harp: playing, how the hands meet the harp. Each preset holds these, so the plate and its
     # thresholds sit here rather than with the instrument's own settings under General.
     # The plate fitted, and how firm a touch its zones need
-    243: select('harp_parameter', 'Plate', ["Stock strip, or any plate of twelve separate zones",
-                                            "Zipper 24", "Arcade wheel", "Fretless wrap"]),
+    # (the released plates only: 1 to 4 belong to plates not out yet)
+    243: {"section": 'harp_parameter', "group": 'Plate', "ui_type": "select",
+          "options": options(["Stock strip, or any plate of twelve separate zones"])
+                     + options(["Piano plate", "Twin rows", "Framed strings"], start=5)},
     241: control('harp_parameter', 'Plate', 'slider'),
     242: control('harp_parameter', 'Plate', 'slider'),
+    # the piano plate's neighbour guard, and how firmly the plate reads a touch (firmware 93)
+    416: control('harp_parameter', 'Plate', 'slider'),
+    418: control('harp_parameter', 'Plate', 'slider'),
     # when a string sounds and how firmly it's touched, and how it stops
     216: control('harp_parameter', 'Pluck', 'switch'),
     # a finger on a ringing string bends it as far as it is pressed (firmware 49)

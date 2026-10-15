@@ -792,7 +792,7 @@ void apply_audio_parameter(int adress, int value) {
             harp_release_threshold=value; harp_sensor.set_thresholds(harp_touch_threshold, harp_release_threshold);
             break;
         case 243:
-            harp_plate=value;
+            choose_harp_plate(value);
             break;
         case 244:
             usb_audio_request(value);
@@ -1195,6 +1195,12 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 395:
             chord_touch=value; if (!chord_touch) { chord_touch_gain=1; chord_touch_vscale=1; chord_touch_firmness=1; chord_touch_unwind=true; };
+            break;
+        case 416:
+            neighbour_guard=value;
+            break;
+        case 418:
+            harp_touch_scale=value; apply_harp_touch_scale();
             break;
         default:
             break;
