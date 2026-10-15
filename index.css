@@ -186,6 +186,17 @@
       stroke-width: 3;
     }
     #map-svg .map-hit { fill: transparent; }
+    /* a harp plate's touch zones, the piano plate's black keys filled */
+    #map-svg .map-zone {
+      fill: none;
+      stroke: var(--text-primary);
+      stroke-width: 2.5;
+      opacity: 0.55;
+    }
+    #map-svg .map-zone.black {
+      fill: var(--text-primary);
+      fill-opacity: 0.35;
+    }
     #map-svg .map-tick {
       stroke: var(--text-primary);
       stroke-width: 4;
