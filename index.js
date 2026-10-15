@@ -904,14 +904,14 @@ document.getElementById("unlock-all-btn")?.addEventListener("click", () => {
   showNotification("Every setting unlocked", "success");
 });
 
-// Ben Poilve's newest firmware. Past it is the test-allFeatures fork, which this page's newer
-// controls are for.
+// Ben Poilve's newest firmware. Past it is the Key & Cable fork, published as releases of
+// keyandcableco/minichord, which this page's newer controls are for.
 const OFFICIAL_FIRMWARE = 9;
-const TEST_FIRMWARE_LINK = '<a href="https://github.com/keyandcableco/minichord/tree/test-allFeatures">test-allFeatures firmware</a>';
+const TEST_FIRMWARE_LINK = '<a href="https://github.com/keyandcableco/minichord/releases/latest">Key &amp; Cable firmware</a>';
 const TEST_FIRMWARE_CAVEAT = "It is experimental and may have bugs, and it isn't made or endorsed by Ben Poilve. Back up your banks before installing it.";
 
 function firmwareNeed(needed, firmware) {
-  return (needed > OFFICIAL_FIRMWARE ? `Needs the test-allFeatures firmware, version ${needed} or later.` : `Needs firmware ${needed} or later.`) +
+  return (needed > OFFICIAL_FIRMWARE ? `Needs the Key & Cable firmware, version ${needed} or later.` : `Needs firmware ${needed} or later.`) +
     ` This minichord has ${firmware}.`;
 }
 
