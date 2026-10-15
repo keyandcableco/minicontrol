@@ -4,7 +4,7 @@ Twelve presets through drum and bass, one for each bank, all at 168-174 bpm: liq
 
 Tap hold for rhythm mode to bring in the drums; the chord buttons are the bass (and a pad above it), held as long as you hold them, so the bassline is yours. Roll from one button onto the next for a sliding bass. Modifier + hold plays a fill.
 
-They need firmware 80 (the sampled electric piano, vibraphone and basses) from the test-allFeatures branch.
+They need advanced firmware 80 or later (the sampled electric piano, vibraphone and basses).
 
 **All twelve at once:** in minicontrol, "reorder and bulk edit", then "restore from a backup" with `drum-and-bass.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning reference, LED brightness, harp plate and thresholds, and USB audio as they are.
 

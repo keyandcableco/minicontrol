@@ -6,7 +6,7 @@ Bank 7, **Barry Harris**, is the place to play brothers (390) and brothers again
 
 In each bank the hand over the plate is a different pianist's third hand: the sustain pedal, the left hand's legato, rubato, swing, the bass an octave down, the voicing opening, the band coming in, beats taken from the bar, the felt lifting, the tape's wow.
 
-They need firmware 89 from the test-allFeatures branch: the chords following the harp's touch is 89, brothers striking each block afresh 88, brothers again 87, the time signature 86, the upright bass 80. On firmware 87 the Barry Harris blocks slide from one to the next instead of being struck.
+They need advanced firmware 89 or later: the chords following the harp's touch is 89, brothers striking each block afresh 88, brothers again 87, the time signature 86, the upright bass 80. On firmware 87 the Barry Harris blocks slide from one to the next instead of being struck.
 
 **All twelve at once:** in minicontrol, "reorder and bulk edit", then "restore from a backup" with `piano.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning reference, LED brightness, harp plate and thresholds, and USB audio as they are.
 

@@ -4,7 +4,7 @@ Twelve instruments from the front porch, one for each bank, each played the way 
 
 Where the real instrument sounds as the finger leaves the string (the autoharp, the Celtic harp, the dulcimer, the music-box-like tines) the harp here plucks on lift: rest fingers on strings and they sound as you lift them. The dulcimer's noter is the koto press: press a ringing string to bend it. The pedal steel's volume pedal is touch pressure, the harmonica's cupped hands are the hovering hand, the mandolin's tremolo picking is a hand held over the plate, and the washboard band is the harp's twelve strings as drum pads, with the looper to build a rhythm in layers.
 
-They need firmware 80 (the sampled upright bass and accordion) from the test-allFeatures branch.
+They need advanced firmware 80 or later (the sampled upright bass and accordion).
 
 **All twelve at once:** in minicontrol, "reorder and bulk edit", then "restore from a backup" with `folk.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning reference, LED brightness, harp plate and thresholds, and USB audio as they are.
 

@@ -4,7 +4,7 @@ Twelve electronic instruments, one for each bank, each a way of playing the mini
 
 Hover is a filter sweep where a synth wants one, and elsewhere the thing a synth player reaches for mid-phrase: the theremin's vibrato, the gate's filter, the DJ's low pass. The mod knob takes the sound's one essential control (attack, decay, gate speed, resonance, the sequence's note length) and the double tap the moment's change: suspensions while held, the gate doubling, the swing, chromatic pitch, the tape stop.
 
-They need firmware 73 (the sampled electric piano) from the test-allFeatures branch. **Radio DJ** (bank 9) and the stabs of **Synth Brass** (bank 7) listen to what plays into the minichord over USB, so they need USB audio set to 1 in minicontrol, once (presets don't change it).
+They need advanced firmware 73 or later (the sampled electric piano). **Radio DJ** (bank 9) and the stabs of **Synth Brass** (bank 7) listen to what plays into the minichord over USB, so they need USB audio set to 1 in minicontrol, once (presets don't change it).
 
 **All twelve at once:** in minicontrol, "reorder and bulk edit", then "restore from a backup" with `synth.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning reference, LED brightness, harp plate and thresholds, and USB audio as they are.
 

@@ -26,7 +26,7 @@ def INTRO(backup):
         "breathing pad, the whale and the deep field. The hovering hand does what a slow music most wants: "
         "the room, the drone's level, a bow's attack, a music box winding down.",
         "",
-        "They need firmware 74 (the tanpura's jawari) from the test-allFeatures branch.",
+        "They need advanced firmware 74 or later (the tanpura's jawari).",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "

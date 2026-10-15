@@ -904,14 +904,14 @@ document.getElementById("unlock-all-btn")?.addEventListener("click", () => {
   showNotification("Every setting unlocked", "success");
 });
 
-// Ben Poilve's newest firmware. Past it is the Key & Cable fork, published as releases of
+// Ben Poilve's newest classic firmware. Past it is the advanced firmware, published as releases of
 // keyandcableco/minichord, which this page's newer controls are for.
 const OFFICIAL_FIRMWARE = 9;
-const TEST_FIRMWARE_LINK = '<a href="https://github.com/keyandcableco/minichord/releases/latest">Key &amp; Cable firmware</a>';
+const TEST_FIRMWARE_LINK = '<a href="https://github.com/keyandcableco/minichord/releases/latest">advanced firmware</a>';
 const TEST_FIRMWARE_CAVEAT = "It is experimental and may have bugs, and it isn't made or endorsed by Ben Poilve. Back up your banks before installing it.";
 
 function firmwareNeed(needed, firmware) {
-  return (needed > OFFICIAL_FIRMWARE ? `Needs the Key & Cable firmware, version ${needed} or later.` : `Needs firmware ${needed} or later.`) +
+  return (needed > OFFICIAL_FIRMWARE ? `Needs the advanced firmware, version ${needed} or later.` : `Needs firmware ${needed} or later.`) +
     ` This minichord has ${firmware}.`;
 }
 
@@ -925,7 +925,7 @@ function showFirmwareNote(firmware, newest) {
     note.innerHTML = `This minichord has firmware ${firmware}, so the greyed-out controls are off: they need firmware ${newest} or later. ` +
       `The <a href="https://minichord.com/user_manual/">minichord documentation</a> says how to update it.`;
   } else if (firmware <= OFFICIAL_FIRMWARE) {
-    note.innerHTML = `This minichord has the official firmware (${firmware}), so the greyed-out controls are off: ` +
+    note.innerHTML = `This minichord has the classic firmware (${firmware}), so the greyed-out controls are off: ` +
       `they need the ${TEST_FIRMWARE_LINK}, version ${newest} or later. ${TEST_FIRMWARE_CAVEAT}`;
   } else {
     note.innerHTML = `This minichord has version ${firmware} of the ${TEST_FIRMWARE_LINK}, so the greyed-out controls are off: ` +

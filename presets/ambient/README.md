@@ -4,7 +4,7 @@ Twelve slow instruments for a quiet room, one for each bank, each a way of letti
 
 Most of these pluck on lift: rest fingers on the strings to choose the notes and lift them to let them sound, one by one or together, which is how a slow music is placed rather than struck. Two bend by pressing (the koto press): a glass rubbed harder, a bowl's rim pressed. Pressure swells the breathing pad, the whale and the deep field. The hovering hand does what a slow music most wants: the room, the drone's level, a bow's attack, a music box winding down.
 
-They need firmware 74 (the tanpura's jawari) from the test-allFeatures branch.
+They need advanced firmware 74 or later (the tanpura's jawari).
 
 **All twelve at once:** in minicontrol, "reorder and bulk edit", then "restore from a backup" with `ambient.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning reference, LED brightness, harp plate and thresholds, and USB audio as they are.
 

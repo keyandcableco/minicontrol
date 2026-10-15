@@ -4,7 +4,7 @@ Twelve presets for the kalimba and the marimba, one for each bank, each the inst
 
 In the kalimba presets a hand over the plate is a hand over the instrument's sound hole: kalimba players cup and open it for a wah, and the notes go dim and round as the hand comes down. The kalimba was recorded from C#3 to D5, so the presets keep it near there, except the marimbula, which plays it an octave down on purpose.
 
-They need firmware 80 (the sampled kalimba, marimba and upright bass, the reed piano) from the test-allFeatures branch.
+They need advanced firmware 80 or later (the sampled kalimba, marimba and upright bass, the reed piano).
 
 **All twelve at once:** in minicontrol, "reorder and bulk edit", then "restore from a backup" with `mallets.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning reference, LED brightness, harp plate and thresholds, and USB audio as they are.
 

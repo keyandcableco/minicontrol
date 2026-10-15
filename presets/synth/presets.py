@@ -27,7 +27,7 @@ def INTRO(backup):
         "and the double tap the moment's change: suspensions while held, the gate doubling, the swing, "
         "chromatic pitch, the tape stop.",
         "",
-        "They need firmware 73 (the sampled electric piano) from the test-allFeatures branch. **Radio DJ** "
+        "They need advanced firmware 73 or later (the sampled electric piano). **Radio DJ** "
         "(bank 9) and the stabs of **Synth Brass** (bank 7) listen to what plays into the minichord over USB, "
         "so they need USB audio set to 1 in minicontrol, once (presets don't change it).",
         "",

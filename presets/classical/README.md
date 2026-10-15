@@ -4,7 +4,7 @@ Twelve presets through the history of written music, one for each bank, stepping
 
 Each early preset is in the tuning its music was played in: the twelve-note historical temperaments are sweetest in the keys around C and grow rougher in the far keys, as they did. Four presets come from Gen 2 as they are.
 
-They need firmware 69 from the test-allFeatures branch.
+They need advanced firmware 69 or later.
 
 **All twelve at once:** in minicontrol, "reorder and bulk edit", then "restore from a backup" with `classical.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning reference, LED brightness, harp plate and thresholds, and USB audio as they are.
 

@@ -28,8 +28,8 @@ def INTRO(backup):
         "kalimba was recorded from C#3 to D5, so the presets keep it near there, except the marimbula, which "
         "plays it an octave down on purpose.",
         "",
-        "They need firmware 80 (the sampled kalimba, marimba and upright bass, the reed piano) from the "
-        "test-allFeatures branch.",
+        "They need advanced firmware 80 or later (the sampled kalimba, marimba and upright bass, the reed "
+        "piano).",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "

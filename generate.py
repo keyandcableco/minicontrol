@@ -999,7 +999,7 @@ html_template = '''<!DOCTYPE html>
       {parameter_sections}
     </div>
     <footer id="page-footer">
-      <p>A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>. The bank tools, knob layer, double tap pairs and the other newer settings need the unofficial <a href="https://github.com/keyandcableco/minichord/releases/latest">Key &amp; Cable firmware</a> for the minichord. It is experimental and may have bugs, and it isn't made or endorsed by Ben Poilve: back up your banks before installing it.</p>
+      <p>A fork of <a href="https://minichord.com/minicontrol/">Ben Poilve's minicontrol</a>. The bank tools, knob layer, double tap pairs and the other newer settings need the unofficial <a href="https://github.com/keyandcableco/minichord/releases/latest">advanced firmware</a> for the minichord. It is experimental and may have bugs, and it isn't made or endorsed by Ben Poilve: back up your banks before installing it.</p>
       <p>Made by <a href="https://keyandcable.com">The Key &amp; Cable Company</a>. Source on <a href="https://github.com/keyandcableco/minicontrol">GitHub</a>.<span class="manual-link" hidden> The <a href="manual/">advanced manual</a> explains the newer settings.</span></p>
     </footer>
   </div>

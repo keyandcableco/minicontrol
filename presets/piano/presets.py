@@ -32,7 +32,7 @@ def INTRO(backup):
         "left hand's legato, rubato, swing, the bass an octave down, the voicing opening, the band coming in, "
         "beats taken from the bar, the felt lifting, the tape's wow.",
         "",
-        "They need firmware 89 from the test-allFeatures branch: the chords following the harp's touch is 89, "
+        "They need advanced firmware 89 or later: the chords following the harp's touch is 89, "
         "brothers striking each block afresh 88, brothers again 87, the time signature 86, the upright bass 80. "
         "On firmware 87 the Barry Harris blocks slide from one to the next instead of being struck.",
         "",

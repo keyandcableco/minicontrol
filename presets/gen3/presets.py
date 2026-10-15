@@ -33,8 +33,8 @@ def INTRO(backup):
         "Organ plays the tonewheel organ, Lo-fi Study the sampled electric piano, and Highland Pipes' "
         "accordion is the sampled accordion.",
         "",
-        "They need firmware 80 (the sampled electric piano and accordion, the tonewheel organ) from the "
-        "test-allFeatures branch; on older firmware the settings that came after it reset to off.",
+        "They need advanced firmware 80 or later (the sampled electric piano and accordion, the tonewheel "
+        "organ); on older firmware the settings that came after it reset to off.",
         "",
         f"**All twelve at once:** in minicontrol, \"reorder and bulk edit\", then \"restore from a backup\" with "
         f"`{backup}`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning "

@@ -4,7 +4,7 @@ Twelve presets, one for each bank, each built around something the minichord lea
 
 Revised for firmware 68 and 69. The sounds are the ones tuned by ear; each preset now also has the gestures that suit it from firmware 49-69: a fill on modifier + hold, an intro and an ending in rhythm mode, a second rhythm style that each fill switches to, hammer-ons on the plucked instruments (quick enough for trills where the instrument wants them), the double tap held for a moment's change, fingered glide (on the sampled choir and strings too), the drums and the drone in the reverb, and purity (just intonation that follows the chord) where an ensemble would tune by ear. Midnight Raga is rebuilt around the new tanpura and the recorded tabla. For firmware 80, each preset takes the recorded instrument it was imitating, where the minichord now has one: Midnight Raga's ribbon is the sampled sitar, and Jazz Piano and Folk Guitar & Bass have the sampled upright bass on the bass note. In every preset, modifier + down puts the preset back as it was saved, and modifier + up is the panic.
 
-They need firmware 80 (the sampled sitar and upright bass) from the test-allFeatures branch; on older firmware the settings that came after it reset to off.
+They need advanced firmware 80 or later (the sampled sitar and upright bass); on older firmware the settings that came after it reset to off.
 
 **All twelve at once:** in minicontrol, "reorder and bulk edit", then "restore from a backup" with `gen2.backup.json`. That replaces every bank (back up first). It keeps each bank's MIDI routing, tuning reference, LED brightness, harp plate and thresholds, and USB audio as they are.
 

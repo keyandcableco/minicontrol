@@ -53,7 +53,7 @@ const TOUR_STEPS = [
   { target: '[aria-labelledby="tool-share"]', title: 'Preset codes and the minishop',
     text: 'Copy puts the live sound on the clipboard as a preset code, to keep or to share; paste loads one. The minishop has presets players have shared, to hear on the minichord and save to a bank.' },
   { target: ['[aria-labelledby="tool-looper"]', '[aria-labelledby="tool-chord-memory"]'], title: 'Looper and chord memory',
-    text: 'The looper records what you play and plays it back, with overdubs. Chord memory records a chord progression in time with rhythm mode and plays it by itself while both hands play the harp, as an Omnichord does. Both need the newer firmware named at the foot of the page.' },
+    text: 'The looper records what you play and plays it back, with overdubs. Chord memory records a chord progression in time with rhythm mode and plays it by itself while both hands play the harp, as an Omnichord does. Both need the advanced firmware named at the foot of the page.' },
   { target: '#minichord-map', title: 'The minichord, drawn',
     text: 'Each button and knob is labelled with what it does in the live preset, and the harp with its strings for the chord you point at. Choose any part of it to change what it does.' },
   { target: '#map-layers', title: 'Three views of the drawing',
