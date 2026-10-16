@@ -10135,7 +10135,7 @@
       "min_value": 0,
       "max_value": 1535,
       "default_value": 0,
-      "tooltip": "a lock keeps the instrument's own value for a setting, whatever preset is loaded: a preset load skips a locked setting, as it skips USB audio and upside down, and a change made to it is kept in the minichord itself rather than in the preset. Writing it does one thing and it goes back to 0, never kept in a preset: an address from 1 to 511 locks that setting, 1024 plus the address unlocks it. Control command 9 reports the locked settings, command 10 unlocks them all (0) or locks the default ones again (1): the harp plate, its touch and release thresholds, neighbour guard and touch scale, and the master tuning. Actions, the preset's name and the controls' own storage can't be locked",
+      "tooltip": "a lock keeps the instrument's own value for a setting, whatever preset is loaded: a preset load skips a locked setting, as it skips USB audio and upside down, and a change made to it is kept in the minichord itself rather than in the preset. Writing it does one thing and it goes back to 0, never kept in a preset: an address from 1 to 511 locks that setting, 1024 plus the address unlocks it. Control command 9 reports the locked settings, command 10 unlocks them all (0) or locks the default ones again (1): the harp plate, its touch and release thresholds, neighbour guard, strip guard and touch scale, and the master tuning. A default one a newer firmware brings is locked at its default the first time that firmware starts, and stays unlocked once a player unlocks it. Actions, the preset's name and the controls' own storage can't be locked",
       "method": "lock_action(value);",
       "iterate": 1,
       "curve": "linear",
