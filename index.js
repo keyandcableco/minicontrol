@@ -869,6 +869,23 @@ function handleDataReceived(data) {
   showFirmwareNote(firmware, newest);
 }
 
+// Page 1 sent by the minichord unasked, when it changes settings of its own accord: choosing a plate
+// live puts harp touch scale (418) back to 100. The controls follow what changed. It isn't another
+// edit: the change that caused it already was one.
+function handlePage(values) {
+  let changed = false;
+  values.forEach((value, sysex) => {
+    const param = findParameterBySysex(sysex);
+    if (!param || currentValues[sysex] === value) return;
+    currentValues[sysex] = value;
+    applyUIValue(param, value);
+    changed = true;
+  });
+  if (!changed) return;
+  updateUIColor();   // the sliders' tracks
+  if (typeof scheduleMinichordMap === 'function') scheduleMinichordMap();
+}
+
 // The locks (firmware 76): the padlock beside a setting shows whether the minichord keeps it as its
 // own, whatever preset is loaded, and a click locks or unlocks it. The padlocks stay hidden until a
 // minichord answers for its locks (command 9), so older firmware shows the page as it was.
@@ -1146,6 +1163,7 @@ async function initialize() {
   setupRhythmGridControls();
   controller.onConnectionChange = updateConnectionStatus;
   controller.onDataReceived = handleDataReceived;
+  controller.onPage = handlePage;
   controller.onLocks = paintLocks;
   const connected = await controller.initialize();
   if (connected) loadBankSettings(0);

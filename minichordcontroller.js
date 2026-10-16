@@ -31,6 +31,7 @@ class MiniChordController {
     this.MIDI_request_option = { sysex: true };
     this.onConnectionChange = null;
     this.onDataReceived = null;
+    this.onPage = null;          // page 1 sent unasked, as an array by address (processPage)
     this.isInitializing = false; // New flag
 
   }
@@ -211,18 +212,24 @@ class MiniChordController {
 }
 
 // A page past 0: 7D 6D <page>, then two bytes a setting. Page 1 completes the dump held for it.
+// With none held, the minichord sent it by itself, having changed a setting of its own accord (a
+// plate chosen live puts harp touch scale back to 100), and onPage hands it to the page to follow.
 processPage(data) {
   const page = data[2];
   if (page !== 1) return;
   this.has_page1 = true;
+  const values = [];
+  for (let i = 0; i < this.page_size; i++) values[this.page_size + i] = data[3 + 2 * i] + 128 * data[3 + 2 * i + 1];
   const held = this.pendingDump;
-  if (!held) return;
-  this.dropPendingDump();
-  for (let i = 0; i < this.page_size; i++) {
-    const value = data[3 + 2 * i] + 128 * data[3 + 2 * i + 1];
-    held.parameters[this.page_size + i] = value;
-    held.rawParameters[this.page_size + i] = value;
+  if (!held) {
+    if (this.onPage) this.onPage(values);
+    return;
   }
+  this.dropPendingDump();
+  values.forEach((value, i) => {
+    held.parameters[i] = value;
+    held.rawParameters[i] = value;
+  });
   this.deliverDump(held);
 }
 
