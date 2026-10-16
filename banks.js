@@ -340,6 +340,19 @@ function restoreValues(entry) {
   if (values.length <= controller.page_size && controller.has_page1) {
     Object.entries(controller.page1_defaults).forEach(([a, v]) => { values[a] = v; });
   }
+  // A bank saved by an older firmware restores as the minichord loads one from its own memory
+  // (apply_preset_version): the settings that came in after it go to their defaults rather than
+  // the 0 the file holds there, and a plate takes its number from 93. A file carries every address
+  // whatever its age, and the minichord saves what it's sent as its own version's, so without this
+  // a bank set from firmware 89 turns neighbour guard and strip guard off for good. Page 0 is whole
+  // in every file from firmware 30 on; a version of 0 says nothing, so that file is left as it is.
+  const version = values[controller.firmware_adress] || 0;
+  if (version > 0) {
+    Object.entries(controller.page1_defaults).forEach(([a, v]) => {
+      if (Math.round((findParameterBySysex(+a)?.introduction_version ?? 0) * 100) > version) values[a] = v;
+    });
+    if (version < 93 && values[243] >= 1 && values[243] <= 4) values[243] += 7;   // harp plate
+  }
   // a backup from before names were kept in the bank brings its name along into it
   if (namesOnDevice() && typeof entry.name === "string" && entry.name && !presetName(values)) {
     setPresetName(values, entry.name);
