@@ -35,7 +35,8 @@ CHORD_TYPES = ["Slot default", "Major", "Minor", "Dominant 7", "Major 7", "Minor
 
 
 def options(labels, start=0):
-    return [{"value": i + start, "label": label} for i, label in enumerate(labels)]
+    # a label None leaves its value out (the harp plate's 5-7, for plates not out)
+    return [{"value": i + start, "label": label} for i, label in enumerate(labels) if label is not None]
 
 
 def select(section, group, labels, start=0):
@@ -212,9 +213,11 @@ UI_OVERRIDES = {
     # harp: playing, how the hands meet the harp. Each preset holds these, so the plate and its
     # thresholds sit here rather than with the instrument's own settings under General.
     # The plate fitted, and how firm a touch its zones need
-    # (the released plates only: 8 and up belong to plates not out yet)
+    # (the released plates only: 5-7 are kept for plates of twelve separate zones, and 10 and up belong to
+    # plates not out yet)
     243: select('harp_parameter', 'Plate', ["Stock strip, or any plate of twelve separate zones",
-                                            "Keymaster", "Piano plate", "Twin rows", "Framed strings"]),
+                                            "Keymaster", "Piano plate", "Twin rows", "Framed strings",
+                                            None, None, None, "Zipper 24", "Arcade wheel"]),
     241: control('harp_parameter', 'Plate', 'slider'),
     242: control('harp_parameter', 'Plate', 'slider'),
     # the piano plate's neighbour guard, and how firmly the plate reads a touch (firmware 93)
