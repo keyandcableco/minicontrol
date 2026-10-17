@@ -222,6 +222,9 @@ UI_OVERRIDES = {
     418: control('harp_parameter', 'Plate', 'slider'),
     # the strip guard, for the stock strip and framed strings (firmware 95)
     417: control('harp_parameter', 'Plate', 'slider'),
+    # plate detect (firmware 98): on or off here; its actions, 2 forget and 3 teach, are buttons
+    # (generate.py's PLATE_TEACH_HTML), as a switch would keep them
+    422: control('harp_parameter', 'Plate', 'switch'),
     # when a string sounds and how firmly it's touched, and how it stops
     216: control('harp_parameter', 'Pluck', 'switch'),
     # a finger on a ringing string bends it as far as it is pressed (firmware 49)

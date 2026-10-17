@@ -1205,6 +1205,9 @@ void apply_audio_parameter(int adress, int value) {
         case 418:
             harp_touch_scale=value; apply_harp_touch_scale();
             break;
+        case 422:
+            plate_detect_set(value);
+            break;
         default:
             break;
     }

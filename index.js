@@ -1506,4 +1506,17 @@ document.querySelectorAll(".looper-btn").forEach(button => button.addEventListen
   controller.sendParameter(parseInt(button.dataset.address || "256"), parseInt(button.dataset.looperAction));
 }));
 
+// Plate detect's actions (firmware 98), written once to setting 422 like the looper's: 3 teaches the plate
+// fitted as the one harp plate shows, 2 forgets every plate taught. The minichord puts 422 back to 1 and
+// sends it (handlePage); what it learned it shows on its LED.
+document.querySelectorAll(".plate-btn").forEach(button => button.addEventListener("click", () => {
+  if (!deviceReady()) return;
+  const action = parseInt(button.dataset.plateAction);
+  if (action === 2 && !confirm("Forget every plate this minichord has learned? Each plate will need teaching again.")) return;
+  controller.sendParameter(422, action);
+  showNotification(action === 3
+    ? "Hands off the harp: the LED flashes white three times when the plate is learned (one long red flash: it reads as another plate already learned)"
+    : "Every plate forgotten: teach each one again", "success");
+}));
+
 initialize();

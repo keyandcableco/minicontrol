@@ -133,7 +133,7 @@ parameter_name_order = {
             'octave change',
             'harp shuffling'
         ],
-        'Plate': ['harp plate', 'harp touch threshold', 'harp release threshold'],
+        'Plate': ['harp plate', 'plate detect', 'harp touch threshold', 'harp release threshold'],
         'Pluck': [
             'pluck on lift',
             'touch velocity',
@@ -461,7 +461,23 @@ def generate_param_html(param):
                 </div>
             </div>
         ''')
+    if sysex_address == 422:
+        html.append(PLATE_TEACH_HTML)
     return '\n'.join(html)
+
+# Plate detect (422, firmware 98): teaching the plate fitted and forgetting every plate taught are
+# actions written once, like the looper's (index.js, plate buttons); the switch above keeps 0 or 1.
+# Choosing a plate in harp plate teaches it too: the button is for the plate already chosen.
+PLATE_TEACH_HTML = '''
+            <div class="plate-teach" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px;">
+                <div class="button_div">
+                    <button type="button" class="plate-btn inactive" data-plate-action="3" version="0.98" title="learn the plate fitted now as the plate harp plate shows: keep your hands off the harp until the LED flashes white three times; one long red flash means it reads as another plate already learned">teach this plate</button>
+                </div>
+                <div class="button_div">
+                    <button type="button" class="plate-btn inactive" data-plate-action="2" version="0.98" title="forget every plate this minichord has learned; plate detect stays on, and each plate needs teaching again">forget all plates</button>
+                </div>
+                <div style="font-size: 0.85em; opacity: 0.8; max-width: 340px;">To teach a plate: fit it, choose it in harp plate (or press teach if it is already chosen), then keep your hands off the harp until the LED flashes white three times. From then on two white flashes mean the minichord found that plate by itself.</div>
+            </div>'''
 
 # A Scala file (.scl) of twelve notes read into the own temperament (tuning.js)
 SCALA_IMPORT_HTML = '''
