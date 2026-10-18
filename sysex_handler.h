@@ -1239,10 +1239,13 @@ void apply_audio_parameter(int adress, int value) {
             stutter_sync=value; bend_apply();
             break;
         case 440:
-            stutter_shortest_ms=value; bend_apply();
+            stutter_shortest_ms=value < 3 ? 25 : value; bend_apply();
             break;
         case 441:
             stutter_drums=value; bend_apply();
+            break;
+        case 442:
+            bends_interact=value; bend_apply();
             break;
         default:
             break;
