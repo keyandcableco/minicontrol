@@ -118,6 +118,8 @@
   "431": "global: bends: pitch drop range",
   "432": "global: bends: pitch drop sag",
   "438": "global: bends: stutter",
+  "441": "global: bends: stutter drums",
+  "440": "global: bends: stutter shortest",
   "439": "global: bends: stutter sync",
   "433": "global: bends: voltage starve",
   "372": "global: drone: drone",

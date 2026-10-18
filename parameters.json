@@ -2021,7 +2021,7 @@
       "min_value": 0,
       "max_value": 100,
       "default_value": 0,
-      "tooltip": "catches a slice of everything that comes out from the moment it is pressed and plays it over and over while held, the bent Omnichord's glitch: the deeper, the shorter the slice, from 139 ms at a touch to 9 ms (a buzz) at 100, each new depth taken at the slice's next repeat. The slice plays once it has been heard through once, so a short one starts at once and a long one after it. Let go, the sound comes back. With stutter sync, slices in time with the rhythm. A preset always loads it at 0, so a saved preset never starts frozen in a slice. Control change 116 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before",
+      "tooltip": "catches a slice of everything that comes out from the moment it is pressed and plays it over and over while held, the bent Omnichord's glitch: the deeper, the shorter the slice, from 280 ms at a touch to stutter shortest (25 ms) at 100, each new depth taken at the slice's next repeat. The drums play on through it unless stutter drums is 1. The slice plays once it has been heard through once, so a short one starts at once and a long one after it. Let go, the sound comes back. With stutter sync, slices in time with the rhythm. A preset always loads it at 0, so a saved preset never starts frozen in a slice. Control change 116 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before",
       "method": "stutter_setting(value);",
       "iterate": 1,
       "curve": "linear",
@@ -2037,12 +2037,55 @@
       "min_value": 0,
       "max_value": 1,
       "default_value": 0,
-      "tooltip": "while rhythm mode plays, stutter's slices are a quarter of a beat, an eighth, a sixteenth, a 32nd or a 64th (at the bent tempo, with clock bend), shorter the deeper, rather than any length. 0 any length, 1 in time",
+      "tooltip": "while rhythm mode plays, stutter's slices are half a beat, a quarter, an eighth, a sixteenth or a 32nd (at the bent tempo, with clock bend; none shorter than stutter shortest), shorter the deeper, rather than any length. 0 any length, 1 in time",
       "method": "stutter_sync=value; bend_apply();",
       "iterate": 1,
       "curve": "linear",
       "controls": "tap",
       "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 440,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "stutter shortest",
+      "data_type": "int",
+      "min_value": 3,
+      "max_value": 100,
+      "default_value": 25,
+      "tooltip": "the slice stutter plays at 100, in ms: the deeper it is pressed, the shorter the slice, from 280 ms down to this. 25 keeps it a stutter all the way; under about 20 it becomes a buzz, a tone of its own, at the end of the press",
+      "method": "stutter_shortest_ms=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 441,
+      "group": "Bends",
+      "ui_type": "select",
+      "name": "stutter drums",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "whether the drums stutter with everything else. 0: they keep playing through a stutter, so the beat drives on under the repeating slice; 1: they are caught in the slice too and repeat with it",
+      "method": "stutter_drums=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 1.02,
+      "options": [
+        {
+          "value": 0,
+          "label": "The drums play on through it"
+        },
+        {
+          "value": 1,
+          "label": "The drums stutter too"
+        }
+      ],
       "step": 1
     }
   ],

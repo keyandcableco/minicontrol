@@ -1238,6 +1238,12 @@ void apply_audio_parameter(int adress, int value) {
         case 439:
             stutter_sync=value; bend_apply();
             break;
+        case 440:
+            stutter_shortest_ms=value; bend_apply();
+            break;
+        case 441:
+            stutter_drums=value; bend_apply();
+            break;
         default:
             break;
     }
