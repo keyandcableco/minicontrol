@@ -179,6 +179,11 @@ UI_OVERRIDES = {
     265: select('chord_parameter', 'Oscillator', VOICES_AND_SONG),
     # each chord note's own voice (firmware 41): 0 follows chord voice, then the voices one up
     **{a: select('chord_parameter', 'Oscillator', ["As the chord voice"] + VOICES_AND_SONG) for a in (270, 271, 272, 273)},
+    # global: the bends (firmware 102), what a circuit bender wires into an Omnichord, on the whole instrument
+    **{a: control('global_parameter', 'Bends', 'slider') for a in (430, 431, 432, 433, 434, 436, 438)},
+    435: select('global_parameter', 'Bends', ["Bits and sample rate", "Bits only", "Sample rate only"]),
+    437: select('global_parameter', 'Bends', ["Slower", "Faster"]),
+    439: control('global_parameter', 'Bends', 'switch'),
     # chord: the ensemble, a slow stereo chorus after the chord chain
     259: control('chord_parameter', 'Ensemble', 'slider'),
     # global: the vocoder, shaped by the sound coming in over USB

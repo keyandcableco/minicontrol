@@ -1857,6 +1857,193 @@
         }
       ],
       "step": 1
+    },
+    {
+      "sysex_adress": 430,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "pitch drop",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "bends the whole instrument down in pitch, as a circuit bender's pitch drop does: the chords, the harp, the drums, everything that comes out, sagging down as far as the depth, in percent of pitch drop range, and back up when let go, over pitch drop sag. A delay-line pitch shifter on the last mix, so it adds a warble of a few Hz, more the deeper, and the sound is 17 ms late while it bends. Control change 112 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before",
+      "method": "bend_setting[0]=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 431,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "pitch drop range",
+      "data_type": "int",
+      "min_value": 1,
+      "max_value": 24,
+      "default_value": 12,
+      "tooltip": "how far pitch drop bends at 100, in semitones: 12 an octave down",
+      "method": "pitch_drop_range=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 432,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "pitch drop sag",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2000,
+      "default_value": 150,
+      "tooltip": "how long pitch drop takes to sag to its depth and to come back up, in ms (to 95%): 0 jumps, 150 a quick sag, 1000 a slow dying-battery droop",
+      "method": "pitch_drop_sag=value; bend_apply();",
+      "iterate": 1,
+      "curve": "exponential",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 433,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "voltage starve",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "starves the instrument's supply, as a bender's voltage-starve pot does: in percent, the pitch wobbles and sags, the sound fuzzes as the rails close in and gets quieter, browns out in short drop-outs that come more often the deeper, and crackles. On everything that comes out. Control change 113 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before",
+      "method": "bend_setting[1]=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 434,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "bitcrush",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "crushes the whole instrument to fewer bits and a lower sample rate, in percent: at 100, 4 bits (counted across the sound's own loudness, so a quiet preset crushes as much as a loud one) at 1.8 kHz. Bitcrush mode chooses bits, rate or both. Control change 114 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before",
+      "method": "bend_setting[2]=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 435,
+      "group": "Bends",
+      "ui_type": "select",
+      "name": "bitcrush mode",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "what bitcrush takes away: 0 bits and sample rate, 1 bits only (a grainy hiss round the notes), 2 sample rate only (a metallic alias above them)",
+      "method": "bitcrush_mode=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 1.02,
+      "options": [
+        {
+          "value": 0,
+          "label": "Bits and sample rate"
+        },
+        {
+          "value": 1,
+          "label": "Bits only"
+        },
+        {
+          "value": 2,
+          "label": "Sample rate only"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 436,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "clock bend",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "bends the rhythm's clock, as a bender's clock pot does: in percent, rhythm mode's patterns, its drums and the MIDI clock it sends slow down (or speed up, with clock bend direction), to a quarter (or four times) the tempo at 100, and come back to the tempo when let go. The sound's pitch stays; pitch drop bends that. Not while the rhythm follows a MIDI clock, which has the tempo; the looper keeps its own time. Control change 115 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before",
+      "method": "bend_setting[3]=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 437,
+      "group": "Bends",
+      "ui_type": "select",
+      "name": "clock bend direction",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "which way clock bend bends the rhythm: 0 slower, 1 faster",
+      "method": "clock_bend_faster=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 1.02,
+      "options": [
+        {
+          "value": 0,
+          "label": "Slower"
+        },
+        {
+          "value": 1,
+          "label": "Faster"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 438,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "stutter",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 100,
+      "default_value": 0,
+      "tooltip": "catches a slice of everything that comes out from the moment it is pressed and plays it over and over while held, the bent Omnichord's glitch: the deeper, the shorter the slice, from 139 ms at a touch to 9 ms (a buzz) at 100, each new depth taken at the slice's next repeat. The slice plays once it has been heard through once, so a short one starts at once and a long one after it. Let go, the sound comes back. With stutter sync, slices in time with the rhythm. A preset always loads it at 0, so a saved preset never starts frozen in a slice. Control change 116 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before",
+      "method": "stutter_setting(value);",
+      "iterate": 1,
+      "curve": "linear",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 439,
+      "group": "Bends",
+      "ui_type": "switch",
+      "name": "stutter sync",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "while rhythm mode plays, stutter's slices are a quarter of a beat, an eighth, a sixteenth, a 32nd or a 64th (at the bent tempo, with clock bend), shorter the deeper, rather than any length. 0 any length, 1 in time",
+      "method": "stutter_sync=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 1.02,
+      "step": 1
     }
   ],
   "chord_parameter": [

@@ -1208,6 +1208,36 @@ void apply_audio_parameter(int adress, int value) {
         case 422:
             plate_detect_set(value);
             break;
+        case 430:
+            bend_setting[0]=value; bend_apply();
+            break;
+        case 431:
+            pitch_drop_range=value; bend_apply();
+            break;
+        case 432:
+            pitch_drop_sag=value; bend_apply();
+            break;
+        case 433:
+            bend_setting[1]=value; bend_apply();
+            break;
+        case 434:
+            bend_setting[2]=value; bend_apply();
+            break;
+        case 435:
+            bitcrush_mode=value; bend_apply();
+            break;
+        case 436:
+            bend_setting[3]=value; bend_apply();
+            break;
+        case 437:
+            clock_bend_faster=value; bend_apply();
+            break;
+        case 438:
+            stutter_setting(value);
+            break;
+        case 439:
+            stutter_sync=value; bend_apply();
+            break;
         default:
             break;
     }
