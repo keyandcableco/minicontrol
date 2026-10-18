@@ -8,7 +8,7 @@ in a preset that the preset's other settings keep from being heard.
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-sys.path.insert(0, os.path.expanduser("~/minichord/firmware/preset_maker"))
+sys.path.insert(0, os.environ.get("PRESET_MAKER", os.path.expanduser("~/minichord/firmware/preset_maker")))
 import build        # noqa: E402
 import interpret    # noqa: E402
 
