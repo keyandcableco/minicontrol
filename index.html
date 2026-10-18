@@ -5397,7 +5397,7 @@
           <div class="minishop-head">
             <div>
               <h2 id="effects-sheet-title">effects</h2>
-              <p class="controls-sheet-where">reverb, pan, the vocoder and the organ</p>
+              <p class="controls-sheet-where">reverb, pan, the vocoder, the organ and the bends</p>
             </div>
             <button type="button" class="settings-close always-on" popovertarget="effects-sheet" popovertargetaction="hide" aria-label="close"><span class="glyph">✕</span></button>
           </div>
@@ -5579,6 +5579,185 @@
                     <option value="0">None</option><option value="1">Second harmonic, fast</option><option value="2">Third harmonic, fast</option><option value="3">Third harmonic, slow</option>
                 </select>
                 <button type="button" class="lock-btn always-on" data-lock="389" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        <h3 style="margin: 30px 0 10px; font-size: 1.5em;">Bends</h3>
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-430" title="bends the whole instrument down in pitch, as a circuit bender's pitch drop does: the chords, the harp, the drums, everything that comes out, sagging down as far as the depth, in percent of pitch drop range, and back up when let go, over pitch drop sag. A delay-line pitch shifter on the last mix, so it adds a warble of a few Hz, more the deeper, and the sound is 17 ms late while it bends. Control change 112 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" style="width: 150px; font-weight: bold;">pitch drop</label>
+                <input type="range" id="param-430" name="pitch drop" class="inactive"
+                       min="0" max="100"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="430" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="bends the whole instrument down in pitch, as a circuit bender's pitch drop does: the chords, the harp, the drums, everything that comes out, sagging down as far as the depth, in percent of pitch drop range, and back up when let go, over pitch drop sag. A delay-line pitch shifter on the last mix, so it adds a warble of a few Hz, more the deeper, and the sound is 17 ms late while it bends. Control change 112 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-430" class="inactive"
+                       value="0"
+                       min="0" max="100" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="430" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-431" title="how far pitch drop bends at 100, in semitones: 12 an octave down" style="width: 150px; font-weight: bold;">pitch drop range</label>
+                <input type="range" id="param-431" name="pitch drop range" class="inactive"
+                       min="1" max="24"
+                       step="1"
+                       value="12"
+                       
+                       data-sysex-address="431" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="how far pitch drop bends at 100, in semitones: 12 an octave down" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-431" class="inactive"
+                       value="12"
+                       min="1" max="24" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="431" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-432" title="how long pitch drop takes to sag to its depth and to come back up, in ms (to 95%): 0 jumps, 150 a quick sag, 1000 a slow dying-battery droop" style="width: 150px; font-weight: bold;">pitch drop sag</label>
+                <input type="range" id="param-432" name="pitch drop sag" class="inactive"
+                       min="0" max="2000"
+                       step="1"
+                       value="150"
+                       
+                       data-sysex-address="432" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="how long pitch drop takes to sag to its depth and to come back up, in ms (to 95%): 0 jumps, 150 a quick sag, 1000 a slow dying-battery droop" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-432" class="inactive"
+                       value="150"
+                       min="0" max="2000" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="432" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-433" title="starves the instrument's supply, as a bender's voltage-starve pot does: in percent, the pitch wobbles and sags, the sound fuzzes as the rails close in and gets quieter, browns out in short drop-outs that come more often the deeper, and crackles. On everything that comes out. Control change 113 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" style="width: 150px; font-weight: bold;">voltage starve</label>
+                <input type="range" id="param-433" name="voltage starve" class="inactive"
+                       min="0" max="100"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="433" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="starves the instrument's supply, as a bender's voltage-starve pot does: in percent, the pitch wobbles and sags, the sound fuzzes as the rails close in and gets quieter, browns out in short drop-outs that come more often the deeper, and crackles. On everything that comes out. Control change 113 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-433" class="inactive"
+                       value="0"
+                       min="0" max="100" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="433" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-434" title="crushes the whole instrument to fewer bits and a lower sample rate, in percent: at 100, 4 bits (counted across the sound's own loudness, so a quiet preset crushes as much as a loud one) at 1.8 kHz. Bitcrush mode chooses bits, rate or both. Control change 114 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" style="width: 150px; font-weight: bold;">bitcrush</label>
+                <input type="range" id="param-434" name="bitcrush" class="inactive"
+                       min="0" max="100"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="434" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="crushes the whole instrument to fewer bits and a lower sample rate, in percent: at 100, 4 bits (counted across the sound's own loudness, so a quiet preset crushes as much as a loud one) at 1.8 kHz. Bitcrush mode chooses bits, rate or both. Control change 114 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-434" class="inactive"
+                       value="0"
+                       min="0" max="100" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="434" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-435" title="what bitcrush takes away: 0 bits and sample rate, 1 bits only (a grainy hiss round the notes), 2 sample rate only (a metallic alias above them)" style="width: 150px; font-weight: bold;">bitcrush mode</label>
+                <select id="param-435" name="bitcrush mode" class="inactive" data-sysex-address="435" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="what bitcrush takes away: 0 bits and sample rate, 1 bits only (a grainy hiss round the notes), 2 sample rate only (a metallic alias above them)" version="1.02"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="0">Bits and sample rate</option><option value="1">Bits only</option><option value="2">Sample rate only</option>
+                </select>
+                <button type="button" class="lock-btn always-on" data-lock="435" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-436" title="bends the rhythm's clock, as a bender's clock pot does: in percent, rhythm mode's patterns, its drums and the MIDI clock it sends slow down (or speed up, with clock bend direction), to a quarter (or four times) the tempo at 100, and come back to the tempo when let go. The sound's pitch stays; pitch drop bends that. Not while the rhythm follows a MIDI clock, which has the tempo; the looper keeps its own time. Control change 115 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" style="width: 150px; font-weight: bold;">clock bend</label>
+                <input type="range" id="param-436" name="clock bend" class="inactive"
+                       min="0" max="100"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="436" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="bends the rhythm's clock, as a bender's clock pot does: in percent, rhythm mode's patterns, its drums and the MIDI clock it sends slow down (or speed up, with clock bend direction), to a quarter (or four times) the tempo at 100, and come back to the tempo when let go. The sound's pitch stays; pitch drop bends that. Not while the rhythm follows a MIDI clock, which has the tempo; the looper keeps its own time. Control change 115 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-436" class="inactive"
+                       value="0"
+                       min="0" max="100" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="436" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-437" title="which way clock bend bends the rhythm: 0 slower, 1 faster" style="width: 150px; font-weight: bold;">clock bend direction</label>
+                <select id="param-437" name="clock bend direction" class="inactive" data-sysex-address="437" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="which way clock bend bends the rhythm: 0 slower, 1 faster" version="1.02"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="0">Slower</option><option value="1">Faster</option>
+                </select>
+                <button type="button" class="lock-btn always-on" data-lock="437" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-438" title="catches a slice of everything that comes out from the moment it is pressed and plays it over and over while held, the bent Omnichord's glitch: the deeper, the shorter the slice, from 280 ms at a touch to stutter shortest (25 ms) at 100, each new depth taken at the slice's next repeat. The drums play on through it unless stutter drums is 1. The slice plays once it has been heard through once, so a short one starts at once and a long one after it. Let go, the sound comes back. With stutter sync, slices in time with the rhythm. A preset always loads it at 0, so a saved preset never starts frozen in a slice. Control change 116 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" style="width: 150px; font-weight: bold;">stutter</label>
+                <input type="range" id="param-438" name="stutter" class="inactive"
+                       min="0" max="100"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="438" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="catches a slice of everything that comes out from the moment it is pressed and plays it over and over while held, the bent Omnichord's glitch: the deeper, the shorter the slice, from 280 ms at a touch to stutter shortest (25 ms) at 100, each new depth taken at the slice's next repeat. The drums play on through it unless stutter drums is 1. The slice plays once it has been heard through once, so a short one starts at once and a long one after it. Let go, the sound comes back. With stutter sync, slices in time with the rhythm. A preset always loads it at 0, so a saved preset never starts frozen in a slice. Control change 116 sets it live too, 0 to 127 for 0 to 100, without keeping it, and the deeper of the two counts. 0 off, as before" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-438" class="inactive"
+                       value="0"
+                       min="0" max="100" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="438" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-439" title="while rhythm mode plays, stutter's slices are half a beat, a quarter, an eighth, a sixteenth or a 32nd (at the bent tempo, with clock bend; none shorter than stutter shortest), shorter the deeper, rather than any length. 0 any length, 1 in time" style="width: 150px; font-weight: bold;">stutter sync</label>
+                <input type="checkbox" id="param-439" name="stutter sync" class="inactive"
+                        data-sysex-address="439" data-ui-type="switch" data-data-type="int" data-float-multiplier="1" title="while rhythm mode plays, stutter's slices are half a beat, a quarter, an eighth, a sixteenth or a 32nd (at the bent tempo, with clock bend; none shorter than stutter shortest), shorter the deeper, rather than any length. 0 any length, 1 in time" version="1.02"
+                       style="margin: 0 8px;">
+                <button type="button" class="lock-btn always-on" data-lock="439" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-440" title="the slice stutter plays at 100, in ms: the deeper it is pressed, the shorter the slice, from 280 ms down to this. 25 keeps it a stutter all the way; under about 20 it becomes a buzz, a tone of its own, at the end of the press" style="width: 150px; font-weight: bold;">stutter shortest</label>
+                <input type="range" id="param-440" name="stutter shortest" class="inactive"
+                       min="3" max="100"
+                       step="1"
+                       value="25"
+                       
+                       data-sysex-address="440" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="the slice stutter plays at 100, in ms: the deeper it is pressed, the shorter the slice, from 280 ms down to this. 25 keeps it a stutter all the way; under about 20 it becomes a buzz, a tone of its own, at the end of the press" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-440" class="inactive"
+                       value="25"
+                       min="3" max="100" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="440" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-441" title="whether the drums stutter with everything else. 0: they keep playing through a stutter, so the beat drives on under the repeating slice; 1: they are caught in the slice too and repeat with it" style="width: 150px; font-weight: bold;">stutter drums</label>
+                <select id="param-441" name="stutter drums" class="inactive" data-sysex-address="441" data-ui-type="select" data-data-type="int" data-float-multiplier="1" title="whether the drums stutter with everything else. 0: they keep playing through a stutter, so the beat drives on under the repeating slice; 1: they are caught in the slice too and repeat with it" version="1.02"
+                        style="width: 150px; padding: 5px; margin: 0 8px;">
+                    <option value="0">The drums play on through it</option><option value="1">The drums stutter too</option>
+                </select>
+                <button type="button" class="lock-btn always-on" data-lock="441" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
+            </div>
+        
+            <div style="display: flex; align-items: center; margin: 8px 0;">
+                <label for="param-442" title="how much the bends act on one another, as they do in a bent Omnichord, where they share one clock and one supply, in percent. The pitch drop drags the rhythm's clock as it sags (at 100 as far as the pitch: a slowed master clock) and lowers the sample rate (to 5 kHz an octave down); the voltage starve drags the clock as its supply sags, nearly stops it in a brown-out, and takes bits away, all of them in a brown-out. So pressing one bends the others' worlds: a pitch drop on the rhythm slows the beat with it. 0: each bend on its own, as before" style="width: 150px; font-weight: bold;">bends interact</label>
+                <input type="range" id="param-442" name="bends interact" class="inactive"
+                       min="0" max="100"
+                       step="1"
+                       value="0"
+                       
+                       data-sysex-address="442" data-ui-type="slider" data-data-type="int" data-float-multiplier="1" title="how much the bends act on one another, as they do in a bent Omnichord, where they share one clock and one supply, in percent. The pitch drop drags the rhythm's clock as it sags (at 100 as far as the pitch: a slowed master clock) and lowers the sample rate (to 5 kHz an octave down); the voltage starve drags the clock as its supply sags, nearly stops it in a brown-out, and takes bits away, all of them in a brown-out. So pressing one bends the others' worlds: a pitch drop on the rhythm slows the beat with it. 0: each bend on its own, as before" version="1.02"
+                       style="width: 150px; margin: 0 8px;">
+                <input type="number" id="value-442" class="inactive"
+                       value="0"
+                       min="0" max="100" step="1"
+                       style="width: 50px; text-align: right; border: none; padding: 2px;">
+                <button type="button" class="lock-btn always-on" data-lock="442" hidden title="lock: keep this setting as the minichord's own, whatever preset is loaded. Locked, loading a preset leaves it alone, and a change to it is kept in the minichord itself rather than in the preset. Click to lock or unlock. Firmware 76 or later">lock</button>
             </div>
         
             </div>

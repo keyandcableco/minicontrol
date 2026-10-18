@@ -31,7 +31,7 @@ for group_name, params in parameters.items():
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Own temperament', 'Drone', 'Effects', 'Vocoder', 'Organ', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
+    'global_parameter': ['General', 'Key and tuning', 'Own temperament', 'Drone', 'Effects', 'Vocoder', 'Organ', 'Bends', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
@@ -63,6 +63,10 @@ parameter_name_order = {
         'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
         'Vocoder': ['vocoder', 'vocoder carrier', 'vocoder consonants'],
         'Organ': ['organ drawbars', 'organ percussion'],
+        # firmware 102: the bends, each a depth with its shaping beside it, then how they act on one another
+        'Bends': ['pitch drop', 'pitch drop range', 'pitch drop sag', 'voltage starve', 'bitcrush', 'bitcrush mode',
+                  'clock bend', 'clock bend direction', 'stutter', 'stutter sync', 'stutter shortest', 'stutter drums',
+                  'bends interact'],
         'Phone': ['phone follow 1 control', 'phone follow 1 value', 'phone follow 1 band', 'phone follow 1 release',
                   'phone follow 2 control', 'phone follow 2 value', 'phone follow 2 band', 'phone follow 2 release',
                   'phone beat', 'phone kick stab', 'phone kick note', 'phone filter', 'phone filter resonance', 'phone echo',
@@ -224,6 +228,8 @@ PLACES = {
     ('global_parameter', 'Vocoder'): ('effects', 'Vocoder'),
     # the tonewheel organ (voice 13), one registration shared by the harp and the chords
     ('global_parameter', 'Organ'): ('effects', 'Organ'),
+    # the bends (firmware 102): pitch drop, voltage starve, bitcrush, clock bend and stutter on the whole instrument
+    ('global_parameter', 'Bends'): ('effects', 'Bends'),
     ('global_parameter', 'Phone'): ('phone', 'Phone'),
     ('global_parameter', 'General'): ('device', 'USB'),
     ('global_parameter', 'MIDI'): ('device', 'MIDI'),
@@ -252,7 +258,7 @@ SHEETS = {
         'Press: chords hold until the next. Hold down: rhythm mode on or off. In rhythm mode a press taps the tempo.'),
     'tuning': ('tuning', 'for the chords and the harp', ''),
     'drone': ('drone', 'a tanpura on the key\'s root', ''),
-    'effects': ('effects', 'reverb, pan, the vocoder and the organ', ''),
+    'effects': ('effects', 'reverb, pan, the vocoder, the organ and the bends', ''),
     'phone': ('phone', 'sound from a phone or computer, over USB', ''),
     'light': ('light', 'the round light under the buttons', ''),
     'device': ('device and MIDI', 'how the minichord talks to a computer', ''),
