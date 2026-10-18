@@ -40,7 +40,9 @@ def INTRO(backup):
         "Where a bank already has them interacting, the double tap lets them go their own ways",
         "",
         "A knob's alternate stays where it is left when the modifier is let go: back to the bottom to let a "
-        "bend go. Turn the mod knob to the bottom before loading a bank, or it drops the pitch at once. "
+        "bend go. Every bank loads with the alternates at the bottom (no crush, clock bend or stutter). The "
+        "mod knob is the one bend a bank load takes from where the knob is: turn it to the bottom before "
+        "loading a bank, or the bank comes in with its pitch dropped. "
         "Stutter always loads at 0. The bends also answer control change 112 (pitch drop), 113 (starve), "
         "114 (crush), 115 (clock) and 116 (stutter), from a DAW or a foot controller.",
         "",
@@ -87,7 +89,11 @@ def wired(interact):
     return merge(knobs(chord_alt=(CRUSH, 100), harp_alt=(CLOCK_BEND, 100), mod=(PITCH_DROP, 100),
                        mod_alt=(STUTTER, 100)),
                  hover(STARVE, 100, 7), hover_alt(0, 0),
-                 double_tap((INTERACT, 0 if interact else 100)), {117: 0})
+                 double_tap((INTERACT, 0 if interact else 100)), {117: 0},
+                 # each knob's alternate remembered at the bottom: a bank load puts a knob's alternate at the
+                 # value it remembers (4-6), and these were the middle, so every bank loaded with the crush,
+                 # the clock bend and a stutter (looping the silence of the load) at about half
+                 {4: 0, 5: 0, 6: 0})
 
 
 def bent(set_name, base, name, hue, blurb, shows, how, *parts, play=None, interact=0, **kw):
