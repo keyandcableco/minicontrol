@@ -186,6 +186,9 @@ UI_OVERRIDES = {
     439: control('global_parameter', 'Bends', 'switch'),
     440: control('global_parameter', 'Bends', 'slider'),
     442: control('global_parameter', 'Bends', 'slider'),
+    443: select('global_parameter', 'Bends', ["None", "Pitch drop, clock bend and stutter", "Every bend"]),
+    444: control('global_parameter', 'Bends', 'slider'),
+    445: control('global_parameter', 'Bends', 'slider'),
     441: select('global_parameter', 'Bends', ["The drums play on through it", "The drums stutter too"]),
     # chord: the ensemble, a slow stereo chorus after the chord chain
     259: control('chord_parameter', 'Ensemble', 'slider'),

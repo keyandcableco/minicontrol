@@ -2103,6 +2103,69 @@
       "curve": "linear",
       "introduction_version": 1.02,
       "step": 1
+    },
+    {
+      "sysex_adress": 443,
+      "group": "Bends",
+      "ui_type": "select",
+      "name": "spring back",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 2,
+      "default_value": 0,
+      "tooltip": "which bends come back by themselves when a knob leaves them on, as a bender's touch point does when the finger lifts: a knob stays where it is left, and a bend left on stays on (a stutter looping what it caught, a dragged clock, a dropped pitch, and a bank load taking the mod knob's position). A bend that springs back counts fully while its knob moves and, a moment after the knob stops, eases back to nothing over spring time; a stutter lets go at the end of it. Move the knob again to bend again. Control changes 112-116 hold as long as the controller does, and hover comes back with the hand anyway. 0: none, as before. 1: pitch drop, clock bend and stutter (bitcrush and voltage starve stay where they are set). 2: every bend",
+      "method": "spring_back=value; bend_apply();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 1.02,
+      "options": [
+        {
+          "value": 0,
+          "label": "None"
+        },
+        {
+          "value": 1,
+          "label": "Pitch drop, clock bend and stutter"
+        },
+        {
+          "value": 2,
+          "label": "Every bend"
+        }
+      ],
+      "step": 1
+    },
+    {
+      "sysex_adress": 444,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "spring time",
+      "data_type": "int",
+      "min_value": 50,
+      "max_value": 5000,
+      "default_value": 1000,
+      "tooltip": "how long a bend that springs back (spring back, 443) takes to come back once its knob stops, in ms: pitch drop and clock bend ease back over it, a stutter lets go at its end",
+      "method": "spring_ms=value < 50 ? 1000 : value;",
+      "iterate": 1,
+      "curve": "exponential",
+      "introduction_version": 1.02,
+      "step": 1
+    },
+    {
+      "sysex_adress": 445,
+      "group": "Bends",
+      "ui_type": "slider",
+      "name": "stutter refresh",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 10000,
+      "default_value": 2000,
+      "tooltip": "how often a held stutter catches a new slice, in ms: after this long repeating one slice it goes back to the live sound and, still held, catches the next, so a stutter left on rolls along with the music rather than holding what it caught for ever (silence, at worst). 0: never, the one slice for as long as it is held",
+      "method": "stutter_refresh_ms=value; bend_apply();",
+      "iterate": 1,
+      "curve": "exponential",
+      "introduction_version": 1.02,
+      "step": 1
     }
   ],
   "chord_parameter": [

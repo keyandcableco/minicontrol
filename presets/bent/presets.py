@@ -16,6 +16,8 @@ FIRMWARE = 102          # the bends (430-442)
 PITCH_DROP, PITCH_DROP_RANGE, PITCH_DROP_SAG, STARVE, CRUSH, CRUSH_MODE = 430, 431, 432, 433, 434, 435
 CLOCK_BEND, CLOCK_FASTER, STUTTER, STUTTER_SYNC, STUTTER_SHORTEST, STUTTER_DRUMS, INTERACT = (
     436, 437, 438, 439, 440, 441, 442)
+SPRING_BACK, SPRING_TIME, STUTTER_REFRESH = 443, 444, 445
+SPRINGS_PLAYED = 1   # pitch drop, clock bend and stutter spring back; bitcrush and starve stay where set
 BITS_AND_RATE, BITS, RATE = 0, 1, 2
 
 
@@ -39,10 +41,11 @@ def INTRO(backup):
         "drop drags the beat with it and grits the sample rate, the starve stumbles the beat and eats bits. "
         "Where a bank already has them interacting, the double tap lets them go their own ways",
         "",
-        "A knob's alternate stays where it is left when the modifier is let go: back to the bottom to let a "
-        "bend go. Every bank loads with the alternates at the bottom (no crush, clock bend or stutter). The "
-        "mod knob is the one bend a bank load takes from where the knob is: turn it to the bottom before "
-        "loading a bank, or the bank comes in with its pitch dropped. "
+        "Pitch drop, clock bend and stutter spring back, as a bender's touch point does when the finger "
+        "lifts: they bend while their knob moves and, a moment after it stops, come back by themselves over "
+        "about a second (a stutter lets go). Turn the knob again to bend again. Bitcrush stays where it is "
+        "set, and the starve comes back with the hand. A stutter held on catches a new slice every two "
+        "seconds, so it rolls along with the music rather than holding one slice. "
         "Stutter always loads at 0. The bends also answer control change 112 (pitch drop), 113 (starve), "
         "114 (crush), 115 (clock) and 116 (stutter), from a DAW or a foot controller.",
         "",
@@ -75,12 +78,13 @@ CONTROLS = {
 
 
 def bends(drop_range=12, sag=150, starve=0, crush=0, crush_mode=BITS_AND_RATE, clock_faster=0, sync=0,
-          shortest=25, drums_stutter=0, interact=0):
+          shortest=25, drums_stutter=0, interact=0, spring=1000):
     """how the bank's bends behave, and what is bent before a hand touches anything; the controls are the
     set's own (wired)"""
     return {PITCH_DROP: 0, PITCH_DROP_RANGE: drop_range, PITCH_DROP_SAG: sag, STARVE: starve, CRUSH: crush,
             CRUSH_MODE: crush_mode, CLOCK_BEND: 0, CLOCK_FASTER: clock_faster, STUTTER: 0, STUTTER_SYNC: sync,
-            STUTTER_SHORTEST: shortest, STUTTER_DRUMS: drums_stutter, INTERACT: interact}
+            STUTTER_SHORTEST: shortest, STUTTER_DRUMS: drums_stutter, INTERACT: interact,
+            SPRING_BACK: SPRINGS_PLAYED, SPRING_TIME: spring, STUTTER_REFRESH: 2000}
 
 
 def wired(interact):

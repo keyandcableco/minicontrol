@@ -1247,6 +1247,15 @@ void apply_audio_parameter(int adress, int value) {
         case 442:
             bends_interact=value; bend_apply();
             break;
+        case 443:
+            spring_back=value; bend_apply();
+            break;
+        case 444:
+            spring_ms=value < 50 ? 1000 : value;
+            break;
+        case 445:
+            stutter_refresh_ms=value; bend_apply();
+            break;
         default:
             break;
     }

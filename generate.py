@@ -66,7 +66,7 @@ parameter_name_order = {
         # firmware 102: the bends, each a depth with its shaping beside it, then how they act on one another
         'Bends': ['pitch drop', 'pitch drop range', 'pitch drop sag', 'voltage starve', 'bitcrush', 'bitcrush mode',
                   'clock bend', 'clock bend direction', 'stutter', 'stutter sync', 'stutter shortest', 'stutter drums',
-                  'bends interact'],
+                  'bends interact', 'spring back', 'spring time', 'stutter refresh'],
         'Phone': ['phone follow 1 control', 'phone follow 1 value', 'phone follow 1 band', 'phone follow 1 release',
                   'phone follow 2 control', 'phone follow 2 value', 'phone follow 2 band', 'phone follow 2 release',
                   'phone beat', 'phone kick stab', 'phone kick note', 'phone filter', 'phone filter resonance', 'phone echo',
