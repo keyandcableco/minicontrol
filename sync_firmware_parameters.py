@@ -213,38 +213,11 @@ UI_OVERRIDES = {
     # harp: playing, how the hands meet the harp. Each preset holds these, so the plate and its
     # thresholds sit here rather than with the instrument's own settings under General.
     # The plate fitted, and how firm a touch its zones need
-    # (5-7 are kept for plates of twelve separate zones; 11 belongs to a plate not out yet)
+    # (the released plates only: 5-7 are kept for plates of twelve separate zones, and 10 and up belong to
+    # plates not out yet)
     243: select('harp_parameter', 'Plate', ["Stock strip, or any plate of twelve separate zones",
                                             "Keymaster", "Piano plate", "Twin rows", "Framed strings",
-                                            None, None, None, "Zipper 24", "Arcade wheel",
-                                            "Fretless wrap", None, "Piano glide", "Drum pads",
-                                            "XY pad", "Torus", "Tesseract", "Split", "Split XY"]),
-    # the places plates (firmware 100): the drum pads' seams, what the xy pad's x sweeps and how far,
-    # and the torus and tesseract's corner chords
-    419: control('harp_parameter', 'Plate', 'switch'),
-    420: {"section": "harp_parameter", "group": "Plate", "ui_type": "select", "none_option": "none",
-          "targets": "sweep"},
-    # a value in the units of the setting 420 names, as the knob, hover and double tap values are
-    421: {"section": "harp_parameter", "group": "Plate", "ui_type": "slider", "follows_target": 420},
-    423: control('harp_parameter', 'Plate', 'switch'),
-    # the xy pad as a control surface (firmware 104): up the plate moves a second setting, across can
-    # bend the touch's own note instead of sweeping, and the last stroke drawn can replay on lift
-    424: {"section": "harp_parameter", "group": "Plate", "ui_type": "select", "none_option": "The pad plays notes",
-          "targets": "sweep"},
-    425: {"section": "harp_parameter", "group": "Plate", "ui_type": "slider", "follows_target": 424},
-    428: control('harp_parameter', 'Plate', 'slider'),
-    429: control('harp_parameter', 'Plate', 'switch'),
-    # the drum pads' resting hand (firmware 104): a press chokes or bends, a held pad mutes the groove
-    426: control('harp_parameter', 'Plate', 'slider'),
-    427: control('harp_parameter', 'Plate', 'switch'),
-    # melodic pads (firmware 105): the 28 places as notes
-    446: control('harp_parameter', 'Plate', 'switch'),
-    # xy zones (firmware 106): the painted cells; the zone editor's canvas draws under these sliders
-    447: control('harp_parameter', 'Plate', 'slider'),
-    **{a: control('harp_parameter', 'Plate', 'slider') for a in range(448, 472)
-       if a not in (452, 458, 464, 470)},
-    **{a: select('harp_parameter', 'Plate', ["Off", "A fader", "A chord", "A drum", "A toggle"])
-       for a in (452, 458, 464, 470)},
+                                            None, None, None, "Zipper 24", "Arcade wheel"]),
     241: control('harp_parameter', 'Plate', 'slider'),
     242: control('harp_parameter', 'Plate', 'slider'),
     # the piano plate's neighbour guard, and how firmly the plate reads a touch (firmware 93)

@@ -1033,7 +1033,6 @@ html_template = '''<!DOCTYPE html>
   <script src="controls.js"></script>
   <script src="envelope.js"></script>
   <script src="waveforms.js"></script>
-  <script src="zones.js"></script>
   <script src="filters.js"></script>
   <script src="pedals.js"></script>
   <script src="tour.js"></script>
