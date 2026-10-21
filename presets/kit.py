@@ -383,3 +383,23 @@ def looper(quantize=0, count_in=0, click=0, click_level=50, length=0):
 
 
 LOOPER, CHORD_MEMORY, RHYTHM_FILL, PHONE_DECK = 256, 287, 315, 332   # the double tap takes a step of these
+
+
+# ---- borrowing one section of another preset ----------------------------------------------------
+CHORD_SIDE = (set(C_OSC) | set(C_NOTES) | set(C_ENV) | set(C_FILT) | set(C_FENV) | set(C_LFO) | set(C_TREM)
+              | set(C_VIB) | set(C_DELAY) | set(C_OUT)
+              | {39, 111, 112, 120, 142, 151, 184, 185, 186, 198, 199, 259, 265, 270, 271, 272, 273, 320, 387}
+              | set(range(202, 209)))
+ROOM = {24, 25, 26, 27, 28}
+
+
+FORMANTS = {118, 119, 239, 240}
+
+
+def chords_from(set_name, preset_name, room=True, formants=False):
+    """the chord buttons' sound from a preset of another set (and its room, the reverb the sections share):
+    its oscillators or samples, notes, envelope, filter, effects, layout, voice leading and glide, and with
+    formants its formant filter, nothing of its harp, controls or rhythm"""
+    settings = borrow(set_name, preset_name)["settings"]
+    keep = CHORD_SIDE | (ROOM if room else set()) | (FORMANTS if formants else set())
+    return {a: v for a, v in settings.items() if a in keep}

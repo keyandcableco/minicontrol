@@ -247,6 +247,88 @@
    ]
   },
   {
+   "id": "drum-pads",
+   "title": "Drum Pads",
+   "author": "Key & Cable",
+   "description": "Twelve kits to play with your fingers on the drum pads plate, one for each bank: the twelve pads are the kit's voices, kick at the bottom left, and the sixteen seams between them sounds of their own, 28 places, as loud as you hit them. Each bank is a different music's kit and groove, with the chord buttons playing a sound that suits it.",
+   "firmware": 101,
+   "file": "presets/drum-pads/drum-pads.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "808 Pocket",
+     "hue": 20,
+     "blurb": "Boom bap on the 808: a deep kick, a snappy snare, closed hats ticking, played with your fingers in the pocket at 90, over soulful Rhodes chords. The seams fill the gaps: the half open hat between the hat and the open one, a floor tom, a rim snap."
+    },
+    {
+     "bank": 1,
+     "name": "Trap Lab",
+     "hue": 280,
+     "blurb": "Trap at 140, half time: the trap kit's kick is an 808 bass tuned to the chord you hold, so the bass line is your left hand and your thumb. Strike it and press into it and the 808 slides up, up to a fourth, and back down as you let go; a felt piano for the dark chords."
+    },
+    {
+     "bank": 2,
+     "name": "Amen Chopper",
+     "hue": 0,
+     "blurb": "Jungle at 172: the amen-style break on the dusty kit, yours to chop with your fingers over a Reese bass that growls under the chord you hold. Snares on the right, the ride seam up the left for the break's cymbal."
+    },
+    {
+     "bank": 3,
+     "name": "Warehouse 909",
+     "hue": 200,
+     "blurb": "House at 124 on the 909: four on the floor, open hats on the off beat, claps, and the organ stab from a Sunday church turned warehouse. The half open hat seam is the classic offbeat."
+    },
+    {
+     "bank": 4,
+     "name": "Brush Trio",
+     "hue": 40,
+     "blurb": "A jazz trio's drummer: brushes on the snare, the ride seam swinging, a feathered kick, at 150 with the piano trio's jazz waltz chords. Sweep a finger across the snare for a brush stir."
+    },
+    {
+     "bank": 5,
+     "name": "Second Line",
+     "hue": 10,
+     "blurb": "A New Orleans second line at 100: the parade snare, the bass drum on the move, a cymbal on top, under a brass band's chords. Swing it harder on the modifier and the mod knob, as a brass band's drummer leans back."
+    },
+    {
+     "bank": 6,
+     "name": "Conga Descarga",
+     "hue": 120,
+     "blurb": "Cuban percussion at 100: congas high and low at the top, the bongo seam, the bell, claves across the fifth row, a timbale, over the son clave and a marimbula's bass. Slap the conga seam; strike a conga and press into it for the moan a conguero gets with the heel of the hand, and rest a finger on th…"
+    },
+    {
+     "bank": 7,
+     "name": "Afrobeat Bell",
+     "hue": 30,
+     "blurb": "Afrobeat at 110: the bell pattern, shakers, congas and a tight kit, over a wah-wah Rhodes, Lagos in the seventies. The low bell seam and the shaker seam keep the time."
+    },
+    {
+     "bank": 8,
+     "name": "Tabla Teental",
+     "hue": 330,
+     "blurb": "Tabla in teental, sixteen matras: the bayan and dayan's bols on the pads, the dayan tuned to the key's Sa, a tanpura droning under a raga's chords. Strike the bayan's ge and press into it with the heel of the hand, as a tabla player does: the bass rises and sighs back down, the ge-e-e that tabla is…"
+    },
+    {
+     "bank": 9,
+     "name": "Doumbek Maqsum",
+     "hue": 50,
+     "blurb": "The darbuka in maqsum at 100: dum on the kick, tek on the snare and the rim, ka on the claps, a riq shimmer on the open hat, under an oud's maqam chords. Roll the tek between two fingers."
+    },
+    {
+     "bank": 10,
+     "name": "Gamelan Slendro",
+     "hue": 75,
+     "blurb": "A gamelan on the drum pads: the 28 places are 28 bronze keys in slendro (melodic pads), five notes to the octave, none of them twelve's, from the big gong's range at the bottom left, rising along each row, to the small gangsa's at the top, every seam the key between its pads. Strike harder for loud…"
+    },
+    {
+     "bank": 11,
+     "name": "Cliqhop Garden",
+     "hue": 160,
+     "blurb": "Cliqhop at 110: blips, clicks, pings and crackle, the kit's pitched sounds on the chord's root and fifth, so the pads play in the key of the chord you hold, over a garden of rain. Swing the sixteenths until the clicks lurch."
+    }
+   ]
+  },
+  {
    "id": "electric-piano",
    "title": "Electric Piano",
    "author": "Key & Cable",
@@ -661,7 +743,7 @@
    "title": "Acoustic Piano",
    "author": "Key & Cable",
    "description": "Twelve pianos, one for each bank, each the piano in a music it belongs to, roughly in the order the music came: a concert grand, a classical sonata, a nocturne, Satie's slow waltz, ragtime turning into stride, boogie-woogie, Barry Harris's sixth-diminished blocks, a jazz waltz, a gospel ballad, Glass's arpeggios, a felt piano and a piano on tape.",
-   "firmware": 88,
+   "firmware": 89,
    "file": "presets/piano/piano.backup.json",
    "presets": [
     {

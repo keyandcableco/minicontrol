@@ -8,7 +8,7 @@ in a preset that the preset's other settings keep from being heard.
 import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-sys.path.insert(0, os.path.expanduser("~/minichord/firmware/preset_maker"))
+sys.path.insert(0, os.environ.get("PRESET_MAKER", os.path.expanduser("~/minichord/firmware/preset_maker")))
 import build        # noqa: E402
 import interpret    # noqa: E402
 
@@ -33,6 +33,8 @@ for name in sys.argv[1:] or ["gen2"]:
             if q.get("follows_target") is not None:
                 source = params.get(values[q["follows_target"]], q)
             state[a] = build.human(source, v)
+        if getattr(module, "PLATE", None) is not None:
+            state[243] = module.PLATE   # the plate the set is made for: the instrument's, which a restore keeps
         notes = interpret.conflict_notes(params, sel, start, state, lambda a: params[a]["name"].strip())
         # the bend at its centre (1.0) is how kit.py leaves the vibrato's bend: nothing to hear
         notes = [n for n in notes if "pitch bend envelope" not in n and "harp's pitch bend" not in n]

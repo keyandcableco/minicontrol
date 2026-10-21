@@ -29,6 +29,10 @@ Sets of one kind of sound, some presets borrowed from the generations as they ar
   third hand (firmware 88)
 - [ambient](ambient/README.md): slow instruments for a quiet room: glass, bowls, a tanpura with the jawari
   on the mod knob, generative rain, Orwell's scale, a music box that winds down (firmware 74)
+- [drum-pads](drum-pads/README.md): Drum Pads, twelve kits for the drum pads plate (harp plate 13), the
+  pads and the seams between them 28 places: the 808, trap, the amen, house, brushes, a second line, congas,
+  afrobeat, tabla, the doumbek, a gamelan on the 28 places as notes, cliqhop; the resting hand's drum press
+  and pads mute the groove (firmware 101)
 
 ```
 python3 presets/build.py gen2      # or any set's folder name: the backup and the README
