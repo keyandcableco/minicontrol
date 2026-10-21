@@ -5713,7 +5713,7 @@
       "max_value": 2000,
       "tooltip": "corner frequency of the filter in the absence of control signal",
       "iterate": 1,
-      "method": "string_filter_base_freq=value;",
+      "method": "string_filter_base_freq=value; refresh_string_filters();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 1
@@ -5729,7 +5729,7 @@
       "max_value": 3,
       "tooltip": "value that is multiplied by the note frequency and added to the base corner frequency to allow for keytracking",
       "iterate": 1,
-      "method": "string_filter_keytrack=value;",
+      "method": "string_filter_keytrack=value; refresh_string_filters();",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -6245,7 +6245,7 @@
       "max_value": 1,
       "tooltip": "intensity of the vibrato and bend effect",
       "iterate": 12,
-      "method": "string_waveform_array[i]->frequencyModulation(value); string_pluck_array[i]->frequencyModulation(value);",
+      "method": "string_waveform_array[i]->frequencyModulation(value); string_pluck_array[i]->frequencyModulation(value); harp_vibrato_tap.octaves(value);",
       "introduction_version": 0.02,
       "ui_type": "slider",
       "step": 0.01
@@ -7012,9 +7012,9 @@
       "name": "harp plate",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 10,
+      "max_value": 13,
       "default_value": 0,
-      "tooltip": "which harp plate is fitted, so the harp reads it as it should. 0 is the stock strip, and any plate with twelve separate zones. 1 is the Keymaster, twelve round pads in three columns, well apart: it plays at the stock touch thresholds and needs no strip guard. 2 is the piano plate: twelve keys, C at the bottom; where the black keys are played every key is a band narrower than a fingertip, so a finger reaching for one key lands on its neighbours too, and neighbour guard (416) keeps them silent. 3 is twin rows and 4 framed strings; twin rows' pads, three times a stock pad's, read about 2.4 times as strongly. All but the piano plate play as the stock strip. The stock strip and framed strings have the strip guard (417), and the stock strip's own touch thresholds are lower while it is on. Each plate brings its own touch calibration, so choosing it is all a plate swap asks: harp touch scale (418) trims on top of it and goes back to 100 when another plate is chosen. With plate detect (422) on, choosing a plate here with that plate fitted also teaches it to this minichord: keep your hands off the harp until the LED flashes white three times, a second or two; from then on the minichord chooses that plate by itself whenever it is fitted. 8 and up belong to other plates and read the zones in their own ways: set it to 0 for any plate not named here",
+      "tooltip": "which harp plate is fitted, so the harp reads it as it should. 0 is the stock strip, and any plate with twelve separate zones. 1 is the Keymaster, twelve round pads in three columns, well apart: it plays at the stock touch thresholds and needs no strip guard. 2 is the piano plate: twelve keys, C at the bottom; where the black keys are played every key is a band narrower than a fingertip, so a finger reaching for one key lands on its neighbours too, and neighbour guard (416) keeps them silent. 3 is twin rows and 4 framed strings; twin rows' pads, three times a stock pad's, read about 2.4 times as strongly. All but the piano plate play as the stock strip. The stock strip and framed strings have the strip guard (417), and the stock strip's own touch thresholds are lower while it is on. Each plate brings its own touch calibration, so choosing it is all a plate swap asks: harp touch scale (418) trims on top of it and goes back to 100 when another plate is chosen. With plate detect (422) on, choosing a plate here with that plate fitted also teaches it to this minichord: keep your hands off the harp until the LED flashes white three times, a second or two; from then on the minichord chooses that plate by itself whenever it is fitted. 13 is the drum pads: twelve pads in two columns and sixteen seams between them, 28 places to strike with harp drums (343), each seam a sound of its own (drum seams, 419); without harp drums it plays as the stock strip, a seam both its strings, and with melodic pads (446) its 28 places are 28 notes. Other numbers belong to other plates and read the zones in their own ways: set it to 0 for any plate not named here",
       "method": "choose_harp_plate(value);",
       "iterate": 1,
       "curve": "linear",
@@ -7039,6 +7039,10 @@
         {
           "value": 4,
           "label": "Framed strings"
+        },
+        {
+          "value": 13,
+          "label": "Drum pads"
         }
       ],
       "step": 1,
@@ -7430,6 +7434,23 @@
       "step": 1
     },
     {
+      "sysex_adress": 343,
+      "group": "Drum pads",
+      "ui_type": "switch",
+      "name": "harp drums",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "the harp's twelve strings play the drum kit instead of notes, the lowest string the kick: kick, snare, side stick, clap, closed hat, open hat, cymbal, low tom, high tom, low conga, high conga, bell. As hard as they are struck, with or without rhythm mode, and out over MIDI with drum MIDI out. The kit is drum kit's, or the groove's. While on, the harp ribbon, hammer-on and palm mute rest. 0 the strings play notes, as before",
+      "method": "harp_drums=value; apply_harp_thresholds();",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "tap",
+      "introduction_version": 0.6,
+      "step": 1
+    },
+    {
       "sysex_adress": 344,
       "group": "Notes",
       "ui_type": "steps",
@@ -7768,6 +7789,24 @@
       "step": 1
     },
     {
+      "sysex_adress": 419,
+      "group": "Drum pads",
+      "ui_type": "switch",
+      "name": "drum seams",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 1,
+      "tooltip": "with harp plate 13, the drum pads, and harp drums (343) on: what the sixteen seams between the pads play. 1: each its own sound, made from the kit's voices, bottom to top: kick and snare together across the bottom row, then hat and clap, a shaker, a floor tom, claves and a conga slap across the rows; kick and hat, a half open hat, a ride, a ride bell and a low bell up the left column; snare and clap, a snap, a timbale, a mid tom and a bongo up the right. 0: a seam plays its two pads together, as on any other plate",
+      "method": "drum_seams=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "lock": "default",
+      "introduction_version": 1.01,
+      "step": 1
+    },
+    {
       "sysex_adress": 422,
       "group": "Plate",
       "ui_type": "switch",
@@ -7783,6 +7822,58 @@
       "controls": "none",
       "lock": "default",
       "introduction_version": 0.98,
+      "step": 1
+    },
+    {
+      "sysex_adress": 426,
+      "group": "Drum pads",
+      "ui_type": "slider",
+      "name": "drum press",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 12,
+      "default_value": 3,
+      "tooltip": "with harp drums (343) on: pressing a pad you have struck works the drum still ringing under the finger, on any plate, every plate's strings being the kit's pads, and on the drum pads (13) all 28 places. A cymbal, a hat, a bell or the shaker has a hand laid on it and is choked; a drum with a skin is pressed up to this many semitones sharp, the bayan's rising cry under the heel of the hand, and eases back down with the finger. Pressing is measured from the lightest the finger has read since it settled, as koto press (289) measures it, so a firm strike alone bends nothing. With melodic pads (446) on and koto press (289) off, a key struck and then pressed into is damped instead, as a gamelan player stops the bronze key just played with the hand. 0: pressing does nothing. The press constants are the stock strip's, not yet tuned on the drum pads, where a seam sums two zones",
+      "method": "drum_press_semis=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 1.01,
+      "step": 1
+    },
+    {
+      "sysex_adress": 427,
+      "group": "Drum pads",
+      "ui_type": "switch",
+      "name": "pads mute the groove",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 1,
+      "tooltip": "with harp drums (343) on, while the drums (334) play a groove: a finger resting on a pad holds that pad's voice out of the groove: hold the kick and the kick drops out, lift it and the groove comes back. On any plate, every plate's strings being the kit's pads; on the drum pads (13) a finger on a seam holds back what the seam plays. Your own strikes still sound, and so do the looper's. 0: off",
+      "method": "pads_mute_groove=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "lock": "default",
+      "introduction_version": 1.01,
+      "step": 1
+    },
+    {
+      "sysex_adress": 446,
+      "group": "Drum pads",
+      "ui_type": "switch",
+      "name": "melodic pads",
+      "data_type": "int",
+      "min_value": 0,
+      "max_value": 1,
+      "default_value": 0,
+      "tooltip": "with harp plate 13, the drum pads, harp drums (343) off, in chromatic mode or a scale mode: the 28 places play 28 notes instead of twelve strings, the lowest at the bottom left, rising along each row (pad, seam, pad) with the column seams between one row and the next, so every seam plays the note between its pads: in chromatic mode 28 steps, two octaves and a fourth, and in a scale mode 28 steps of the scale, where a seam is the passing note its scale skips. A mbira of 28 tongues: touch velocity (252) plays them as it plays the strings, pluck on lift (216) places fingers ahead and plucks as they leave, and koto press (289) bends a held place as it bends a ringing string, in the division's steps with its snap; with koto press off, drum press (426) damps a key pressed into, the gamelan's hand on the bronze. In chord mode, or with harp drums on, the plate plays as before. 0: off",
+      "method": "melodic_pads=value;",
+      "iterate": 1,
+      "curve": "linear",
+      "controls": "none",
+      "introduction_version": 1.01,
       "step": 1
     }
   ],
@@ -9013,9 +9104,9 @@
       "name": "drum groove",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 47,
+      "max_value": 48,
       "default_value": 0,
-      "tooltip": "the drums' groove instead of the rhythm style's own part: 1 rock, 2 pop eighths, 3 pop sixteenths, 4 ballad, 5 funk, 6 disco, 7 motown, 8 shuffle, 9 jazz swing, 10 waltz, 11 march, 12 second line, 13 country two-beat, 14 folk, 15 six eight, 16 habanera, 17 house, 18 trap, 19 amen-style break, 20 funky drummer-style, 21 think-style break, 22 boom bap, 23 drum and bass, 24 lo-fi, 25 son clave, 26 rumba clave, 27 bossa nova, 28 samba, 29 cumbia, 30 baiao, 31 salsa, 32 one drop, 33 dembow, 34 soca, 35 afrobeat, 36 12/8 bell, 37 highlife, 38 maqsum, 39 baladi, 40 saidi, 41 kehrwa, 42 dadra, 43 teental, 44 cliqhop, 45 clicks and cuts, 46 idm, 47 microsound. Played in our own synthesized sounds; the famous breaks re-played, not sampled. One in another metre than the style wraps to the style's bar (or time signature's, 393): each bar starts the groove again, cut off where the bar is shorter. 0 the rhythm style's own drum part",
+      "tooltip": "the drums' groove instead of the rhythm style's own part: 1 rock, 2 pop eighths, 3 pop sixteenths, 4 ballad, 5 funk, 6 disco, 7 motown, 8 shuffle, 9 jazz swing, 10 waltz, 11 march, 12 second line, 13 country two-beat, 14 folk, 15 six eight, 16 habanera, 17 house, 18 trap, 19 amen-style break, 20 funky drummer-style, 21 think-style break, 22 boom bap, 23 drum and bass, 24 lo-fi, 25 son clave, 26 rumba clave, 27 bossa nova, 28 samba, 29 cumbia, 30 baiao, 31 salsa, 32 one drop, 33 dembow, 34 soca, 35 afrobeat, 36 12/8 bell, 37 highlife, 38 maqsum, 39 baladi, 40 saidi, 41 kehrwa, 42 dadra, 43 teental, 44 cliqhop, 45 clicks and cuts, 46 idm, 47 microsound, 48 kendang (a gamelan's drummer on the hand drums). Played in our own synthesized sounds; the famous breaks re-played, not sampled. One in another metre than the style wraps to the style's bar (or time signature's, 393): each bar starts the groove again, cut off where the bar is shorter. 0 the rhythm style's own drum part",
       "method": "drum_groove=value;",
       "iterate": 1,
       "curve": "linear",
@@ -9213,6 +9304,10 @@
         {
           "value": 47,
           "label": "microsound"
+        },
+        {
+          "value": 48,
+          "label": "kendang"
         }
       ],
       "step": 1
@@ -9224,7 +9319,7 @@
       "name": "drum groove B",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 47,
+      "max_value": 48,
       "default_value": 0,
       "tooltip": "the groove after a fill switches to rhythm style B: 0 as before the switch (the groove chosen, or style B's own drum part if none is), else one of drum groove's list",
       "method": "drum_groove_b=value;",
@@ -9424,6 +9519,10 @@
         {
           "value": 47,
           "label": "microsound"
+        },
+        {
+          "value": 48,
+          "label": "kendang"
         }
       ],
       "step": 1
@@ -9592,23 +9691,6 @@
       "default_value": 0,
       "tooltip": "with drums on, the accompaniment rests and the drums play alone, for playing the chords and the harp over a beat; fills, breaks and the ending as before. 0 both",
       "method": "drums_only=value;",
-      "iterate": 1,
-      "curve": "linear",
-      "controls": "tap",
-      "introduction_version": 0.6,
-      "step": 1
-    },
-    {
-      "sysex_adress": 343,
-      "group": "Drums",
-      "ui_type": "switch",
-      "name": "harp drums",
-      "data_type": "int",
-      "min_value": 0,
-      "max_value": 1,
-      "default_value": 0,
-      "tooltip": "the harp's twelve strings play the drum kit instead of notes, the lowest string the kick: kick, snare, side stick, clap, closed hat, open hat, cymbal, low tom, high tom, low conga, high conga, bell. As hard as they are struck, with or without rhythm mode, and out over MIDI with drum MIDI out. The kit is drum kit's, or the groove's. While on, the harp ribbon, hammer-on and palm mute rest. 0 the strings play notes, as before",
-      "method": "harp_drums=value; apply_harp_thresholds();",
       "iterate": 1,
       "curve": "linear",
       "controls": "tap",

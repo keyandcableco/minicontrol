@@ -153,10 +153,10 @@ void apply_audio_parameter(int adress, int value) {
             }
             break;
         case 49:
-            string_filter_base_freq=value;
+            string_filter_base_freq=value; refresh_string_filters();
             break;
         case 50:
-            string_filter_keytrack=value/100.0;
+            string_filter_keytrack=value/100.0; refresh_string_filters();
             break;
         case 51:
             for (int i=0;i<12;i++){
@@ -251,7 +251,7 @@ void apply_audio_parameter(int adress, int value) {
             break;
         case 76:
             for (int i=0;i<12;i++){
-                string_waveform_array[i]->frequencyModulation(value/100.0); string_pluck_array[i]->frequencyModulation(value/100.0);
+                string_waveform_array[i]->frequencyModulation(value/100.0); string_pluck_array[i]->frequencyModulation(value/100.0); harp_vibrato_tap.octaves(value/100.0);
             }
             break;
         case 77:
@@ -1205,8 +1205,20 @@ void apply_audio_parameter(int adress, int value) {
         case 418:
             harp_touch_scale=value; apply_harp_touch_scale();
             break;
+        case 419:
+            drum_seams=value;
+            break;
         case 422:
             plate_detect_set(value);
+            break;
+        case 426:
+            drum_press_semis=value;
+            break;
+        case 427:
+            pads_mute_groove=value;
+            break;
+        case 446:
+            melodic_pads=value;
             break;
         default:
             break;

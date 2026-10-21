@@ -35,7 +35,7 @@ subgroup_order = {
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
-    'harp_parameter': ['Notes', 'Plate', 'Pluck', 'Ribbon', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
+    'harp_parameter': ['Notes', 'Plate', 'Drum pads', 'Pluck', 'Ribbon', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
                        'Reverb', 'Crunch', 'Output filter', 'Spread'],
     'sharp_button_parameter': ['General'],
     'rhythm_parameter': ['Style', 'Sections', 'Drums', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
@@ -50,7 +50,7 @@ parameter_name_order = {
         'Style': ['rhythm style', 'rhythm bass', 'rhythm chords', 'rhythm articulation', 'rhythm accents'],
         'Sections': ['rhythm style B', 'fill on modifier and hold', 'rhythm intro', 'rhythm ending', 'rhythm palm break'],
         'Drums': ['drums', 'drum groove', 'drum groove B', 'drum kit', 'drum level', 'drum humanize', 'count-in', 'drums only',
-                  'harp drums', 'drum MIDI out'],
+                  'drum MIDI out'],
         'Tempo': ['default bpm', 'tap tempo counts', 'shuffle value', 'MIDI clock out'],
         'Chord changes': ['rhythm follows hands', 'rhythm chord change', 'measure update', 'MIDI chords'],
         'Pattern': ['cycle length', 'note pushed duration'],  # then the grid of steps (SysEx 220–235)
@@ -134,6 +134,8 @@ parameter_name_order = {
             'harp shuffling'
         ],
         'Plate': ['harp plate', 'plate detect', 'harp touch threshold', 'harp release threshold'],
+        # harp drums, on any plate, then the drum pads' own (harp plate 13) and the resting hand's (firmware 101)
+        'Drum pads': ['harp drums', 'drum seams', 'melodic pads', 'drum press', 'pads mute the groove'],
         'Pluck': [
             'pluck on lift',
             'touch velocity',
@@ -546,7 +548,8 @@ submenus = {
     ],
     'harp_parameter': [
         ('Notes', ['Notes']),
-        ('Playing', ['Plate', 'Pluck', 'Ribbon']),
+        # harp drums and the drum pads' settings (firmware 101) beside the plate
+        ('Playing', ['Plate', 'Drum pads', 'Pluck', 'Ribbon']),
         ('Sound', ['Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
         ('Effects', ['Delay', 'Reverb', 'Crunch', 'Spread', 'Output filter']),
     ],
@@ -555,7 +558,7 @@ submenus = {
         ('Style', ['Style']),
         # style B, fills, the intro, the ending and the palm's break
         ('Fills and sections', ['Sections']),
-        # a synthesized kit on the rhythm's clock, its grooves, and the harp as its pads
+        # a synthesized kit on the rhythm's clock and its grooves (harp drums, the harp as its pads, is with the harp's plate)
         ('Drums', ['Drums']),
         ('Tempo', ['Tempo']),
         ('Chord changes', ['Chord changes']),

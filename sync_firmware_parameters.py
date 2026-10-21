@@ -17,6 +17,7 @@ Addresses this page has and the firmware doesn't are dropped (and reported).
 Afterwards run generate_sysex_name_map.py and generate.py.
 """
 import json
+import re
 import sys
 
 PAGE_FILE = 'parameters.json'
@@ -35,7 +36,8 @@ CHORD_TYPES = ["Slot default", "Major", "Minor", "Dominant 7", "Major 7", "Minor
 
 
 def options(labels, start=0):
-    return [{"value": i + start, "label": label} for i, label in enumerate(labels)]
+    # a label None leaves its value out (the harp plate's numbers for plates not out)
+    return [{"value": i + start, "label": label} for i, label in enumerate(labels) if label is not None]
 
 
 def select(section, group, labels, start=0):
@@ -64,7 +66,7 @@ GROOVES = ["rock", "pop eighths", "pop sixteenths", "ballad", "funk", "disco", "
            "amen-style break", "funky drummer-style", "think-style break", "boom bap", "drum and bass", "lo-fi",
            "son clave", "rumba clave", "bossa nova", "samba", "cumbia", "baiao", "salsa", "one drop", "dembow", "soca",
            "afrobeat", "12/8 bell", "highlife", "maqsum", "baladi", "saidi", "kehrwa", "dadra", "teental",
-           "cliqhop", "clicks and cuts", "idm", "microsound"]
+           "cliqhop", "clicks and cuts", "idm", "microsound", "kendang"]
 KITS = ["808", "909", "CR-78", "studio", "brushes", "boom bap", "world percussion", "tabla and doumbek", "trap", "house",
         "glitch", "cliqhop"]
 
@@ -212,9 +214,19 @@ UI_OVERRIDES = {
     # harp: playing, how the hands meet the harp. Each preset holds these, so the plate and its
     # thresholds sit here rather than with the instrument's own settings under General.
     # The plate fitted, and how firm a touch its zones need
-    # (the released plates only: 8 and up belong to plates not out yet)
+    # (the released plates only: 0-4, and the drum pads, 13, from firmware 101; the numbers
+    # between belong to plates not out yet)
     243: select('harp_parameter', 'Plate', ["Stock strip, or any plate of twelve separate zones",
-                                            "Keymaster", "Piano plate", "Twin rows", "Framed strings"]),
+                                            "Keymaster", "Piano plate", "Twin rows", "Framed strings"]
+                + [None] * 8 + ["Drum pads"]),
+    # the drum pads (firmware 101): harp drums turns any plate's strings into the kit's pads, so it
+    # sits under Playing beside the drum pads' own settings (drum seams, melodic pads) and the
+    # resting hand's, which work on any plate with harp drums on (drum press, pads mute the groove)
+    343: control('harp_parameter', 'Drum pads', 'switch'),
+    419: control('harp_parameter', 'Drum pads', 'switch'),
+    426: control('harp_parameter', 'Drum pads', 'slider'),
+    427: control('harp_parameter', 'Drum pads', 'switch'),
+    446: control('harp_parameter', 'Drum pads', 'switch'),
     241: control('harp_parameter', 'Plate', 'slider'),
     242: control('harp_parameter', 'Plate', 'slider'),
     # the piano plate's neighbour guard, and how firmly the plate reads a touch (firmware 93)
@@ -347,7 +359,6 @@ UI_OVERRIDES = {
     340: select('rhythm_parameter', 'Drums', ["Off", "Channel 10 on port 1", "Channel 10 on port 2"]),
     341: control('rhythm_parameter', 'Drums', 'switch'),
     342: control('rhythm_parameter', 'Drums', 'switch'),
-    343: control('rhythm_parameter', 'Drums', 'switch'),
     # firmware 69: hammer-on time, tabla laya, the drums' and the drone's reverb, speed ramp
     376: control('harp_parameter', 'Pluck', 'slider'),
     377: select('rhythm_parameter', 'Drums', ["As written: a bol a step", "A bol a beat (the tempo counts matras)",
@@ -360,6 +371,33 @@ UI_OVERRIDES = {
 WAVEFORM_ADDRESSES = [42, 59, 62, 93, 100, 122, 125, 128, 152, 156, 160]
 for address in WAVEFORM_ADDRESSES:
     UI_OVERRIDES.setdefault(address, {})["options"] = options(WAVEFORMS)
+
+# The harp plates this page offers: those released. The firmware's tooltips describe every plate it
+# reads, so the others are taken out of them, and the sync stops before writing if any is still named.
+RELEASED_PLATES = {0, 1, 2, 3, 4, 13}
+PLATE_SETTING = 243
+
+
+def released_plates_only(address, tooltip):
+    """harp plate's tooltip gives each plate a sentence starting with its number ("13 is the drum pads:
+    ..."), and a setting for some plates lists them as "harp plate 2, the piano plate, and N, the ...
+    (...)": the sentences and list entries of plates not released are left out"""
+    if address == PLATE_SETTING:
+        parts = re.split(r'(?<=\.) (?=\d+ is )', tooltip)
+        tooltip = ' '.join(p for p in parts if not re.match(r'\d+ is ', p) or int(p.split()[0]) in RELEASED_PLATES)
+    if 'harp plate' in tooltip:
+        tooltip = re.sub(r', and (\d+), the [^,.(]*(?:\([^)]*\))?',
+                         lambda m: m.group(0) if int(m.group(1)) in RELEASED_PLATES else '', tooltip)
+    return tooltip
+
+
+def plates_named(param):
+    """the plate numbers a setting names: its options for harp plate, and plate numbers in its tooltip"""
+    tooltip = param.get('tooltip', '')
+    named = re.findall(r'\bplates? (\d+)\b', tooltip) + re.findall(r', and (\d+), the\b', tooltip)
+    if param['sysex_adress'] == PLATE_SETTING:
+        named += re.findall(r'(?:^|\. )(\d+) is ', tooltip) + [o['value'] for o in param.get('options', [])]
+    return {int(n) for n in named}
 
 # the rhythm section and the hidden values live in sections of their own here
 RHYTHM_ADDRESSES = set(range(187, 192)) | set(range(220, 236)) | set(range(274, 283))
@@ -410,6 +448,8 @@ def main(firmware_file):
                     entry[field] = fw_param[field]
             if 'controls' not in fw_param:
                 entry.pop('controls', None)
+            if 'tooltip' in entry:
+                entry['tooltip'] = released_plates_only(address, entry['tooltip'])
             # the firmware counts versions in whole numbers, this page in hundredths
             entry['introduction_version'] = round(fw_param.get('introduction_version', 2) / 100.0, 2)
             override = dict(UI_OVERRIDES.get(address, {}))
@@ -424,6 +464,10 @@ def main(firmware_file):
     dropped = sorted(address for address in current if address not in seen)
     for section in merged:
         merged[section].sort(key=lambda p: p['sysex_adress'])
+    leaks = [f"{p['sysex_adress']} {p['name']}: plates {sorted(plates_named(p) - RELEASED_PLATES)}"
+             for params in merged.values() for p in params if plates_named(p) - RELEASED_PLATES]
+    if leaks:
+        sys.exit("plates not released named, nothing written:\n  " + "\n  ".join(leaks))
     with open(PAGE_FILE, 'w') as f:
         json.dump(merged, f, indent=2)
         f.write('\n')

@@ -31,6 +31,8 @@ PLATES = {
     2: ('piano PCB/gerber/piano PCB-F_Cu.gbr', 'piano PCB/gerber/piano PCB-Edge_Cuts.gbr', {'size': 28, 'black': [1, 3, 6, 8, 10]}),
     3: ('twin rows PCB/gerber/twin rows PCB-F_Cu.gbr', 'twin rows PCB/gerber/twin rows PCB-Edge_Cuts.gbr', {'size': 31}),
     4: ('framed strings PCB/gerber/framed strings PCB-F_Cu.gbr', 'framed strings PCB/gerber/framed strings PCB-Edge_Cuts.gbr', {'size': 28}),
+    # the drum pads (firmware 101): twelve pads in two columns; the seams between them are where two pads meet
+    13: ('drum pads PCB/gerber/drum pads PCB-F_Cu.gbr', 'drum pads PCB/gerber/drum pads PCB-Edge_Cuts.gbr', {'size': 24}),
 }
 # board millimetres to the drawing, fitted to the chord buttons
 SCALE, DX, DY = 8.4985, 489.41, -40.61
