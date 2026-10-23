@@ -5,7 +5,7 @@ void apply_audio_parameter(int adress, int value) {
     switch(adress) {
 
         case 2:
-            string_gain.amplitude(value/100.0,100);  harp_attack_velocity=value/100.0*127;
+            string_gain.amplitude(value/100.0,100);  harp_attack_velocity=value/100.0*127; harp_drum_gain=harp_drum_taper(value/100.0);
             break;
         case 3:
             chords_gain.amplitude(value/100.0,100); chord_attack_velocity=value/100.0*127;
