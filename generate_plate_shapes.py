@@ -33,6 +33,9 @@ PLATES = {
     4: ('framed strings PCB/gerber/framed strings PCB-F_Cu.gbr', 'framed strings PCB/gerber/framed strings PCB-Edge_Cuts.gbr', {'size': 28}),
     8: ('zipper 24 PCB/gerber/zipper 24 PCB-F_Cu.gbr', 'zipper 24 PCB/gerber/zipper 24 PCB-Edge_Cuts.gbr', {'size': 20}),
     9: ('arcade wheel PCB/gerber/arcade wheel PCB-F_Cu.gbr', 'arcade wheel PCB/gerber/arcade wheel PCB-Edge_Cuts.gbr', {'size': 18}),
+    # piano glide (firmware 114): the piano's keys and a fretless strip down the left edge, each key's copper
+    # running on into the strip at its height
+    12: ('piano glide PCB/gerber/piano glide PCB-F_Cu.gbr', 'piano glide PCB/gerber/piano glide PCB-Edge_Cuts.gbr', {'size': 28, 'black': [1, 3, 6, 8, 10]}),
     # the drum pads (firmware 101): twelve pads in two columns; the seams between them are where two pads meet
     13: ('drum pads PCB/gerber/drum pads PCB-F_Cu.gbr', 'drum pads PCB/gerber/drum pads PCB-Edge_Cuts.gbr', {'size': 24}),
 }

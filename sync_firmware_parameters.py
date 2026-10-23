@@ -216,10 +216,11 @@ UI_OVERRIDES = {
     # thresholds sit here rather than with the instrument's own settings under General.
     # The plate fitted, and how firm a touch its zones need
     # (the released plates only: 0-4, zipper 24 and the arcade wheel, 8 and 9, from firmware 99,
-    # and the drum pads, 13, from firmware 101; the numbers between belong to plates not out yet)
+    # the drum pads, 13, from firmware 101, and piano glide, 12, from firmware 114; the numbers
+    # between belong to plates not out yet)
     243: select('harp_parameter', 'Plate', ["Stock strip, or any plate of twelve separate zones",
                                             "Keymaster", "Piano plate", "Twin rows", "Framed strings"]
-                + [None] * 3 + ["Zipper 24", "Arcade wheel"] + [None] * 3 + ["Drum pads"]),
+                + [None] * 3 + ["Zipper 24", "Arcade wheel"] + [None] * 2 + ["Piano glide", "Drum pads"]),
     # the drum pads (firmware 101): harp drums turns any plate's strings into the kit's pads, so it
     # sits under Playing beside the drum pads' own settings (drum seams, melodic pads) and the
     # resting hand's, which work on any plate with harp drums on (drum press, pads mute the groove)
@@ -375,7 +376,7 @@ for address in WAVEFORM_ADDRESSES:
 
 # The harp plates this page offers: those released. The firmware's tooltips describe every plate it
 # reads, so the others are taken out of them, and the sync stops before writing if any is still named.
-RELEASED_PLATES = {0, 1, 2, 3, 4, 8, 9, 13}
+RELEASED_PLATES = {0, 1, 2, 3, 4, 8, 9, 12, 13}
 PLATE_SETTING = 243
 
 

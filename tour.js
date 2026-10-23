@@ -78,7 +78,7 @@ const TOUR_STEPS = [
     text: 'Choosing a control opens its sheet: what the control does, what it could do instead, and the settings behind it. Change things here and the minichord follows. Close it with ✕ or Escape.' },
   { target: ['label[for="param-243"]', '.plate-teach'], title: 'The harp plates',
     before: () => tourSetting('harp-sheet', 243),
-    text: 'The harp’s touch plate swaps, and each plays in its own way: the Keymaster, the piano plate, twin rows, framed strings, zipper 24, the arcade wheel and the drum pads. Choose the fitted plate here and the harp reads it as it should, touch calibration included. With plate detect on, the minichord learns a plate once and from then on knows it by itself whenever it is fitted.' },
+    text: 'The harp’s touch plate swaps, and each plays in its own way: the Keymaster, the piano plate, twin rows, framed strings, zipper 24, the arcade wheel, piano glide and the drum pads. Choose the fitted plate here and the harp reads it as it should, touch calibration included. With plate detect on, the minichord learns a plate once and from then on knows it by itself whenever it is fitted.' },
   { target: ['label[for="param-334"]', '#user-kit'], title: 'The drums',
     before: () => tourSetting('rhythm-sheet', 334),
     text: 'Rhythm mode plays drums with the accompaniment: synthesized kits from the 808 to tabla and doumbek, grooves from a waltz to drum and bass. Harp drums, in the harp’s sheet, puts the kit under your fingers on the strings. Your own kit turns your sound files into drum kit 13 and sends it to the minichord.' },
