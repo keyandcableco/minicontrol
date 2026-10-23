@@ -9542,9 +9542,9 @@
       "name": "drum kit",
       "data_type": "int",
       "min_value": 0,
-      "max_value": 12,
+      "max_value": 13,
       "default_value": 0,
-      "tooltip": "the kit the drums play: 1 808, 2 909, 3 CR-78, 4 studio, 5 brushes, 6 boom bap, 7 world percussion, 8 tabla and doumbek, 9 trap, 10 house, 11 glitch, 12 cliqhop (blips, bleeps, clicks, pings and crackle, its pitched sounds on the chord's root and fifth). Each groove has its own kit (the breaks the dusty boom bap kit, the son clave the world percussion, maqsum and teental the tabla and doumbek); this plays any groove on another. The trap kit's kick is an 808 bass on the chord's root. 0 the groove's own",
+      "tooltip": "the kit the drums play: 1 808, 2 909, 3 CR-78, 4 studio, 5 brushes, 6 boom bap, 7 world percussion, 8 tabla and doumbek, 9 trap, 10 house, 11 glitch, 12 cliqhop (blips, bleeps, clicks, pings and crackle, its pitched sounds on the chord's root and fifth), 13 your own kit, sent from minicontrol. Each groove has its own kit (the breaks the dusty boom bap kit, the son clave the world percussion, maqsum and teental the tabla and doumbek); this plays any groove on another. The trap kit's kick is an 808 bass on the chord's root. 0 the groove's own",
       "method": "drum_kit=value;",
       "iterate": 1,
       "curve": "linear",
@@ -9602,6 +9602,10 @@
         {
           "value": 12,
           "label": "cliqhop"
+        },
+        {
+          "value": 13,
+          "label": "your own"
         }
       ],
       "step": 1

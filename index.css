@@ -2603,3 +2603,166 @@
 .lock-btn:hover { opacity: 1; }
 .lock-btn.locked { background: var(--primary-color); color: var(--text-color); opacity: 1; }
 .lock-btn.fixed { cursor: default; }
+
+/* your own kit (kits.js), under drum kit: files in, a row a voice, the size against the room there is */
+.user-kit [hidden] { display: none !important; }
+.user-kit {
+  margin: 4px 0 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--track-color);
+  border-radius: 8px;
+  max-width: 760px;
+  box-sizing: border-box;
+}
+.user-kit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+.kit-info, .kit-licence-note, .kit-heard, .kit-status, #kit-meter-text, #kit-progress-text {
+  font-size: 0.85em;
+  opacity: 0.85;
+}
+.kit-load, .kit-fields, .kit-actions, .kit-meter-line, .kit-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.kit-pick-btn {
+  position: relative;
+  overflow: hidden;
+  padding: 6px 10px;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  cursor: pointer;
+}
+/* its input is invisible, so the label shows where the keyboard is */
+.kit-pick-btn:focus-within {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+.kit-pick-btn input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.kit-drop {
+  flex: 1 1 200px;
+  padding: 8px 10px;
+  border: 2px dashed var(--track-color);
+  border-radius: 6px;
+  font-size: 0.85em;
+  text-align: center;
+  opacity: 0.85;
+}
+.kit-drop.kit-drop-over, .kit-voice.kit-drop-over {
+  border-color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+}
+.kit-fields label, .kit-licence {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.kit-fields input[type="text"] { width: 150px; }
+.kit-licence { margin-top: 8px; align-items: flex-start; }
+.kit-licence textarea {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.85em;
+}
+.kit-licence-note.kit-warn {
+  color: var(--conflict-border);
+  opacity: 1;
+  font-weight: bold;
+}
+.kit-voices {
+  display: grid;
+  /* the rows no wider than the block, however long a file's name in a voice's list */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+.kit-voice {
+  padding: 6px 8px;
+  border: 1px solid var(--track-color);
+  border-radius: 6px;
+}
+.kit-voice-head, .kit-voice-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+.kit-voice-controls { margin-top: 4px; font-size: 0.9em; }
+.kit-voice-name {
+  width: 80px;
+  font-weight: bold;
+}
+.kit-pick {
+  flex: 1 1 180px;
+  min-width: 0;
+  max-width: 320px;
+}
+.kit-tag {
+  font-size: 0.8em;
+  opacity: 0.75;
+}
+.kit-voice-controls button {
+  padding: 3px 8px;
+  font-size: 0.9em;
+}
+.kit-voice-controls button:disabled { opacity: 0.4; cursor: default; }
+.kit-trim {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.kit-trim input { width: 90px; }
+.kit-trim-value { min-width: 92px; font-size: 0.9em; }
+.kit-row-error:empty { display: none; }
+.kit-row-error { font-size: 0.85em; color: var(--conflict-border); }
+.kit-unused {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.kit-unused-head, .kit-unused-more { flex: 1 1 100%; font-size: 0.85em; opacity: 0.85; }
+.kit-filter { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.kit-filter[hidden] { display: none; }
+.kit-filter input { flex: 1 1 160px; max-width: 300px; min-width: 0; }
+.kit-chip {
+  padding: 2px 8px;
+  border: 1px solid var(--track-color);
+  border-radius: 10px;
+  font-size: 0.8em;
+  cursor: grab;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+#kit-meter { flex: 1 1 160px; max-width: 300px; height: 14px; }
+.kit-progress progress { flex: 1 1 160px; max-width: 300px; }
+/* the upload's milestones, for screen readers only: the bar's own text changes with every piece */
+.kit-said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.kit-status:empty { display: none; }
+.kit-status { margin-top: 6px; }
+.kit-actions button:disabled { opacity: 0.5; cursor: default; }
+@media (max-width: 600px) {
+  .kit-voice-name { width: auto; flex: 1 1 100%; }
+  .kit-fields input[type="text"] { width: 120px; }
+}

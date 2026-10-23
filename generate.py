@@ -402,6 +402,9 @@ def generate_param_html(param):
         if sysex_address == 244:
             # the minichord's own sound, from its USB recording, through this phone or computer: listen.js
             html.append('<div id="listen-usb" class="talk-slot talk-beside"></div>')
+        if sysex_address == 337:
+            # your own kit (drum kit 13): sound files read, mapped to the voices and sent (kits.js)
+            html.append(user_kit_html(param))
     elif ui_type == 'switch':
         html.append(f'''
             <div style="display: flex; align-items: center; margin: 8px 0;">
@@ -489,6 +492,55 @@ SCALA_IMPORT_HTML = '''
                 <label title="move the offsets together so A stays on the master tuning pitch"><input type="checkbox" id="scala-keep-a" class="always-on" checked> keep A at the master pitch</label>
                 <button type="button" id="own-equal" class="always-on" style="margin-left: 8px;">all to equal</button>
                 <div id="scala-status" style="font-size: 0.85em; opacity: 0.8; margin-top: 4px;"></div>
+            </div>'''
+
+# Your own drum kit (kits.js, firmware 113): sound files, a folder or a .mckit read in, a voice each,
+# processed into one image and sent to the minichord, which plays it as drum kit 13. Shown whatever the
+# firmware, so a kit can be made and saved as a .mckit with no minichord at hand; kits.js says what the
+# minichord has room for. The voice rows are drawn by kits.js once there are files.
+def user_kit_html(param):
+    base_kits = ''.join(f'<option value="{o["value"]}"{" selected" if o["value"] == 4 else ""}>{html_escape(o["label"])}</option>'
+                        for o in param.get('options', []) if 1 <= o['value'] <= 12)
+    return f'''
+            <div id="user-kit" class="user-kit">
+                <div class="user-kit-head">
+                    <label style="font-weight: bold;" title="up to thirteen of your own one-shots in place of the drum machine's voices: drum kit 13, your own. Give it sound files (WAV, AIFF, FLAC, MP3, Ogg, Opus, M4A), a folder of them, or a .mckit kit file; each file goes to the voice its name suggests, and each hit is trimmed, faded and levelled before it is sent">Your own kit</label>
+                    <span id="kit-info" class="kit-info"></span>
+                </div>
+                <div class="kit-load">
+                    <label class="kit-pick-btn" title="sound files, or a .mckit kit file">sound files <input type="file" id="kit-files" class="always-on" multiple accept="audio/*,.wav,.aif,.aiff,.aifc,.flac,.mp3,.ogg,.oga,.opus,.m4a,.aac,.mckit"></label>
+                    <label class="kit-pick-btn" title="a folder of sound files: its folders' names help say which is which">a folder <input type="file" id="kit-folder" class="always-on" webkitdirectory multiple></label>
+                    <div id="kit-drop" class="kit-drop">or drop sound files, a folder or a .mckit here</div>
+                    <button type="button" id="kit-resend" class="always-on" hidden title="the last kit sent from this browser, kept here">send your last kit again</button>
+                </div>
+                <div id="kit-card" class="kit-card" hidden>
+                    <div class="kit-fields">
+                        <label title="the kit's name, up to 20 characters of plain ASCII: drum kit shows it">name <input type="text" id="kit-name" class="always-on" maxlength="20" autocomplete="off"></label>
+                        <label title="who made the sounds, kept in the .mckit">author <input type="text" id="kit-author" class="always-on" autocomplete="off"></label>
+                        <label title="what plays for a voice left empty, and the grit (bits, hold and drive) of the whole kit">base kit <select id="kit-base" class="always-on">{base_kits}</select></label>
+                        <button type="button" id="kit-reset" class="always-on" title="the guess from the file names again, every voice back to its defaults">reset mapping</button>
+                    </div>
+                    <label class="kit-licence" title="the sounds' licence, from a licence or readme file in the folder, or as you type it: kept in the .mckit">licence
+                        <textarea id="kit-licence" class="always-on" rows="2"></textarea></label>
+                    <div id="kit-licence-note" class="kit-licence-note"></div>
+                    <label id="kit-filter-box" class="kit-filter" hidden title="with this many files, each voice's list and the not-used bin show only some: this finds the others by part of a name or folder">find a file <input type="search" id="kit-filter" class="always-on" autocomplete="off" placeholder="part of its name or folder"></label>
+                    <div id="kit-voices" class="kit-voices"></div>
+                    <div id="kit-unused" class="kit-unused" hidden></div>
+                    <div class="kit-meter-line">
+                        <meter id="kit-meter" min="0" max="262144" value="0"></meter>
+                        <span id="kit-meter-text"></span>
+                    </div>
+                    <div class="kit-actions">
+                        <button type="button" id="kit-send" class="always-on" disabled title="write the kit to the minichord and set drum kit to your own; a bank keeps it once saved">send to the minichord</button>
+                        <button type="button" id="kit-save" class="always-on" disabled title="the kit as a .mckit file, to keep or share">save as a .mckit</button>
+                    </div>
+                </div>
+                <div id="kit-progress-box" class="kit-progress" hidden>
+                    <progress id="kit-progress" max="1" value="0" aria-labelledby="kit-progress-text"></progress>
+                    <span id="kit-progress-text"></span>
+                    <span id="kit-progress-said" class="kit-said" aria-live="polite"></span>
+                </div>
+                <div id="kit-status" class="kit-status" role="status"></div>
             </div>'''
 
 # The tuning circle (tuning.js): the octave as a circle, the live tuning's steps, the harp's scale,
@@ -1033,6 +1085,7 @@ html_template = '''<!DOCTYPE html>
   <script src="talk.js"></script>
   <script src="listen.js"></script>
   <script src="tuning.js"></script>
+  <script src="kits.js"></script>
   <script src="controls.js"></script>
   <script src="envelope.js"></script>
   <script src="waveforms.js"></script>

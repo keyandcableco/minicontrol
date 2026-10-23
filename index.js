@@ -393,7 +393,8 @@ function okToDropEdits(action) {
 }
 
 // Whether a button that talks to the minichord can go ahead: connected, and not in the middle of
-// walking the banks, which a stray load or save would throw off
+// walking the banks, which a stray load or save would throw off, or of a kit upload, which holds
+// everything else back till it's over (a bank read would time out waiting, then load once it is)
 function deviceReady() {
   if (!controller.isConnected()) {
     showNotification("No minichord connected", "error");
@@ -401,6 +402,10 @@ function deviceReady() {
   }
   if (typeof bankState !== 'undefined' && bankState.busy) {
     showNotification("Wait till the banks are done", "error");
+    return false;
+  }
+  if (controller.kitPaused) {
+    showNotification(`Wait: ${controller.kitPaused}`, "error");
     return false;
   }
   return true;

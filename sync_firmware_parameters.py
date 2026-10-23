@@ -67,8 +67,9 @@ GROOVES = ["rock", "pop eighths", "pop sixteenths", "ballad", "funk", "disco", "
            "son clave", "rumba clave", "bossa nova", "samba", "cumbia", "baiao", "salsa", "one drop", "dembow", "soca",
            "afrobeat", "12/8 bell", "highlife", "maqsum", "baladi", "saidi", "kehrwa", "dadra", "teental",
            "cliqhop", "clicks and cuts", "idm", "microsound", "kendang"]
+# 13 (firmware 113): the player's own one-shots, sent from minicontrol (kits.js names it after the kit)
 KITS = ["808", "909", "CR-78", "studio", "brushes", "boom bap", "world percussion", "tabla and doumbek", "trap", "house",
-        "glitch", "cliqhop"]
+        "glitch", "cliqhop", "your own"]
 
 UI_OVERRIDES = {
     # the firmware's name has an underscore

@@ -19,6 +19,20 @@ class MiniChordController {
     this.has_locks = false;     // whether the minichord answered for its locks
     this.locks_version = 76;
     this.onLocks = null;
+    // Your own drum kit (firmware 113, kits.js): kit messages are F0 7D 6B <op> ... F7. Every reply
+    // goes to onKit as it came, F0 to F7 (null when the minichord goes away, undefined after a dump
+    // from firmware with no kit slot); INFO is asked after each dump, as the locks are. While a kit
+    // is being sent, here or by another app, kitPaused says why and every other message waits in
+    // kitHeld (onPausedSend told), as the minichord drops what isn't the kit's meanwhile; it goes, in
+    // the order it was sent, once the upload is over (resumeAfterKit), as minictl holds a set or a
+    // command till then.
+    this.kit_version = 113;
+    this.onKit = null;
+    this.onKitAsked = null;
+    this.kitPaused = false;
+    this.kitHeld = [];
+    this.kit_held_most = 4096;  // past this many (a knob turned for a whole upload), the oldest go
+    this.onPausedSend = null;
     this.has_page1 = false;     // whether the minichord answered for page 1
     this.page1_defaults = {};   // address -> stored default, from parameters.json (index.js)
     this.pendingDump = null;    // page 0, held while page 1 is asked for
@@ -109,6 +123,9 @@ class MiniChordController {
       this.has_locks = false;
       this.locks = new Set();
       if (this.onLocks) this.onLocks(this.locks);
+      this.kitPaused = false;
+      this.kitHeld = [];
+      if (this.onKit) this.onKit(null);
       this.dropPendingDump();
       // Clean up input handlers
       for (const input of event.target.inputs.values()) {
@@ -142,6 +159,11 @@ class MiniChordController {
   const data = midiMessage.data.slice(1);
   if (data.length >= 3 && data[0] === 0x7D && data[1] === 0x6C) {
     this.processLocks(data);
+    return;
+  }
+  // a kit reply (7D 6B), before any length is taken for a dump: kits.js reads it
+  if (data.length >= 3 && data[0] === 0x7D && data[1] === 0x6B) {
+    if (this.onKit) this.onKit(midiMessage.data);
     return;
   }
   if (data.length === 3 + this.page_size * 2 + 1 && data[0] === 0x7D && data[1] === 0x6D) {
@@ -286,6 +308,7 @@ deliverDump(processedData) {
   this.active_bank_number = processedData.bankNumber;
   this.firmware_version = processedData.firmwareVersion;
   if (Math.round(this.firmware_version * 100) >= this.locks_version && !this.has_locks) this.requestLocks();
+  this.requestKitInfo();
   if (this.pendingSave && typeof currentValues !== 'undefined') {
     for (let i = 2; i < processedData.parameters.length; i++) {
       if (processedData.parameters[i] !== undefined && currentValues[i] !== undefined) {
@@ -300,14 +323,73 @@ deliverDump(processedData) {
   }
 }
 
-  sendSysEx(bytes) {
+  // `always` sends it while a kit upload holds everything else back (kits.js stopping the rhythm)
+  sendSysEx(bytes, always) {
     if (!this.device) return;
-    const isInvalid = bytes.some(b => b >= 0xF0 && b !== 0xF7);
+    // between F0 and F7 every byte is data, below 0x80
+    const isInvalid = bytes.some(b => !Number.isInteger(b) || b < 0 || b > 0x7F);
     if (isInvalid) {
       console.error("Invalid SysEx message:", bytes);
       return;
     }
+    if (this.kitPaused && !always) {
+      this.kitHeld.push(bytes.slice());
+      if (this.kitHeld.length > this.kit_held_most) console.warn("[sendSysEx] dropped, held back too long:", this.kitHeld.shift());
+      if (this.onPausedSend) this.onPausedSend();
+      return;
+    }
     this.device.send([0xF0, ...bytes, 0xF7]);
+  }
+
+  // A kit upload begins (here, or another app's heard): every other message waits till it's over
+  pauseForKit(why) {
+    this.kitPaused = why;
+  }
+
+  // The upload over: what was held back goes now, in the order it was sent
+  resumeAfterKit() {
+    this.kitPaused = false;
+    const held = this.kitHeld;
+    this.kitHeld = [];
+    if (held.length) console.log(`[sendSysEx] ${held.length} held back during the kit upload, sent now`);
+    for (const bytes of held) this.sendSysEx(bytes);
+  }
+
+  // A kit message, whole (F0 7D 6B ... F7), sent whatever else is held back. Every data byte is checked
+  // to be below 0x80 first, as a byte past it would end the message early or start another.
+  sendKitMessage(message) {
+    if (!this.device) return false;
+    const n = message.length;
+    if (n < 7 || message[0] !== 0xF0 || message[1] !== 0x7D || message[2] !== 0x6B || message[n - 1] !== 0xF7) {
+      console.error("Not a kit message:", message);
+      return false;
+    }
+    for (let i = 1; i < n - 1; i++) {
+      if (message[i] > 0x7F) {
+        console.error(`Kit message byte ${i} is ${message[i]}, not data`);
+        return false;
+      }
+    }
+    try {
+      this.device.send(message);
+      return true;
+    } catch (error) {
+      console.error("sendKitMessage failed:", error);
+      return false;
+    }
+  }
+
+  // INFO (F0 7D 6B 05 01 00 F7), asked after each dump from firmware with a kit slot; kits.js gives it
+  // a second to come
+  requestKitInfo() {
+    if (!this.device || this.kitPaused) return false;
+    if (Math.round((this.firmware_version || 0) * 100) < this.kit_version) {
+      if (this.onKit) this.onKit(undefined);
+      return false;
+    }
+    if (!this.sendKitMessage([0xF0, 0x7D, 0x6B, 0x05, 0x01, 0x00, 0xF7])) return false;
+    if (this.onKitAsked) this.onKitAsked();
+    return true;
   }
 
   // whether a setting can be written to this minichord: not a reserved address, and page 1

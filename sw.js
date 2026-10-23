@@ -22,6 +22,8 @@ const SHELL = [
   'talk.js',
   'listen.js',
   'tuning.js',
+  'kits.js',
+  'kit-formats/aiff.js',
   'controls.js',
   'envelope.js',
   'waveforms.js',
