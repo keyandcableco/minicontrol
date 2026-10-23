@@ -40,6 +40,15 @@ async function tourBanksets() {
   await openBanksets();
 }
 
+// a settings sheet for the tour: shown the manual way, its quick sliders rendered, and
+// the submenu that holds the step's target opened so the target has somewhere to be seen
+function tourSetting(sheetId, sysex) {
+  tourShow(sheetId);
+  if (typeof renderQuick === 'function') renderQuick();
+  const el = document.getElementById(`param-${sysex}`);
+  for (let d = el?.closest('details'); d; d = d.parentElement?.closest('details')) d.open = true;
+}
+
 // target: what to light, one selector or several (lit together); before: what to open first
 const TOUR_STEPS = [
   { target: '.title-container', title: 'Welcome to minicontrol',
@@ -67,8 +76,17 @@ const TOUR_STEPS = [
       openControlSheet('mod');
     },
     text: 'Choosing a control opens its sheet: what the control does, what it could do instead, and the settings behind it. Change things here and the minichord follows. Close it with ✕ or Escape.' },
+  { target: ['label[for="param-243"]', '.plate-teach'], title: 'The harp plates',
+    before: () => tourSetting('harp-sheet', 243),
+    text: 'The harp’s touch plate swaps, and each plays in its own way: the Keymaster, the piano plate, twin rows, framed strings, zipper 24, the arcade wheel and the drum pads. Choose the fitted plate here and the harp reads it as it should, touch calibration included. With plate detect on, the minichord learns a plate once and from then on knows it by itself whenever it is fitted.' },
+  { target: ['label[for="param-334"]', '#user-kit'], title: 'The drums',
+    before: () => tourSetting('rhythm-sheet', 334),
+    text: 'Rhythm mode plays drums with the accompaniment: synthesized kits from the 808 to tabla and doumbek, grooves from a waltz to drum and bass. Harp drums, in the harp’s sheet, puts the kit under your fingers on the strings. Your own kit turns your sound files into drum kit 13 and sends it to the minichord.' },
   { target: '.map-pedals', title: 'The pedals',
     text: 'What the minichord has no button for, as pedals under the drawing: the key and tuning, the drone, the effects, and sound from a phone or computer over USB. Each opens its own sheet.' },
+  { target: '#tuning-sheet', title: 'Key and tuning',
+    before: () => tourSetting('tuning-sheet', 30),
+    text: 'The tuning pedal’s sheet: transpose, the key signature, master tuning, and temperaments from quarter-comma meantone to 31-EDO — or your own, read from a Scala file. The tuning circle draws what the twelve notes come to. The drone, the pedal beside it, holds a note under everything you play.' },
   { target: '.describe-group', title: 'Describe',
     text: 'Say what you want in words: warm pad chords, make bank 5 louder, key signature to E minor. The page describes the live sound here too. The words are read by rules on this page and never sent anywhere.' },
   { target: '#settings-finder', title: 'Any setting by name',
