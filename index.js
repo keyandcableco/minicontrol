@@ -258,16 +258,20 @@ function updateConnectionStatus(connected, message) {
   if (!isShowingNotification) {
     bubbleElement.className = connected ? 'connected' : 'disconnected';
     const bankText = currentBankNumber >= 0 ? ` | Bank ${currentBankNumber + 1}${liveName()}${unsavedEdits ? ' (unsaved changes)' : ''}` : '';
-    textElement.textContent = !connected ? "minichord disconnected" : progressText || `minichord connected${bankText}`;
+    // away for a firmware update (update.js): said as that, not as a fault
+    textElement.textContent = !connected ? (window.firmwareUpdating ? "minichord in update mode" : "minichord disconnected")
+      : progressText || `minichord connected${bankText}`;
     bubbleElement.style.display = 'flex';
   }
-  if (message && !isShowingNotification) {
+  // a firmware update (update.js) takes the minichord away on purpose: no alarm, and no connection help
+  const updating = !connected && window.firmwareUpdating;
+  if (message && !isShowingNotification && !updating) {
     showNotification(message, connected ? "success" : "error");
   }
   if (!connected) {
     // the buttons have all gone grey: say what they are waiting for
     const help = document.getElementById("connection-help");
-    if (help) help.open = true;
+    if (help && !updating) help.open = true;
     // greyed for want of a minichord now, not of firmware
     showFirmwareNote(0, 0);
     document.querySelectorAll("[data-needs-firmware]").forEach(holder => {
@@ -953,6 +957,8 @@ function showFirmwareNote(firmware, newest) {
     note.innerHTML = `This minichord has version ${firmware} of the ${TEST_FIRMWARE_LINK}, so the greyed-out controls are off: ` +
       `they need version ${newest} or later. ${TEST_FIRMWARE_CAVEAT}`;
   }
+  // the firmware sheet (update.js) installs it from here
+  if (window.openFirmwareSheet) note.insertAdjacentHTML("beforeend", ' <button type="button" class="always-on fw-open" data-firmware-open>update the firmware</button>');
 }
 
 // a click on a greyed control lands on what holds it: say why nothing happens

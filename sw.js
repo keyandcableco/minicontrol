@@ -24,6 +24,8 @@ const SHELL = [
   'tuning.js',
   'kits.js',
   'kit-formats/aiff.js',
+  'flash.js',
+  'update.js',
   'controls.js',
   'envelope.js',
   'waveforms.js',

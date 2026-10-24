@@ -64,7 +64,7 @@
         </span>
         <span id="tour-nudge" class="tour-nudge" hidden>New here? <button type="button" class="always-on" data-tour-start>take the tour</button> <button type="button" class="always-on tour-nudge-close" id="tour-nudge-close" aria-label="not now">✕</button></span>
       </div>
-      <button type="button" class="settings-toggle always-on" popovertarget="settings-drawer" title="how to connect, manage all banks, back up and restore, the vocoder voice, the theme, and reset"><span class="glyph">⚙</span> settings</button>
+      <button type="button" class="settings-toggle always-on" popovertarget="settings-drawer" title="how to connect, the firmware, manage all banks, back up and restore, the vocoder voice, the theme, and reset"><span class="glyph">⚙</span> settings</button>
     </div>
     <div id="firmware-note" role="status" hidden></div>
     <div id="header">
@@ -262,6 +262,109 @@
         </div>
       </div>
     </div>
+    <!-- the minichord's firmware, installed from here over USB: flash.js writes it, update.js runs the steps -->
+    <div id="firmware-sheet" class="minishop-sheet firmware-sheet" popover aria-labelledby="firmware-title">
+      <div class="minishop-head">
+        <div>
+          <h2 id="firmware-title">update the firmware</h2>
+          <p class="controls-sheet-where">the minichord's own program, installed from this page over USB</p>
+        </div>
+        <button type="button" class="settings-close always-on" popovertarget="firmware-sheet" popovertargetaction="hide" aria-label="close the firmware update"><span class="glyph">✕</span></button>
+      </div>
+      <div class="firmware-body">
+        <div id="fw-unsupported" class="fw-box" hidden>
+          <p class="fw-text">Updating the firmware from this page needs Chrome or Edge on a computer.</p>
+          <p class="fw-text">In this browser, update it the old way, with Teensy Loader: the <a href="https://github.com/keyandcableco/minichord/releases/latest" target="_blank" rel="noopener">release page</a> has the file and the steps.</p>
+        </div>
+        <div id="fw-main" hidden>
+          <p id="fw-now" class="fw-now"></p>
+          <p id="fw-newest" class="fw-newest"></p>
+          <div class="fw-buttons" id="fw-lookup-row" hidden>
+            <button type="button" id="fw-lookup-again" class="always-on">try again</button>
+          </div>
+          <details id="fw-other" class="fw-other">
+            <summary>other firmware</summary>
+            <div class="fw-choices">
+              <label class="fw-choice"><input type="radio" name="fw-pick" value="newest" class="always-on"> <span id="fw-pick-newest">the newest firmware</span></label>
+              <label class="fw-choice"><input type="radio" name="fw-pick" value="classic" class="always-on"> Ben's classic firmware</label>
+              <p class="settings-hint fw-under">It has fewer features, and the advanced settings on this page stop working with it.</p>
+              <label class="fw-choice"><input type="radio" name="fw-pick" value="file" class="always-on"> a .hex file from this computer</label>
+              <div class="fw-under"><input type="file" id="fw-file" class="always-on" accept=".hex" aria-label="a .hex file from this computer"></div>
+              <p id="fw-file-said" class="fw-under fw-small"></p>
+            </div>
+          </details>
+          <p id="fw-get" class="fw-get"></p>
+          <div class="fw-buttons" id="fw-get-row" hidden>
+            <button type="button" id="fw-get-again" class="always-on">try again</button>
+          </div>
+          <ol id="fw-steps" class="fw-steps">
+            <li id="fw-step-backup" class="fw-step">
+              <h3>Back up your banks</h3>
+              <p id="fw-backup-text" class="fw-text"></p>
+              <label id="fw-backup-box" class="fw-check"><input type="checkbox" id="fw-backup-check" class="always-on" checked> back up my banks first (recommended)</label>
+              <div class="fw-buttons">
+                <button type="button" id="fw-backup-btn" class="always-on" title="read all twelve banks into a file, and keep them here to put back after the update">back up my banks</button>
+              </div>
+            </li>
+            <li id="fw-step-restart" class="fw-step">
+              <h3>Restart it into update mode</h3>
+              <p id="fw-restart-text" class="fw-text"></p>
+              <div class="fw-buttons">
+                <button type="button" id="fw-restart-btn" class="always-on" title="restart the minichord into update mode, ready for the new firmware">restart into update mode</button>
+              </div>
+            </li>
+            <li id="fw-step-install" class="fw-step">
+              <h3>Install it</h3>
+              <p id="fw-install-text" class="fw-text"></p>
+              <div class="fw-buttons">
+                <button type="button" id="fw-install-btn" class="always-on">install</button>
+                <button type="button" id="fw-pin-btn" class="always-on fw-quiet">use the pin instead</button>
+              </div>
+            </li>
+          </ol>
+          <div id="fw-finish" class="fw-box" hidden>
+            <p class="fw-text">If it's plugged in and its light is off, it may be waiting in update mode, after an update that stopped partway or a restart into update mode.</p>
+            <div class="fw-buttons">
+              <button type="button" id="fw-finish-btn" class="always-on">finish an update</button>
+              <button type="button" id="fw-leave-btn" class="always-on fw-quiet">leave update mode</button>
+            </div>
+            <p id="fw-finish-text" class="fw-text fw-small"></p>
+          </div>
+          <div id="fw-progress-box" class="fw-progress" hidden>
+            <progress id="fw-progress" max="1" value="0" aria-labelledby="fw-progress-text"></progress>
+            <span id="fw-progress-text"></span>
+            <span id="fw-progress-said" class="fw-said" aria-live="polite"></span>
+          </div>
+          <div id="fw-status" class="fw-status" role="status"></div>
+          <div id="fw-rule-box" hidden>
+              <div class="fw-rule">
+                <pre><code>sudo wget -O /etc/udev/rules.d/00-teensy.rules https://www.pjrc.com/teensy/00-teensy.rules
+sudo udevadm control --reload-rules &amp;&amp; sudo udevadm trigger</code></pre>
+                <button type="button" class="always-on fw-quiet fw-copy" title="copy the two commands, to paste into a terminal">copy the commands</button>
+              </div>
+          </div>
+          <div class="fw-buttons" id="fw-after-row" hidden>
+            <button type="button" id="fw-again-btn" class="always-on" hidden>try again</button>
+            <button type="button" id="fw-restore-btn" class="always-on" hidden title="write the banks backed up before the update back to the minichord">put my banks back</button>
+          </div>
+          <details class="fw-help">
+            <summary>if it doesn't work</summary>
+            <ul>
+              <li>Close Teensy Loader if it is open: with Auto on, it takes the minichord as soon as it is in update mode.</li>
+              <li>Nothing in Chrome's box? Press the little button through the hole in the back of the minichord with a pin: it appears after a moment.</li>
+              <li class="fw-linux-only">On Linux, Chrome needs a permission rule for the update mode, once. Run these two commands in a terminal:
+              <div class="fw-rule">
+                <pre><code>sudo wget -O /etc/udev/rules.d/00-teensy.rules https://www.pjrc.com/teensy/00-teensy.rules
+sudo udevadm control --reload-rules &amp;&amp; sudo udevadm trigger</code></pre>
+                <button type="button" class="always-on fw-quiet fw-copy" title="copy the two commands, to paste into a terminal">copy the commands</button>
+              </div></li>
+              <li>Use a USB cable that carries data, plugged straight into the computer rather than through a hub.</li>
+              <li>The old way still works: Teensy Loader, with the file from the <a href="https://github.com/keyandcableco/minichord/releases/latest" target="_blank" rel="noopener">release page</a>.</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </div>
     <!-- what is reached for now and then, out of the way until the settings button opens it -->
     <div id="settings-drawer" class="settings-drawer" popover aria-labelledby="settings-title">
       <div class="settings-panel">
@@ -287,6 +390,15 @@
           <div class="settings-buttons">
             <div class="button_div">
               <button type="button" class="always-on" popovertarget="device-sheet" title="MIDI channels and ports, MPE, tuning sent over MIDI, and USB audio">device and MIDI</button>
+            </div>
+          </div>
+        </section>
+        <section class="settings-section" id="settings-firmware">
+          <h5 class="tool-label">firmware</h5>
+          <p class="settings-hint" id="firmware-hint">The minichord's own program: the newest installs from here, over USB.</p>
+          <div class="settings-buttons">
+            <div class="button_div">
+              <button type="button" id="firmware-btn" class="always-on" data-close-settings title="install the newest firmware on the minichord from this page, its banks backed up first">update the firmware</button>
             </div>
           </div>
         </section>
@@ -6373,6 +6485,8 @@
   <script src="listen.js"></script>
   <script src="tuning.js"></script>
   <script src="kits.js"></script>
+  <script src="flash.js"></script>
+  <script src="update.js"></script>
   <script src="controls.js"></script>
   <script src="envelope.js"></script>
   <script src="waveforms.js"></script>

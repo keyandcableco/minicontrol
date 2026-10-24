@@ -2766,3 +2766,200 @@
   .kit-voice-name { width: auto; flex: 1 1 100%; }
   .kit-fields input[type="text"] { width: 120px; }
 }
+
+/* firmware update (update.js): the steps in order, a number each, the ones that don't apply left out */
+.firmware-sheet { width: min(600px, calc(100vw - 32px)); }
+.firmware-sheet [hidden] { display: none !important; }
+/* the page's details are a column of the settings, 450 px at most: here they are as wide as the sheet */
+.firmware-sheet details { max-width: none; overflow-x: visible; }
+.firmware-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0 -22px;
+  padding: 4px 22px calc(18px + env(safe-area-inset-bottom));
+}
+.fw-now {
+  margin: 8px 0 4px;
+  font-weight: bold;
+}
+.fw-newest, .fw-get {
+  margin: 0 0 8px;
+  line-height: 1.45;
+}
+.fw-get:empty { display: none; }
+.fw-text {
+  margin: 0;
+  font-size: 0.9em;
+  line-height: 1.45;
+}
+.fw-small { font-size: 0.85em; opacity: 0.8; }
+/* what went wrong getting or reading the firmware: as the status says it, dark text on its own pale ground */
+.fw-bad-text {
+  color: var(--conflict-text);
+  background: var(--conflict-bg);
+  border-left: 4px solid var(--conflict-border);
+  padding: 6px 10px;
+  border-radius: 6px;
+  opacity: 1;
+}
+.fw-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+/* a row whose buttons are all hidden (a step done) leaves no gap behind */
+.fw-buttons:not(:has(> :not([hidden]))) { display: none; }
+.firmware-sheet button:disabled { opacity: 0.5; cursor: default; }
+.firmware-sheet .fw-quiet, #firmware-note .fw-open {
+  padding: 2px 4px;
+  background: transparent;
+  color: var(--text-primary);
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+.firmware-sheet .fw-quiet:hover, #firmware-note .fw-open:hover {
+  background: transparent;
+  color: var(--primary-color);
+}
+#firmware-note .fw-open { padding: 0; font: inherit; color: var(--primary-color); }
+.fw-other, .fw-box {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border: 1px solid var(--track-color);
+  border-radius: 8px;
+}
+.fw-other summary, .fw-help summary {
+  cursor: pointer;
+  width: fit-content;
+}
+.fw-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 4px;
+}
+.fw-choice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.fw-under { margin: -2px 0 2px 26px; }
+.fw-under.settings-hint { margin-bottom: 2px; }
+.fw-under input[type="file"] { max-width: 100%; }
+#fw-file-said:empty { display: none; }
+.fw-steps {
+  list-style: none;
+  counter-reset: fw-step;
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.fw-step {
+  counter-increment: fw-step;
+  position: relative;
+  padding: 10px 12px 12px 46px;
+  border: 1px solid var(--track-color);
+  border-radius: 8px;
+}
+.fw-step::before {
+  content: counter(fw-step);
+  position: absolute;
+  left: 12px;
+  top: 9px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: var(--text-color);
+  font-size: 0.85em;
+  font-weight: bold;
+}
+.fw-step.fw-done::before { content: "✓"; }
+.fw-step h3 {
+  margin: 2px 0 4px;
+  font-size: 1em;
+}
+.fw-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+.fw-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin-top: 12px;
+}
+.fw-progress progress { flex: 1 1 100%; height: 16px; accent-color: var(--primary-color); }
+#fw-progress-text { font-size: 0.9em; }
+/* the milestones, for screen readers only: the bar moves with every block */
+.fw-said {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.fw-status:empty { display: none; }
+.fw-status {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-left: 4px solid var(--track-color);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  line-height: 1.45;
+}
+/* done: the bubble's green, as a minichord connected, on a green ground: not to be taken for what to do next */
+.fw-status.fw-good { border-left-color: #2e8b57; background: color-mix(in srgb, #2e8b57 14%, transparent); }
+[data-theme="dark"] .fw-status.fw-good { border-left-color: #3cb371; background: color-mix(in srgb, #3cb371 18%, transparent); }
+.fw-status.fw-bad {
+  border-left-color: var(--conflict-border);
+  background: var(--conflict-bg);
+  color: var(--conflict-text);
+}
+.fw-rule pre {
+  margin: 6px 0;
+  padding: 8px 10px;
+  overflow-x: auto;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent);
+  font-size: 0.8em;
+  line-height: 1.5;
+  /* wrapped rather than cut off, a command's later lines indented under its first: copying still gives two lines */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-indent: 2ch each-line hanging;
+}
+#fw-rule-box { margin-top: 8px; }
+.fw-help {
+  margin-top: 16px;
+  padding: 0;
+  font-size: 0.9em;
+}
+.fw-help ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  line-height: 1.5;
+}
+.fw-help li + li { margin-top: 4px; }
+@media (max-width: 600px) {
+  .firmware-body {
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .fw-step { padding-left: 42px; }
+  .fw-step .fw-buttons button:not(.fw-quiet), .fw-box .fw-buttons button:not(.fw-quiet) { flex: 1 1 100%; }
+}
