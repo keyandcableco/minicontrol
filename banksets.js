@@ -306,7 +306,11 @@ function saveHtml() {
 function renderBanksets() {
   const body = document.getElementById("banksets-body");
   if (!body || !banksets) return;
-  const focus = document.activeElement?.closest?.("[data-bs]")?.dataset;
+  // the button pressed, to focus again after the redraw: the same one, in the same set, and with
+  // the sheet left where it was scrolled (on a phone, focusing it would scroll to it)
+  const pressed = document.activeElement?.closest?.("[data-bs]");
+  const focus = pressed && { ...pressed.dataset, set: pressed.closest("[data-set]")?.dataset.set };
+  const scrolled = body.scrollTop;
   const pending = toWrite();
   const ours = banksets.filter(s => !s.shared && !s.local), shared = banksets.filter(s => s.shared), local = banksets.filter(s => s.local);
   body.innerHTML =
@@ -316,6 +320,7 @@ function renderBanksets() {
     (local.length ? `<h3>from your computer</h3>${local.map(setHtml).join("")}` : "") +
     (!banksets.length ? `<p class="bs-note">Couldn't read the list of sets.</p>` : "") +
     `<button type="button" class="bs-quiet" data-bs="load-file">load a set file…</button></section></div>`;
+  body.scrollTop = scrolled;
   document.getElementById("banksets-save").innerHTML = saveHtml();
   document.getElementById("banksets-summary").textContent = !pending.length ? (mine.some(Boolean) ? "Nothing new to write" : "Nothing to write yet")
     : (pending.length === 1 ? "Bank " : "Banks ") + pending.map(i => i + 1).join(", ") + " will be rewritten";
@@ -325,7 +330,11 @@ function renderBanksets() {
   document.getElementById("banksets-save-btn").disabled = !mine.some(Boolean) && !bankState.read;
   alwaysOn(body);
   alwaysOn(document.getElementById("banksets-save"));
-  if (focus?.bs) body.querySelector(`[data-bs="${focus.bs}"]${focus.slot ? `[data-slot="${focus.slot}"]` : ""}`)?.focus();
+  if (focus?.bs) {
+    const within = focus.set ? body.querySelector(`[data-set="${CSS.escape(focus.set)}"]`) : body;
+    within?.querySelector(`[data-bs="${focus.bs}"]${focus.slot ? `[data-slot="${focus.slot}"]` : ""}${focus.bank ? `[data-bank="${focus.bank}"]` : ""}`)
+      ?.focus({ preventScroll: true });
+  }
 }
 
 async function openBanksets() {
