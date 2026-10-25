@@ -449,6 +449,35 @@
     #parameters [popover] details.sheet-section > summary { display: none; }
     #parameters [popover] details.sheet-section > div { padding: 0 !important; }
     .sheet-quick:empty { display: none; }
+    /* a setting shown again in another sheet, as a row like the sheet's own */
+    .sheet-quick-rows .quick-row {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+    }
+    .sheet-quick-rows .cs-label {
+      width: 150px;
+      font-size: inherit;
+      font-weight: bold;
+      opacity: 1;
+    }
+    #parameters .sheet-quick.sheet-quick-rows select {
+      width: 150px;
+      flex: 1 1 90px;
+      min-width: 0;
+      max-width: 150px;
+      padding: 5px;
+      margin: 0 8px;
+    }
+    .sheet-quick-rows .cs-note { max-width: 320px; }
+    @media screen and (max-width: 600px) {
+      .sheet-quick-rows .cs-label { flex: none; width: 112px; }
+      #parameters .sheet-quick.sheet-quick-rows select {
+        flex: 1 1 auto;
+        max-width: none;
+        margin: 0 6px;
+      }
+    }
     /* the page's rule for a dropdown in a row of settings stretches it down a column here */
     #parameters .sheet-quick select {
       flex: none;

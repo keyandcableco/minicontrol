@@ -83,7 +83,7 @@ const TOUR_STEPS = [
     before: () => tourSetting('rhythm-sheet', 334),
     text: 'Rhythm mode plays drums with the accompaniment: synthesized kits from the 808 to tabla and doumbek, grooves from a waltz to drum and bass. Harp drums, in the harp’s sheet, puts the kit under your fingers on the strings. Your own kit turns your sound files into drum kit 13 and sends it to the minichord.' },
   { target: '.map-pedals', title: 'The pedals',
-    text: 'What the minichord has no button for, as pedals under the drawing: the key and tuning, the drone, the effects, the vocoder, the organ, and sound from a phone or computer over USB. Each opens its own sheet.' },
+    text: 'What the minichord has no button for, as pedals under the drawing: the key and tuning, the drone, the effects, the vocoder, and sound from a phone or computer over USB. Each opens its own sheet.' },
   { target: '#tuning-sheet', title: 'Key and tuning',
     before: () => tourSetting('tuning-sheet', 30),
     text: 'The tuning pedal’s sheet: transpose, the key signature, master tuning, and temperaments from quarter-comma meantone to 31-EDO — or your own, read from a Scala file. The tuning circle draws what the twelve notes come to. The drone, the pedal beside it, holds a note under everything you play.' },

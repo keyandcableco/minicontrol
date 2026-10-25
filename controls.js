@@ -651,7 +651,6 @@ function renderPedals() {
     drone: num(372) ? valueText(372, num(372)).toLowerCase() : 'off',
     effects: `reverb ${valueText(24, num(24))}`,
     vocoder: num(260) ? `${num(260)}%` : 'off',
-    organ: valueText(388, num(388)).split(' ')[0],   // the drawbars as an organist reads them
     phone: num(311) || num(303) || num(307) ? 'following' : '',
   };
   document.querySelectorAll('[data-status]').forEach(el => { el.textContent = status[el.dataset.status] ?? ''; });
@@ -837,7 +836,8 @@ function sheetBody(key) {
 // ---- the page's sheets ----
 
 // a few things on top of a sheet's own settings: the key the buttons are spelled in on the chord
-// sheet, and hover on the harp's
+// sheet, and hover on the harp's; and under harp voice, the organ's settings, whose rows are the
+// chord sheet's (one registration for both)
 // the key change gesture, said once, with the way to the drawing's view of it
 function keyGestureNote() {
   return `<p class="cs-note">${KEY_NOTE}</p>` +
@@ -853,6 +853,11 @@ function quickBody(name) {
     const s = slotSummary('hover', 'main');
     return `<section class="cs-extra"><button type="button" class="cs-target always-on" data-open-control="hover">` +
       `<span>hover · ${esc(s.text)}</span><span class="glyph" aria-hidden="true">›</span></button></section>`;
+  }
+  if (name === 'harp-organ') {
+    return [[388, 'organ drawbars'], [389, 'organ percussion']].map(([sysex, label]) =>
+      `<div class="quick-row">${paramControl(sysex, label)}</div>`).join('') +
+      `<p class="cs-note">One organ for the harp and the chords: these are the chord sheet's organ settings too.</p>`;
   }
   return '';
 }

@@ -31,11 +31,11 @@ for group_name, params in parameters.items():
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Own temperament', 'Drone', 'Effects', 'Vocoder', 'Organ', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
-    'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Oscillator',
+    'global_parameter': ['General', 'Key and tuning', 'Own temperament', 'Drone', 'Effects', 'Vocoder', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
+    'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Voice', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
-    'harp_parameter': ['Notes', 'Plate', 'Drum pads', 'Pluck', 'Ribbon', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
+    'harp_parameter': ['Notes', 'Plate', 'Drum pads', 'Pluck', 'Ribbon', 'Voice', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
                        'Reverb', 'Crunch', 'Output filter', 'Spread'],
     'sharp_button_parameter': ['General'],
     'rhythm_parameter': ['Style', 'Sections', 'Drums', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
@@ -62,7 +62,6 @@ parameter_name_order = {
                            'modifier step', 'purity'],
         'Effects': ['reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion', 'pan'],
         'Vocoder': ['vocoder', 'vocoder carrier', 'vocoder consonants'],
-        'Organ': ['organ drawbars', 'organ percussion'],
         'Phone': ['phone follow 1 control', 'phone follow 1 value', 'phone follow 1 band', 'phone follow 1 release',
                   'phone follow 2 control', 'phone follow 2 value', 'phone follow 2 band', 'phone follow 2 release',
                   'phone beat', 'phone kick stab', 'phone kick note', 'phone filter', 'phone filter resonance', 'phone echo',
@@ -85,8 +84,11 @@ parameter_name_order = {
         'Delay': DELAY,
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
+        # what the chords sound, then what only one voice has (the reed piano's bark, the organ's
+        # drawbars), then each note's own voice
+        'Voice': ['chord voice', 'chord reed bark', 'organ drawbars', 'organ percussion', 'first note voice',
+                  'second note voice', 'third note voice', 'fourth note voice'],
         'Oscillator': [
-            'chord voice',
             'waveform 1',
             'amplitude 1',
             'frequency multiplier 1',
@@ -152,7 +154,8 @@ parameter_name_order = {
         'Delay': DELAY,
         'Reverb': ['reverb level'],
         'Crunch': ['crunch level', 'crunch type'],
-        'Oscillator': ['harp voice', 'waveform', 'frequency multiplier', 'amplitude', 'noise'],
+        'Voice': ['harp voice', 'harp reed bark'],
+        'Oscillator': ['waveform', 'frequency multiplier', 'amplitude', 'noise'],
         'Envelope': ['attack', 'decay', 'sustain', 'release', 'retrigger release'],
         'Low pass filter': [
             'base frequency',
@@ -224,8 +227,6 @@ PLACES = {
     ('global_parameter', 'Drone'): ('drone', 'Drone'),
     ('global_parameter', 'Effects'): ('effects', 'Reverb and pan'),
     ('global_parameter', 'Vocoder'): ('vocoder', 'Vocoder'),
-    # the tonewheel organ (voice 13), one registration shared by the harp and the chords
-    ('global_parameter', 'Organ'): ('organ', 'Organ'),
     ('global_parameter', 'Phone'): ('phone', 'Phone'),
     ('global_parameter', 'General'): ('device', 'USB'),
     ('global_parameter', 'MIDI'): ('device', 'MIDI'),
@@ -238,6 +239,11 @@ PLACES = {
 }
 # single settings placed apart from their subgroup: the light's colour and brightness
 PLACES_BY_ADDRESS = {20: ('light', 'Light'), 32: ('light', 'Light')}
+# the voices, and what only one of them has, ahead of the oscillators. The tonewheel organ (voice 13)
+# has one registration for the harp and the chords: its rows are the chord sheet's, and the harp
+# sheet shows them again under harp voice (controls.js, quickBody)
+PLACES_BY_ADDRESS.update({a: ('chord_parameter', 'Voice') for a in (265, 270, 271, 272, 273, 387, 388, 389)})
+PLACES_BY_ADDRESS.update({a: ('harp_parameter', 'Voice') for a in (264, 386)})
 for (section, group), (place, new) in PLACES.items():
     parameter_name_order.setdefault(place, {})[new] = parameter_name_order.get(section, {}).get(group, [])
     subgroup_order.setdefault(place, []).append(new)
@@ -256,12 +262,11 @@ SHEETS = {
     'drone': ('drone', 'a tanpura on the key\'s root', ''),
     'effects': ('effects', 'the reverb room and pan, shared by the chords and the harp', ''),
     'vocoder': ('vocoder', 'the chords or the harp, shaped by sound over USB', ''),
-    'organ': ('organ', 'the tonewheel organ, chord voice or harp voice 13', ''),
     'phone': ('phone', 'sound from a phone or computer, over USB', ''),
     'light': ('light', 'the round light under the buttons', ''),
     'device': ('device and MIDI', 'how the minichord talks to a computer', ''),
 }
-PLACE_ORDER = ['chord_parameter', 'harp_parameter', 'rhythm_parameter', 'tuning', 'drone', 'effects', 'vocoder', 'organ', 'phone',
+PLACE_ORDER = ['chord_parameter', 'harp_parameter', 'rhythm_parameter', 'tuning', 'drone', 'effects', 'vocoder', 'phone',
                'light', 'device', 'controls']
 
 
@@ -597,14 +602,14 @@ submenus = {
     'chord_parameter': [
         ('Playing', ['General', 'Buttons']),
         ('Voicing and layout', ['Voicing', 'Slash chords and cantus', 'Alternate layout']),
-        ('Sound', ['Oscillator', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants']),
+        ('Sound', ['Voice', 'Oscillator', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants']),
         ('Effects', ['Delay', 'Reverb', 'Crunch', 'Ensemble', 'Output filter']),
     ],
     'harp_parameter': [
         ('Notes', ['Notes']),
         # harp drums and the drum pads' settings (firmware 101) beside the plate
         ('Playing', ['Plate', 'Drum pads', 'Pluck', 'Ribbon']),
-        ('Sound', ['Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
+        ('Sound', ['Voice', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
         ('Effects', ['Delay', 'Reverb', 'Crunch', 'Spread', 'Output filter']),
     ],
     # the looper sits with rhythm mode, whose beat and bars it keeps
@@ -664,6 +669,8 @@ def generate_details_html(group_name, params):
             subgroup_html[param_group] += generate_rhythm_grid_html()
         if param_group == 'Key and tuning':
             subgroup_html[param_group] += TUNING_CIRCLE_HTML
+        if group_name == 'harp_parameter' and param_group == 'Voice':
+            subgroup_html[param_group] += '<div class="sheet-quick sheet-quick-rows" data-quick="harp-organ"></div>'
 
     def heading(g):
         return f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{g}</h3>'
@@ -1240,7 +1247,7 @@ for group_name in PLACE_ORDER:
 
 # Insert into HTML
 # the sheets with no part of the minichord to open them, under the drawing
-PEDALS = ['tuning', 'drone', 'effects', 'vocoder', 'organ', 'phone']
+PEDALS = ['tuning', 'drone', 'effects', 'vocoder', 'phone']
 pedal_buttons = '\n'.join(f'''          <button type="button" class="map-pedal always-on" data-sheet="{p}" aria-haspopup="dialog">
             <span class="map-pedal-name">{p}</span><span class="map-pedal-value" data-status="{p}"></span>
           </button>''' for p in PEDALS)
