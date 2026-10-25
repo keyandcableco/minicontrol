@@ -649,7 +649,9 @@ function renderPedals() {
   const status = {
     tuning: `${KEY_NAMES[num(35)] ?? 'C'} · ${valueText(237, num(237)).toLowerCase()}`,
     drone: num(372) ? valueText(372, num(372)).toLowerCase() : 'off',
-    effects: `reverb ${valueText(24, num(24))}${num(260) ? ' · vocoder' : ''}`,
+    effects: `reverb ${valueText(24, num(24))}`,
+    vocoder: num(260) ? `${num(260)}%` : 'off',
+    organ: valueText(388, num(388)).split(' ')[0],   // the drawbars as an organist reads them
     phone: num(311) || num(303) || num(307) ? 'following' : '',
   };
   document.querySelectorAll('[data-status]').forEach(el => { el.textContent = status[el.dataset.status] ?? ''; });

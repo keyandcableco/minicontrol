@@ -162,7 +162,7 @@ async function startLoop(using) {
     const vocoderOff = typeof currentValues !== "undefined" && !currentValues[VOCODER];
     say((recorded ? "Your line" : `"${talk.phrase.trim() || DEFAULT_PHRASE}"`) + " is going round into the minichord: play the chords. " +
         (mode === 1 ? "USB audio 1 plays it through the minichord too. " : "") +
-        (vocoderOff ? "The vocoder is off in what's playing now: turn up the vocoder slider (Global Parameters › Effects), " +
+        (vocoderOff ? "The vocoder is off in what's playing now: turn up the vocoder slider (vocoder, under the drawing), " +
                       "or apply a song that talks." : ""));
   } catch (e) {
     console.warn("[talk]", e);

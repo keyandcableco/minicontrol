@@ -60,7 +60,7 @@ parameter_name_order = {
         'General': ['bank color', 'led attenuation', 'usb audio'],
         'Key and tuning': ['transpose', 'sharp function', 'chord key signature', 'master tuning', 'temperament',
                            'modifier step', 'purity'],
-        'Effects': ['pan', 'reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion'],
+        'Effects': ['reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion', 'pan'],
         'Vocoder': ['vocoder', 'vocoder carrier', 'vocoder consonants'],
         'Organ': ['organ drawbars', 'organ percussion'],
         'Phone': ['phone follow 1 control', 'phone follow 1 value', 'phone follow 1 band', 'phone follow 1 release',
@@ -223,9 +223,9 @@ PLACES = {
     ('global_parameter', 'Own temperament'): ('tuning', 'Own temperament'),
     ('global_parameter', 'Drone'): ('drone', 'Drone'),
     ('global_parameter', 'Effects'): ('effects', 'Reverb and pan'),
-    ('global_parameter', 'Vocoder'): ('effects', 'Vocoder'),
+    ('global_parameter', 'Vocoder'): ('vocoder', 'Vocoder'),
     # the tonewheel organ (voice 13), one registration shared by the harp and the chords
-    ('global_parameter', 'Organ'): ('effects', 'Organ'),
+    ('global_parameter', 'Organ'): ('organ', 'Organ'),
     ('global_parameter', 'Phone'): ('phone', 'Phone'),
     ('global_parameter', 'General'): ('device', 'USB'),
     ('global_parameter', 'MIDI'): ('device', 'MIDI'),
@@ -254,12 +254,14 @@ SHEETS = {
         'Press: chords hold until the next. Hold down: rhythm mode on or off. In rhythm mode a press taps the tempo.'),
     'tuning': ('tuning', 'for the chords and the harp', ''),
     'drone': ('drone', 'a tanpura on the key\'s root', ''),
-    'effects': ('effects', 'reverb, pan, the vocoder and the organ', ''),
+    'effects': ('effects', 'the reverb room and pan, shared by the chords and the harp', ''),
+    'vocoder': ('vocoder', 'the chords or the harp, shaped by sound over USB', ''),
+    'organ': ('organ', 'the tonewheel organ, chord voice or harp voice 13', ''),
     'phone': ('phone', 'sound from a phone or computer, over USB', ''),
     'light': ('light', 'the round light under the buttons', ''),
     'device': ('device and MIDI', 'how the minichord talks to a computer', ''),
 }
-PLACE_ORDER = ['chord_parameter', 'harp_parameter', 'rhythm_parameter', 'tuning', 'drone', 'effects', 'phone',
+PLACE_ORDER = ['chord_parameter', 'harp_parameter', 'rhythm_parameter', 'tuning', 'drone', 'effects', 'vocoder', 'organ', 'phone',
                'light', 'device', 'controls']
 
 
@@ -1238,7 +1240,7 @@ for group_name in PLACE_ORDER:
 
 # Insert into HTML
 # the sheets with no part of the minichord to open them, under the drawing
-PEDALS = ['tuning', 'drone', 'effects', 'phone']
+PEDALS = ['tuning', 'drone', 'effects', 'vocoder', 'organ', 'phone']
 pedal_buttons = '\n'.join(f'''          <button type="button" class="map-pedal always-on" data-sheet="{p}" aria-haspopup="dialog">
             <span class="map-pedal-name">{p}</span><span class="map-pedal-value" data-status="{p}"></span>
           </button>''' for p in PEDALS)
