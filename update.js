@@ -42,7 +42,9 @@ const UPDATE_MODE = {vendorId: flash.HALFKAY.vendorId, productId: flash.HALFKAY.
 // listed by its USB ids, in Chrome's label for a device without a name (16C0:0478) or, on Linux, as the
 // kernel names it (HID 16c0:0478). To check on a real update: whether HalfKay has a product string after all
 const LISTED = "by number, 16C0:0478, not by name";
-const PIN_SAY = "Now press the little button through the hole in the back of the minichord with a pin. " +
+// the Teensy's button held for about 15 s wipes its whole flash (PJRC: "Memory Wipe"), firmware, banks and kit
+const QUICK = "A quick press: held down for long, it wipes the minichord.";
+const PIN_SAY = `Now press the little button through the hole in the back of the minichord with a pin. ${QUICK} ` +
   `Chrome's box lists it after a moment ${LISTED}: pick it and click Connect.`;
 
 const blank = () => ({image: null, error: "", getting: null});
@@ -418,7 +420,7 @@ function paintSteps() {
       `and lists it there after a moment ${LISTED}: pick it and click Connect.`
     : way === "serial"
     ? `Chrome opens a box for the minichord in update mode, listed there ${LISTED}: pick it and click Connect.`
-    : "Click install, then press the little button through the hole in the back of the minichord with a pin. " +
+    : `Click install, then press the little button through the hole in the back of the minichord with a pin. ${QUICK} ` +
       `Chrome's box lists it after a moment ${LISTED}: pick it and click Connect.`;
   text += " Leave it plugged in till it's done, in under a minute.";
   if (waiting) text += " Restart it into update mode first.";

@@ -351,7 +351,7 @@ sudo udevadm control --reload-rules &amp;&amp; sudo udevadm trigger</code></pre>
             <summary>if it doesn't work</summary>
             <ul>
               <li>Close Teensy Loader if it is open: with Auto on, it takes the minichord as soon as it is in update mode.</li>
-              <li>Nothing in Chrome's box? Press the little button through the hole in the back of the minichord with a pin: it appears after a moment.</li>
+              <li>Nothing in Chrome's box? Press the little button through the hole in the back of the minichord with a pin, a quick press: it appears after a moment.</li>
               <li class="fw-linux-only">On Linux, Chrome needs a permission rule for the update mode, once. Run these two commands in a terminal:
               <div class="fw-rule">
                 <pre><code>sudo wget -O /etc/udev/rules.d/00-teensy.rules https://www.pjrc.com/teensy/00-teensy.rules

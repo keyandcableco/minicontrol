@@ -842,7 +842,7 @@ FIRMWARE_SHEET_HTML = f'''
             <summary>if it doesn't work</summary>
             <ul>
               <li>Close Teensy Loader if it is open: with Auto on, it takes the minichord as soon as it is in update mode.</li>
-              <li>Nothing in Chrome's box? Press the little button through the hole in the back of the minichord with a pin: it appears after a moment.</li>
+              <li>Nothing in Chrome's box? Press the little button through the hole in the back of the minichord with a pin, a quick press: it appears after a moment.</li>
               <li class="fw-linux-only">On Linux, Chrome needs a permission rule for the update mode, once. Run these two commands in a terminal:
               {LINUX_RULE_HTML}</li>
               <li>Use a USB cable that carries data, plugged straight into the computer rather than through a hub.</li>

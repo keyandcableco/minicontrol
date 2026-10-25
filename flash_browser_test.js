@@ -579,7 +579,7 @@ const LISTED = "by number, 16C0:0478, not by name";
     "Linux, firmware 100: no serial step, the pin in the install step");
   await page.click("#fw-backup-check");
   await page.click("#fw-install-btn");
-  await status(page, /^Now press the little button through the hole in the back of the minichord with a pin\. Chrome's box lists it after a moment by number, 16C0:0478, not by name: pick it and click Connect\.$/, 3000);
+  await status(page, /^Now press the little button through the hole in the back of the minichord with a pin\. A quick press: held down for long, it wipes the minichord\. Chrome's box lists it after a moment by number, 16C0:0478, not by name: pick it and click Connect\.$/, 3000);
   console.log("     pin: " + await text(page, "fw-status"));
   check(!await shown(page, "fw-install-text"), "the pin said once, in the status, not again in the step above it");
   await shot(page, "3-pin-desktop.png");
