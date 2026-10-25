@@ -698,6 +698,7 @@ function scheduleMinichordMap() {
     mapPending = false;
     renderMinichordMap();
     renderQuick();
+    refreshUnheard();
     if (typeof refreshEnvelopes === 'function') refreshEnvelopes();
     if (typeof refreshWaves === 'function') refreshWaves();
     if (typeof refreshFilters === 'function') refreshFilters();
@@ -860,6 +861,37 @@ function quickBody(name) {
       `<p class="cs-note">One organ for the harp and the chords: these are the chord sheet's organ settings too.</p>`;
   }
   return '';
+}
+
+// ---- what the voices chosen leave unheard ----
+
+// A voice other than the synth (1-15: the samples, the reed piano 10, the organ 13) sounds in place
+// of its oscillators, which the firmware silences (apply_chord_source, set_harp_source), so their
+// settings fade while no voice plays them; so do the reed piano's bark and the organ's drawbars
+// while no voice is that instrument. The note levels, the harp's amplitude (a sample's level too),
+// the transient, the envelopes and the filters shape every voice and stay as they are.
+const voiceSource = v => (v >= 1 && v <= 15 ? v : 0);
+// what each of the four chord notes sounds: its own voice (270-273, 1 + a source) or the chord voice
+const chordSources = () => [270, 271, 272, 273].map(a => num(a) && num(a) <= 16 ? voiceSource(num(a) - 1) : voiceSource(num(265)));
+const CHORD_OSCILLATORS = [121, 122, 123, 124, 125, 126, 127, 128, 129, 130];
+const HARP_SYNTH = [42, 217, 218, 219];   // the harp's waveform and its string model
+
+function refreshUnheard() {
+  const chords = chordSources(), harp = voiceSource(num(264));
+  const unheard = new Set([
+    ...(chords.includes(0) ? [] : CHORD_OSCILLATORS),
+    ...(harp ? HARP_SYNTH : []),
+    ...(chords.includes(10) ? [] : [387]),
+    ...(harp === 10 ? [] : [386]),
+    ...(chords.includes(13) || harp === 13 ? [] : [388, 389]),
+  ]);
+  [...CHORD_OSCILLATORS, ...HARP_SYNTH, 386, 387, 388, 389].forEach(a => {
+    document.getElementById(`param-${a}`)?.closest('div[style*="display: flex"]')?.classList.toggle('unheard', unheard.has(a));
+  });
+  document.querySelector('[data-quick="harp-organ"]')?.classList.toggle('unheard', unheard.has(388));
+  document.querySelectorAll('.voice-legend').forEach(p => {
+    p.hidden = !p.closest('[popover]')?.querySelector('.unheard');
+  });
 }
 
 function renderQuick() {

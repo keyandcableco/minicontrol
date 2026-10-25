@@ -671,6 +671,9 @@ def generate_details_html(group_name, params):
             subgroup_html[param_group] += TUNING_CIRCLE_HTML
         if group_name == 'harp_parameter' and param_group == 'Voice':
             subgroup_html[param_group] += '<div class="sheet-quick sheet-quick-rows" data-quick="harp-organ"></div>'
+        if param_group == 'Voice':
+            # shown while a setting below is faded, as no voice chosen uses it (controls.js, refreshUnheard)
+            subgroup_html[param_group] += '<p class="cs-note voice-legend" hidden>Faded settings aren\'t heard with the voices chosen now.</p>'
 
     def heading(g):
         return f'<h3 style="margin: 30px 0 10px; font-size: 1.5em;">{g}</h3>'

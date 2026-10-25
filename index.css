@@ -470,6 +470,14 @@
       margin: 0 8px;
     }
     .sheet-quick-rows .cs-note { max-width: 320px; }
+    /* a setting no voice chosen now uses (controls.js, refreshUnheard): faded, and still there to set */
+    #parameters .unheard {
+      opacity: 0.4;
+      transition: opacity 0.15s;
+    }
+    #parameters .unheard:hover,
+    #parameters .unheard:focus-within { opacity: 0.75; }
+    .voice-legend { max-width: 320px; margin-top: 8px !important; }
     @media screen and (max-width: 600px) {
       .sheet-quick-rows .cs-label { flex: none; width: 112px; }
       #parameters .sheet-quick.sheet-quick-rows select {
