@@ -155,6 +155,40 @@ const MAP_PLATES = {
    { x: 1070.6, y: 206.7, d: "M1040.3,114.1 l 0.7 71.3 1.2 1.7 10.6 0 1.7 -1.2 0.7 -71.8 6.2 0.8 0 70.5 1.2 1.7 10.6 0 1.7 -1.2 0.7 -71.8 6.2 0.8 0 70.5 1.2 1.7 10.6 0 1.7 -1.2 0.7 -71.8 6.1 0.6 0.1 34.2 1.2 1.6 102.2 0.4 -0.6 6.8 -90.9 0 -1.7 1.8 0 10.4 1.2 1.7 92.2 0.9 -0.8 6.2 -92.1 0.5 -0.5 11.7 1.2 1.7 92.2 0.9 -0.8 6.2 -91.8 0.3 -0.8 11.9 1.2 1.7 92.2 0.9 -0.8 6.3 -91.4 0 -1.2 1.7 0.8 11.9 91.8 0.3 0.8 6.2 -92.2 0.9 -1.2 1.7 0.5 11.7 92.1 0.5 0.6 6.8 -99.4 0.3 -0.7 -35.3 -1.7 -1.3 -10.6 0.1 -1.2 1.7 0 70.5 -6.2 0.8 -0.7 -71.8 -1.7 -1.3 -10.6 0.1 -1.2 1.7 0 70.5 -6.2 0.8 -0.7 -71.8 -1.7 -1.3 -10.6 0.1 -1.2 1.7 0 70.5 -6.6 0.6 -0.3 -71.6 -1.7 -1.3 -10.1 0 -2.2 2.5 -1.2 -0.8 0 -39.9 4.2 -1.1 0.9 -1.5 0 -70.5 z" }
   ] }
 };
+// The bent board, a full-face plate: its touch areas' copper and its harp's six lines', the harp as
+// one shape and the spots its thirteen places are named at (lowest first), and its touch areas, each
+// its shape and where its name goes: the bend rail's five points left to right (the name rising from
+// the top of each), the palm pad and the thumb ribbon. From its gerbers, by generate_plate_shapes.py.
+const MAP_BENT = {
+ size: 26, bounds: [1007.8, 36.0, 1330.8, 746.6], lead: [1328.2, 680.7],
+ copper: [
+  "M668.9,83.5 l -0.2 6.8 -71.3 0 -1.8 1.7 0 10.1 1.3 1.7 71.8 0.1 0.2 5.5 -52.9 0 -19.4 1.4 -8.5 -1.4 -60.4 -0.6 0.7 -16.9 76.2 -8.4 z",
+  "M816.8,63.1 l -0.2 6.8 -71.3 0 -1.8 1.7 0 10.1 1.3 1.7 72.7 0.9 -0.9 6 -71.8 0 -1.3 1.7 0.9 11.6 72.2 0.3 0.2 6.7 -16.3 -1.2 -78.3 0 -7.8 1.2 -6.2 2.5 -11.2 -3.6 -23.4 -0.1 -0.7 -7.7 -1.7 -1.2 -72.1 -0.7 0.8 -6.1 72.8 -0.9 -0.6 -12.5 -21.2 -0.2 -0.1 -1.7 138.8 -15.3 z",
+  "M888.1,52.2 l 0.1 57.2 -66.5 0.8 -0.9 -8.5 -1.2 -1.2 -72.7 -0.7 0.9 -6.1 71.3 0 1.8 -1.8 0 -10.1 -1.3 -1.7 -71.8 0 -0.3 -6.8 72.1 -0.1 1.3 -1.7 0.3 -11.9 z",
+  "M99.1,161.3 l 1.8 19.3 7 11.7 8.8 5.9 7.9 2 38.5 0.2 0.5 17.6 3.1 10.1 6.8 8.4 9.9 5.7 -0.6 162.4 -36.5 -9.6 -25.7 -10.6 -22.1 -14.7 -18.9 -18.9 -14.6 -21.8 -10.1 -24.4 -5.1 -26.2 0 -26.2 5.2 -25.9 10.1 -24.4 14.6 -21.8 z",
+  "M681.9,453.2 l 10.6 2.1 78.3 0 10.7 -2.1 17.2 2.1 78.3 0 10.7 -2.1 17.2 2.1 78.3 0 11.6 -1.9 0 5.5 -10.3 3.4 -2.2 -1.1 -29.7 0 -2 1.2 -2.3 -1.2 -28.2 0 -1.7 1.3 -0.3 203.7 -2.1 -1 -0.5 -203.5 -12.7 -0.6 -7.5 -2 -6.8 0.1 -1.2 1.2 -0.9 180.5 -4.4 -4.3 -0.4 -175.1 -23.7 -0.3 -1.7 1.3 -0.9 147.7 -7.3 -7.1 -0.5 -141.4 -20.8 -0.5 -1.7 1.3 0 114 -0.9 0.8 -10 -10.7 -0.6 -104.9 -18.1 -0.7 -1.5 1.3 -0.1 83.6 -0.9 0.9 -12.8 -9.8 -0.6 -76.6 -15 0.8 -1.7 1.3 -0.1 60 -0.9 0.9 -15.7 -11.9 -0.5 -49.8 -12.3 -0.5 -1.7 1.3 0 39.6 -1.1 0.8 -18.3 -9.4 -1 -32 -10.5 0.6 -0.7 25 -19.1 -9.2 -0.3 -23.9 z",
+  "M894.3,466 l 18.3 2.9 0.2 202.6 6.7 4.5 2.2 -1.2 0.1 -206.1 24.2 -0.6 0.6 26.3 1.2 2.3 -8.2 19.9 -2 20 1.3 8.4 7.7 18.8 0.1 129.3 5.4 4 2.1 -1.2 0.1 -120.9 0.9 -0.9 25.4 11.3 0 123.5 0.7 1.4 5.1 2 1.9 -1.7 0 -124.1 6.7 -1.1 -0.4 135.4 -33.2 -12.7 -60 -39 -53.4 -52.6 -50.2 -53 -56.4 -42.1 -60.8 -31.3 1.1 -4.2 21.3 9.9 0.9 -27.1 4.1 -0.6 0.9 31.2 24.9 12.3 1.2 -1.7 0 -41.2 7.2 -0.6 0.5 49.1 22 16.4 1.4 -1.8 0 -63.1 10.2 -1 0.4 75.1 18.9 14.2 1.6 -1.8 0.1 -86.6 12.9 -0.5 0.5 104.9 16.4 16.6 1.3 -1.7 0 -119.2 15.8 -0.6 0.4 140.8 13.2 13 1.7 -1.7 0 -151.5 18.9 -0.5 0.2 174.2 10.3 10.2 1.7 -1.8 0 -184 z"
+ ],
+ lines: [
+  "M1042,114.7 l 0.7 49.9 1.7 1.8 10.1 0 1.7 -1.3 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.3 1.7 -1.3 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.3 1.7 -1.3 0.9 -50.4 5.9 0.9 0.5 50.3 11.4 0.5 1.7 -1.3 0.9 -50.4 5.9 0.9 0.1 49.5 1.7 1.3 11.3 -0.5 0.5 -50.3 6 -0.9 0.9 50.4 1.7 1.3 11 -0.3 0.8 -50.8 6 -0.6 0.9 50.4 1.7 1.3 10.6 -0.1 1.2 -1.7 0 -49.3 6.4 -0.5 0.4 49.8 2.6 2.6 0 46.6 -11.5 0.9 -1.2 1.2 -0.2 49.9 -6.7 -0.2 0 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -6 -0.7 0 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.9 -50.8 -11 -0.2 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.9 -50.8 -11 -0.2 -1.7 1.3 -0.9 50.4 -6 -0.9 -0.5 -50.3 -11.3 -0.5 -1.7 1.3 -0.9 50.4 -5.9 -0.9 -0.1 -49.5 -1.7 -1.3 -11.3 0.5 -0.5 50.3 -6 0.9 -0.9 -50.4 -1.7 -1.3 -11 0.2 -0.9 50.8 -5.9 0.7 -0.9 -50.4 -1.7 -1.3 -10.6 0.1 -1.2 1.7 -0.1 49.2 -5.9 0.7 -0.9 -50.4 -1.7 -1.3 -10.1 0 -1.7 1.8 -0.1 49.4 -24.2 0.3 -0.4 -99.1 27.8 -1.5 0.3 -49.9 z",
+  "M1042,218 l 0.7 49.9 1.7 1.8 10.1 0 1.7 -1.3 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0.1 1.7 -1.3 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.3 1.7 -1.3 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.3 1.7 -1.3 0.9 -50.4 5.9 0.9 0.5 50.2 11.4 0.6 1.7 -1.3 0.9 -50.4 5.9 0.9 0.1 49.5 1.7 1.3 11.3 -0.6 0.5 -50.2 6 -0.9 0.9 50.4 1.7 1.3 11 -0.3 0.8 -50.8 6 -0.6 0.9 50.4 1.7 1.3 10.6 -0.1 1.2 -1.7 0 -49.3 6.4 -0.5 0.4 49.8 2.6 2.6 0 46.5 -11.5 1 -1.2 1.2 -0.2 49.9 -6.7 -0.2 0 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.3 -6 -0.6 0 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.3 -5.9 -0.6 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.3 -5.9 -0.6 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.3 -5.9 -0.6 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.3 -5.9 -0.6 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.3 -5.9 -0.6 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.3 -5.9 -0.6 -0.9 -50.8 -11 -0.2 -1.7 1.3 -0.9 50.3 -5.9 -0.6 -0.9 -50.8 -11 -0.2 -1.7 1.3 -0.9 50.3 -6 -0.8 -0.5 -50.3 -11.3 -0.5 -1.7 1.3 -0.9 50.3 -5.9 -0.8 -0.1 -49.5 -1.7 -1.3 -11.3 0.5 -0.5 50.3 -6 0.8 -0.9 -50.3 -1.7 -1.3 -11 0.2 -0.9 50.8 -5.9 0.6 -0.9 -50.3 -1.7 -1.3 -10.6 0.1 -1.2 1.7 -0.1 49.2 -5.9 0.6 -0.9 -50.3 -1.7 -1.3 -10.1 0 -1.7 1.8 -0.1 49.4 -21.2 0.3 -0.6 -22.7 -2.8 -9.8 0 -66.6 27.8 -1.5 0.3 -49.9 z",
+  "M1042,321.3 l 0.7 49.9 1.7 1.7 10.1 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.2 1.7 -1.2 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.2 1.7 -1.2 0.9 -50.4 5.9 0.8 0.5 50.3 11.4 0.5 1.7 -1.2 0.9 -50.4 5.9 0.8 0.1 49.6 1.7 1.2 11.3 -0.5 0.5 -50.3 6 -0.8 0.9 50.4 1.7 1.2 11 -0.2 0.8 -50.8 6 -0.6 0.9 50.4 1.7 1.2 10.6 0 1.2 -1.7 0 -49.3 6.4 -0.5 0.4 49.8 2.6 2.6 0 46.5 -11.5 1 -1.2 1.1 -0.2 50 -6.7 -0.2 0 -49.3 -1.2 -1.6 -10.6 -0.1 -1.7 1.2 -0.9 50.4 -6 -0.6 0 -49.3 -1.2 -1.6 -10.6 -0.1 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.6 -10.6 -0.1 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.6 -10.6 -0.1 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.6 -10.6 -0.1 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.6 -10.6 -0.1 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.6 -10.6 -0.1 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.9 -50.8 -11 -0.2 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.9 -50.8 -11 -0.2 -1.7 1.2 -0.9 50.4 -6 -0.8 -0.5 -50.3 -11.3 -0.5 -1.7 1.2 -0.9 50.4 -5.9 -0.8 -0.1 -49.6 -1.7 -1.2 -11.3 0.5 -0.5 50.3 -6 0.8 -0.9 -50.4 -1.7 -1.2 -11 0.2 -0.9 50.8 -5.9 0.6 -0.9 -50.4 -1.7 -1.2 -10.6 0.1 -1.2 1.6 -0.1 49.3 -5.9 0.6 -0.9 -50.4 -1.7 -1.2 -10.1 0 -1.7 1.7 -0.1 49.5 -24.2 0.3 -0.4 -32.4 3 -12.5 0 -54.2 24.8 -1.5 0.3 -50 z",
+  "M1042,424.6 l 0.7 49.9 1.7 1.7 10.1 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.2 1.7 -1.2 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.2 1.7 -1.2 0.9 -50.4 5.9 0.8 0.5 50.3 11.4 0.5 1.7 -1.2 0.9 -50.4 5.9 0.8 0.1 49.6 1.7 1.2 11.3 -0.5 0.5 -50.3 6 -0.8 0.9 50.4 1.7 1.2 11 -0.2 0.8 -50.8 6 -0.6 0.9 50.4 1.7 1.2 10.6 0 1.2 -1.7 0 -49.3 6.4 -0.5 0.4 49.8 2.6 2.6 0 46.5 -11.5 0.9 -1.2 1.2 -0.2 50 -6.7 -0.2 0 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -6 -0.6 0 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.9 -50.8 -11 -0.2 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.9 -50.8 -11 -0.2 -1.7 1.2 -0.9 50.4 -6 -0.8 -0.5 -50.3 -11.3 -0.5 -1.7 1.2 -0.9 50.4 -6 -0.8 0 -49.6 -1.7 -1.2 -11.3 0.5 -0.6 50.3 -5.9 0.8 -0.9 -50.4 -1.7 -1.2 -11 0.2 -0.9 50.8 -5.9 0.6 -0.9 -50.4 -1.7 -1.2 -10.6 0 -1.2 1.7 -0.1 49.3 -5.9 0.6 -0.9 -50.4 -1.7 -1.2 -10.1 0 -1.7 1.7 -0.1 49.3 -6.3 0.5 -0.5 -50.3 -1.2 -1.2 -9.2 -0.3 -2.3 -10.1 -8.6 -19.5 -5.6 -6.2 -11.3 -6.5 0.6 -5.6 27.2 -0.9 0.3 -50 z",
+  "M1042,527.9 l 0.7 49.9 1.7 1.7 10.1 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.1 49.3 1.2 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0 49.3 1.3 1.7 10.6 0 1.7 -1.2 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.2 1.7 -1.2 0.9 -50.4 5.9 0.6 0.9 50.8 11 0.2 1.7 -1.2 0.9 -50.4 5.9 0.8 0.5 50.3 11.4 0.5 1.7 -1.2 0.9 -50.4 5.9 0.8 0.1 49.6 1.7 1.2 11.3 -0.5 0.5 -50.3 6 -0.8 0.9 50.4 1.7 1.2 11 -0.2 0.8 -50.8 6 -0.6 0.9 50.4 1.7 1.2 10.6 0 1.2 -1.7 0 -49.3 6.4 -0.5 0.4 49.8 2.6 2.6 0 46.5 -11.5 0.9 -1.2 1.2 -0.2 50 -6.7 -0.2 0 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -6 -0.6 0 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.1 -49.3 -1.2 -1.7 -10.6 0 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.9 -50.8 -11 -0.2 -1.7 1.2 -0.9 50.4 -5.9 -0.6 -0.9 -50.8 -11 -0.2 -1.7 1.2 -0.9 50.4 -6 -0.8 -0.5 -50.3 -11.3 -0.5 -1.7 1.2 -0.9 50.4 -5.9 -0.8 -0.1 -49.6 -1.7 -1.2 -11.3 0.5 -0.5 50.3 -6 0.8 -0.9 -50.4 -1.7 -1.2 -11 0.2 -0.9 50.8 -5.9 0.6 -0.9 -50.4 -1.7 -1.2 -10.6 0 -1.2 1.7 -0.1 49.3 -5.9 0.6 -0.9 -50.4 -1.7 -1.2 -10.1 0 -1.7 1.7 -0.1 49.5 -24.2 0.3 -0.4 -99.2 27.8 -1.4 0.3 -50 z",
+  "M1117.8,36 l 72.7 6.3 68.5 20.3 63.2 33.7 8.4 7 0.2 7.2 -11.5 0.9 -1.2 1.2 -0.2 49.9 -6.7 -0.2 0 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -6 -0.7 0 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.1 -49.2 -1.2 -1.7 -10.6 -0.1 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.9 -50.7 -11 -0.3 -1.7 1.3 -0.9 50.4 -5.9 -0.7 -0.9 -50.7 -11 -0.3 -1.7 1.3 -0.9 50.4 -6 -0.9 -0.5 -50.3 -11.3 -0.5 -1.7 1.3 -0.9 50.4 -5.9 -0.9 -0.1 -49.5 -1.7 -1.3 -11.3 0.5 -0.5 50.3 -6 0.9 -0.9 -50.4 -1.7 -1.3 -11 0.3 -0.9 50.7 -5.9 0.7 -0.9 -50.4 -1.7 -1.3 -10.6 0.1 -1.2 1.7 -0.1 49.2 -5.9 0.7 -0.9 -50.4 -1.7 -1.3 -10.1 0 -1.7 1.8 -0.1 49.4 -24.3 0.2 -0.3 -52.4 8.2 -9.5 3.2 -10.5 0.1 -38.4 -1.6 -10.4 z M1042,631.2 l 0.7 49.9 1.2 1.6 10.6 0.1 1.7 -1.3 0.9 -50.3 5.9 0.6 0.1 49.3 1.2 1.6 10.6 0.1 1.7 -1.3 0.9 -50.3 5.9 0.6 0.1 49.3 1.2 1.6 10.6 0.1 1.7 -1.3 0.9 -50.3 5.9 0.6 0.1 49.3 1.2 1.6 10.6 0.1 1.7 -1.3 0.9 -50.3 5.9 0.6 0 49.3 1.3 1.6 10.6 0.1 1.7 -1.3 0.9 -50.3 5.9 0.6 0 49.3 1.3 1.6 10.6 0.1 1.7 -1.3 0.9 -50.3 5.9 0.6 0 49.3 1.3 1.6 10.6 0.1 1.7 -1.3 0.9 -50.3 5.9 0.6 0 49.3 1.8 1.7 10.1 0 1.7 -1.3 0.9 -50.3 5.9 0.6 0.9 50.8 11 0.2 1.7 -1.3 0.9 -50.3 5.9 0.6 0.9 50.8 11 0.2 1.7 -1.3 0.9 -50.3 5.9 0.8 0.5 50.3 11.4 0.5 1.7 -1.3 0.9 -50.3 5.9 0.8 0.1 49.5 1.7 1.3 11.3 -0.5 0.5 -50.3 6 -0.8 0.9 50.3 1.7 1.3 11 -0.2 0.8 -50.8 6 -0.6 0.9 50.3 1.7 1.3 10.6 -0.1 1.2 -1.6 0 -49.3 6.2 -0.6 0.6 49.6 -23.1 17.2 -65.2 30.1 -69.6 16.4 -71.8 2 -70.2 -12.2 -20.4 -8.2 -0.1 -42.7 27.8 -1.4 0.3 -50 z"
+ ],
+ harp: "M1007.8,580.1 l 0 98.4 1.2 2.6 -1.2 2.6 0 42.1 20.3 8.5 70.6 12.3 71.7 -2.2 69.8 -16.4 64.8 -30 23.1 -17 -0.4 -50.9 3.1 -3.3 0 -46.4 -2.6 -3.1 -0.5 -50.2 3.1 -3.6 0 -46.3 -2.6 -3.1 -0.5 -50.3 3.1 -3.5 0 -46.4 -2.6 -3.1 -0.5 -50.3 3.1 -3.5 0 -46.4 -2.6 -3.1 -0.5 -50.3 3.1 -3.5 0 -46.4 -2.6 -3.1 -0.5 -50.3 3 -3.2 0.1 -6.8 -8.6 -7.6 -63.2 -33.7 -68.7 -20.3 -72.9 -6.3 -99.8 5.6 1.7 10.3 -0.2 38.7 -3.1 10.2 -8.2 9.8 0 51.4 1.2 2.7 -1.2 2.6 0 98 1.2 2.7 -1.2 2.6 0 66.2 2.9 9.9 0.1 21.9 1.2 2.6 -1.2 2.7 -0.1 56.3 -2.9 10.1 0 31.6 1.2 2.6 -1.2 7.3 9.2 5.1 6.1 5.5 11.1 24.2 2.6 9.6 -0.9 2.6 0 48.2 -2.3 2.5 z",
+ zones: [{ x: 1146.8, y: 706.9 }, { x: 1168, y: 655.3 }, { x: 1169.3, y: 603.6 }, { x: 1182, y: 552 }, { x: 1179.2, y: 500.4 }, { x: 1168, y: 448.7 }, { x: 1170.8, y: 397.1 }, { x: 1169.3, y: 345.4 }, { x: 1169.3, y: 293.8 }, { x: 1168, y: 242.1 }, { x: 1169.3, y: 190.5 }, { x: 1168, y: 138.8 }, { x: 1162.2, y: 87.2 }],
+ rail: [
+  {x: 560.4, y: 88.4, d: "M527.7,108.8 l 60.4 0.6 9.2 1.3 0 -26.4 -69.1 7.6 z"},
+  {x: 634.3, y: 83.5, d: "M597.6,110.7 l 18.4 -1.3 53.2 -0.1 2.1 -1.1 0 -32.1 -20.7 2.3 -0.3 3.5 -2.1 1.6 -50.9 0.8 z"},
+  {x: 708.2, y: 72.0, d: "M671.5,108.2 l 2.4 1.2 23.2 0.1 11.1 3.6 11.3 -3.6 25.7 -0.1 0 -41.4 -73.9 8.1 z"},
+  {x: 782.2, y: 63.9, d: "M800.5,109.4 l 16 1.3 2.7 -1.4 0 -46.1 -29.6 -0.1 -44.4 4.9 0 41.4 z"},
+  {x: 856.1, y: 55.7, d: "M819.3,109.3 l 2.4 0.9 66.8 -1 0.2 -56.6 -67.7 7.1 -1.8 3.5 z"}
+ ],
+ palm: {x: 116.7, y: 290.0, d: "M98.5,161.4 l -18.6 18.5 -14.7 21.8 -10.2 24.6 -5.2 25.9 0 26.2 5.2 26.2 10 24.4 14.6 21.8 18.8 18.9 22.2 14.7 25.6 10.6 36.6 9.6 0.6 -162.5 -9.8 -5.6 -6.9 -8.4 -3.1 -10 -0.4 -17.5 -38.5 -0.4 -12.5 -4.4 -6.1 -5.5 -4.3 -7.1 -1.9 -7.8 -0.2 -13.4 z"},
+ ribbon: {x: 873.4, y: 532.5, d: "M680.7,486.5 l 0.5 4.4 60.3 30.6 58.9 44.2 47.6 50.8 53.4 52.6 60 38.9 33.5 12.5 0.1 -135.1 -6.7 1 0 123 -2.8 2.5 -3.9 -1.5 -1 -2 0 -123 -25.4 -11.3 -0.9 1 -0.1 119.3 -2.9 2 -4.6 -3.4 -0.1 -129.2 -7.7 -18.9 -1.3 -8.3 2 -19.9 8.2 -20 -1.2 -2.7 0 -25.2 -25.9 -0.3 -2.3 -2.6 0.3 -3.3 2 -1.4 27.2 0 2.6 1.2 2.5 -1.2 28.9 0 2.6 1.1 10.3 -3.4 -0.1 -5.6 -11.5 2 -78.3 0 -10.8 -2.1 -17.1 2.1 -78.3 0 -10.8 -2.1 -17.1 2.1 -78.3 0 -11.1 -2.1 -0.6 24.5 18.3 9.4 3.6 0.1 1 6.5 -3.1 1.7 -18.7 -9.4 z M912.6,668.2 l 2.1 -2.5 5.9 0.7 1.1 1.9 -0.4 5.9 -2.8 1.1 -4.7 -3 z M891.1,466 l -2.3 0.2 -1.5 -1.6 0 -3.7 1.7 -1.7 25 2.1 2 2.2 -0.2 3.4 -2.1 1.6 z M878.6,639.7 l 2.8 -2.6 4.6 3.7 3.9 0.3 0 9.6 -3.6 0 -7.2 -7.2 z M859.9,468.1 l -2.2 0.2 -1.5 -1.6 0 -3.7 1.7 -1.7 21.7 -0.2 2.4 2.1 -0.2 3.7 -1.8 1.5 z M844.6,606.2 l 1 -2 2.3 -0.4 6.9 6.3 3.9 0.4 0.1 9.5 -3.6 0 -10 -9.8 z M828.8,468.1 l -2.2 0.2 -1.5 -1.6 0 -3.7 1.7 -1.7 18.9 -0.1 2.2 1.8 0 3.7 -1.7 1.7 z M810.7,569.8 l 1.1 -2.2 2.4 -0.2 9.4 9.8 4 0.4 0 10 -3.6 -0.1 -12.8 -13.7 z M797.6,468.2 l -2.2 0.1 -1.5 -1.7 0 -3.7 1.7 -1.7 16.2 0 2.1 1.8 0 3.7 -1.7 1.7 z M776.7,539.8 l 1.1 -2.1 2.3 -0.3 12.5 9.2 3.7 0.3 0.4 8.3 -3.3 0.5 -15.7 -11.7 z M766.5,468.1 l -1.9 0.3 -1.7 -1.5 -0.1 -3.6 1.3 -1.8 13.5 -1.3 2.2 1.4 0.2 4.4 -1.3 1.7 z M742.7,514.3 l 1.1 -2.1 2.3 -0.3 15.3 11.4 3.6 0.1 1.1 1.8 -0.6 6.6 -3.3 0.6 -18.5 -13.9 z M735.4,468.1 l -2.2 0.2 -1.4 -1.4 -0.2 -3.6 1.3 -1.8 10.9 -0.3 2 1.4 0.2 3.8 -1.3 1.8 z M708.7,496 l 0.9 -2 2.2 -0.5 18.6 9.3 3.3 0 1.3 1.9 -0.3 5.1 -3.2 1.2 -21.4 -10.8 z M704.3,468.1 l -2.2 0.2 -1.5 -1.4 0.8 -5.1 8.1 -0.6 2 1 -0.4 5.7 z"}
+};
 // the 21 chord buttons, row by row (major, minor, seventh), each 80 wide and 78 high, and the
 // letters their columns are named for, left to right
 const MAP_ROWS = [
@@ -194,9 +228,26 @@ const CONTROLS = {
   strings: { name: 'harp strings', kind: 'sheet', sheet: 'harp' },
   rhythm: { name: 'rhythm', kind: 'sheet', sheet: 'rhythm' },
   light: { name: 'light', kind: 'sheet', sheet: 'light' },
+  // the bent board's touch areas, drawn while it is fitted: each moves a setting from the preset's own
+  // to its value, as hover does (472-485)
+  rail0: { name: 'bend rail 1', where: 'the bend rail above the chord buttons, its left end', kind: 'bent', main: { control: 472, value: 473 } },
+  rail1: { name: 'bend rail 2', where: 'the bend rail above the chord buttons, its second point', kind: 'bent', main: { control: 474, value: 475 } },
+  rail2: { name: 'bend rail 3', where: 'the bend rail above the chord buttons, its middle', kind: 'bent', main: { control: 476, value: 477 } },
+  rail3: { name: 'bend rail 4', where: 'the bend rail above the chord buttons, its fourth point', kind: 'bent', main: { control: 478, value: 479 } },
+  rail4: { name: 'bend rail 5', where: 'the bend rail above the chord buttons, its right end', kind: 'bent', main: { control: 480, value: 481 } },
+  palm: { name: 'palm pad', where: 'left of the chord buttons, under the left palm', kind: 'bent', main: { control: 482, value: 483 } },
+  ribbon: { name: 'thumb ribbon', where: 'the wedge below the seventh row', kind: 'bent', main: { control: 484, value: 485 } },
+};
+const BENT_AREAS = ['rail0', 'rail1', 'rail2', 'rail3', 'rail4', 'palm', 'ribbon'];
+// what each area does, on top of its sheet; the ribbon's by how it reads (486)
+const BENT_INTRO = {
+  rail: 'Pressed, it moves its setting from the preset\'s own toward the value, as far as it is pressed, and springs back as the finger lifts.',
+  palm: 'Its setting goes to the value while the palm rests on it, and back as it lifts.',
+  ribbonPlace: 'Where the thumb is along it: the preset\'s own at the left end, the value at the right, held while the thumb rests.',
+  ribbonPress: 'How firmly the thumb presses, anywhere along it: the preset\'s own to the value.',
 };
 // which control's sheet edits each of these settings, for the search
-const CONTROL_OF = { 117: 'mod', 251: 'hover', 321: 'tap', 322: 'updown' };
+const CONTROL_OF = { 117: 'mod', 251: 'hover', 321: 'tap', 322: 'updown', 486: 'ribbon' };
 Object.entries(CONTROLS).forEach(([key, c]) => {
   [c.main, c.alt].forEach(slot => slot && [slot.control, slot.range, slot.value].forEach(a => { if (a) CONTROL_OF[a] = key; }));
   (c.slots ?? []).flat().forEach(a => CONTROL_OF[a] = key);
@@ -212,7 +263,7 @@ const GROUP_SHORT = { 'low pass filter': 'filter' };
 const GROUP_SILENT = new Set(['general', 'oscillator', 'notes', 'effects', 'key and tuning', 'buttons', 'voicing',
   'knobs', 'midi', 'style', 'tempo', 'sections', 'pattern', 'chord changes', 'slash chords and cantus',
   'alternate layout', 'string model', 'transient', 'plate', 'drum pads', 'pluck', 'ribbon', 'drone', 'phone', 'vocoder', 'organ', 'drums',
-  'looper']);
+  'looper', 'bends']);
 
 let mapLayer = 0;          // what the drawing shows: 0 turning, 1 holding ♯, 2 ▲ ▼ held, the key each button picks
 let sheetControl = null;   // the control the sheet is open on
@@ -226,10 +277,10 @@ const knobLayerOn = () => num(KNOB_LAYER) === 1;
 const shownLayer = () => (mapLayer === 1 || knobLayerOn()) ? 'alt' : 'main';
 
 // a control's setting, as the page's own control for it (greyed with no minichord, or for an
-// older firmware) has it
+// older firmware) has it; a row of switches by its switches
 function locked(sysex) {
   const element = document.getElementById(`param-${sysex}`);
-  return element ? element.classList.contains('inactive') : !controller.isConnected();
+  return element ? element.classList.contains('inactive') || !!element.querySelector('.degree-box.inactive') : !controller.isConnected();
 }
 
 // Set a setting through its own control, which sends it and marks the bank edited
@@ -244,6 +295,12 @@ function setParam(sysex, value) {
   } else if (uiType === 'select') {
     element.value = value;
     element.dispatchEvent(new Event('change', { bubbles: true }));
+  } else if (uiType === 'degrees') {
+    // a row of switches, each a bit of the value: each one that changes, as if clicked
+    element.querySelectorAll('.degree-box').forEach(box => {
+      const on = !!(value & (1 << parseInt(box.dataset.bit)));
+      if (box.checked !== on) { box.checked = on; box.dispatchEvent(new Event('input', { bubbles: true })); }
+    });
   } else {
     element.value = value;
     element.dispatchEvent(new Event('input', { bubbles: true }));
@@ -333,7 +390,7 @@ function slotSummary(key, layer) {
     parts.push(`${valueText(187, num(187))} bpm`);
     return { text: parts.join(' · '), assigned: true };
   }
-  const slot = c[layer];
+  const slot = c[layer] ?? c.main;   // the bent board's areas have no ♯ layer
   if (slot.fixed) return { text: slot.fixed, assigned: true, fixed: true };
   let control = num(slot.control);
   // hover with no ♯ setting of its own moves its own on both layers
@@ -480,13 +537,14 @@ function spellAbove(root, interval, degree) {
   return letter + (ACCIDENTALS[acc] ?? '');
 }
 
-// the twelve strings' names, lowest first, or null where they can't be named here
-function harpNotes(sharp) {
+// the strings' names, lowest first, or null where they can't be named here: twelve, or the bent
+// board's thirteen places, the thirteenth going on as the firmware's shuffling_level_past does
+function harpNotes(sharp, count = 12) {
   const twelve = !TEMPERAMENT_DIVISIONS[num(237)];
   const names = num(35) in KEY_FLATS ? FLAT_NAMES : SHARP_NAMES;
   const transpose = twelve ? num(30) % 12 : 0;
   // chromatic, from C: no scale to spell it by, so the key's sharps or flats
-  if (num(98)) return twelve ? Array.from({ length: 12 }, (_, i) => names[(i + transpose) % 12]) : null;
+  if (num(98)) return twelve ? Array.from({ length: count }, (_, i) => names[(i + transpose) % 12]) : null;
   if (!twelve) return null;
   const mode = num(36);
   if (mode >= 1 && mode <= 7) {
@@ -495,7 +553,7 @@ function harpNotes(sharp) {
     if (transpose) tonic = spelled(names[(NATURAL[tonic.letter] + tonic.acc + transpose + 12) % 12]);
     const root = mode >= 5 ? spelled(spellAbove(tonic, 9, 5)) : tonic;
     const scale = HARP_SCALES[mode - 1];
-    return Array.from({ length: 12 }, (_, i) => spellAbove(root, scale[i % scale.length], DEGREE_OF[scale[i % scale.length]]));
+    return Array.from({ length: count }, (_, i) => spellAbove(root, scale[i % scale.length], DEGREE_OF[scale[i % scale.length]]));
   }
   if (mode !== 0) return null;
   const { col, row } = stringsChord();
@@ -504,14 +562,16 @@ function harpNotes(sharp) {
   const tones = CHORD_TONES[index] ?? CHORD_TONES[0];
   const except = DEGREE_EXCEPT[index] ?? {};
   const pattern = HARP_PATTERNS[num(40)] ?? HARP_PATTERNS[0];
-  return pattern.map(level => {
+  return Array.from({ length: count }, (_, i) => pattern[i % 12]).map(level => {
     const interval = tones[level % 10] % 12;
     return spellAbove(root, tones[level % 10], except[interval] ?? DEGREE_OF[interval]);
   });
 }
 
-// the plate fitted, from MAP_PLATES, or null for the stock strip (and the plates not drawn)
-const fittedPlate = () => MAP_PLATES[num(243)] ?? null;
+// the bent board's number in harp plate's list, found by its name: 21 on firmware 111, 5 from 121
+const bentNumber = () => choicesOf(findParameterBySysex(243))?.find(c => /^bent board:/i.test(c.label))?.value;
+// the plate fitted, from MAP_PLATES or MAP_BENT, or null for the stock strip (and the plates not drawn)
+const fittedPlate = () => num(243) === bentNumber() ? MAP_BENT : MAP_PLATES[num(243)] ?? null;
 
 // where the plate fitted names its strings, lowest first, and how big; where the harp mode goes
 // when they can't be named, and the chord they're shown for
@@ -528,8 +588,8 @@ function stringSpots() {
 }
 
 function stringsSvg() {
-  const notes = harpNotes(mapLayer === 1);
   const { spots, size, mid, foot } = stringSpots();
+  const notes = harpNotes(mapLayer === 1, spots.length);
   if (!notes) {
     const mode = choicesOf(findParameterBySysex(36))?.find(c => c.value === num(36))?.label ?? '';
     return `<text class="map-string-mode" x="${mid[0]}" y="${mid[1]}" ` +
@@ -546,10 +606,11 @@ function stringsSvg() {
 }
 
 // the harp plate fitted: the stock strip, or another plate's outline and its zones, the piano's
-// black keys filled
+// black keys filled; on the bent board its harp's six lines (the rest of it is bentSvg's)
 function plateSvg() {
   const plate = fittedPlate();
   if (!plate) return `<path class="map-shape" d="${MAP_SHAPES.plate}"/>` + MAP_SHAPES.plateDots.map(d => `<path class="map-part" d="${d}"/>`).join('');
+  if (plate === MAP_BENT) return `<path class="map-shape" d="${plate.harp}"/>` + plate.lines.map(d => `<path class="map-zone" d="${d}"/>`).join('');
   return `<path class="map-shape" fill-rule="evenodd" d="${plate.outline}"><title>${esc(valueText(243, num(243)).toLowerCase())}</title></path>` +
     plate.zones.map((z, i) => `<path class="map-zone${plate.black?.includes(i) ? ' black' : ''}" d="${z.d}"/>`).join('');
 }
@@ -559,6 +620,30 @@ function renderStrings() {
   if (g) g.innerHTML = stringsSvg();
   document.querySelectorAll('#map-svg [data-col]').forEach(r =>
     r.classList.toggle('previewed', !!previewChord && parseInt(r.dataset.col) === previewChord.col && parseInt(r.dataset.row) === previewChord.row));
+}
+
+// what a bent board area moves, in a few words for the drawing
+function areaWord(key) {
+  const { control } = CONTROLS[key].main;
+  const value = num(control);
+  if (!value) return 'nothing';
+  const name = targetName(control, value);
+  return name.length > 14 ? name.slice(0, 13) + '…' : name;
+}
+
+// the bent board's touch areas' copper, and each area a control with what it moves written on it:
+// the rail's rising from each point, the palm's up its pad, the ribbon's on its wedge. Not its sheet,
+// whose knob holes are where the real knobs are, about 3 mm right of the drawing's.
+function bentSvg() {
+  const b = MAP_BENT;
+  const word = (key, x, y, turn, anchor) => `<text class="map-bent-word" x="${x}" y="${y}" text-anchor="${anchor}"` +
+    (turn ? ` transform="rotate(${turn} ${x} ${y})"` : '') + `>${esc(areaWord(key))}</text>`;
+  const area = (key, shape, label) => controlGroup(key, `<path class="map-shape" d="${shape.d}">` +
+    `<title>${esc(controlName(key))}: ${esc(slotSummary(key, 'main').text)}</title></path>` + label);
+  return b.copper.map(d => `<path class="map-zone" d="${d}"/>`).join('') +
+    b.rail.map((p, i) => area(`rail${i}`, p, word(`rail${i}`, p.x, p.y - 10, -45, 'start'))).join('') +
+    area('palm', b.palm, word('palm', b.palm.x, b.palm.y, -90, 'middle')) +
+    area('ribbon', b.ribbon, word('ribbon', b.ribbon.x, b.ribbon.y, 0, 'middle'));
 }
 
 // ---- the drawing ----
@@ -618,6 +703,7 @@ function renderMinichordMap() {
   svg.setAttribute('viewBox', narrowMap.matches ? MAP_VIEW_NARROW : MAP_VIEW_WIDE);
   svg.innerHTML =
     `<path class="map-body" d="${s.body}"/>` +
+    (fittedPlate() === MAP_BENT ? bentSvg() : '') +   // under the minichord's own controls, which win where they meet
     `<path class="map-part" d="${s.jacks[1]}"><title>the rhythm light</title></path>` +
     controlGroup('rhythm', `<rect class="map-hit" x="930" y="40" width="85" height="80"/><path class="map-shape" d="${s.jacks[0]}"/>`) +
     controlGroup('light', `<circle class="map-hit" cx="${MAP_LED[0]}" cy="${MAP_LED[1]}" r="50"/>` +
@@ -660,7 +746,8 @@ function renderPedals() {
 function renderMapList() {
   const list = document.getElementById('map-list');
   if (!list) return;
-  const keys = ['chord', 'harp', 'mod', 'hover', 'tap', 'updown', 'rhythm', 'chords', 'strings', 'light'];
+  const keys = ['chord', 'harp', 'mod', 'hover', 'tap', 'updown', 'rhythm', 'chords', 'strings', 'light',
+    ...(fittedPlate() === MAP_BENT ? BENT_AREAS : [])];
   list.innerHTML = keys.map(key => {
     const s = slotSummary(key, shownLayer());
     const extra = s.fixed ? ' · built in' : s.same ? ' · as turning' : '';
@@ -728,6 +815,12 @@ function paramControl(sysex, label) {
   }
   if (shape.ui_type === 'switch') {
     return `<label class="cs-switch" title="${tip}"><input type="checkbox" class="always-on" data-set="${sysex}"${value ? ' checked' : ''}${off}> ${esc(label)}</label>`;
+  }
+  // a setting's own switches, each a bit of it (bent board options, 486)
+  if (shape.ui_type === 'degrees' && shape.flag_labels) {
+    return `<p class="cs-label" title="${tip}">${esc(label)}</p>` + shape.flag_labels.map((flag, bit) =>
+      `<label class="cs-switch" title="${tip}"><input type="checkbox" class="always-on" data-set="${sysex}" data-bit="${bit}"` +
+      `${value & (1 << bit) ? ' checked' : ''}${off}> ${esc(flag)}</label>`).join('');
   }
   const choices = choicesOf(shape);
   if (choices && (shape.ui_type === 'select' || shape.options)) {
@@ -824,6 +917,17 @@ function sheetBody(key) {
       html += `</section>`;
     });
     html += `<section class="cs-extra">${paramControl(321, 'tap, then hold: only while held')}</section>`;
+    return html;
+  }
+  if (c.kind === 'bent') {
+    // the ribbon goes by where the thumb is unless it reads how firmly (486's switch 1 on firmware 121)
+    const byPlace = key === 'ribbon' && !(num(486) & 1);
+    const intro = key === 'ribbon' ? (byPlace ? BENT_INTRO.ribbonPlace : BENT_INTRO.ribbonPress) : BENT_INTRO[key] ?? BENT_INTRO.rail;
+    let html = `<p class="cs-intro">${esc(intro)}</p><section class="cs-layer">${targetPicker(c.main.control, 'sweep')}`;
+    if (num(c.main.control)) html += paramControl(c.main.value, byPlace ? 'at its right end' : key === 'palm' ? 'palm resting' : 'pressed firmly');
+    html += '</section>';
+    // 486: firmware 121's bent board options, the ribbon's own switch first (111's two choices before it)
+    if (key === 'ribbon') html += `<section class="cs-extra">${paramControl(486, findParameterBySysex(486)?.name ?? 'bent board options')}</section>`;
     return html;
   }
   if (c.kind === 'updown') {
@@ -1035,6 +1139,14 @@ function openControlSheet(key) {
   if (!sheet.matches(':popover-open')) sheet.showPopover();
 }
 
+// what a sheet's switch or list sets its setting to; one of a setting's switches, the rest kept
+function chosenValue(set) {
+  const sysex = parseInt(set.dataset.set);
+  if (set.dataset.bit == null) return set.type === 'checkbox' ? (set.checked ? 1 : 0) : parseInt(set.value);
+  const bit = 1 << parseInt(set.dataset.bit);
+  return set.checked ? num(sysex) | bit : num(sysex) & ~bit;
+}
+
 // a slider in a sheet moved: send it, and say what it now comes to
 function slide(set, root) {
   if (!set || set.type !== 'range') return;
@@ -1121,7 +1233,7 @@ function setupMinichordMap() {
   sheet.addEventListener('change', e => {
     const set = e.target.closest('[data-set]');
     if (!set || set.type === 'range') return;
-    setParam(parseInt(set.dataset.set), set.type === 'checkbox' ? (set.checked ? 1 : 0) : parseInt(set.value));
+    setParam(parseInt(set.dataset.set), chosenValue(set));
     renderSheet();
   });
 
@@ -1137,7 +1249,7 @@ function setupMinichordMap() {
   });
   document.addEventListener('change', e => {
     const set = e.target.closest('.sheet-quick [data-set]');
-    if (set && set.type !== 'range') setParam(parseInt(set.dataset.set), set.type === 'checkbox' ? (set.checked ? 1 : 0) : parseInt(set.value));
+    if (set && set.type !== 'range') setParam(parseInt(set.dataset.set), chosenValue(set));
   });
   setupFinder();
 

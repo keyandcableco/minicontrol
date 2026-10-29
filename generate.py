@@ -31,11 +31,11 @@ for group_name, params in parameters.items():
 
 # Define subgroup order for each group
 subgroup_order = {
-    'global_parameter': ['General', 'Key and tuning', 'Own temperament', 'Drone', 'Effects', 'Vocoder', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap'],
+    'global_parameter': ['General', 'Key and tuning', 'Own temperament', 'Drone', 'Effects', 'Vocoder', 'Bends', 'Phone', 'MIDI', 'Knobs', 'Hover', 'Double tap', 'Bent board'],
     'chord_parameter': ['General', 'Buttons', 'Voicing', 'Slash chords and cantus', 'Alternate layout', 'Voice', 'Oscillator',
                         'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Formants', 'Delay', 'Reverb', 'Crunch',
                         'Output filter', 'Ensemble'],
-    'harp_parameter': ['Notes', 'Plate', 'Drum pads', 'Pluck', 'Ribbon', 'Voice', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
+    'harp_parameter': ['Notes', 'Plate', 'Drum pads', 'Joystick', 'Pluck', 'Ribbon', 'Voice', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato', 'Delay',
                        'Reverb', 'Crunch', 'Output filter', 'Spread'],
     'sharp_button_parameter': ['General'],
     'rhythm_parameter': ['Style', 'Sections', 'Drums', 'Tempo', 'Chord changes', 'Pattern', 'Looper']
@@ -62,6 +62,10 @@ parameter_name_order = {
                            'modifier step', 'purity'],
         'Effects': ['reverb size', 'reverb high damping', 'reverb low damping', 'reverb low pass', 'reverb diffusion', 'pan'],
         'Vocoder': ['vocoder', 'vocoder carrier', 'vocoder consonants'],
+        # firmware 102: the bends, each a depth with its shaping beside it, then how they act on one another
+        'Bends': ['pitch drop', 'pitch drop range', 'pitch drop sag', 'voltage starve', 'bitcrush', 'bitcrush mode',
+                  'clock bend', 'clock bend direction', 'stutter', 'stutter sync', 'stutter shortest', 'stutter drums',
+                  'bends interact', 'spring back', 'spring time', 'stutter refresh'],
         'Phone': ['phone follow 1 control', 'phone follow 1 value', 'phone follow 1 band', 'phone follow 1 release',
                   'phone follow 2 control', 'phone follow 2 value', 'phone follow 2 band', 'phone follow 2 release',
                   'phone beat', 'phone kick stab', 'phone kick note', 'phone filter', 'phone filter resonance', 'phone echo',
@@ -70,6 +74,10 @@ parameter_name_order = {
                  'MIDI in plays'],
         'Knobs': ['knob layer'],
         'Hover': ['hover control', 'hover value', 'hover reach', 'hover alternate control', 'hover alternate value'],
+        # firmware 121: the bent board's touch areas (harp plate 5), each a setting and the value a firm press takes it to,
+        # then its options, the areas played together
+        'Bent board': [f'bend rail {k} {w}' for k in range(1, 6) for w in ('control', 'value')]
+                      + ['palm pad control', 'palm pad value', 'thumb ribbon control', 'thumb ribbon value', 'bent board options'],
         'Double tap': ['double tap control', 'double tap value', 'double tap control 2', 'double tap value 2',
                        'double tap control 3', 'double tap value 3', 'double tap hold', 'modifier with up and down']
     },
@@ -227,6 +235,8 @@ PLACES = {
     ('global_parameter', 'Drone'): ('drone', 'Drone'),
     ('global_parameter', 'Effects'): ('effects', 'Reverb and pan'),
     ('global_parameter', 'Vocoder'): ('vocoder', 'Vocoder'),
+    # the bends (firmware 102): pitch drop, voltage starve, bitcrush, clock bend and stutter on the whole instrument
+    ('global_parameter', 'Bends'): ('effects', 'Bends'),
     ('global_parameter', 'Phone'): ('phone', 'Phone'),
     ('global_parameter', 'General'): ('device', 'USB'),
     ('global_parameter', 'MIDI'): ('device', 'MIDI'),
@@ -236,6 +246,8 @@ PLACES = {
     ('global_parameter', 'Knobs'): ('controls', 'Knob layer'),
     ('global_parameter', 'Hover'): ('controls', 'Hover'),
     ('global_parameter', 'Double tap'): ('controls', 'Double tap'),
+    # the bent board's touch areas (firmware 111): what each moves, as hover's setting and value
+    ('global_parameter', 'Bent board'): ('controls', 'Bent board'),
 }
 # single settings placed apart from their subgroup: the light's colour and brightness
 PLACES_BY_ADDRESS = {20: ('light', 'Light'), 32: ('light', 'Light')}
@@ -260,7 +272,7 @@ SHEETS = {
         'Press: chords hold until the next. Hold down: rhythm mode on or off. In rhythm mode a press taps the tempo.'),
     'tuning': ('tuning', 'for the chords and the harp', ''),
     'drone': ('drone', 'a tanpura on the key\'s root', ''),
-    'effects': ('effects', 'the reverb room and pan, shared by the chords and the harp', ''),
+    'effects': ('effects', 'the reverb room and pan, shared by the chords and the harp, and the bends on everything', ''),
     'vocoder': ('vocoder', 'the chords or the harp, shaped by sound over USB', ''),
     'phone': ('phone', 'sound from a phone or computer, over USB', ''),
     'light': ('light', 'the round light under the buttons', ''),
@@ -423,7 +435,8 @@ def generate_param_html(param):
             </div>
         ''')
     elif ui_type == 'degrees':
-        # twelve checkboxes, one per chromatic degree, each a bit of the one value
+        # twelve checkboxes, one per chromatic degree, each a bit of the one value; or a setting's own
+        # switches, each a bit, named by its flag_labels (bent board options, 486)
         boxes = ''.join(
             f'''<label class="degree" title="{degree}">
                     <input type="checkbox" class="degree-box inactive" id="param-{sysex_address}-bit-{bit}"
@@ -431,7 +444,7 @@ def generate_param_html(param):
                            {'checked' if default_value & (1 << bit) else ''}>
                     <span>{degree}</span>
                 </label>'''
-            for bit, degree in enumerate(DEGREES))
+            for bit, degree in enumerate(param.get('flag_labels') or DEGREES))
         html.append(f'''
             <div style="display: flex; align-items: center; margin: 8px 0;">
                 <label style="width: 150px; font-weight: bold;" title="{html_escape(tooltip)}">{name}</label>
@@ -608,7 +621,7 @@ submenus = {
     'harp_parameter': [
         ('Notes', ['Notes']),
         # harp drums and the drum pads' settings (firmware 101) beside the plate
-        ('Playing', ['Plate', 'Drum pads', 'Pluck', 'Ribbon']),
+        ('Playing', ['Plate', 'Drum pads', 'Joystick', 'Pluck', 'Ribbon']),
         ('Sound', ['Voice', 'Oscillator', 'String model', 'Transient', 'Envelope', 'Low pass filter', 'Tremolo', 'Vibrato']),
         ('Effects', ['Delay', 'Reverb', 'Crunch', 'Spread', 'Output filter']),
     ],

@@ -248,6 +248,13 @@
       font-weight: normal;
       opacity: 0.7;
     }
+    /* the bent board's touch areas: what each moves, written on it */
+    #map-svg .map-bent-word {
+      fill: var(--text-primary);
+      font-size: 24px;
+      dominant-baseline: central;
+    }
+    #map-svg .map-ctl:not(.assigned) .map-bent-word { opacity: 0.5; }
     #map-svg .map-string-for {
       fill: var(--text-primary);
       font-size: 26px;
@@ -1925,6 +1932,17 @@
       width: 13em;
       row-gap: 3px;
     }
+    /* a setting's own switches (bent board options): named, two to a row, each box beside its name */
+    .bank-degrees.bank-flags {
+      width: 22em;
+      max-width: 100%;
+    }
+    .bank-flags .bank-degree {
+      flex: 0 0 50%;
+      flex-direction: row;
+      gap: 4px;
+      text-align: left;
+    }
     .bank-degree {
       flex: 0 0 16.66%;
       display: flex;
@@ -2354,6 +2372,7 @@
       /* the drawing fits the width, its labels a list under it */
       #map-svg .map-labels,
       #map-svg #map-strings,
+      #map-svg .map-bent-word,
       .map-hint {
         display: none;
       }

@@ -168,8 +168,9 @@ function valueLabel(p, v, edits) {
   if (isTargetSetting(p)) return targetLabel(v);
   const m = valueMeta(p, edits);
   if (m.ui_type === "degrees") {
-    const on = DEGREE_LABELS.filter((_, bit) => v & (1 << bit));
-    return on.length ? on.join(" ") : "no notes";
+    // the scale's degrees, or a setting's own switches (bent board options' flag_labels)
+    const on = (m.flag_labels || DEGREE_LABELS).filter((_, bit) => v & (1 << bit));
+    return on.length ? on.join(m.flag_labels ? ", " : " ") : (m.flag_labels ? "none" : "no notes");
   }
   const opts = selectOptions(m);
   const o = opts && opts.find(x => x.value === v);
@@ -886,8 +887,8 @@ function renderBankSheet() {
       readValue = () => parseInt(sel.value, 10);
     } else if (m.ui_type === "degrees") {
       const row = document.createElement("span");
-      row.className = "bank-degrees";
-      const boxes = DEGREE_LABELS.map((label, bit) => {
+      row.className = m.flag_labels ? "bank-degrees bank-flags" : "bank-degrees";
+      const boxes = (m.flag_labels || DEGREE_LABELS).map((label, bit) => {
         const l = document.createElement("label");
         l.className = "bank-degree";
         const box = document.createElement("input");

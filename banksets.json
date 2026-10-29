@@ -83,6 +83,170 @@
    ]
   },
   {
+   "id": "bent",
+   "title": "Circuit Bent",
+   "author": "Key & Cable",
+   "description": "Twelve instruments with the bends wired in, one for each bank: what a circuit bender does to an Omnichord, a Speak & Spell or a music box, done to the minichord's own instruments. Each bank is an instrument from another set, borrowed as it is and bent.",
+   "firmware": 121,
+   "file": "presets/bent/bent.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Bent Omnichord",
+     "hue": 35,
+     "blurb": "From folk, as it is there."
+    },
+    {
+     "bank": 1,
+     "name": "Speak & Spell",
+     "hue": 275,
+     "blurb": "From classical, as it is there."
+    },
+    {
+     "bank": 2,
+     "name": "8-bit Melt",
+     "hue": 120,
+     "blurb": "From synth, as it is there."
+    },
+    {
+     "bank": 3,
+     "name": "Dying Battery",
+     "hue": 330,
+     "blurb": "From ambient, as it is there."
+    },
+    {
+     "bank": 4,
+     "name": "Tape Eater",
+     "hue": 330,
+     "blurb": "From piano, as it is there."
+    },
+    {
+     "bank": 5,
+     "name": "Cliqhop Bent",
+     "hue": 15,
+     "blurb": "From synth, as it is there."
+    },
+    {
+     "bank": 6,
+     "name": "Brownout Reese",
+     "hue": 280,
+     "blurb": "From drum-and-bass, as it is there."
+    },
+    {
+     "bank": 7,
+     "name": "Clock Crash",
+     "hue": 140,
+     "blurb": "From synth, as it is there."
+    },
+    {
+     "bank": 8,
+     "name": "Bent Rhodes",
+     "hue": 30,
+     "blurb": "From electric-piano, as it is there."
+    },
+    {
+     "bank": 9,
+     "name": "Starved Organ",
+     "hue": 320,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 10,
+     "name": "Cracked Glass",
+     "hue": 185,
+     "blurb": "From ambient, as it is there."
+    },
+    {
+     "bank": 11,
+     "name": "Meltdown",
+     "hue": 290,
+     "blurb": "From synth, as it is there."
+    }
+   ]
+  },
+  {
+   "id": "bentboard",
+   "title": "Bent Board",
+   "author": "Key & Cable",
+   "description": "Twelve instruments for the bent board, the full-face plate whose touch areas bend the sound, that play just as well on any other plate. Each bank is an instrument from another set, borrowed as it is, with the bends wired in.",
+   "firmware": 121,
+   "file": "presets/bentboard/bentboard.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Talking Quartet",
+     "hue": 45,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 1,
+     "name": "Failing Cathedral",
+     "hue": 260,
+     "blurb": "From classical, as it is there."
+    },
+    {
+     "bank": 2,
+     "name": "Tremolo Rhodes",
+     "hue": 25,
+     "blurb": "From electric-piano, as it is there."
+    },
+    {
+     "bank": 3,
+     "name": "Motor Vibes",
+     "hue": 200,
+     "blurb": "From electric-piano, as it is there."
+    },
+    {
+     "bank": 4,
+     "name": "Sobbing Clarinet",
+     "hue": 50,
+     "blurb": "From world, as it is there."
+    },
+    {
+     "bank": 5,
+     "name": "Worn Adagio",
+     "hue": 0,
+     "blurb": "From classical, as it is there."
+    },
+    {
+     "bank": 6,
+     "name": "Bent Acid",
+     "hue": 100,
+     "blurb": "From synth, as it is there."
+    },
+    {
+     "bank": 7,
+     "name": "Bent Amen",
+     "hue": 10,
+     "blurb": "From drum-and-bass, as it is there."
+    },
+    {
+     "bank": 8,
+     "name": "Bent Bhairav",
+     "hue": 40,
+     "blurb": "From world, as it is there."
+    },
+    {
+     "bank": 9,
+     "name": "Bent Dub",
+     "hue": 150,
+     "blurb": "From gen2, as it is there."
+    },
+    {
+     "bank": 10,
+     "name": "Deflating Pipes",
+     "hue": 120,
+     "blurb": "From world, as it is there."
+    },
+    {
+     "bank": 11,
+     "name": "Rusted Gamelan",
+     "hue": 30,
+     "blurb": "From world, as it is there."
+    }
+   ]
+  },
+  {
    "id": "classical",
    "title": "Classical",
    "author": "Key & Cable",
@@ -653,6 +817,88 @@
      "name": "Highland Pipes",
      "hue": 120,
      "blurb": "A pipe chanter on the harp, in the pipes' mixolydian scale, over drones that never stop, and an accordion on the chord buttons, all in just intonation. The chanter can't play louder or softer, like the real one: shape the tune with grace notes instead, holding a note and tapping the one beside it.…"
+    }
+   ]
+  },
+  {
+   "id": "handson",
+   "title": "Hands-On",
+   "author": "Key & Cable",
+   "description": "Twelve instruments for the bent board, the full-face plate, whose touch areas play the instrument with no bends: the rail's five dots, the palm pad and the thumb ribbon each move an everyday setting of that instrument, a tremolo, a vibrato, an echo, a swell, the drawbars, the tempo. The Bent Board set shows what the board does to a sound; this one shows it as a plate for expression. Each bank is an instrument from another set, borrowed as it is, its knobs, hover and double tap its own.",
+   "firmware": 121,
+   "file": "presets/handson/handson.backup.json",
+   "presets": [
+    {
+     "bank": 0,
+     "name": "Hands-On Rhodes",
+     "hue": 200,
+     "blurb": "From electric-piano, as it is there."
+    },
+    {
+     "bank": 1,
+     "name": "Hands-On Strings",
+     "hue": 280,
+     "blurb": "From classical, as it is there (the mod knob's alternate lets the chords ring, since the palm has the ensemble)."
+    },
+    {
+     "bank": 2,
+     "name": "Hands-On Organ",
+     "hue": 320,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 3,
+     "name": "Hands-On Pad",
+     "hue": 300,
+     "blurb": "From synth, as it is there."
+    },
+    {
+     "bank": 4,
+     "name": "Hands-On Guitar",
+     "hue": 30,
+     "blurb": "From classical, as it is there."
+    },
+    {
+     "bank": 5,
+     "name": "Hands-On Vibes",
+     "hue": 180,
+     "blurb": "From electric-piano, as it is there."
+    },
+    {
+     "bank": 6,
+     "name": "Hands-On Groove",
+     "hue": 90,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 7,
+     "name": "Hands-On Steel",
+     "hue": 165,
+     "blurb": "From gen3, as it is there."
+    },
+    {
+     "bank": 8,
+     "name": "Hands-On Accordion",
+     "hue": 330,
+     "blurb": "From folk, as it is there."
+    },
+    {
+     "bank": 9,
+     "name": "Hands-On Choir",
+     "hue": 45,
+     "blurb": "From gen2, as it is there."
+    },
+    {
+     "bank": 10,
+     "name": "Hands-On Raga",
+     "hue": 40,
+     "blurb": "From world, as it is there."
+    },
+    {
+     "bank": 11,
+     "name": "Hands-On Brass",
+     "hue": 15,
+     "blurb": "From synth, as it is there (the chords a little quieter with the palm off its pad, so resting it swells them to their own level)."
     }
    ]
   },

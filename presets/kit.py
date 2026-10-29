@@ -303,6 +303,23 @@ def phone_follow(slot, target, value, band=0, release=200):
     return {base: target, base + 1: value, base + 2: band, base + 3: release}
 
 
+def bent_board(rail=(100, 100, 100, 100, 100), palm=(442, 100), ribbon=(434, 100), options=0,
+               rail_targets=(430, 433, 434, 436, 438)):
+    """the bent board's touch areas (472-486, firmware 121; harp plate 5): each (target, value), the setting
+    it moves from the preset's own toward value as it is pressed firmly (the ribbon by where the thumb is
+    along it). rail: the five points' values, left to right, on rail_targets (the bends by default); on a bend
+    the value is how deep a firm press goes. options: bent board options (486), its switches added up: 1 the
+    ribbon by how firmly, 2 catch, 4 the harp strikes, 8 the second knob, 16 rolls, 32 the plug, 64 the palm
+    hold, 128 the chain"""
+    out = {}
+    for k, (t, v) in enumerate(zip(rail_targets, rail)):
+        out[472 + 2 * k], out[473 + 2 * k] = t, v
+    out[482], out[483] = palm
+    out[484], out[485] = ribbon
+    out[486] = options
+    return out
+
+
 def performance(revert=1):
     """the modifier with up and down: down reverts the preset as saved, up is the panic (322, firmware 56)"""
     return {322: revert}

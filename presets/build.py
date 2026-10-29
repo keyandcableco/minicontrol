@@ -30,7 +30,13 @@ RESERVED = {0, 1, 382, 383, 510, 511}
 # the instrument's, not the preset's: a restore keeps what each bank has
 KEEP_ON_RESTORE = {8, 32, 106, 107, 108, 109, 110, 238, 241, 242, 243, 244}
 # controls that take a setting to move, and the address of the value they move it to (if any)
-KNOB_TARGETS = {10: None, 12: None, 14: None, 16: None, 249: 250, 325: 326, 303: 304, 307: 308}
+KNOB_TARGETS = {10: None, 12: None, 14: None, 16: None, 249: 250, 325: 326, 303: 304, 307: 308,
+                # the bent board's touch areas (firmware 111): the rail's five points, the palm pad, the thumb ribbon
+                472: 473, 474: 475, 476: 477, 478: 479, 480: 481, 482: 483, 484: 485}
+BENT_AREAS = {472, 474, 476, 478, 480, 482, 484}
+# the bends' depths: a bent board area pressed on one is a depth of its own beside the setting, the deepest
+# counting, so it doesn't fight the knob, hover or double tap that also moves it
+BEND_DEPTHS = {430, 433, 434, 436, 438}
 TAP_TARGETS = {200: 201, 209: 210, 211: 212}
 # the preset's name (firmware 50): two ASCII letters to each of the twelve settings from 290, the first
 # in the low seven bits; on older firmware it is kept but not shown
@@ -108,14 +114,23 @@ def build(preset, params, firmware=FIRMWARE):
         values[a] = s
     # two controls on one setting fight: hover moves it from the stored value, a knob sets it outright
     # and the double tap stores over it, so each setting gets one control at most. Hover and the
-    # alternate hover are one hand on two layers, so they may share one.
+    # alternate hover are one hand on two layers, so they may share one. A bent board area moves its
+    # setting from the stored value as hover does, so it fights a knob or hover on the same setting, but
+    # not the double tap (it starts from what the tap stores) or another area (the deepest moves it); on
+    # a bend's depth it is a depth of its own (bend_touch) and fights nothing.
     owners = {}
     for a in sorted(set(KNOB_TARGETS) | set(TAP_TARGETS)):
+        if a in BENT_AREAS and values[a] in BEND_DEPTHS:
+            continue
         if values[a] and values[a] not in ACTIONS:
-            owners.setdefault(values[a], set()).add("hover" if a in (249, 325) else label(params[a]))
+            kind = "area" if a in BENT_AREAS else "tap" if a in TAP_TARGETS else "hover" if a in (249, 325) else "knob"
+            owners.setdefault(values[a], set()).add((kind, "hover" if a in (249, 325) else label(params[a])))
     for target, who in owners.items():
-        if len(who) > 1:
-            problems.append(f"{label(params[target])} is moved by more than one control: {', '.join(sorted(who))}")
+        controls = {name for kind, name in who if kind != "area"}
+        live = {name for kind, name in who if kind in ("knob", "hover")}
+        if len(controls) > 1 or (live and len(controls) < len(who)):
+            problems.append(f"{label(params[target])} is moved by more than one control: "
+                            f"{', '.join(sorted(name for _, name in who))}")
     name = preset["name"]
     if len(name) > 2 * NAME_SLOTS or not all(32 <= ord(c) < 127 for c in name):
         problems.append(f"the name {name!r} isn't up to {2 * NAME_SLOTS} plain ASCII letters")

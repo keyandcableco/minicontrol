@@ -10,8 +10,14 @@ The plates share the stock plate's frame, header for header, and the template th
 carries the front panel's drawing in that frame, so the 21 chord buttons there place them: the
 fit puts every button within a unit of MAP_ROWS.
 
+The bent board, a full-face plate, is MAP_BENT: every zone's copper, its harp's thirteen places and
+its touch areas (the bend rail's five points, the palm pad, the thumb ribbon), each where
+make_bentboard.py lays it out. Its sheet isn't drawn: its holes are where the real knobs are, about
+3 mm right of the drawing's.
+
 Needs shapely (the plates' generator's venv has it). Run it again when a plate's gerbers change.
 """
+import ast
 import json
 import math
 import os
@@ -19,8 +25,8 @@ import re
 import sys
 
 from shapely import affinity
-from shapely.geometry import Point, Polygon
-from shapely.ops import nearest_points, polylabel
+from shapely.geometry import LineString, Point, Polygon, box
+from shapely.ops import nearest_points, polylabel, unary_union
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser('~/minichord-harp-plates')
 OUT = 'controls.js'
@@ -39,6 +45,11 @@ PLATES = {
     # the drum pads (firmware 101): twelve pads in two columns; the seams between them are where two pads meet
     13: ('drum pads PCB/gerber/drum pads PCB-F_Cu.gbr', 'drum pads PCB/gerber/drum pads PCB-Edge_Cuts.gbr', {'size': 24}),
 }
+# the bent board: its gerbers, its generator (whose layout constants place the harp's places and
+# the rail's points) and how big the places' names are drawn
+BENT = ('full face plate/bent board PCB/gerber/bent board PCB-F_Cu.gbr',
+        'full face plate/bent board PCB/gerber/bent board PCB-Edge_Cuts.gbr',
+        'full face plate/make_bentboard.py', {'size': 26})
 # board millimetres to the drawing, fitted to the chord buttons
 SCALE, DX, DY = 8.4985, 489.41, -40.61
 SIMPLIFY = 0.1   # mm, a third of a pixel on a wide screen
@@ -185,7 +196,8 @@ def name_spot(zone):
     return core.centroid.x, core.centroid.y
 
 
-def plate(copper, edge, extra):
+def zones_and_outline(copper, edge):
+    """A plate's twelve zones' copper, by T number, and its outline with any holes through it"""
     flashes, _ = read_gerber(os.path.join(ROOT, copper))
     _, edges = read_gerber(os.path.join(ROOT, edge))
     zones = {}
@@ -195,17 +207,110 @@ def plate(copper, edge, extra):
     assert sorted(zones) == list(range(1, 13)), f'{copper}: zones {sorted(zones)}'
     # the outline and any slots through the board: the biggest ring, with the rest as its holes
     outer, *slots = sorted(rings(edges), key=lambda r: -r.area)
-    outline = Polygon(outer.exterior.coords, [r.exterior.coords for r in slots])
+    return zones, Polygon(outer.exterior.coords, [r.exterior.coords for r in slots])
+
+
+def hover_lead(shape):
+    """Where the hover label's lead meets a plate: its edge nearest the label"""
+    edge = nearest_points(shape.exterior, Point((HOVER_LEAD[0] - DX) / SCALE, (HOVER_LEAD[1] - DY) / SCALE))[0]
+    return list(to_map(edge.x, edge.y))
+
+
+def plate(copper, edge, extra):
+    zones, outline = zones_and_outline(copper, edge)
     strings = []
     for t in range(12, 0, -1):   # T12, the lowest string, first
         pieces = sorted(zones[t], key=lambda p: -p.area)
         x, y = to_map(*name_spot(pieces[0]))
         strings.append({'d': ' '.join(shape_d(p) for p in pieces), 'x': x, 'y': y})
     x0, y0, x1, y1 = outline.bounds
-    # where the hover label's lead meets the plate: its edge nearest the label
-    edge = nearest_points(outline.exterior, Point((HOVER_LEAD[0] - DX) / SCALE, (HOVER_LEAD[1] - DY) / SCALE))[0]
-    return {**extra, 'bounds': [*to_map(x0, y0), *to_map(x1, y1)], 'lead': list(to_map(edge.x, edge.y)),
+    return {**extra, 'bounds': [*to_map(x0, y0), *to_map(x1, y1)], 'lead': hover_lead(outline),
             'outline': shape_d(outline), 'zones': strings}
+
+
+def layout_constants(path):
+    """make_bentboard.py's module-level constants (HARP_T, HARP_Y, RAIL_X ...), read without running it"""
+    out = {}
+    for node in ast.parse(open(path).read()).body:
+        if not isinstance(node, ast.Assign) or len(node.targets) != 1:
+            continue
+        target = node.targets[0]
+        try:
+            values = ast.literal_eval(node.value)
+        except (ValueError, TypeError, SyntaxError):
+            continue
+        if isinstance(target, ast.Name):
+            out[target.id] = values
+        elif isinstance(target, ast.Tuple):
+            out.update((n.id, v) for n, v in zip(target.elts, values) if isinstance(n, ast.Name))
+    return out
+
+
+def bent_board(copper, edge, generator, extra):
+    """The bent board: its touch areas' copper and its harp's six lines' (top to bottom); the harp as
+    one shape and its thirteen places, lowest first, each where it is named (the middle of the
+    harp at that place's height); the rail's five points, left to right, each its fifth of the strip and
+    the top of its middle, where its name starts; the palm pad and the thumb ribbon, each its copper as
+    one shape and the spot its name goes (the palm's running up it)"""
+    zones, _ = zones_and_outline(copper, edge)
+    c = layout_constants(os.path.join(ROOT, generator))
+    whole = lambda ts: unary_union([p for t in ts for p in zones[t]]).buffer(0.3).buffer(-0.3)   # teeth closed up
+    spot = lambda shape: to_map(*polylabel(max(getattr(shape, 'geoms', [shape]), key=lambda p: p.area), 0.01).coords[0])
+    across = lambda shape, x: LineString([(x, shape.bounds[1] - 1), (x, shape.bounds[3] + 1)]).intersection(shape).bounds
+    # the harp: thirteen places of q down its span, place 0 at the bottom
+    harp = whole(c['HARP_T'])
+    top, bot = c['HARP_Y']
+    q = (bot - top) / 13
+    hx0, _, hx1, _ = harp.bounds
+    places = []
+    for k in range(13):
+        y = bot - q * (k + 0.5)
+        span = LineString([(hx0 - 1, y), (hx1 + 1, y)]).intersection(harp).bounds
+        places.append(to_map((span[0] + span[2]) / 2, y))
+    # the rail: five points of equal width along RAIL_X, the end ones out to the rail's ends
+    rail = whole(c['RAIL_T'])
+    x0, x1 = c['RAIL_X']
+    xs = [x0 + (x1 - x0) / 5 * i for i in range(6)]
+    xs[0], xs[5] = rail.bounds[0] - 1, rail.bounds[2] + 1
+    points = []
+    for i in range(5):
+        piece = rail.intersection(box(xs[i], rail.bounds[1] - 1, xs[i + 1], rail.bounds[3] + 1))
+        mid = x0 + (x1 - x0) / 5 * (i + 0.5)
+        x, y = to_map(mid, across(rail, mid)[1])
+        points.append({'x': x, 'y': y, 'd': shape_d(piece)})
+    area = lambda shape: dict(zip('xy', spot(shape)), d=shape_d(shape))
+    # the palm's name runs up the pad: the middle of its height where it is widest
+    palm = whole([c['PALM_T']])
+    x = polylabel(palm, 0.01).x
+    _, y0, _, y1 = across(palm, x)
+    palm_area = dict(zip('xy', to_map(x, (y0 + y1) / 2)), d=shape_d(palm))
+    hb = harp.bounds
+    return {**extra, 'bounds': [*to_map(hb[0], hb[1]), *to_map(hb[2], hb[3])], 'lead': hover_lead(harp),
+            'copper': [' '.join(shape_d(p) for p in zones[t]) for t in [*c['RAIL_T'], c['PALM_T'], *c['RIBBON_T']]],
+            'lines': [' '.join(shape_d(p) for p in zones[t]) for t in c['HARP_T']],
+            'harp': shape_d(harp), 'zones': [{'x': x, 'y': y} for x, y in places],
+            'rail': points, 'palm': palm_area, 'ribbon': area(whole(c['RIBBON_T']))}
+
+
+def bent_block():
+    b = bent_board(*BENT)
+    js = lambda v: json.dumps(v).replace('"x": ', 'x: ').replace('"y": ', 'y: ').replace('"d": ', 'd: ')
+    head = ', '.join(f'{k}: {json.dumps(v)}' for k, v in b.items() if k in ('size', 'bounds', 'lead'))
+    lines = [f' {head},',
+             ' copper: [\n' + ',\n'.join(f'  {json.dumps(d)}' for d in b['copper']) + '\n ],',
+             ' lines: [\n' + ',\n'.join(f'  {json.dumps(d)}' for d in b['lines']) + '\n ],',
+             f' harp: {json.dumps(b["harp"])},',
+             ' zones: [' + ', '.join(f'{{ x: {num(z["x"])}, y: {num(z["y"])} }}' for z in b['zones']) + '],',
+             ' rail: [\n' + ',\n'.join(f'  {js(p)}' for p in b['rail']) + '\n ],',
+             f' palm: {js(b["palm"])},', f' ribbon: {js(b["ribbon"])}']
+    return 'const MAP_BENT = {\n' + '\n'.join(lines) + '\n};'
+
+
+def replace(source, name, block):
+    updated, n = re.subn(rf'const {name} = \{{.*?\n\}};', lambda _: block, source, count=1, flags=re.S)
+    if not n:
+        sys.exit(f'{OUT} has no {name} to replace')
+    return updated
 
 
 def main():
@@ -216,12 +321,10 @@ def main():
         head = ', '.join(f'{k}: {json.dumps(v)}' for k, v in p.items() if k not in ('outline', 'zones'))
         entries.append(f' {key}: {{ {head},\n  outline: {json.dumps(p["outline"])},\n  zones: [\n{zones}\n  ] }}')
     block = 'const MAP_PLATES = {\n' + ',\n'.join(entries) + '\n};'
-    source = open(OUT).read()
-    updated, n = re.subn(r'const MAP_PLATES = \{.*?\n\};', lambda _: block, source, count=1, flags=re.S)
-    if not n:
-        sys.exit(f'{OUT} has no MAP_PLATES to replace')
+    bent = bent_block()
+    updated = replace(replace(open(OUT).read(), 'MAP_PLATES', block), 'MAP_BENT', bent)
     open(OUT, 'w').write(updated)
-    print(f'{OUT}: MAP_PLATES, {len(block)} characters, plates {", ".join(map(str, PLATES))}')
+    print(f'{OUT}: MAP_PLATES, {len(block)} characters, plates {", ".join(map(str, PLATES))}; MAP_BENT, {len(bent)} characters')
 
 
 if __name__ == '__main__':

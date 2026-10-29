@@ -181,6 +181,17 @@ UI_OVERRIDES = {
     265: select('chord_parameter', 'Oscillator', VOICES_AND_SONG),
     # each chord note's own voice (firmware 41): 0 follows chord voice, then the voices one up
     **{a: select('chord_parameter', 'Oscillator', ["As the chord voice"] + VOICES_AND_SONG) for a in (270, 271, 272, 273)},
+    # global: the bends (firmware 102), what a circuit bender wires into an Omnichord, on the whole instrument
+    **{a: control('global_parameter', 'Bends', 'slider') for a in (430, 431, 432, 433, 434, 436, 438)},
+    435: select('global_parameter', 'Bends', ["Bits and sample rate", "Bits only", "Sample rate only"]),
+    437: select('global_parameter', 'Bends', ["Slower", "Faster"]),
+    439: control('global_parameter', 'Bends', 'switch'),
+    440: control('global_parameter', 'Bends', 'slider'),
+    442: control('global_parameter', 'Bends', 'slider'),
+    443: select('global_parameter', 'Bends', ["None", "Pitch drop, clock bend and stutter", "Every bend"]),
+    444: control('global_parameter', 'Bends', 'slider'),
+    445: control('global_parameter', 'Bends', 'slider'),
+    441: select('global_parameter', 'Bends', ["The drums play on through it", "The drums stutter too"]),
     # chord: the ensemble, a slow stereo chorus after the chord chain
     259: control('chord_parameter', 'Ensemble', 'slider'),
     # global: the vocoder, shaped by the sound coming in over USB
@@ -216,11 +227,16 @@ UI_OVERRIDES = {
     # thresholds sit here rather than with the instrument's own settings under General.
     # The plate fitted, and how firm a touch its zones need
     # (the released plates only: 0-4, zipper 24 and the arcade wheel, 8 and 9, from firmware 99,
-    # the drum pads, 13, from firmware 101, and piano glide, 12, from firmware 114; the numbers
-    # between belong to plates not out yet)
+    # the drum pads, 13, from firmware 101, piano glide, 12, from firmware 114, and the bent board,
+    # 5, from firmware 121; the numbers between belong to plates not out yet, and the joystick
+    # harp's entry, 11, is left out below until it is shown)
     243: select('harp_parameter', 'Plate', ["Stock strip, or any plate of twelve separate zones",
-                                            "Keymaster", "Piano plate", "Twin rows", "Framed strings"]
-                + [None] * 3 + ["Zipper 24", "Arcade wheel"] + [None] * 2 + ["Piano glide", "Drum pads"]),
+                                            "Keymaster", "Piano plate", "Twin rows", "Framed strings",
+                                            "Bent board: a harp of thirteen places, the bend rail, palm pad and thumb ribbon",
+                                            None, None, "Zipper 24", "Arcade wheel", None,
+                                            "Joystick harp: a strip of twelve places, a thumbstick, A, B and its click",
+                                            "Piano glide", "Drum pads"]),
+    # (the entries of plates not shown are dropped from it in main)
     # the drum pads (firmware 101): harp drums turns any plate's strings into the kit's pads, so it
     # sits under Playing beside the drum pads' own settings (drum seams, melodic pads) and the
     # resting hand's, which work on any plate with harp drums on (drum press, pads mute the groove)
@@ -343,6 +359,32 @@ UI_OVERRIDES = {
     394: select('chord_parameter', 'Slash chords and cantus', ["Leaves the block as it is", "Climbs the drops, then starts over",
                                                                "Climbs the drops and comes back down", "Close and drop 2 in turn"]),
     325: {"section": "global_parameter", "group": "Hover", "ui_type": "select", "none_option": "none", "targets": "sweep"},
+    # firmware 111: the bent board's touch areas, each a setting a knob could sweep (as hover's) and its value
+    **{a: {"section": "global_parameter", "group": "Bent board", "ui_type": "select", "none_option": "none", "targets": "sweep"}
+       for a in range(472, 485, 2)},
+    **{a: control('global_parameter', 'Bent board', 'slider') for a in range(473, 486, 2)},
+    # bent board options (firmware 121): its switches, a checkbox each, as the custom scale's degrees are
+    486: {"section": "global_parameter", "group": "Bent board", "ui_type": "degrees",
+          "flag_labels": ["Ribbon by pressure", "Catch with the thumb", "The harp strikes", "Second knob", "Rolls",
+                          "Pull the plug", "Palm hold", "Chain order"]},
+    # the joystick harp (harp plate 11, firmware 120): the stick's mode and orientation, its bend and
+    # vibrato, and the settings its four directions sweep and its three buttons hold
+    396: select('harp_parameter', 'Joystick', ["Settings: each direction pushes a setting of its own",
+                                               "Bend and vibrato: left and right bend, up adds vibrato"]),
+    397: select('harp_parameter', 'Joystick', ["As drawn", "Axes swapped", "Left and right turned round",
+                                               "Axes swapped, left and right turned round", "Up and down turned round",
+                                               "Axes swapped, up and down turned round", "Both turned round",
+                                               "Axes swapped, both turned round"]),
+    398: control('harp_parameter', 'Joystick', 'discrete_slider'),
+    399: select('harp_parameter', 'Joystick', ["The harp and the chords", "The harp", "The chords"]),
+    400: {"section": "harp_parameter", "group": "Joystick", "ui_type": "slider", "step": 0.01},
+    401: {"section": "harp_parameter", "group": "Joystick", "ui_type": "slider", "step": 0.01},
+    # up, down, left and right sweep as a knob does; A, B and the click hold a value as the double tap does
+    **{a: {"section": "harp_parameter", "group": "Joystick", "ui_type": "select", "none_option": "none",
+           "targets": "sweep"} for a in (402, 404, 406, 408)},
+    **{a: {"section": "harp_parameter", "group": "Joystick", "ui_type": "select", "none_option": "none",
+           "targets": "tap"} for a in (410, 412, 414)},
+    **{a: control('harp_parameter', 'Joystick', 'slider') for a in (403, 405, 407, 409, 411, 413, 415)},
     326: control('global_parameter', 'Hover', 'slider'),
     # firmware 59: the DJ box on the song, and the harp that plays it
     327: control('global_parameter', 'Phone', 'slider'),
@@ -376,7 +418,13 @@ for address in WAVEFORM_ADDRESSES:
 
 # The harp plates this page offers: those released. The firmware's tooltips describe every plate it
 # reads, so the others are taken out of them, and the sync stops before writing if any is still named.
-RELEASED_PLATES = {0, 1, 2, 3, 4, 8, 9, 12, 13}
+RELEASED_PLATES = {0, 1, 2, 3, 4, 5, 8, 9, 12, 13}
+# A local branch can show plates not released yet; the live page shows none.
+SHOWN_HERE = set()
+SHOWN_PLATES = RELEASED_PLATES | SHOWN_HERE
+# Settings only an unreleased plate uses stay off the page until the plate is shown: the joystick harp's (11).
+PLATE_ONLY_SETTINGS = {11: set(range(396, 416))}
+HELD_BACK = set().union(*(a for plate, a in PLATE_ONLY_SETTINGS.items() if plate not in SHOWN_PLATES))
 PLATE_SETTING = 243
 
 
@@ -386,10 +434,13 @@ def released_plates_only(address, tooltip):
     (...)": the sentences and list entries of plates not released are left out"""
     if address == PLATE_SETTING:
         parts = re.split(r'(?<=\.) (?=\d+ is )', tooltip)
-        tooltip = ' '.join(p for p in parts if not re.match(r'\d+ is ', p) or int(p.split()[0]) in RELEASED_PLATES)
+        tooltip = ' '.join(p for p in parts if not re.match(r'\d+ is ', p) or int(p.split()[0]) in SHOWN_PLATES)
+    sentences = re.split(r'(?<=\.) ', tooltip)
+    tooltip = ' '.join(t for t in sentences
+                       if all(int(n) in SHOWN_PLATES for n in re.findall(r'\(harp plate (\d+)\)', t)))
     if 'harp plate' in tooltip:
         tooltip = re.sub(r', and (\d+), the [^,.(]*(?:\([^)]*\))?',
-                         lambda m: m.group(0) if int(m.group(1)) in RELEASED_PLATES else '', tooltip)
+                         lambda m: m.group(0) if int(m.group(1)) in SHOWN_PLATES else '', tooltip)
     return tooltip
 
 
@@ -432,6 +483,8 @@ def main(firmware_file):
     for fw_section, params in firmware.items():
         for fw_param in params:
             address = fw_param['sysex_adress']
+            if address in HELD_BACK:
+                continue
             seen.add(address)
             if address in current:
                 section, entry = current[address]
@@ -457,6 +510,10 @@ def main(firmware_file):
             override = dict(UI_OVERRIDES.get(address, {}))
             section = override.pop('section', section)
             entry.update(override)
+            if address == PLATE_SETTING and 'options' in entry:
+                entry['options'] = [o for o in entry['options'] if int(o['value']) in SHOWN_PLATES]
+            if entry.get("ui_type") == "degrees":
+                entry.pop("options", None)   # a setting of switches has no list of choices (486 had two before 121)
             if entry['data_type'] == 'int' and entry['ui_type'] != 'select':
                 entry['step'] = 1
             if entry['ui_type'] == 'select' and 'options' in entry:
@@ -466,8 +523,8 @@ def main(firmware_file):
     dropped = sorted(address for address in current if address not in seen)
     for section in merged:
         merged[section].sort(key=lambda p: p['sysex_adress'])
-    leaks = [f"{p['sysex_adress']} {p['name']}: plates {sorted(plates_named(p) - RELEASED_PLATES)}"
-             for params in merged.values() for p in params if plates_named(p) - RELEASED_PLATES]
+    leaks = [f"{p['sysex_adress']} {p['name']}: plates {sorted(plates_named(p) - SHOWN_PLATES)}"
+             for params in merged.values() for p in params if plates_named(p) - SHOWN_PLATES]
     if leaks:
         sys.exit("plates not released named, nothing written:\n  " + "\n  ".join(leaks))
     with open(PAGE_FILE, 'w') as f:

@@ -1217,8 +1217,101 @@ void apply_audio_parameter(int adress, int value) {
         case 427:
             pads_mute_groove=value;
             break;
+        case 430:
+            bend_setting[0]=value; bend_apply();
+            break;
+        case 431:
+            pitch_drop_range=value; bend_apply();
+            break;
+        case 432:
+            pitch_drop_sag=value; bend_apply();
+            break;
+        case 433:
+            bend_setting[1]=value; bend_apply();
+            break;
+        case 434:
+            bend_setting[2]=value; bend_apply();
+            break;
+        case 435:
+            bitcrush_mode=value; bend_apply();
+            break;
+        case 436:
+            bend_setting[3]=value; bend_apply();
+            break;
+        case 437:
+            clock_bend_faster=value; bend_apply();
+            break;
+        case 438:
+            stutter_setting(value);
+            break;
+        case 439:
+            stutter_sync=value; bend_apply();
+            break;
+        case 440:
+            stutter_shortest_ms=value < 3 ? 25 : value; bend_apply();
+            break;
+        case 441:
+            stutter_drums=value; bend_apply();
+            break;
+        case 442:
+            bends_interact=value; bend_apply();
+            break;
+        case 443:
+            spring_back=value; bend_apply();
+            break;
+        case 444:
+            spring_ms=value < 50 ? 1000 : value;
+            break;
+        case 445:
+            stutter_refresh_ms=value; bend_apply();
+            break;
         case 446:
             melodic_pads=value;
+            break;
+        case 472:
+            bent_area_target(0, value);
+            break;
+        case 473:
+            bent_area_value(0, value);
+            break;
+        case 474:
+            bent_area_target(1, value);
+            break;
+        case 475:
+            bent_area_value(1, value);
+            break;
+        case 476:
+            bent_area_target(2, value);
+            break;
+        case 477:
+            bent_area_value(2, value);
+            break;
+        case 478:
+            bent_area_target(3, value);
+            break;
+        case 479:
+            bent_area_value(3, value);
+            break;
+        case 480:
+            bent_area_target(4, value);
+            break;
+        case 481:
+            bent_area_value(4, value);
+            break;
+        case 482:
+            bent_area_target(5, value);
+            break;
+        case 483:
+            bent_area_value(5, value);
+            break;
+        case 484:
+            bent_area_target(6, value);
+            break;
+        case 485:
+            bent_area_value(6, value);
+            break;
+        case 486:
+            bent_options(value);
             break;
         default:
             break;

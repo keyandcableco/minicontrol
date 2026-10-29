@@ -50,9 +50,14 @@ function toHuman(p, stored) { return isFloat(p) ? round2(stored / 100) : Math.tr
 function storedBounds(p) { return [toStored(p, p.min_value), toStored(p, p.max_value)]; }
 function storedDefault(p) { return toStored(p, p.default_value); }
 
-const KNOB_TARGETS = new Set([10, 12, 14, 16, 249, 303, 307, 325]);   // what sweeps: knobs, hover, the phone, alternate hover
+const KNOB_TARGETS = new Set([10, 12, 14, 16, 249, 303, 307, 325,   // what sweeps: knobs, hover, the phone, alternate hover,
+  472, 474, 476, 478, 480, 482, 484]);                                 // the bent board's rail points, palm pad and thumb ribbon
 const TAP_TARGETS = new Set([200, 209, 211]);
 const LOCKED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 241, 242, 243, 244, 256, 384]);
+// The bent board's touch areas by name ("rail:k" the rail's points, k from 0), as interpret.area_name
+function areaName(control) {
+  return control.startsWith("rail:") ? `bend rail point ${parseInt(control.slice(5), 10) + 1}` : D.control_names[control];
+}
 const RESERVED = new Set([382, 383, 510, 511]);
 const PARAMETER_SIZE = 512, PAGE_SIZE = 256, VERSION_ADDRESS = 7;
 
@@ -556,7 +561,7 @@ class Interpreter {
     const r = this.result;
     let index = null;
     if (control.startsWith("tap:")) { index = parseInt(control.slice(4), 10); control = "tap"; }
-    const names = D.control_names[control];
+    const names = control in D.bent_areas ? areaName(control) : D.control_names[control];
     const where = D.roles[role];
     if ("global" in where) section = "global";
     else if (section == null || !(section in where)) {
@@ -577,7 +582,8 @@ class Interpreter {
       this.put(ca, a, `${names} → ${lbl}`);
       if (this.selectors.has(a) || !(role in D.sweep)) {
         this.put(ra, 100, names);
-        const choices = p.max_value - p.min_value === 1 ? "on and off" : "through all its choices";
+        const choices = p.max_value - p.min_value === 1 ? "on and off" :
+          p.sweep === "whole" ? "across its whole depth" : "through all its choices";
         r.understood.push(`${names} → ${lbl}, ${choices}`);
       } else if (this.profile) {
         this.put(ra, 100, names);
@@ -592,6 +598,20 @@ class Interpreter {
       return;
     }
     const value = this.tapValue(role, a, words);
+    if (control in D.bent_areas) {
+      if (role === "looper" || p.controls !== "all") {
+        r.notes.push(`${names} can't move ${lbl}; try the double tap`);
+        return;
+      }
+      const [ca, va] = D.bent_areas[control];
+      this.put(ca, a, `${names} → ${lbl}`);
+      this.putRaw(va, value, `${names} value`);
+      this.lastValue = [va, a];
+      const how = control === "thumb_ribbon" ? "with the thumb at its right end" : "pressed firmly";
+      r.understood.push(`${names} → ${lbl}, toward ${fmtG(value)} ${how}`);
+      if (!r.notes.includes(D.bent_note)) r.notes.push(D.bent_note);
+      return;
+    }
     if (control === "hover" || control === "alt_hover") {
       if (role === "looper" || p.controls !== "all") {
         r.notes.push(`hover can't move ${lbl}; try the double tap`);
@@ -677,6 +697,9 @@ class Interpreter {
     } else if (control === "phone") {
       for (const slot of D.phone_slots) this.put(slot[0], 0, "phone follower cleared");
       r.understood.push("the phone's sound moves nothing");
+    } else if (control in D.bent_areas) {
+      this.put(D.bent_areas[control][0], 0, `${areaName(control)} cleared`);
+      r.understood.push(`${areaName(control)} does nothing`);
     } else {
       this.put(D.knob_addresses[control][0], 0, `${D.control_names[control]} cleared`);
       r.understood.push(`${D.control_names[control]} does nothing`);
@@ -863,6 +886,9 @@ class Interpreter {
         take(m);
         if (control === "two_knobs") {
           found.push([idx[0], "chord_knob"], [idx[0] + 0.5, "harp_knob"]);
+        } else if (control === "rail_n") {
+          const w = m[0].split(/\s+/).find(x => x in D.rail_words);
+          found.push([idx[0], `rail:${(w ? D.rail_words[w] : 1) - 1}`]);
         } else if (control === "tap_n") {
           const w = m[0].split(/\s+/).find(x => x in tapNumbers);
           found.push([idx[0], `tap:${(w ? tapNumbers[w] : 1) - 1}`]);
@@ -1072,7 +1098,9 @@ class Interpreter {
       if (isFloat(t) && n > t.max_value && n / 100 <= t.max_value) n /= 100;
       n = Math.max(t.min_value, Math.min(t.max_value, n));
       this.putRaw(va, n, "value");
-      r.understood.push(`${va === 250 ? "hover" : "double tap"} value ${fmtG(n)} (${this.settingName(ta)})`);
+      const area = Object.keys(D.bent_areas).find(c => D.bent_areas[c][1] === va);
+      const who = va === 250 ? "hover" : area ? areaName(area) : "double tap";
+      r.understood.push(`${who} value ${fmtG(n)} (${this.settingName(ta)})`);
       take(m);
     }
   }
@@ -1250,6 +1278,7 @@ function conflictNotes(start, state, selectors, name) {
       case ">": return x > b;
       case "<": return x < b;
       case "in": return b.includes(x);
+      case "has": return ((Math.trunc(x) || 0) & b) !== 0;   // a switch of a setting of switches (486)
       default: return !b.includes(x);
     }
   };
