@@ -37,6 +37,11 @@ PLATES = {
     2: ('piano PCB/gerber/piano PCB-F_Cu.gbr', 'piano PCB/gerber/piano PCB-Edge_Cuts.gbr', {'size': 28, 'black': [1, 3, 6, 8, 10]}),
     3: ('twin rows PCB/gerber/twin rows PCB-F_Cu.gbr', 'twin rows PCB/gerber/twin rows PCB-Edge_Cuts.gbr', {'size': 31}),
     4: ('framed strings PCB/gerber/framed strings PCB-F_Cu.gbr', 'framed strings PCB/gerber/framed strings PCB-Edge_Cuts.gbr', {'size': 28}),
+    # the chord plates (firmware 125), played in chromatic mode: where three zones meet, a chord. The
+    # tesseract's three rings round a centre in four, the torus's honeycomb, and below, the Celtic knot
+    # (its gerbers' celtic plait), one ribbon cut into twelve arcs
+    6: ('tesseract PCB/gerber/tesseract PCB-F_Cu.gbr', 'tesseract PCB/gerber/tesseract PCB-Edge_Cuts.gbr', {'size': 20}),
+    7: ('torus PCB/gerber/torus PCB-F_Cu.gbr', 'torus PCB/gerber/torus PCB-Edge_Cuts.gbr', {'size': 24}),
     8: ('zipper 24 PCB/gerber/zipper 24 PCB-F_Cu.gbr', 'zipper 24 PCB/gerber/zipper 24 PCB-Edge_Cuts.gbr', {'size': 20}),
     9: ('arcade wheel PCB/gerber/arcade wheel PCB-F_Cu.gbr', 'arcade wheel PCB/gerber/arcade wheel PCB-Edge_Cuts.gbr', {'size': 18}),
     # piano glide (firmware 114): the piano's keys and a fretless strip down the left edge, each key's copper
@@ -44,6 +49,7 @@ PLATES = {
     12: ('piano glide PCB/gerber/piano glide PCB-F_Cu.gbr', 'piano glide PCB/gerber/piano glide PCB-Edge_Cuts.gbr', {'size': 28, 'black': [1, 3, 6, 8, 10]}),
     # the drum pads (firmware 101): twelve pads in two columns; the seams between them are where two pads meet
     13: ('drum pads PCB/gerber/drum pads PCB-F_Cu.gbr', 'drum pads PCB/gerber/drum pads PCB-Edge_Cuts.gbr', {'size': 24}),
+    14: ('celtic plait PCB/gerber/celtic plait PCB-F_Cu.gbr', 'celtic plait PCB/gerber/celtic plait PCB-Edge_Cuts.gbr', {'size': 18}),
 }
 # the bent board: its gerbers, its generator (whose layout constants place the harp's places and
 # the rail's points) and how big the places' names are drawn

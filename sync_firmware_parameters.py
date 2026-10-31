@@ -227,15 +227,19 @@ UI_OVERRIDES = {
     # thresholds sit here rather than with the instrument's own settings under General.
     # The plate fitted, and how firm a touch its zones need
     # (the released plates only: 0-4, zipper 24 and the arcade wheel, 8 and 9, from firmware 99,
-    # the drum pads, 13, from firmware 101, piano glide, 12, from firmware 114, and the bent board,
-    # 5, from firmware 121; the numbers between belong to plates not out yet, and the joystick
+    # the drum pads, 13, from firmware 101, piano glide, 12, from firmware 114, the bent board,
+    # 5, from firmware 121, and the chord plates, the tesseract, torus and Celtic knot, 6, 7 and
+    # 14, from firmware 125; the numbers between belong to plates not out yet, and the joystick
     # harp's entry, 11, is left out below until it is shown)
     243: select('harp_parameter', 'Plate', ["Stock strip, or any plate of twelve separate zones",
                                             "Keymaster", "Piano plate", "Twin rows", "Framed strings",
                                             "Bent board: a harp of thirteen places, the bend rail, palm pad and thumb ribbon",
-                                            None, None, "Zipper 24", "Arcade wheel", None,
+                                            "Tesseract: all 24 major and minor chords, one at each corner",
+                                            "Torus: the Tonnetz, a chord at each corner",
+                                            "Zipper 24", "Arcade wheel", None,
                                             "Joystick harp: a strip of twelve places, a thumbstick, A, B and its click",
-                                            "Piano glide", "Drum pads"]),
+                                            "Piano glide", "Drum pads",
+                                            "Celtic knot: the circle of fifths, a chord at each crossing"]),
     # (the entries of plates not shown are dropped from it in main)
     # the drum pads (firmware 101): harp drums turns any plate's strings into the kit's pads, so it
     # sits under Playing beside the drum pads' own settings (drum seams, melodic pads) and the
@@ -418,7 +422,7 @@ for address in WAVEFORM_ADDRESSES:
 
 # The harp plates this page offers: those released. The firmware's tooltips describe every plate it
 # reads, so the others are taken out of them, and the sync stops before writing if any is still named.
-RELEASED_PLATES = {0, 1, 2, 3, 4, 5, 8, 9, 12, 13}
+RELEASED_PLATES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14}
 # A local branch can show plates not released yet; the live page shows none.
 SHOWN_HERE = set()
 SHOWN_PLATES = RELEASED_PLATES | SHOWN_HERE
